@@ -1,0 +1,9 @@
+word_master: "input/MASTER_1805_1144.docx"
+md_output: "output/MASTER_1805_1144.md"
+yaml_output: "output/MASTER_1805_1144.yaml"
+json_output: "output/MASTER_1805_1144.json"
+outline_yaml: "output/MASTER_outline.yaml"
+rtm_yaml: "output/RTM_QQQ.yaml"
+python_path: "C:/Python311/python.exe"
+pandoc_path: "C:/Users/gbonthuy/Downloads/pandoc-3.6.3-windows-x86_64/pandoc-3.6.3/pandoc.exe"
+
