@@ -1,6 +1,0 @@
-docx_master: "C:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GitHub/LOCAL_FOLDER_automation_files_OOdrive/MASTER_1805_1144.docx"
-pandoc_path: C:\Program Files\Pandoc\pandoc.exe
-python_executable: /usr/local/bin/python3
-output_dir: data/
-api_keys:
-  open

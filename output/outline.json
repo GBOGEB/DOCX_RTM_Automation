@@ -1,0 +1,24 @@
+[
+  {
+    "title": "Heading 1",
+    "level": 1,
+    "children": [
+      {
+        "title": "Heading 2",
+        "level": 2,
+        "children": [
+          {
+            "title": "Heading 3",
+            "level": 3,
+            "children": []
+          }
+        ]
+      },
+      {
+        "title": "Another Heading 2",
+        "level": 2,
+        "children": []
+      }
+    ]
+  }
+]

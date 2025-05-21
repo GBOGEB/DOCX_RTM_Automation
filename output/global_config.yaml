@@ -1,0 +1,22 @@
+metadata:
+  created_by: GBOGEB
+  created_at: '2025-05-21 14:04:44'
+  last_updated: '2025-05-21 14:04:44'
+paths:
+  python: C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\.venv\Scripts\python.exe
+  git_bash: C:\Program Files\Git\bin\bash.exe
+  pandoc: pandoc
+  office_template: C:\Users\gbonthuy\OneDrive - Studiecentrum voor Kernenergie\Documents\Custom
+    Office Templates\GPT Outline.dotx
+environment:
+  development: MS VS Code, Git BASH and PowerShell
+  requirements:
+  - Python 3.x
+  - PyYAML
+  - pandoc
+api_keys:
+  openai: ''
+  github: ''
+deliverables_matrix:
+  data_tables: 15
+  description: YAML data tables for design/process deliverables

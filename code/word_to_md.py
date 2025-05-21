@@ -1,4 +1,4 @@
-import os, subprocess, yaml, re
+import os, subprocess, yaml, re, sys
 
 with open('config/paths.yaml') as file:
     paths = yaml.safe_load(file)
@@ -6,21 +6,34 @@ with open('config/paths.yaml') as file:
 # Ensure output directory exists
 os.makedirs(os.path.dirname(paths['md_output']), exist_ok=True)
 
+# Check if input DOCX file exists
+if not os.path.isfile(paths['word_master']):
+    print(f"❌ Word master file not found: {paths['word_master']} (Resolved as: {os.path.abspath(paths['word_master'])})")
+    sys.exit(1)  # replaced exit(1)
+
+# Check if Lua filter file exists
+if not os.path.isfile('config/extend_headings.lua'):
+    print("❌ Lua filter file not found: config/extend_headings.lua")
+    exit(1)
+
+cmd = [
+    paths['pandoc_path'], 
+    paths['word_master'], 
+    "-f", "docx", 
+    "-t", "markdown",
+    "--toc", "--toc-depth=7", "--number-sections",
+    "--lua-filter=config/extend_headings.lua",
+    "-o", paths['md_output']
+]
+print("DEBUG: Running pandoc command:", " ".join(cmd))
 try:
-    subprocess.run([
-        paths['pandoc_path'], 
-        paths['word_master'], 
-        "-f", "docx", 
-        "-t", "markdown",
-        "--toc", "--toc-depth=6",  # Changed from 7 to 6
-        "--number-sections",
-        "--lua-filter=config/extend_headings.lua",
-        "-o", paths['md_output']
-    ], check=True)
+    subprocess.run(cmd, check=True, capture_output=True, text=True)
     print("✅ DOCX → Markdown conversion complete.")
 except subprocess.CalledProcessError as e:
-    print("❌ Conversion failed.", e)
-    exit(1)
+    print("❌ Conversion failed.")
+    print("Stdout:", e.stdout)
+    print("Stderr:", e.stderr)
+    sys.exit(1)
 
 # Process the generated Markdown file to extract QQQ requirements and outline
 lines = open(paths['md_output'], encoding="utf-8").readlines()
