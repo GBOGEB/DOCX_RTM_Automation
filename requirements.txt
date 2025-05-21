@@ -1,2 +1,7 @@
 python-docx
 PyYAML
+
+rich>=13.0.0
+pytest>=7.0.0
+black>=23.0.0
+mypy>=1.0.0
