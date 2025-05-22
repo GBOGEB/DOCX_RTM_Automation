@@ -9,6 +9,7 @@ import os
 import sys
 import subprocess
 import argparse
+import webbrowser
 from pathlib import Path
 
 def run_command(command, verbose=True):
@@ -79,13 +80,93 @@ def git_setup_remote(remote_url=None, use_https=True):
     
     print(f"Remote URL set to: {remote_url}")
 
+def check_git_identity():
+    """Check and configure Git user identity if needed."""
+    name = run_command("git config --global user.name", verbose=False)
+    email = run_command("git config --global user.email", verbose=False)
+    
+    if not name or not email:
+        print("\nGit identity not fully configured. Let's set it up:")
+        
+        if not name:
+            name = input("Enter your name for Git commits: ")
+            if name:
+                run_command(f'git config --global user.name "{name}"')
+        
+        if not email:
+            email = input("Enter your email for Git commits: ")
+            if email:
+                run_command(f'git config --global user.email "{email}"')
+                
+        print("Git identity configured successfully.")
+    return name and email
+
+def check_repo_exists(repo_url):
+    """Check if a GitHub repository exists."""
+    # Convert the URL to the API endpoint
+    if repo_url.endswith('.git'):
+        repo_url = repo_url[:-4]
+    
+    if repo_url.startswith('https://github.com/'):
+        parts = repo_url.split('/')
+        api_url = f'https://api.github.com/repos/{parts[3]}/{parts[4]}'
+        
+        # Use curl to check if the repo exists
+        result = run_command(f'curl -s -o /dev/null -w "%{{http_code}}" {api_url}', verbose=False)
+        return result and result.strip() == '200'
+    
+    return False
+
+def create_github_repo(repo_name, username=None):
+    """Open browser to create a new GitHub repository."""
+    if username:
+        repo_name = f"{username}/{repo_name}"
+    
+    print(f"\nRepository '{repo_name}' doesn't exist on GitHub.")
+    print("Opening GitHub to create a new repository...\n")
+    
+    # Extract repository name from URL if needed
+    if '/' in repo_name:
+        repo_name = repo_name.split('/')[-1]
+    
+    # Open the GitHub new repository page
+    webbrowser.open(f'https://github.com/new?name={repo_name}')
+    
+    print("Please complete these steps:")
+    print("1. Sign in to GitHub if prompted")
+    print("2. Enter repository name: " + repo_name)
+    print("3. Add a description (optional)")
+    print("4. Choose public or private")
+    print("5. DO NOT initialize with README, .gitignore, or license")
+    print("6. Click 'Create repository'")
+    
+    input("\nAfter creating the repository, press Enter to continue...")
+
 def git_first_commit():
     """Make initial commit with all files."""
+    # Check if there are any changes to commit
+    status = run_command("git status --porcelain", verbose=False)
+    if not status:
+        print("No changes to commit. Repository is clean.")
+        return False
+    
+    # Ensure Git identity is configured
+    if not check_git_identity():
+        print("Git identity configuration required before committing.")
+        return False
+    
     print("Adding all files...")
     run_command("git add .")
     
     print("Committing files...")
-    run_command('git commit -m "Initial commit"')
+    result = run_command('git commit -m "Initial commit"', verbose=False)
+    
+    if result:
+        print("Files committed successfully.")
+        return True
+    else:
+        print("Commit failed. Please check previous error messages.")
+        return False
 
 def git_push(branch="main"):
     """Push changes to GitHub."""
@@ -118,84 +199,61 @@ def git_clone(repo_url=None, target_dir=None):
     print(f"Cloning repository from {repo_url}...")
     run_command(command)
 
-def fix_permission_denied():
-    """Fix 'Permission denied (publickey)' error by switching to HTTPS."""
-    print("Fixing 'Permission denied (publickey)' error...")
-    git_setup_remote(use_https=True)
-    print("\nRemote URL changed to HTTPS. Try pushing again with:")
-    print("git push -u origin main")
-    print("\nNote: You'll be prompted for your GitHub username and password.")
-    print("If you have 2FA enabled, use a personal access token instead of your password.")
-    print("\nTo create a personal access token:")
-    print("1. Go to GitHub → Settings → Developer settings → Personal access tokens → Generate new token")
-    print("2. Select 'repo' scope")
-    print("3. Generate and copy the token")
-    print("4. Use this token as your password when prompted")
+def create_project_structure():
+    """Create basic project structure if it doesn't exist."""
+    directories = [
+        "config", 
+        "input", 
+        "output", 
+        "output/outlines", 
+        "logs", 
+        "scripts",
+        "code"
+    ]
+    
+    for directory in directories:
+        Path(directory).mkdir(exist_ok=True)
+    
+    # Create a sample config file if it doesn't exist
+    config_path = Path("config/paths.yaml")
+    if not config_path.exists():
+        with open(config_path, "w") as f:
+            f.write("# Configuration paths\n")
+            f.write("input_dir: './input'\n")
+            f.write("output_dir: './output'\n")
+            f.write("temp_dir: './temp'\n")
+    
+    print("Project structure created/verified.")
 
-def main():
-    """Main function to process command-line arguments."""
-    parser = argparse.ArgumentParser(description="Helper script for Git operations")
-    
-    # Create subparsers for different commands
-    subparsers = parser.add_subparsers(dest="command", help="Git command to run")
-    
-    # Init command
-    init_parser = subparsers.add_parser("init", help="Initialize Git repository")
-    
-    # Setup remote command
-    remote_parser = subparsers.add_parser("remote", help="Set up GitHub remote")
-    remote_parser.add_argument("--url", help="GitHub repository URL", 
-                              default="https://github.com/GBOGEB/DOCX_RTM_Automation.git")
-    remote_parser.add_argument("--https", action="store_true", help="Use HTTPS instead of SSH", default=True)
-    
-    # Commit command
-    commit_parser = subparsers.add_parser("commit", help="Make initial commit")
-    
-    # Push command
-    push_parser = subparsers.add_parser("push", help="Push to GitHub")
-    push_parser.add_argument("--branch", default="main", help="Branch to push to")
-    
-    # Clone command
-    clone_parser = subparsers.add_parser("clone", help="Clone repository")
-    clone_parser.add_argument("--url", help="GitHub repository URL", 
-                             default="https://github.com/GBOGEB/DOCX_RTM_Automation.git")
-    clone_parser.add_argument("--dir", help="Target directory")
-    
-    # Status command
-    subparsers.add_parser("status", help="Show Git status")
-    
-    # Setup command (init + remote + commit + push)
-    setup_parser = subparsers.add_parser("setup", help="Complete setup (init, remote, commit, push)")
-    setup_parser.add_argument("--url", help="GitHub repository URL", 
-                             default="https://github.com/GBOGEB/DOCX_RTM_Automation.git")
-    
-    # Fix permission denied command
-    subparsers.add_parser("fix-permission", help="Fix 'Permission denied (publickey)' error")
-    
-    args = parser.parse_args()
-    
-    # Process commands
-    if args.command == "init":
+def git_setup_repo():
+    """Set up a complete GitHub repository with proper structure."""
+    # Check if already a Git repo
+    is_git_repo = Path(".git").exists()
+    if not is_git_repo:
         git_init()
-    elif args.command == "remote":
-        git_setup_remote(args.url, args.https)
-    elif args.command == "commit":
-        git_first_commit()
-    elif args.command == "push":
-        git_push(args.branch)
-    elif args.command == "clone":
-        git_clone(args.url, args.dir)
-    elif args.command == "status":
-        git_status()
-    elif args.command == "setup":
-        git_init()
-        git_setup_remote(args.url, True)  # Always use HTTPS for initial setup
-        git_first_commit()
-        git_push()
-    elif args.command == "fix-permission":
-        fix_permission_denied()
     else:
-        parser.print_help()
-
-if __name__ == "__main__":
-    main()
+        print("Git repository already initialized.")
+    
+    # Create project structure
+    create_project_structure()
+    
+    # Configure remote
+    repo_url = "https://github.com/GBOGEB/DOCX_RTM_Automation.git"
+    
+    # Extract username and repo name for GitHub check
+    parts = repo_url.split("/")
+    username = parts[3]
+    repo_name = parts[4].replace(".git", "")
+    
+    # Check if repo exists on GitHub
+    exists = check_repo_exists(repo_url)
+    if not exists:
+        create_github_repo(repo_name, username)
+    
+    # Set up remote
+    git_setup_remote(repo_url, use_https=True)
+    
+    # Make initial commit
+    committed = git_first_commit()
+    
+    # If commit
