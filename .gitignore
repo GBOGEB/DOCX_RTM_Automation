@@ -1,1 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+.project
+.pydevproject
+.spyderproject
+.ropeproject
+
+# Secrets
+config/secrets/
+*.key
+*.pem
+*_key.txt
+
+# Output files
+output/*.md
+output/*.json
+output/*.yaml
+output/markdown/
+output/json/
+output/yaml/
+output/rtm/
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+temp/
+.DS_Store
+Thumbs.db
 .venv/
