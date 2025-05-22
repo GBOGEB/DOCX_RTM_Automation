@@ -1,0 +1,852 @@
+[
+  {
+    "title": "Copyright Rules",
+    "children": []
+  },
+  {
+    "title": "Table of Contents",
+    "children": [
+      {
+        "title": "Abbreviations",
+        "children": []
+      },
+      {
+        "title": "Terms and Definitions",
+        "children": []
+      },
+      {
+        "title": "Figure Index",
+        "children": []
+      },
+      {
+        "title": "Table Index",
+        "children": []
+      }
+    ]
+  },
+  {
+    "title": "Introduction",
+    "children": []
+  },
+  {
+    "title": "The LINAC",
+    "children": []
+  },
+  {
+    "title": "Cryogenic System",
+    "children": []
+  },
+  {
+    "title": "Cryogenic Users",
+    "children": []
+  },
+  {
+    "title": "Main Helium Process Interfaces",
+    "children": []
+  },
+  {
+    "title": "Introduction to CIS",
+    "children": []
+  },
+  {
+    "title": "Nature of the Procurement",
+    "children": []
+  },
+  {
+    "title": "Scope of Work by the Contractor",
+    "children": []
+  },
+  {
+    "title": "Scope of Supply by the Contractor",
+    "children": []
+  },
+  {
+    "title": "Technical Requirements",
+    "children": []
+  },
+  {
+    "title": "General Requirements",
+    "children": []
+  },
+  {
+    "title": "Operation Modes and Associated Performances of the Cryogenic System",
+    "children": []
+  },
+  {
+    "title": "Lifetime and annual operation schedule",
+    "children": []
+  },
+  {
+    "title": "Stead state operational scenarios",
+    "children": []
+  },
+  {
+    "title": "Transient operational Scenarios",
+    "children": []
+  },
+  {
+    "title": "Cool-down",
+    "children": []
+  },
+  {
+    "title": "Warm-Up",
+    "children": []
+  },
+  {
+    "title": "Other operational scenarios",
+    "children": []
+  },
+  {
+    "title": "Purging and Conditioning",
+    "children": []
+  },
+  {
+    "title": "LHe filling and emptying",
+    "children": []
+  },
+  {
+    "title": "QPLANT performance",
+    "children": []
+  },
+  {
+    "title": "Machine self-protection",
+    "children": []
+  },
+  {
+    "title": "Design and Construction Requirements",
+    "children": []
+  },
+  {
+    "title": "General requirements",
+    "children": []
+  },
+  {
+    "title": "Energy efficiency",
+    "children": []
+  },
+  {
+    "title": "Reliability requirements",
+    "children": []
+  },
+  {
+    "title": "Design, materials and construction requirements",
+    "children": []
+  },
+  {
+    "title": "Pressure design",
+    "children": []
+  },
+  {
+    "title": "Material requirements",
+    "children": []
+  },
+  {
+    "title": "Safety device requirements",
+    "children": []
+  },
+  {
+    "title": "Valve requirements",
+    "children": []
+  },
+  {
+    "title": "Joints and seals",
+    "children": []
+  },
+  {
+    "title": "Bellows",
+    "children": []
+  },
+  {
+    "title": "Welding",
+    "children": []
+  },
+  {
+    "title": "Cleaning and surface treatment",
+    "children": []
+  },
+  {
+    "title": "Helium guard",
+    "children": []
+  },
+  {
+    "title": "QRB Vacuum system",
+    "children": []
+  },
+  {
+    "title": "Purge requirements",
+    "children": []
+  },
+  {
+    "title": "Leak rate requirements",
+    "children": []
+  },
+  {
+    "title": "Helium Recovery and Helium Inventory management",
+    "children": []
+  },
+  {
+    "title": "Instrumentation requirements",
+    "children": []
+  },
+  {
+    "title": "Sensors used in hard wired component protection",
+    "children": []
+  },
+  {
+    "title": "Heaters and electrical measurements",
+    "children": []
+  },
+  {
+    "title": "Temperature measurements",
+    "children": []
+  },
+  {
+    "title": "Pressure measurements",
+    "children": []
+  },
+  {
+    "title": "Liquid level measurements",
+    "children": []
+  },
+  {
+    "title": "Flow rate measurements",
+    "children": []
+  },
+  {
+    "title": "Impurity measurements in helium flow",
+    "children": []
+  },
+  {
+    "title": "Pick-ups and sampling main requirements",
+    "children": []
+  },
+  {
+    "title": "Gas analysis main requirements",
+    "children": []
+  },
+  {
+    "title": "Wiring requirements",
+    "children": []
+  },
+  {
+    "title": "Electrical Requirements",
+    "children": []
+  },
+  {
+    "title": "Identification and labelling",
+    "children": []
+  },
+  {
+    "title": "Valves",
+    "children": []
+  },
+  {
+    "title": "Warm Compressor Station",
+    "children": []
+  },
+  {
+    "title": "Technical Specifications of the Warm Compressor Station",
+    "children": []
+  },
+  {
+    "title": "General requirements",
+    "children": []
+  },
+  {
+    "title": "Valves requirements",
+    "children": []
+  },
+  {
+    "title": "Noise level",
+    "children": []
+  },
+  {
+    "title": "Vibration",
+    "children": []
+  },
+  {
+    "title": "Heat dissipation to air",
+    "children": []
+  },
+  {
+    "title": "Heat recovery",
+    "children": []
+  },
+  {
+    "title": "Compressors requirements",
+    "children": []
+  },
+  {
+    "title": "Coolers",
+    "children": []
+  },
+  {
+    "title": "Oil",
+    "children": []
+  },
+  {
+    "title": "Oil circulating system",
+    "children": []
+  },
+  {
+    "title": "Oil-pump units",
+    "children": []
+  },
+  {
+    "title": "Oil-retention vessel",
+    "children": []
+  },
+  {
+    "title": "Oil filters",
+    "children": []
+  },
+  {
+    "title": "Purge and fill up requirements",
+    "children": []
+  },
+  {
+    "title": "Oil Removal System (ORS)",
+    "children": []
+  },
+  {
+    "title": "Coalescers",
+    "children": []
+  },
+  {
+    "title": "Charcoal adsorber",
+    "children": []
+  },
+  {
+    "title": "Helium dryer",
+    "children": []
+  },
+  {
+    "title": "Recovery and purification system",
+    "children": []
+  },
+  {
+    "title": "Gas Filters",
+    "children": []
+  },
+  {
+    "title": "Measuring points",
+    "children": []
+  },
+  {
+    "title": "Refrigeration Cold Box (QRB)",
+    "children": []
+  },
+  {
+    "title": "General description",
+    "children": []
+  },
+  {
+    "title": "General design requirements",
+    "children": []
+  },
+  {
+    "title": "Main components",
+    "children": []
+  },
+  {
+    "title": "Vacuum vessel",
+    "children": []
+  },
+  {
+    "title": "Heat exchangers",
+    "children": []
+  },
+  {
+    "title": "Turbines",
+    "children": []
+  },
+  {
+    "title": "Cold Compressors",
+    "children": []
+  },
+  {
+    "title": "Helium baths",
+    "children": []
+  },
+  {
+    "title": "Adsorbers",
+    "children": []
+  },
+  {
+    "title": "Filters",
+    "children": []
+  },
+  {
+    "title": "Heaters",
+    "children": []
+  },
+  {
+    "title": "Measuring Points",
+    "children": []
+  },
+  {
+    "title": "Warm Storage Helium (Option 1)",
+    "children": []
+  },
+  {
+    "title": "General description",
+    "children": []
+  },
+  {
+    "title": "Design requirements",
+    "children": []
+  },
+  {
+    "title": "Measuring points",
+    "children": []
+  },
+  {
+    "title": "QPLANT Control System",
+    "children": []
+  },
+  {
+    "title": "Overview",
+    "children": []
+  },
+  {
+    "title": "Reference Architecture",
+    "children": []
+  },
+  {
+    "title": "SRequirements",
+    "children": []
+  },
+  {
+    "title": "General Software and Hardware Requirements",
+    "children": []
+  },
+  {
+    "title": "Software development",
+    "children": []
+  },
+  {
+    "title": "Software Change Management",
+    "children": []
+  },
+  {
+    "title": "Human Machine Interface (HMI)",
+    "children": []
+  },
+  {
+    "title": "Network",
+    "children": []
+  },
+  {
+    "title": "Reference Architecture",
+    "children": []
+  },
+  {
+    "title": "General",
+    "children": []
+  },
+  {
+    "title": "Services",
+    "children": []
+  },
+  {
+    "title": "Infrastructure",
+    "children": []
+  },
+  {
+    "title": "Security",
+    "children": []
+  },
+  {
+    "title": "Safety",
+    "children": []
+  },
+  {
+    "title": "Interfaces",
+    "children": []
+  },
+  {
+    "title": "Interfaces to the QLM",
+    "children": []
+  },
+  {
+    "title": "Main cryogenic line interfaces",
+    "children": []
+  },
+  {
+    "title": "Warm line interfaces",
+    "children": []
+  },
+  {
+    "title": "Interfaces with the site",
+    "children": []
+  },
+  {
+    "title": "Compressor room",
+    "children": []
+  },
+  {
+    "title": "The cold box room",
+    "children": []
+  },
+  {
+    "title": "Storage Area",
+    "children": []
+  },
+  {
+    "title": "Site environmental conditions",
+    "children": []
+  },
+  {
+    "title": "Interfaces With Electrical Power Supply",
+    "children": []
+  },
+  {
+    "title": "Interfaces with the Water-Cooling Loop",
+    "children": []
+  },
+  {
+    "title": "Interfaces with instrument air System",
+    "children": []
+  },
+  {
+    "title": "Interfaces with the Vacuum System",
+    "children": []
+  },
+  {
+    "title": "Interfaces with Helium filling",
+    "children": []
+  },
+  {
+    "title": "Liquid Nitrogen (LN2)",
+    "children": []
+  },
+  {
+    "title": "Interfaces with MCS",
+    "children": []
+  },
+  {
+    "title": "Interfaces with MIS",
+    "children": []
+  },
+  {
+    "title": "Interfaces with MIT",
+    "children": []
+  },
+  {
+    "title": "Factory Testing",
+    "children": []
+  },
+  {
+    "title": "Welding, pressure and leak tests",
+    "children": []
+  },
+  {
+    "title": "Tests of components",
+    "children": []
+  },
+  {
+    "title": "Electrical, wiring and control system tests",
+    "children": []
+  },
+  {
+    "title": "Transport and Storage",
+    "children": []
+  },
+  {
+    "title": "Installation and Assembly",
+    "children": []
+  },
+  {
+    "title": "Incoming inspection at SCK CEN site",
+    "children": []
+  },
+  {
+    "title": "Test after Mechanical assembly completion",
+    "children": []
+  },
+  {
+    "title": "Commissioning",
+    "children": []
+  },
+  {
+    "title": "Tests to be done during Commissioning",
+    "children": []
+  },
+  {
+    "title": "Preliminary tests",
+    "children": []
+  },
+  {
+    "title": "Running tests",
+    "children": []
+  },
+  {
+    "title": "Site Acceptance testing",
+    "children": []
+  },
+  {
+    "title": "Site acceptance tests",
+    "children": []
+  },
+  {
+    "title": "General definition",
+    "children": []
+  },
+  {
+    "title": "WCS functional tests",
+    "children": []
+  },
+  {
+    "title": "WCS capacity tests",
+    "children": []
+  },
+  {
+    "title": "QPLANT functional tests",
+    "children": []
+  },
+  {
+    "title": "QPLANT capacity tests",
+    "children": [
+      {
+        "title": "Thermal Shield stand-by",
+        "children": []
+      },
+      {
+        "title": "Cold stand-by",
+        "children": []
+      },
+      {
+        "title": "2 K Operation",
+        "children": []
+      },
+      {
+        "title": "QPLANT transition tests",
+        "children": []
+      }
+    ]
+  },
+  {
+    "title": "Spare Parts (Option 2)",
+    "children": []
+  },
+  {
+    "title": "After-sales services",
+    "children": []
+  },
+  {
+    "title": "Documentation",
+    "children": []
+  },
+  {
+    "title": "Lifecycle Cost Management and Reliability-Centred Maintenance",
+    "children": []
+  },
+  {
+    "title": "Safety, Codes and Standards",
+    "children": []
+  },
+  {
+    "title": "Safety",
+    "children": []
+  },
+  {
+    "title": "Codes and Standards",
+    "children": []
+  },
+  {
+    "title": "Pressure Equipment & Safety",
+    "children": []
+  },
+  {
+    "title": "Functional Safety & Control",
+    "children": []
+  },
+  {
+    "title": "Asset & Maintenance Management",
+    "children": []
+  },
+  {
+    "title": "Cleanliness & Purity",
+    "children": []
+  },
+  {
+    "title": "ProofTest & ControlPhase Requirements",
+    "children": []
+  },
+  {
+    "title": "Schedule",
+    "children": []
+  },
+  {
+    "title": "Contractual Phases",
+    "children": []
+  },
+  {
+    "title": "Preliminary Schedule",
+    "children": []
+  },
+  {
+    "title": "Hold and Witness Points",
+    "children": []
+  },
+  {
+    "title": "Contract Performance",
+    "children": []
+  },
+  {
+    "title": "General Organization",
+    "children": []
+  },
+  {
+    "title": "Communication",
+    "children": []
+  },
+  {
+    "title": "Contract Management",
+    "children": []
+  },
+  {
+    "title": "Progress Dashboard",
+    "children": []
+  },
+  {
+    "title": "Meetings",
+    "children": []
+  },
+  {
+    "title": "Progress Meetings",
+    "children": []
+  },
+  {
+    "title": "Milestone Meetings",
+    "children": []
+  },
+  {
+    "title": "Technical Review Meetings",
+    "children": []
+  },
+  {
+    "title": "Risk Assessment and Risk Management Plan",
+    "children": []
+  },
+  {
+    "title": "Factory Access",
+    "children": []
+  },
+  {
+    "title": "Quality Assurance and Control",
+    "children": []
+  },
+  {
+    "title": "Quality Assurance",
+    "children": []
+  },
+  {
+    "title": "General requirements",
+    "children": []
+  },
+  {
+    "title": "Quality Management System",
+    "children": []
+  },
+  {
+    "title": "Quality Assurance Program",
+    "children": []
+  },
+  {
+    "title": "Qualification of personnel",
+    "children": []
+  },
+  {
+    "title": "Document management",
+    "children": []
+  },
+  {
+    "title": "Change Management",
+    "children": []
+  },
+  {
+    "title": "Non-Conformity Management",
+    "children": []
+  },
+  {
+    "title": "Audits",
+    "children": []
+  },
+  {
+    "title": "Quality Control",
+    "children": []
+  },
+  {
+    "title": "General requirements",
+    "children": []
+  },
+  {
+    "title": "Manufacturing and Inspection Plan",
+    "children": []
+  },
+  {
+    "title": "Declaration of conformity with all requirements",
+    "children": []
+  },
+  {
+    "title": "Acceptance Tests",
+    "children": []
+  },
+  {
+    "title": "General Requirements",
+    "children": []
+  },
+  {
+    "title": "Factory Acceptance Test (FAT)",
+    "children": []
+  },
+  {
+    "title": "Site Acceptance Tests",
+    "children": []
+  },
+  {
+    "title": "Acceptance and Warranty",
+    "children": []
+  },
+  {
+    "title": "Provisional Acceptance",
+    "children": []
+  },
+  {
+    "title": "Warranty Period",
+    "children": []
+  },
+  {
+    "title": "Warranty Conditions",
+    "children": []
+  },
+  {
+    "title": "Final Acceptance",
+    "children": []
+  },
+  {
+    "title": "Appendix",
+    "children": []
+  },
+  {
+    "title": "Cooling Power for Cool-down",
+    "children": []
+  },
+  {
+    "title": "References",
+    "children": []
+  },
+  {
+    "title": "Cold masses of Cryogenic Users and Cryogenic Distribution",
+    "children": []
+  },
+  {
+    "title": "PFD of the QVE (not included in the QPLANT procurement)",
+    "children": []
+  },
+  {
+    "title": "Annexes",
+    "children": []
+  }
+]

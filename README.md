@@ -3,6 +3,7 @@
 ## 🚀 Getting Started
 
 ### Step 1: Setup
+
 - Place your `.docx` file into `/input/`.
 - Ensure `paths.yaml` is correctly updated with your paths.
 

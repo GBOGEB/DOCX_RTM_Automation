@@ -1,9 +1,50 @@
+# Input/Output files
 word_master: "input/MASTER_1805_1144.docx"
 md_output: "output/MASTER_1805_1144.md"
 yaml_output: "output/MASTER_1805_1144.yaml"
 json_output: "output/MASTER_1805_1144.json"
 outline_yaml: "output/MASTER_outline.yaml"
 rtm_yaml: "output/RTM_QQQ.yaml"
-python_path: "C:/Python311/python.exe"
-pandoc_path: "C:/Users/gbonthuy/Downloads/pandoc-3.6.3-windows-x86_64/pandoc-3.6.3/pandoc.exe"
 
+# External input file (pre-existing markdown)
+external_md_input: "C:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GitHub/LOCAL_FOLDER_automation_files_OOdrive/output.md"
+
+# Secret key file paths
+secrets:
+  openai_key_path: "C:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GPT_Automation/openai_key.txt"
+
+# External file locations
+outline_yaml_external: "c:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GitHub/LOCAL_FOLDER_automation_files_OOdrive/MASTER_outline.yaml"
+numbered_outline_json_external: "c:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GitHub/LOCAL_FOLDER_automation_files_OOdrive/MASTER_numbered_outline.json"
+numbered_outline_yaml_external: "c:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GitHub/LOCAL_FOLDER_automation_files_OOdrive/MASTER_numbered_outline.yaml"
+outline_json_external: "c:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GitHub/LOCAL_FOLDER_automation_files_OOdrive/MASTER_outline.json"
+
+# Pipeline configuration
+pipeline:
+  steps:
+    - name: "word_to_md"
+      script: "code/word_to_md.py"
+      enabled: true
+      
+    - name: "extract_outline"
+      script: "code/extract_outline.py"
+      enabled: true
+      
+    - name: "extract_rtm"
+      script: "code/extract_rtm.py"
+      enabled: true
+      
+    - name: "md_to_json_yaml"
+      script: "code/md_to_json_yaml.py"
+      enabled: true
+      
+    - name: "sync_outline_files"
+      script: "code/sync_outline_files.py"
+      enabled: true
+
+# Pandoc command options
+pandoc_options:
+  toc: true
+  toc_depth: 7
+  number_sections: true
+  lua_filter: "config/extend_headings.lua"

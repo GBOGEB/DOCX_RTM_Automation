@@ -1,0 +1,962 @@
+[
+  {
+    "section": "1",
+    "title": "Introduction",
+    "level": 1,
+    "paragraph_index": 232
+  },
+  {
+    "section": "1.1",
+    "title": "The LINAC",
+    "level": 2,
+    "paragraph_index": 235
+  },
+  {
+    "section": "1.2",
+    "title": "Cryogenic System",
+    "level": 2,
+    "paragraph_index": 237
+  },
+  {
+    "section": "1.3",
+    "title": "Cryogenic Users",
+    "level": 2,
+    "paragraph_index": 258
+  },
+  {
+    "section": "1.4",
+    "title": "Main Helium Process Interfaces",
+    "level": 2,
+    "paragraph_index": 264
+  },
+  {
+    "section": "1.5",
+    "title": "Introduction to CIS",
+    "level": 2,
+    "paragraph_index": 270
+  },
+  {
+    "section": "2",
+    "title": "Nature of the Procurement",
+    "level": 1,
+    "paragraph_index": 285
+  },
+  {
+    "section": "2.1",
+    "title": "Scope of Work by the Contractor",
+    "level": 2,
+    "paragraph_index": 286
+  },
+  {
+    "section": "2.2",
+    "title": "Scope of Supply by the Contractor",
+    "level": 2,
+    "paragraph_index": 296
+  },
+  {
+    "section": "3",
+    "title": "Technical Requirements",
+    "level": 1,
+    "paragraph_index": 313
+  },
+  {
+    "section": "3.1",
+    "title": "General Requirements",
+    "level": 2,
+    "paragraph_index": 314
+  },
+  {
+    "section": "3.2",
+    "title": "Operation Modes and Associated Performances of the Cryogenic System",
+    "level": 2,
+    "paragraph_index": 325
+  },
+  {
+    "section": "3.2.1",
+    "title": "Lifetime and annual operation schedule",
+    "level": 3,
+    "paragraph_index": 326
+  },
+  {
+    "section": "3.2.2",
+    "title": "Stead state operational scenarios",
+    "level": 3,
+    "paragraph_index": 335
+  },
+  {
+    "section": "3.2.3",
+    "title": "Transient operational Scenarios",
+    "level": 3,
+    "paragraph_index": 343
+  },
+  {
+    "section": "3.2.4",
+    "title": "Other operational scenarios",
+    "level": 3,
+    "paragraph_index": 380
+  },
+  {
+    "section": "3.2.5",
+    "title": "QPLANT performance",
+    "level": 3,
+    "paragraph_index": 393
+  },
+  {
+    "section": "3.2.6",
+    "title": "Machine self-protection",
+    "level": 3,
+    "paragraph_index": 404
+  },
+  {
+    "section": "3.3",
+    "title": "Design and Construction Requirements",
+    "level": 2,
+    "paragraph_index": 412
+  },
+  {
+    "section": "3.3.1",
+    "title": "General requirements",
+    "level": 3,
+    "paragraph_index": 413
+  },
+  {
+    "section": "3.3.2",
+    "title": "Energy efficiency",
+    "level": 3,
+    "paragraph_index": 416
+  },
+  {
+    "section": "3.3.3",
+    "title": "Reliability requirements",
+    "level": 3,
+    "paragraph_index": 439
+  },
+  {
+    "section": "3.3.4",
+    "title": "Design, materials and construction requirements",
+    "level": 3,
+    "paragraph_index": 471
+  },
+  {
+    "section": "3.3.4.1",
+    "title": "Pressure design",
+    "level": 4,
+    "paragraph_index": 472
+  },
+  {
+    "section": "3.3.4.2",
+    "title": "Material requirements",
+    "level": 4,
+    "paragraph_index": 478
+  },
+  {
+    "section": "3.3.4.3",
+    "title": "Safety device requirements",
+    "level": 4,
+    "paragraph_index": 484
+  },
+  {
+    "section": "3.3.4.4",
+    "title": "Valve requirements",
+    "level": 4,
+    "paragraph_index": 498
+  },
+  {
+    "section": "3.3.4.5",
+    "title": "Joints and seals",
+    "level": 4,
+    "paragraph_index": 504
+  },
+  {
+    "section": "3.3.4.6",
+    "title": "Bellows",
+    "level": 4,
+    "paragraph_index": 507
+  },
+  {
+    "section": "3.3.4.7",
+    "title": "Welding",
+    "level": 4,
+    "paragraph_index": 510
+  },
+  {
+    "section": "3.3.4.8",
+    "title": "Cleaning and surface treatment",
+    "level": 4,
+    "paragraph_index": 514
+  },
+  {
+    "section": "3.3.5",
+    "title": "Helium guard",
+    "level": 3,
+    "paragraph_index": 517
+  },
+  {
+    "section": "3.3.6",
+    "title": "QRB Vacuum system",
+    "level": 3,
+    "paragraph_index": 522
+  },
+  {
+    "section": "3.3.7",
+    "title": "Purge requirements",
+    "level": 3,
+    "paragraph_index": 531
+  },
+  {
+    "section": "3.3.8",
+    "title": "Leak rate requirements",
+    "level": 3,
+    "paragraph_index": 539
+  },
+  {
+    "section": "3.3.9",
+    "title": "Helium Recovery and Helium Inventory management",
+    "level": 3,
+    "paragraph_index": 549
+  },
+  {
+    "section": "3.3.10",
+    "title": "Instrumentation requirements",
+    "level": 3,
+    "paragraph_index": 603
+  },
+  {
+    "section": "3.3.10.1",
+    "title": "Sensors used in hard wired component protection",
+    "level": 4,
+    "paragraph_index": 611
+  },
+  {
+    "section": "3.3.10.2",
+    "title": "Heaters and electrical measurements",
+    "level": 4,
+    "paragraph_index": 615
+  },
+  {
+    "section": "3.3.10.3",
+    "title": "Temperature measurements",
+    "level": 4,
+    "paragraph_index": 623
+  },
+  {
+    "section": "3.3.10.4",
+    "title": "Pressure measurements",
+    "level": 4,
+    "paragraph_index": 634
+  },
+  {
+    "section": "3.3.10.5",
+    "title": "Liquid level measurements",
+    "level": 4,
+    "paragraph_index": 646
+  },
+  {
+    "section": "3.3.10.6",
+    "title": "Flow rate measurements",
+    "level": 4,
+    "paragraph_index": 651
+  },
+  {
+    "section": "3.3.10.7",
+    "title": "Impurity measurements in helium flow",
+    "level": 4,
+    "paragraph_index": 656
+  },
+  {
+    "section": "3.3.10.7.1",
+    "title": "Pick-ups and sampling main requirements",
+    "level": 5,
+    "paragraph_index": 657
+  },
+  {
+    "section": "3.3.10.7.2",
+    "title": "Gas analysis main requirements",
+    "level": 5,
+    "paragraph_index": 665
+  },
+  {
+    "section": "3.3.11",
+    "title": "Wiring requirements",
+    "level": 3,
+    "paragraph_index": 670
+  },
+  {
+    "section": "3.3.12",
+    "title": "Electrical Requirements",
+    "level": 3,
+    "paragraph_index": 674
+  },
+  {
+    "section": "3.3.13",
+    "title": "Identification and labelling",
+    "level": 3,
+    "paragraph_index": 681
+  },
+  {
+    "section": "3.3.14",
+    "title": "Valves",
+    "level": 3,
+    "paragraph_index": 686
+  },
+  {
+    "section": "3.3.15",
+    "title": "Warm Compressor Station",
+    "level": 3,
+    "paragraph_index": 691
+  },
+  {
+    "section": "3.3.15.0.1",
+    "title": "General requirements",
+    "level": 5,
+    "paragraph_index": 693
+  },
+  {
+    "section": "3.3.15.0.2",
+    "title": "Valves requirements",
+    "level": 5,
+    "paragraph_index": 699
+  },
+  {
+    "section": "3.3.15.0.3",
+    "title": "Noise level",
+    "level": 5,
+    "paragraph_index": 707
+  },
+  {
+    "section": "3.3.15.0.4",
+    "title": "Vibration",
+    "level": 5,
+    "paragraph_index": 711
+  },
+  {
+    "section": "3.3.15.0.5",
+    "title": "Heat dissipation to air",
+    "level": 5,
+    "paragraph_index": 714
+  },
+  {
+    "section": "3.3.15.0.6",
+    "title": "Heat recovery",
+    "level": 5,
+    "paragraph_index": 717
+  },
+  {
+    "section": "3.3.15.0.7",
+    "title": "Compressors requirements",
+    "level": 5,
+    "paragraph_index": 726
+  },
+  {
+    "section": "3.3.15.0.8",
+    "title": "Coolers",
+    "level": 5,
+    "paragraph_index": 735
+  },
+  {
+    "section": "3.3.15.0.9",
+    "title": "Oil",
+    "level": 5,
+    "paragraph_index": 742
+  },
+  {
+    "section": "3.3.15.0.10",
+    "title": "Oil-pump units",
+    "level": 5,
+    "paragraph_index": 749
+  },
+  {
+    "section": "3.3.15.0.11",
+    "title": "Oil-retention vessel",
+    "level": 5,
+    "paragraph_index": 752
+  },
+  {
+    "section": "3.3.15.0.12",
+    "title": "Oil filters",
+    "level": 5,
+    "paragraph_index": 758
+  },
+  {
+    "section": "3.3.15.0.13",
+    "title": "Coalescers",
+    "level": 5,
+    "paragraph_index": 769
+  },
+  {
+    "section": "3.3.15.0.14",
+    "title": "Charcoal adsorber",
+    "level": 5,
+    "paragraph_index": 778
+  },
+  {
+    "section": "3.3.16",
+    "title": "Refrigeration Cold Box (QRB)",
+    "level": 3,
+    "paragraph_index": 815
+  },
+  {
+    "section": "3.3.16.0.1",
+    "title": "Vacuum vessel",
+    "level": 5,
+    "paragraph_index": 850
+  },
+  {
+    "section": "3.3.16.0.2",
+    "title": "Heat exchangers",
+    "level": 5,
+    "paragraph_index": 858
+  },
+  {
+    "section": "3.3.16.0.3",
+    "title": "Turbines",
+    "level": 5,
+    "paragraph_index": 865
+  },
+  {
+    "section": "3.3.16.0.4",
+    "title": "Cold Compressors",
+    "level": 5,
+    "paragraph_index": 871
+  },
+  {
+    "section": "3.3.16.0.5",
+    "title": "Helium baths",
+    "level": 5,
+    "paragraph_index": 879
+  },
+  {
+    "section": "3.3.16.0.6",
+    "title": "Adsorbers",
+    "level": 5,
+    "paragraph_index": 885
+  },
+  {
+    "section": "3.3.16.0.7",
+    "title": "Filters",
+    "level": 5,
+    "paragraph_index": 898
+  },
+  {
+    "section": "3.3.16.0.8",
+    "title": "Heaters",
+    "level": 5,
+    "paragraph_index": 902
+  },
+  {
+    "section": "3.3.17",
+    "title": "Warm Storage Helium (Option 1)",
+    "level": 3,
+    "paragraph_index": 915
+  },
+  {
+    "section": "3.3.18",
+    "title": "QPLANT Control System",
+    "level": 3,
+    "paragraph_index": 952
+  },
+  {
+    "section": "3.3.18.0.1",
+    "title": "Reference Architecture",
+    "level": 5,
+    "paragraph_index": 1065
+  },
+  {
+    "section": "3.3.18.0.2",
+    "title": "General",
+    "level": 5,
+    "paragraph_index": 1073
+  },
+  {
+    "section": "3.3.18.0.3",
+    "title": "Services",
+    "level": 5,
+    "paragraph_index": 1080
+  },
+  {
+    "section": "3.3.18.0.4",
+    "title": "Infrastructure",
+    "level": 5,
+    "paragraph_index": 1095
+  },
+  {
+    "section": "3.3.18.1",
+    "title": "Security",
+    "level": 4,
+    "paragraph_index": 1098
+  },
+  {
+    "section": "3.3.18.2",
+    "title": "Safety",
+    "level": 4,
+    "paragraph_index": 1104
+  },
+  {
+    "section": "3.4",
+    "title": "Interfaces",
+    "level": 2,
+    "paragraph_index": 1109
+  },
+  {
+    "section": "3.4.1",
+    "title": "Interfaces to the QLM",
+    "level": 3,
+    "paragraph_index": 1110
+  },
+  {
+    "section": "3.4.2",
+    "title": "Interfaces with the site",
+    "level": 3,
+    "paragraph_index": 1139
+  },
+  {
+    "section": "3.4.3",
+    "title": "Interfaces With Electrical Power Supply",
+    "level": 3,
+    "paragraph_index": 1181
+  },
+  {
+    "section": "3.4.4",
+    "title": "Interfaces with the Water-Cooling Loop",
+    "level": 3,
+    "paragraph_index": 1192
+  },
+  {
+    "section": "3.4.5",
+    "title": "Interfaces with instrument air System",
+    "level": 3,
+    "paragraph_index": 1201
+  },
+  {
+    "section": "3.4.6",
+    "title": "",
+    "level": 3,
+    "paragraph_index": 1205
+  },
+  {
+    "section": "3.4.7",
+    "title": "Interfaces with the Vacuum System",
+    "level": 3,
+    "paragraph_index": 1216
+  },
+  {
+    "section": "3.4.8",
+    "title": "Interfaces with Helium filling",
+    "level": 3,
+    "paragraph_index": 1219
+  },
+  {
+    "section": "3.4.9",
+    "title": "",
+    "level": 3,
+    "paragraph_index": 1222
+  },
+  {
+    "section": "3.4.10",
+    "title": "Liquid Nitrogen (LN2)",
+    "level": 3,
+    "paragraph_index": 1223
+  },
+  {
+    "section": "3.4.11",
+    "title": "Interfaces with MCS",
+    "level": 3,
+    "paragraph_index": 1226
+  },
+  {
+    "section": "3.4.12",
+    "title": "Interfaces with MIS",
+    "level": 3,
+    "paragraph_index": 1229
+  },
+  {
+    "section": "3.4.13",
+    "title": "Interfaces with MIT",
+    "level": 3,
+    "paragraph_index": 1235
+  },
+  {
+    "section": "3.5",
+    "title": "Factory Testing",
+    "level": 2,
+    "paragraph_index": 1249
+  },
+  {
+    "section": "3.5.1",
+    "title": "Welding, pressure and leak tests",
+    "level": 3,
+    "paragraph_index": 1250
+  },
+  {
+    "section": "3.5.2",
+    "title": "Tests of components",
+    "level": 3,
+    "paragraph_index": 1258
+  },
+  {
+    "section": "3.5.3",
+    "title": "Electrical, wiring and control system tests",
+    "level": 3,
+    "paragraph_index": 1265
+  },
+  {
+    "section": "3.6",
+    "title": "Transport and Storage",
+    "level": 2,
+    "paragraph_index": 1278
+  },
+  {
+    "section": "3.7",
+    "title": "Installation and Assembly",
+    "level": 2,
+    "paragraph_index": 1285
+  },
+  {
+    "section": "3.7.1",
+    "title": "Incoming inspection at SCK CEN site",
+    "level": 3,
+    "paragraph_index": 1291
+  },
+  {
+    "section": "3.7.2",
+    "title": "Test after Mechanical assembly completion",
+    "level": 3,
+    "paragraph_index": 1298
+  },
+  {
+    "section": "3.8",
+    "title": "Commissioning",
+    "level": 2,
+    "paragraph_index": 1308
+  },
+  {
+    "section": "3.8.1",
+    "title": "Tests to be done during Commissioning",
+    "level": 3,
+    "paragraph_index": 1311
+  },
+  {
+    "section": "3.9",
+    "title": "Site Acceptance testing",
+    "level": 2,
+    "paragraph_index": 1328
+  },
+  {
+    "section": "3.9.1",
+    "title": "Site acceptance tests",
+    "level": 3,
+    "paragraph_index": 1332
+  },
+  {
+    "section": "3.10",
+    "title": "Spare Parts (Option 2)",
+    "level": 2,
+    "paragraph_index": 1417
+  },
+  {
+    "section": "3.11",
+    "title": "After-sales services",
+    "level": 2,
+    "paragraph_index": 1423
+  },
+  {
+    "section": "3.12",
+    "title": "Documentation",
+    "level": 2,
+    "paragraph_index": 1447
+  },
+  {
+    "section": "4",
+    "title": "Lifecycle Cost Management and Reliability-Centred Maintenance",
+    "level": 1,
+    "paragraph_index": 1484
+  },
+  {
+    "section": "5",
+    "title": "Safety, Codes and Standards",
+    "level": 1,
+    "paragraph_index": 1518
+  },
+  {
+    "section": "5.1",
+    "title": "Safety",
+    "level": 2,
+    "paragraph_index": 1519
+  },
+  {
+    "section": "5.2",
+    "title": "Codes and Standards",
+    "level": 2,
+    "paragraph_index": 1523
+  },
+  {
+    "section": "5.2.1",
+    "title": "Pressure Equipment & Safety",
+    "level": 3,
+    "paragraph_index": 1554
+  },
+  {
+    "section": "5.2.2",
+    "title": "Functional Safety & Control",
+    "level": 3,
+    "paragraph_index": 1555
+  },
+  {
+    "section": "5.2.3",
+    "title": "Asset & Maintenance Management",
+    "level": 3,
+    "paragraph_index": 1556
+  },
+  {
+    "section": "5.2.4",
+    "title": "Cleanliness & Purity",
+    "level": 3,
+    "paragraph_index": 1557
+  },
+  {
+    "section": "5.2.5",
+    "title": "ProofTest & ControlPhase Requirements",
+    "level": 3,
+    "paragraph_index": 1558
+  },
+  {
+    "section": "6",
+    "title": "Schedule",
+    "level": 1,
+    "paragraph_index": 1562
+  },
+  {
+    "section": "6.1",
+    "title": "Contractual Phases",
+    "level": 2,
+    "paragraph_index": 1564
+  },
+  {
+    "section": "6.2",
+    "title": "Preliminary Schedule",
+    "level": 2,
+    "paragraph_index": 1581
+  },
+  {
+    "section": "6.3",
+    "title": "Hold and Witness Points",
+    "level": 2,
+    "paragraph_index": 1584
+  },
+  {
+    "section": "7",
+    "title": "Contract Performance",
+    "level": 1,
+    "paragraph_index": 1602
+  },
+  {
+    "section": "7.1",
+    "title": "General Organization",
+    "level": 2,
+    "paragraph_index": 1603
+  },
+  {
+    "section": "7.2",
+    "title": "Communication",
+    "level": 2,
+    "paragraph_index": 1612
+  },
+  {
+    "section": "7.3",
+    "title": "Contract Management",
+    "level": 2,
+    "paragraph_index": 1618
+  },
+  {
+    "section": "7.3.1",
+    "title": "Progress Dashboard",
+    "level": 3,
+    "paragraph_index": 1619
+  },
+  {
+    "section": "7.3.2",
+    "title": "Meetings",
+    "level": 3,
+    "paragraph_index": 1635
+  },
+  {
+    "section": "7.4",
+    "title": "Risk Assessment and Risk Management Plan",
+    "level": 2,
+    "paragraph_index": 1656
+  },
+  {
+    "section": "7.5",
+    "title": "Factory Access",
+    "level": 2,
+    "paragraph_index": 1660
+  },
+  {
+    "section": "8",
+    "title": "Quality Assurance and Control",
+    "level": 1,
+    "paragraph_index": 1663
+  },
+  {
+    "section": "8.1",
+    "title": "Quality Assurance",
+    "level": 2,
+    "paragraph_index": 1664
+  },
+  {
+    "section": "8.1.1",
+    "title": "General requirements",
+    "level": 3,
+    "paragraph_index": 1665
+  },
+  {
+    "section": "8.1.2",
+    "title": "Quality Management System",
+    "level": 3,
+    "paragraph_index": 1668
+  },
+  {
+    "section": "8.1.3",
+    "title": "Quality Assurance Program",
+    "level": 3,
+    "paragraph_index": 1672
+  },
+  {
+    "section": "8.1.4",
+    "title": "Qualification of personnel",
+    "level": 3,
+    "paragraph_index": 1676
+  },
+  {
+    "section": "8.1.5",
+    "title": "Document management",
+    "level": 3,
+    "paragraph_index": 1684
+  },
+  {
+    "section": "8.1.6",
+    "title": "Change Management",
+    "level": 3,
+    "paragraph_index": 1700
+  },
+  {
+    "section": "8.1.7",
+    "title": "Non-Conformity Management",
+    "level": 3,
+    "paragraph_index": 1708
+  },
+  {
+    "section": "8.1.8",
+    "title": "Audits",
+    "level": 3,
+    "paragraph_index": 1731
+  },
+  {
+    "section": "8.2",
+    "title": "Quality Control",
+    "level": 2,
+    "paragraph_index": 1737
+  },
+  {
+    "section": "8.2.1",
+    "title": "General requirements",
+    "level": 3,
+    "paragraph_index": 1738
+  },
+  {
+    "section": "8.2.2",
+    "title": "Manufacturing and Inspection Plan",
+    "level": 3,
+    "paragraph_index": 1748
+  },
+  {
+    "section": "8.2.3",
+    "title": "Declaration of conformity with all requirements",
+    "level": 3,
+    "paragraph_index": 1753
+  },
+  {
+    "section": "8.3",
+    "title": "Acceptance Tests",
+    "level": 2,
+    "paragraph_index": 1758
+  },
+  {
+    "section": "8.3.1",
+    "title": "General Requirements",
+    "level": 3,
+    "paragraph_index": 1759
+  },
+  {
+    "section": "8.3.2",
+    "title": "Factory Acceptance Test (FAT)",
+    "level": 3,
+    "paragraph_index": 1769
+  },
+  {
+    "section": "8.3.3",
+    "title": "Site Acceptance Tests",
+    "level": 3,
+    "paragraph_index": 1773
+  },
+  {
+    "section": "9",
+    "title": "Acceptance and Warranty",
+    "level": 1,
+    "paragraph_index": 1778
+  },
+  {
+    "section": "9.1",
+    "title": "Provisional Acceptance",
+    "level": 2,
+    "paragraph_index": 1779
+  },
+  {
+    "section": "9.2",
+    "title": "Warranty Period",
+    "level": 2,
+    "paragraph_index": 1782
+  },
+  {
+    "section": "9.3",
+    "title": "Warranty Conditions",
+    "level": 2,
+    "paragraph_index": 1785
+  },
+  {
+    "section": "9.4",
+    "title": "Final Acceptance",
+    "level": 2,
+    "paragraph_index": 1799
+  },
+  {
+    "section": "10",
+    "title": "Appendix",
+    "level": 1,
+    "paragraph_index": 1801
+  },
+  {
+    "section": "10.1",
+    "title": "Cooling Power for Cool-down",
+    "level": 2,
+    "paragraph_index": 1802
+  },
+  {
+    "section": "11",
+    "title": "References",
+    "level": 1,
+    "paragraph_index": 1825
+  },
+  {
+    "section": "11.1",
+    "title": "Cold masses of Cryogenic Users and Cryogenic Distribution",
+    "level": 2,
+    "paragraph_index": 1834
+  },
+  {
+    "section": "11.2",
+    "title": "PFD of the QVE (not included in the QPLANT procurement)",
+    "level": 2,
+    "paragraph_index": 1840
+  }
+]
