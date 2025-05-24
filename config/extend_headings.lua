@@ -1,5 +1,5 @@
--- Extended headings filter for Pandoc
--- This filter processes headers and extracts document structure
+
+ extracts document structure
 
 -- Configuration
 local config = {
