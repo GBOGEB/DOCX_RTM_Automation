@@ -1,0 +1,137 @@
+# RTM Generation Configuration
+
+# Output formats
+export_formats:
+  - markdown
+  - json
+  - yaml
+
+# Requirement identification
+requirement_patterns:
+  - pattern: "shall"
+    weight: 1.0
+  - pattern: "must"
+    weight: 1.0
+  - pattern: "[R|r]equirement"
+    weight: 1.0
+  - pattern: "[R|r]eq-\\d+"
+    weight: 1.0
+
+# Requirement ID format
+id_format:
+  prefix: "REQ-"
+  digits: 3
+  section_prefix: true
+
+# Location hooks for requirements
+location_hooks:
+  # LH1 - Section/location in document
+  section:
+    enabled: true
+    prefix: "LH1_"
+    use_section_titles: true
+  
+  # LH2 - LCP phase assignment
+  lcp_phase:
+    enabled: true
+    prefix: "LH2_"
+    default_phase: "1"  # Default to Concept phase if not specified
+    phases:
+      "0": "Procurement"
+      "1": "Concept"
+      "2": "Detailed Design (FEED)"
+      "3": "Construction & Factory Acceptance"
+      "4": "Installation & Hook-up"
+      "5": "Commissioning & RCM Start"
+      "6": "SAT & RCM Training"
+      "7": "Operational & User Commissioning"
+      "8": "Integrated Commissioning"
+
+# Requirement attributes
+attributes:
+  - name: "priority"
+    values: ["high", "medium", "low"]
+    default: "medium"
+  - name: "status"
+    values: ["proposed", "approved", "implemented", "verified"]
+    default: "proposed"
+
+# Traceability relationships
+relationship_types:
+  - name: "derives"
+    description: "Requirement derives from parent requirement"
+  - name: "depends_on"
+    description: "Requirement depends on another requirement"
+  - name: "verifies"
+    description: "Test verifies requirement"
+
+# Report generation
+reports:
+  include_statistics: true
+  include_coverage_metrics: true
+  hierarchical_view: true
+  lcp_phase_summary: true  # Add summary by LCP phase
+  filters:
+    include_rejected: false
+    priority_threshold: "low"  # Include requirements with priority >= this value
+
+# Visualization settings
+visualization:
+  graph_layout: "hierarchical"  # Options: hierarchical, force, circular
+  node_color:
+    functional: "#6495ED"  # Cornflower Blue
+    non-functional: "#FFA500"  # Orange
+    security: "#FF6347"  # Tomato
+    performance: "#32CD32"  # Lime Green
+  edge_colors:
+    derives: "#000000"
+    depends_on: "#0000FF"
+    verifies: "#00FF00"
+
+# Excel output settings
+excel_output:
+  enabled: true
+  tabs:
+    - name: "Requirements"
+      columns:
+        - "ID"
+        - "Description" 
+        - "Location (LH1)"
+        - "LCP Phase (LH2)"
+        - "Type"
+        - "Priority"
+        - "Status"
+    - name: "LCP Phases"
+      include_phase_definitions: true
+    - name: "Metrics"
+      include_statistics: true
+
+# Configuration Files
+
+## paths.yaml
+
+This file configures the pipeline execution:
+
+python_path: "/path/to/python"
+pandoc_path: "pandoc"
+
+# Input/Output files
+word_master: "input/document.docx"
+md_output: "output/document.md"
+yaml_output: "output/document.yaml"
+json_output: "output/document.json"
+
+# Pipeline configuration
+pipeline:
+  steps:
+    - name: "word_to_md"
+      script: "src/core/word_to_md.py"
+      enabled: true
+      args: ["${word_master}", "-o", "${md_output}"]
+    # ... other steps ...
+
+# Name for output files (will be used with appropriate extensions)
+output_file: "requirements_traceability_matrix"
+
+# Enable requirement traceability detection
+enable_traceability: true

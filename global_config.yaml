@@ -1,17 +1,35 @@
+project:
+  name: DOCX RTM Automation
+  version: 1.0.0
+
 paths:
   python: c:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\.venv\Scripts\python.exe
   git_bash: C:\Program Files\Git\bin\bash.exe
   pandoc: pandoc
   office_template: C:\Users\gbonthuy\Documents\Custom Office Templates\GPT Outline.dotx
+  input_dir: input
+  output_dir: output
+  logs_dir: logs
+  config_dir: config
+
 environment:
   development: MS VS Code, Git BASH and PowerShell
   requirements:
   - Python 3.x
   - PyYAML
   - pandoc
+
 api_keys:
-  openai: ''
+  openai: "your-openai-api-key"
   github: ''
+  copilot: "your-copilot-api-key"
+  google_gemini: "your-google-gemini-api-key"
+
 deliverables_matrix:
   data_tables: 15
   description: YAML data tables for design/process deliverables
+
+pandoc:
+  lua_filter: config/extend_headings.lua
+  toc_depth: 6
+  number_sections: true

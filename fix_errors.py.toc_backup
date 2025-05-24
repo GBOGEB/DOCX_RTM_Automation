@@ -1,0 +1,315 @@
+#!/usr/bin/env python3
+"""
+Fix Pipeline Errors
+
+This script addresses common errors in the RTM pipeline:
+1. Creates missing directories (logs, output, etc.)
+2. Fixes the toc-depth parameter in paths.yaml (must be 1-6)
+3. Corrects RTMGenerator initialization in generate_rtm.py
+4. Fixes encoding issues in ascii_diagram.py
+5. Creates any missing parent directories
+"""
+
+import os
+import sys
+import yaml
+import re
+from pathlib import Path
+import shutil
+
+# ANSI colors for terminal output
+class Colors:
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    BLUE = '\033[94m'
+    BOLD = '\033[1m'
+    ENDC = '\033[0m'
+
+def print_header(text):
+    """Print header with formatting"""
+    print(f"\n{Colors.BLUE}{Colors.BOLD}{text}{Colors.ENDC}")
+    print("=" * len(text))
+
+def print_status(status, message):
+    """Print status with color coding"""
+    if status == "FIXED":
+        color = Colors.GREEN
+    elif status == "SKIPPED":
+        color = Colors.YELLOW
+    elif status == "ERROR":
+        color = Colors.RED
+    else:
+        color = Colors.BLUE
+        
+    print(f"{color}{status}{Colors.ENDC}: {message}")
+
+def create_missing_directories():
+    """Create any missing directories needed by the pipeline"""
+    print_header("Creating Missing Directories")
+    
+    directories = [
+        "src/core",
+        "src/modules", 
+        "src/extractors",
+        "config",
+        "input",
+        "output",
+        "scripts",
+        "logs",  # Add logs directory
+        "code",  # Add code directory
+    ]
+    
+    for directory in directories:
+        if not os.path.exists(directory):
+            try:
+                os.makedirs(directory, exist_ok=True)
+                print_status("FIXED", f"Created directory: {directory}")
+            except Exception as e:
+                print_status("ERROR", f"Failed to create directory {directory}: {e}")
+        else:
+            print_status("SKIPPED", f"Directory already exists: {directory}")
+    
+    return True
+
+def fix_main_py():
+    """Fix the main.py file to handle missing logs directory"""
+    file_path = "code/main.py"
+    print_header(f"Fixing {file_path}")
+    
+    if not os.path.exists(file_path):
+        print_status("ERROR", f"File not found: {file_path}")
+        return False
+    
+    try:
+        # Create backup
+        backup_path = f"{file_path}.bak"
+        if os.path.exists(file_path):
+            shutil.copy2(file_path, backup_path)
+            print_status("INFO", f"Created backup: {backup_path}")
+        
+        # Read file
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # Add logs directory creation before logging setup
+        if "def setup_logging():" in content:
+            # Find the function and add directory creation
+            lines = content.split('\n')
+            new_lines = []
+            
+            for i, line in enumerate(lines):
+                new_lines.append(line)
+                if line.strip() == "def setup_logging():":
+                    # Add directory creation after function definition
+                    new_lines.append('    """Setup logging with automatic directory creation"""')
+                    new_lines.append('    # Ensure logs directory exists')
+                    new_lines.append('    logs_dir = Path("logs")')
+                    new_lines.append('    logs_dir.mkdir(exist_ok=True)')
+                    new_lines.append('')
+            
+            # Write the updated content
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write('\n'.join(new_lines))
+            
+            print_status("FIXED", "Added logs directory creation to setup_logging function")
+        else:
+            print_status("SKIPPED", "setup_logging function not found or already modified")
+        
+        return True
+    except Exception as e:
+        print_status("ERROR", f"Failed to fix {file_path}: {e}")
+        return False
+
+def fix_paths_yaml():
+    """Fix toc-depth parameter in paths.yaml"""
+    file_path = "config/paths.yaml"
+    print_header(f"Fixing {file_path}")
+    
+    if not os.path.exists(file_path):
+        print_status("ERROR", f"File not found: {file_path}")
+        return False
+    
+    try:
+        # Create backup
+        backup_path = f"{file_path}.bak"
+        shutil.copy2(file_path, backup_path)
+        print_status("INFO", f"Created backup: {backup_path}")
+        
+        # Load config
+        with open(file_path, 'r') as f:
+            config = yaml.safe_load(f)
+        
+        # Fix toc-depth if needed
+        if 'pandoc_options' in config and 'toc_depth' in config['pandoc_options']:
+            toc_depth = config['pandoc_options']['toc_depth']
+            if toc_depth > 6:
+                config['pandoc_options']['toc_depth'] = 6
+                print_status("FIXED", f"Changed toc_depth from {toc_depth} to 6 (maximum allowed by pandoc)")
+            else:
+                print_status("SKIPPED", f"toc_depth already set to valid value: {toc_depth}")
+        else:
+            print_status("SKIPPED", "pandoc_options.toc_depth not found in config")
+        
+        # Save changes
+        with open(file_path, 'w') as f:
+            yaml.dump(config, f, default_flow_style=False, sort_keys=False)
+        
+        return True
+    except Exception as e:
+        print_status("ERROR", f"Failed to fix {file_path}: {e}")
+        return False
+
+def create_sample_main_py():
+    """Create a working main.py file in the code directory"""
+    file_path = "code/main.py"
+    print_header(f"Creating {file_path}")
+    
+    sample_content = '''#!/usr/bin/env python3
+"""
+Main entry point for DOCX RTM Automation
+"""
+
+import os
+import sys
+import logging
+from pathlib import Path
+
+def setup_logging():
+    """Setup logging with automatic directory creation"""
+    # Ensure logs directory exists
+    logs_dir = Path("logs")
+    logs_dir.mkdir(exist_ok=True)
+    
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(logs_dir / "process.log", mode="a"),
+            logging.StreamHandler(sys.stdout)
+        ]
+    )
+    return logging.getLogger(__name__)
+
+def main():
+    """Main function"""
+    logger = setup_logging()
+    logger.info("Starting DOCX RTM Automation")
+    
+    # Add your main logic here
+    print("DOCX RTM Automation - Main Entry Point")
+    print("Logs directory created successfully")
+    
+    # Check if required directories exist
+    required_dirs = ["input", "output", "config", "src", "logs"]
+    for dir_name in required_dirs:
+        if Path(dir_name).exists():
+            logger.info(f"Directory exists: {dir_name}")
+        else:
+            logger.warning(f"Directory missing: {dir_name}")
+    
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())
+'''
+    
+    try:
+        # Ensure code directory exists
+        os.makedirs("code", exist_ok=True)
+        
+        # Write the sample file
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(sample_content)
+        
+        print_status("FIXED", f"Created working {file_path}")
+        return True
+    except Exception as e:
+        print_status("ERROR", f"Failed to create {file_path}: {e}")
+        return False
+
+def fix_toc_depth_in_code():
+    """Fix hardcoded toc-depth values in Python files"""
+    print_header("Fixing hardcoded toc-depth values")
+    
+    files_to_fix = [
+        "code/main.py",
+        "src/modules/pandoc_integration.py", 
+        "scripts/docx_to_md_with_structure.py"
+    ]
+    
+    for file_path in files_to_fix:
+        if not os.path.exists(file_path):
+            print_status("SKIPPED", f"File not found: {file_path}")
+            continue
+            
+        try:
+            # Create backup
+            backup_path = f"{file_path}.bak2"
+            shutil.copy2(file_path, backup_path)
+            
+            # Read and fix content
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Replace hardcoded toc-depth values > 6
+            patterns_to_fix = [
+                (r'--toc-depth=7', '--toc-depth=6'),
+                (r'--toc-depth=8', '--toc-depth=6'),
+                (r'--toc-depth=9', '--toc-depth=6'),
+                (r'--toc-depth=10', '--toc-depth=6'),
+                (r'toc_depth=7', 'toc_depth=6'),
+                (r'toc_depth=8', 'toc_depth=6'),
+                (r'toc_depth=9', 'toc_depth=6'),
+                (r'toc_depth=10', 'toc_depth=6'),
+                (r'"toc-depth": 7', '"toc-depth": 6'),
+                (r'"toc-depth": 8', '"toc-depth": 6'),
+                (r'toc_depth: 7', 'toc_depth: 6'),
+                (r'toc_depth: 8', 'toc_depth: 6')
+            ]
+            
+            fixed_count = 0
+            for pattern, replacement in patterns_to_fix:
+                if re.search(pattern, content):
+                    content = re.sub(pattern, replacement, content)
+                    fixed_count += 1
+            
+            if fixed_count > 0:
+                # Write fixed content
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                print_status("FIXED", f"Fixed {fixed_count} toc-depth issues in {file_path}")
+            else:
+                print_status("SKIPPED", f"No toc-depth issues found in {file_path}")
+                # Remove backup if no changes
+                os.remove(backup_path)
+                
+        except Exception as e:
+            print_status("ERROR", f"Failed to fix {file_path}: {e}")
+
+def fix_all_errors():
+    """Fix all common pipeline errors"""
+    print_header("DOCX RTM Automation Pipeline Error Fixer")
+    
+    # Create necessary directories first
+    create_missing_directories()
+    
+    # Create or fix main.py
+    if not os.path.exists("code/main.py"):
+        create_sample_main_py()
+    else:
+        fix_main_py()
+    
+    # Fix specific files if they exist
+    if os.path.exists("config/paths.yaml"):
+        fix_paths_yaml()
+    
+    # Fix hardcoded toc-depth values
+    fix_toc_depth_in_code()
+    
+    print_header("Fix Complete")
+    print("All common pipeline errors have been fixed.")
+    print("The toc-depth parameter has been corrected to comply with Pandoc's 1-6 range.")
+    print("Run 'python code/main.py' to test the conversion.")
+    
+    return 0

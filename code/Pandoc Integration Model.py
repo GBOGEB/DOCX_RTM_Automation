@@ -31,7 +31,7 @@ def get_pandoc_version():
         return f"Error getting Pandoc version: {str(e)}"
 
 def convert_with_pandoc(input_file, output_file, format_from='docx', format_to='markdown', 
-                        toc=True, toc_depth=7, number_sections=True, lua_filter=None):
+                        toc=True, toc_depth=6, number_sections=True, lua_filter=None):
     """
     Convert a document using Pandoc with specified options.
     

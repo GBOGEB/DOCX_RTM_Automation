@@ -12,13 +12,10 @@ def main():
     from word_to_md import convert_word_to_md
     from extract_outline import extract_outline
     from extract_rtm import extract_rtm
-    from sync_outline_files import sync_outline_files
-    
     # Process workflow
     convert_word_to_md()
     extract_outline()
     extract_rtm()
-    sync_outline_files()
 
 if __name__ == "__main__":
     main()

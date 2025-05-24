@@ -1,7 +1,23 @@
-python-docx
-PyYAML
+# DOCX RTM Automation Requirements
+# Core dependencies for the automation pipeline
 
-rich>=13.0.0
+# Document processing
+pandoc>=2.19
+python-docx>=0.8.11
+
+# Data processing
+PyYAML>=6.0
+lxml>=4.9.0
+
+# Utilities
+pathlib>=1.0.1
+argparse>=1.4.0
+
+# Development (optional)
 pytest>=7.0.0
-black>=23.0.0
-mypy>=1.0.0
+black>=22.0.0
+flake8>=4.0.0
+
+# Documentation (optional)
+sphinx>=4.5.0
+sphinx-rtd-theme>=1.0.0

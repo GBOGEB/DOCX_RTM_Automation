@@ -1,0 +1,106 @@
+2025-05-23 11:53:48,582 - INFO - DOCX RTM Automation Integration
+2025-05-23 11:53:48,582 - INFO - Checking Dependencies
+2025-05-23 11:53:48,582 - INFO - Running: Installing dependencies
+2025-05-23 11:53:50,154 - INFO - Command succeeded: Installing dependencies in 1.57 seconds
+2025-05-23 11:53:50,154 - INFO - Creating Sample Files
+2025-05-23 11:53:50,388 - INFO - Running: Repository cleanup (simulation)
+2025-05-23 11:53:50,800 - INFO - Command succeeded: Repository cleanup (simulation) in 0.40 seconds
+2025-05-23 11:53:50,800 - INFO - Running: Main pipeline execution
+2025-05-23 11:53:52,704 - ERROR - Command failed: Main pipeline execution
+2025-05-23 11:53:52,704 - ERROR - Error output: 2025-05-23 11:53:50,935 - INFO - Starting RTM automation pipeline
+2025-05-23 11:53:50,935 - INFO - Checking prerequisites...
+2025-05-23 11:53:50,935 - INFO - Python version check passed: 3.12
+2025-05-23 11:53:50,935 - INFO - Configuration file check passed
+2025-05-23 11:53:50,935 - INFO - Prerequisite check completed successfully
+2025-05-23 11:53:50,935 - INFO - Running pipeline step: word_to_md
+2025-05-23 11:53:51,063 - INFO - Converting input/MASTER_1805_1144.docx to output/MASTER_1805_1144.md
+Argument of --toc-depth must be a number 1-6
+2025-05-23 11:53:51,454 - ERROR - Conversion error: Command '['pandoc', 'input/MASTER_1805_1144.docx', '-o', 'output/MASTER_1805_1144.md', '--wrap=none', '--toc', '--toc-depth', '7', '--number-sections', '--lua-filter', 'config/extend_headings.lua']' returned non-zero exit status 6.
+2025-05-23 11:53:51,454 - ERROR - Error running step 'word_to_md' after 0.52 seconds: Command '['python', 'src/core/word_to_md.py', 'input/MASTER_1805_1144.docx', '-o', 'output/MASTER_1805_1144.md']' returned non-zero exit status 1.
+2025-05-23 11:53:51,454 - INFO - Running pipeline step: clean_outline
+2025-05-23 11:53:51,592 - INFO - Step 'clean_outline' completed successfully in 0.14 seconds.
+2025-05-23 11:53:51,592 - INFO - Running pipeline step: extract_rtm
+Traceback (most recent call last):
+  File "C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\generate_rtm.py", line 157, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\generate_rtm.py", line 139, in main
+    generator = RTMGenerator(config)
+                ^^^^^^^^^^^^^^^^^^^^
+TypeError: RTMGenerator.__init__() takes 1 positional argument but 2 were given
+2025-05-23 11:53:52,319 - ERROR - Error running step 'extract_rtm' after 0.73 seconds: Command '['python', 'generate_rtm.py', '--input', 'output/MASTER_1805_1144.md', '--output-dir', 'output']' returned non-zero exit status 1.
+2025-05-23 11:53:52,319 - INFO - Running pipeline step: generate_diagrams
+Traceback (most recent call last):
+  File "C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\src\modules\ascii_diagram.py", line 243, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\src\modules\ascii_diagram.py", line 234, in main
+    f.write(diagram)
+  File "C:\Users\gbonthuy\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 108-109: character maps to <undefined>
+2025-05-23 11:53:52,450 - ERROR - Error running step 'generate_diagrams' after 0.13 seconds: Command '['python', 'src/modules/ascii_diagram.py', 'output/MASTER_outline.yaml', '--output', 'output/diagram.txt']' returned non-zero exit status 1.
+2025-05-23 11:53:52,450 - INFO - Running pipeline step: compare_formats
+2025-05-23 11:53:52,566 - INFO - Step 'compare_formats' completed successfully in 0.12 seconds.
+2025-05-23 11:53:52,566 - INFO - Comparing JSON and YAML outputs...
+2025-05-23 11:53:52,688 - WARNING - Pipeline execution completed with errors in 1.75 seconds.
+
+2025-05-23 11:53:52,720 - INFO - Integration Complete
+2025-05-23 11:53:54,924 - INFO - DOCX RTM Automation Integration
+2025-05-23 11:53:54,924 - INFO - Checking Dependencies
+2025-05-23 11:53:54,924 - INFO - Running: Installing dependencies
+2025-05-23 11:53:56,026 - INFO - Command succeeded: Installing dependencies in 1.10 seconds
+2025-05-23 11:53:56,026 - INFO - Creating Sample Files
+2025-05-23 11:53:56,109 - INFO - Integration Complete
+2025-05-23 11:53:57,114 - INFO - DOCX RTM Automation Integration
+2025-05-23 11:53:57,114 - INFO - Checking Dependencies
+2025-05-23 11:53:57,114 - INFO - Running: Installing dependencies
+2025-05-23 11:53:58,078 - INFO - Command succeeded: Installing dependencies in 0.96 seconds
+2025-05-23 11:53:58,078 - INFO - Integration Complete
+2025-05-23 11:57:45,007 - INFO - DOCX RTM Automation Integration
+2025-05-23 11:57:45,007 - INFO - Checking Dependencies
+2025-05-23 11:57:45,007 - INFO - Running: Installing dependencies
+2025-05-23 11:57:46,009 - INFO - Command succeeded: Installing dependencies in 1.00 seconds
+2025-05-23 11:57:46,009 - INFO - Running: Main pipeline execution
+2025-05-23 11:57:47,482 - ERROR - Command failed: Main pipeline execution
+2025-05-23 11:57:47,482 - ERROR - Error output: 2025-05-23 11:57:46,157 - INFO - Starting RTM automation pipeline
+2025-05-23 11:57:46,157 - INFO - Checking prerequisites...
+2025-05-23 11:57:46,157 - INFO - Python version check passed: 3.12
+2025-05-23 11:57:46,157 - INFO - Configuration file check passed
+2025-05-23 11:57:46,157 - INFO - Prerequisite check completed successfully
+2025-05-23 11:57:46,157 - INFO - Running pipeline step: word_to_md
+2025-05-23 11:57:46,257 - INFO - Converting input/MASTER_1805_1144.docx to output/MASTER_1805_1144.md
+Argument of --toc-depth must be a number 1-6
+2025-05-23 11:57:46,542 - ERROR - Conversion error: Command '['pandoc', 'input/MASTER_1805_1144.docx', '-o', 'output/MASTER_1805_1144.md', '--wrap=none', '--toc', '--toc-depth', '7', '--number-sections', '--lua-filter', 'config/extend_headings.lua']' returned non-zero exit status 6.
+2025-05-23 11:57:46,557 - ERROR - Error running step 'word_to_md' after 0.40 seconds: Command '['python', 'src/core/word_to_md.py', 'input/MASTER_1805_1144.docx', '-o', 'output/MASTER_1805_1144.md']' returned non-zero exit status 1.
+2025-05-23 11:57:46,557 - INFO - Running pipeline step: clean_outline
+2025-05-23 11:57:46,659 - INFO - Step 'clean_outline' completed successfully in 0.10 seconds.
+2025-05-23 11:57:46,659 - INFO - Running pipeline step: extract_rtm
+Traceback (most recent call last):
+  File "C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\generate_rtm.py", line 157, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\generate_rtm.py", line 139, in main
+    generator = RTMGenerator(config)
+                ^^^^^^^^^^^^^^^^^^^^
+TypeError: RTMGenerator.__init__() takes 1 positional argument but 2 were given
+2025-05-23 11:57:47,097 - ERROR - Error running step 'extract_rtm' after 0.44 seconds: Command '['python', 'generate_rtm.py', '--input', 'output/MASTER_1805_1144.md', '--output-dir', 'output']' returned non-zero exit status 1.
+2025-05-23 11:57:47,097 - INFO - Running pipeline step: generate_diagrams
+Traceback (most recent call last):
+  File "C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\src\modules\ascii_diagram.py", line 243, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\src\modules\ascii_diagram.py", line 234, in main
+    f.write(diagram)
+  File "C:\Users\gbonthuy\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 108-109: character maps to <undefined>
+2025-05-23 11:57:47,208 - ERROR - Error running step 'generate_diagrams' after 0.11 seconds: Command '['python', 'src/modules/ascii_diagram.py', 'output/MASTER_outline.yaml', '--output', 'output/diagram.txt']' returned non-zero exit status 1.
+2025-05-23 11:57:47,208 - INFO - Running pipeline step: compare_formats
+2025-05-23 11:57:47,346 - INFO - Step 'compare_formats' completed successfully in 0.14 seconds.
+2025-05-23 11:57:47,347 - INFO - Comparing JSON and YAML outputs...
+2025-05-23 11:57:47,460 - WARNING - Pipeline execution completed with errors in 1.30 seconds.
+
+2025-05-23 11:57:47,482 - INFO - Integration Complete

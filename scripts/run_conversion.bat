@@ -1,0 +1,1 @@
+scripts\run_conversion.bat input\MASTER_1805_1144.docx output\MASTER_1805_1144.md

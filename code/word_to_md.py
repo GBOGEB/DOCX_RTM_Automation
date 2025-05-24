@@ -21,7 +21,7 @@ cmd = [
     paths['word_master'], 
     "-f", "docx", 
     "-t", "markdown",
-    "--toc", "--toc-depth=7", "--number-sections",
+    "--toc", "--toc-depth=6", "--number-sections",
     "--lua-filter=config/extend_headings.lua",
     "-o", paths['md_output']
 ]

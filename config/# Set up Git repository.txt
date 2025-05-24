@@ -1,0 +1,8 @@
+# Set up Git repository
+python scripts/github_operations.py --setup
+
+# Check Git status
+python scripts/github_operations.py --status
+
+# Commit and push changes
+python scripts/github_operations.py --push
