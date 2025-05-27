@@ -91,63 +91,67 @@ th {
 }
 """
 
+
 def ensure_template_dir():
     """Ensure that the templates directory exists."""
     TEMPLATE_DIR.mkdir(exist_ok=True)
-    
+
+
 def create_default_template():
     """Create default template files."""
     ensure_template_dir()
-    
+
     # Create the default markdown template
     template_path = TEMPLATE_DIR / "default.md"
     with open(template_path, "w") as f:
         f.write(DEFAULT_TEMPLATE_MD)
-    
+
     # Create the default CSS
     css_path = TEMPLATE_DIR / "styles.css"
     with open(css_path, "w") as f:
         f.write(DEFAULT_CSS)
-    
+
     print(f"Created default template at {template_path}")
     print(f"Created default CSS at {css_path}")
+
 
 def list_templates():
     """List all available templates."""
     ensure_template_dir()
-    
+
     templates = list(TEMPLATE_DIR.glob("*.md"))
     css_files = list(TEMPLATE_DIR.glob("*.css"))
-    
+
     if not templates and not css_files:
         print("No templates available.")
         print("Use 'import_template.py create' to create a default template.")
         return
-    
+
     if templates:
         print("Available markdown templates:")
         for template in templates:
             print(f"  - {template.name}")
-    
+
     if css_files:
         print("Available CSS templates:")
         for css in css_files:
             print(f"  - {css.name}")
 
+
 def import_template(source_path, name=None):
     """Import a template from an external file."""
     ensure_template_dir()
-    
+
     source = Path(source_path)
     if not source.exists():
         print(f"Error: Source file {source_path} does not exist.")
         return False
-    
+
     if name is None:
         name = source.name
-    
+
     destination = TEMPLATE_DIR / name
-    
+
     try:
         shutil.copy2(source, destination)
         print(f"Imported template: {source} -> {destination}")
@@ -155,6 +159,7 @@ def import_template(source_path, name=None):
     except Exception as e:
         print(f"Error importing template: {e}")
         return False
+
 
 def extract_template(markdown_path, output_name=None):
     """
@@ -164,14 +169,14 @@ def extract_template(markdown_path, output_name=None):
     if not source.exists():
         print(f"Error: Source file {markdown_path} does not exist.")
         return False
-    
+
     ensure_template_dir()
-    
+
     if output_name is None:
         output_name = f"extracted_{source.name}"
-    
+
     destination = TEMPLATE_DIR / output_name
-    
+
     try:
         shutil.copy2(source, destination)
         print(f"Extracted template from {source} to {destination}")
@@ -180,34 +185,43 @@ def extract_template(markdown_path, output_name=None):
         print(f"Error extracting template: {e}")
         return False
 
+
 def main():
     """Main function to handle command-line arguments and execute operations."""
     parser = argparse.ArgumentParser(
         description="Template management utility for document conversion pipeline."
     )
-    
+
     # Define subparsers for different commands
-    subparsers = parser.add_subparsers(dest="command", help="Command to execute")
-    
+    subparsers = parser.add_subparsers(
+        dest="command", help="Command to execute")
+
     # Create command
-    create_parser = subparsers.add_parser("create", help="Create a default template")
-    
+    create_parser = subparsers.add_parser(
+        "create", help="Create a default template")
+
     # List command
-    list_parser = subparsers.add_parser("list", help="List available templates")
-    
+    list_parser = subparsers.add_parser(
+        "list", help="List available templates")
+
     # Import command
-    import_parser = subparsers.add_parser("import", help="Import a template from an external file")
+    import_parser = subparsers.add_parser(
+        "import", help="Import a template from an external file"
+    )
     import_parser.add_argument("source", help="Source template file path")
     import_parser.add_argument("--name", help="Name for the imported template")
-    
+
     # Extract command
-    extract_parser = subparsers.add_parser("extract", help="Extract template from a markdown file")
+    extract_parser = subparsers.add_parser(
+        "extract", help="Extract template from a markdown file"
+    )
     extract_parser.add_argument("source", help="Source markdown file path")
-    extract_parser.add_argument("--name", help="Name for the extracted template")
-    
+    extract_parser.add_argument(
+        "--name", help="Name for the extracted template")
+
     # Parse arguments
     args = parser.parse_args()
-    
+
     # Execute the appropriate command
     if args.command == "create":
         create_default_template()
@@ -223,7 +237,10 @@ def main():
         # If no command is specified, show help
         parser.print_help()
 
+
 if __name__ == "__main__":
     create_default_template()
     os.system("python scripts/import_template.py --create-default")
-    os.system("scripts\\pandoc_convert.bat input\\your_document.docx output\\your_document.md")
+    os.system(
+        "scripts\\pandoc_convert.bat input\\your_document.docx output\\your_document.md"
+    )

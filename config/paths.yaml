@@ -7,7 +7,7 @@ github:
   repo_url: https://github.com/GBOGEB/DOCX_RTM_Automation.git
   user_email: gerkotze.bonthuys@sckcen.be
   user_name: GBOGEB
-json_output: output/MASTER_1805_1144.json
+json_output: C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\output\MASTER_1805_1144.json
 lcp_phases:
   '0': Procurement
   '1': Concept
@@ -18,64 +18,51 @@ lcp_phases:
   '6': SAT & RCM Training
   '7': Operational & User Commissioning
   '8': Integrated Commissioning
-md_output: output/MASTER_1805_1144.md
+local_numbered_outline_json: C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\input\MASTER_numbered_outline.json
+local_numbered_outline_yaml: C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\input\MASTER_numbered_outline.yaml
+md_output: C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\output\MASTER_1805_1144.md
 metadata:
-  generated_date: '2023-06-15 10:30:00'
+  generated_date: null
   generator: DOCX RTM Automation
   version: '1.0'
 numbered_outline_json_external: c:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GitHub/LOCAL_FOLDER_automation_files_OOdrive/MASTER_numbered_outline.json
 numbered_outline_yaml_external: c:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GitHub/LOCAL_FOLDER_automation_files_OOdrive/MASTER_numbered_outline.yaml
 outline_json: output/MASTER_outline.json
 outline_json_external: c:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GitHub/LOCAL_FOLDER_automation_files_OOdrive/MASTER_outline.json
-outline_yaml: output/MASTER_outline.yaml
+outline_yaml: output/yaml/MASTER_outline.yaml
 outline_yaml_external: c:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GitHub/LOCAL_FOLDER_automation_files_OOdrive/MASTER_outline.yaml
 pandoc_options:
-  lua_filter: config/extend_headings.lua
-  number_sections: true
   toc: true
   toc_depth: 6
-pandoc_path: pandoc
+  number_sections: true
+  standalone: true
+  lua_filter: config/filters/extend_headings.lua
+pandoc_path: C:/Users/gbonthuy/Downloads/pandoc-3.6.3-windows-x86_64/pandoc-3.6.3/pandoc.exe
 pipeline:
   steps:
-  - args:
+  - name: word_to_md
+    script: src/core/word_to_md.py
+    enabled: true
+    args:
     - ${word_master}
     - -o
     - ${md_output}
+  - name: extract_outline
+    script: src/extractors/extract_outline.py
     enabled: true
-    name: word_to_md
-    script: src/core/word_to_md.py
-  - args:
-    - input/MASTER_outline.yaml
+  - name: extract_rtm
+    script: src/extractors/extract_rtm.py
     enabled: true
-    name: clean_outline
+  - name: md_to_json_yaml
+    script: src/core/md_to_json_yaml.py
+    enabled: true
+  - name: sync_outline_files
+    script: src/utils/sync_outline_files.py
+    enabled: true
+  - name: clean_outline
     script: clean_outline.py
-  - args:
-    - --input
-    - ${md_output}
-    - --output-dir
-    - output
     enabled: true
-    name: extract_rtm
-    script: generate_rtm.py
-  - args:
-    - output/MASTER_outline.yaml
-    - --output
-    - output/diagram.txt
-    enabled: true
-    name: generate_diagrams
-    script: src/modules/ascii_diagram.py
-  - args:
-    - output
-    enabled: true
-    name: compare_formats
-    script: scripts/compare_formats.py
-  - args:
-    - --simulate
-    enabled: false
-    name: clean_repository
-    script: clean_repository.py
-  stop_on_error: false
-python_path: python
+python_path: C:/Python311/python.exe
 requirements:
 - id: REQ-001
   lcp_phase: '1'
@@ -83,7 +70,7 @@ requirements:
   section: Security Requirements
   status: proposed
   text: The system shall provide user authentication
-rtm_yaml: output/RTM_QQQ.yaml
+rtm_yaml: output/rtm/RTM_QQQ.yaml
 secrets:
   openai_key_path: C:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GPT_Automation/openai_key.txt
 sections:
@@ -108,15 +95,19 @@ sections:
 - level: 7
   title: Deepest level
   number: 1.1.1.1.1.1.1
-title: Document Title
-word_master: input/MASTER_1805_1144.docx
-yaml_output: output/MASTER_1805_1144.yaml
+title: Requirements Traceability Matrix
+word_master: C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\input\MASTER_1805_1144.docx
+yaml_output: C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\output\MASTER_1805_1144.yaml
 project:
   name: DOCX RTM Automation
   version: 1.0.0
   description: Automated DOCX to RTM conversion pipeline
 paths:
-  input_dir: input
+  input_dir: docs/requirements
   output_dir: output
   logs_dir: logs
   config_dir: config
+pandoc_modules:
+  init: c:/Users/gbonthuy/Downloads/pandoc-3.6.3-windows-x86_64/pandoc-3.6.3/venv/Lib/site-packages/pip/__init__.py
+  main: c:/Users/gbonthuy/Downloads/pandoc-3.6.3-windows-x86_64/pandoc-3.6.3/venv/Lib/site-packages/pip/__main__.py
+  runner: c:/Users/gbonthuy/Downloads/pandoc-3.6.3-windows-x86_64/pandoc-3.6.3/venv/Lib/site-packages/pip/__pip-runner__.py

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
-import sys, json
+import sys
+import json
 from docx import Document
+
 
 def parse(path):
     doc = Document(path)
@@ -16,6 +18,7 @@ def parse(path):
             lvl = int(p.style.name.split()[-1])
             out.append({"type": "h", "lvl": lvl, "text": t})
     return out
+
 
 if __name__ == "__main__":
     print(json.dumps(parse(sys.argv[1]), indent=2))

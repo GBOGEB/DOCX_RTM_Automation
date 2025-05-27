@@ -8,14 +8,11 @@ export_formats:
 
 # Requirement identification
 requirement_patterns:
-  - pattern: "shall"
-    weight: 1.0
-  - pattern: "must"
-    weight: 1.0
   - pattern: "[R|r]equirement"
-    weight: 1.0
+  - pattern: "shall"
+  - pattern: "must"
   - pattern: "[R|r]eq-\\d+"
-    weight: 1.0
+  - pattern: "[R|r]eq_\\d+"
 
 # Requirement ID format
 id_format:
@@ -50,10 +47,17 @@ location_hooks:
 # Requirement attributes
 attributes:
   - name: "priority"
-    values: ["high", "medium", "low"]
+    values:
+      - "high"
+      - "medium"
+      - "low"
     default: "medium"
   - name: "status"
-    values: ["proposed", "approved", "implemented", "verified"]
+    values:
+      - "proposed"
+      - "approved"
+      - "implemented"
+      - "verified"
     default: "proposed"
 
 # Traceability relationships
@@ -105,30 +109,6 @@ excel_output:
       include_phase_definitions: true
     - name: "Metrics"
       include_statistics: true
-
-# Configuration Files
-
-## paths.yaml
-
-This file configures the pipeline execution:
-
-python_path: "/path/to/python"
-pandoc_path: "pandoc"
-
-# Input/Output files
-word_master: "input/document.docx"
-md_output: "output/document.md"
-yaml_output: "output/document.yaml"
-json_output: "output/document.json"
-
-# Pipeline configuration
-pipeline:
-  steps:
-    - name: "word_to_md"
-      script: "src/core/word_to_md.py"
-      enabled: true
-      args: ["${word_master}", "-o", "${md_output}"]
-    # ... other steps ...
 
 # Name for output files (will be used with appropriate extensions)
 output_file: "requirements_traceability_matrix"

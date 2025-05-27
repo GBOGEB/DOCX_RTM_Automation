@@ -1,0 +1,79 @@
+---
+extends: default
+
+# General settings
+# yaml-files:  # You can specify which files to lint, e.g., '*.yaml', '*.yml'
+#   - '*.yaml'
+#   - '*.yml'
+# ignore: | # Paths to ignore, e.g., venv, node_modules
+#   /venv/
+#   /node_modules/
+
+rules:
+  # Line length: 120 is a common modern practice, warning is fine.
+  line-length:
+    max: 120
+    level: warning
+    # allow-non-breakable-words: true # Useful for long URLs or paths
+    # allow-non-breakable-inline-mappings: true # For long single-line dicts
+
+  # Document end marker (---): Not strictly necessary for all YAML files.
+  # If you prefer it, set 'present: true' and 'level: error'.
+  document-end:
+    present: false # Current setting: no newline marker required at end of document.
+
+  # Document start marker (---): Useful for multi-document YAML files.
+  # document-start:
+  #   present: true # Set to true if you use multi-document files often
+  #   level: warning
+
+  # Indentation: 2 spaces is standard.
+  indentation:
+    spaces: 2
+    indent-sequences: true # 'true' means sequences are indented relative to parent.
+                           # 'consistent' or 'whatever' are other options.
+    # check-multi-line-strings: false # Set to true to enforce indentation on multi-line strings
+
+  # Braces/Brackets spacing:
+  # braces:
+  #   min-spaces-inside: 0
+  #   max-spaces-inside: 0 # e.g. {key: value} not { key: value }
+  #   min-spaces-inside-empty: 0
+  #   max-spaces-inside-empty: 0
+  # brackets:
+  #   min-spaces-inside: 0
+  #   max-spaces-inside: 0
+  #   min-spaces-inside-empty: 0
+  #   max-spaces-inside-empty: 0
+
+  # Colons: Ensure proper spacing around colons.
+  # colons:
+  #   max-spaces-before: 0
+  #   min-spaces-after: 1 # Standard: key: value
+
+  # Comments: Rules for comment style.
+  # comments:
+  #   require-starting-space: true # Standard: # comment not #comment
+  #   min-spaces-from-content: 1 # Spaces between content and EOL comment
+
+  # Empty lines: Control excessive empty lines.
+  # empty-lines:
+  #   max: 2
+  #   max-start: 0
+  #   max-end: 1 # Allow one empty line at end of file
+
+  # Key ordering:
+  # key-ordering: enable # Alphabetical key ordering, can be too strict.
+
+  # Truthy values: Define what's considered true/false beyond YAML spec.
+  # truthy:
+  #   allowed-values: ['true', 'false', 'on', 'off', 'yes', 'no']
+  #   check-keys: true # Check keys as well as values
+
+  # New lines:
+  # new-line-at-end-of-file: true # Common practice
+
+  # Octal values:
+  # octal-values:
+  #   forbid-implicit-octal: true # e.g. 0755 should be quoted if string
+  #   forbid-explicit-octal: false

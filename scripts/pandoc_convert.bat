@@ -1,11 +1,12 @@
 @echo off
 REM filepath: /c:/Users/gbonthuy/Downloads/DOCX_RTM_Automation_v1.0/scripts/pandoc_convert.bat
-REM Enhanced Pandoc conversion script for Windows with template support
+REM Enhanced Pandoc conversion script for Windows
 
 setlocal enabledelayedexpansion
 
 REM Default settings
-set LUA_FILTER=config\extend_headings.lua
+REM Assuming this script is in 'scripts' and config is in project root's 'config' folder
+set LUA_FILTER=..\config\extend_headings.lua
 set TOC_DEPTH=6
 set NUMBER_SECTIONS=true
 set EXTRACT_RTM=true
@@ -107,7 +108,7 @@ if not exist "%INPUT_FILE%" (
 REM Create templates directory if it doesn't exist
 if not exist "%TEMPLATE_DIR%" (
     mkdir "%TEMPLATE_DIR%"
-    
+
     REM Create default CSS template
     echo ^/* Default CSS template for Markdown output *^/ > "%CSS_TEMPLATE%"
     echo body { font-family: Calibri, Arial, sans-serif; margin: 3em; } >> "%CSS_TEMPLATE%"
@@ -124,7 +125,7 @@ if not exist "%TEMPLATE_DIR%" (
     echo td { padding: 8px; border: 1px solid #ddd; vertical-align: top; } >> "%CSS_TEMPLATE%"
     echo code { background-color: #f5f5f5; padding: 2px 4px; font-family: Consolas, monospace; } >> "%CSS_TEMPLATE%"
     echo .caption { font-style: italic; color: #666; text-align: center; margin-top: 4px; } >> "%CSS_TEMPLATE%"
-    
+
     REM Create default Markdown template
     echo --- > "%MD_TEMPLATE%"
     echo title: "Document Title" >> "%MD_TEMPLATE%"
@@ -168,7 +169,7 @@ if not exist "%TEMPLATE_DIR%" (
     echo ^</style^> >> "%MD_TEMPLATE%"
     echo. >> "%MD_TEMPLATE%"
     echo $body$ >> "%MD_TEMPLATE%"
-    
+
     echo Created template files in %TEMPLATE_DIR% directory
 )
 
@@ -218,21 +219,21 @@ set RESULT=%ERRORLEVEL%
 
 if %RESULT% EQU 0 (
     echo Conversion successful
-    
+
     REM Extract RTM data if requested
     if "%EXTRACT_RTM%" == "true" (
         if not defined RTM_OUTPUT (
             for %%F in ("%OUTPUT_FILE%") do set RTM_OUTPUT=%%~dpF%%~nF.rtm.json
         )
-        
+
         echo Extracting RTM data to: %RTM_OUTPUT%
-        
+
         REM Use Pandoc with RTM extraction filter
         set RTM_FILTER=config\extract_rtm.lua
-        
+
         if exist "%RTM_FILTER%" (
             pandoc "%OUTPUT_FILE%" -o NUL --lua-filter="%RTM_FILTER%"
-            
+
             REM Check if extraction produced RTM data
             set RTM_TMP=output\extracted_rtm.json
             if exist "%RTM_TMP%" (
@@ -246,7 +247,7 @@ if %RESULT% EQU 0 (
             echo RTM extraction filter not found: %RTM_FILTER%
         )
     )
-    
+
     exit /b 0
 ) else (
     echo Conversion failed with error code: %RESULT%

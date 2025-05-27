@@ -1,61 +1,61 @@
 # Navigate to your project directory
-cd /C:/Users/gbonthuy/Downloads/DOCX_RTM_Automation_v1.0
+cd <your-chosen-directory-to-clone-into>
 
-# Make sure your local Git repository is initialized
-git init
-
-# Check your Git identity is set 
-git config --global user.name "GBOGEB"
-git config --global user.email "gerkotze.bonthuys@sckcen.be"
+# Make sure your Git identity is set
+# (Git uses this information for every commit you create)
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
 
 # Verify the Repository URL
-Ensure you have the correct repository URL. Replace `<your-username>` and `<repository-name>` with the actual values.
-
-```
-https://github.com/<your-username>/<repository-name>.git
-```
+# Ensure you have the correct repository URL.
+# Replace `<your-username>` and `<repository-name>` with the actual values from the project.
+# Example: https://github.com/GBOGEB/DOCX_RTM_Automation.git
 
 # Clone the Repository
-To clone the repository, use the following command:
+# Replace `<repository-url>` with the actual URL.
+git clone <repository-url>
 
-```bash
-git clone https://github.com/<your-username>/<repository-name>.git
-```
+# Navigate into the cloned directory
+# Replace `<repository-name>` with the actual name of the repository folder.
+cd <repository-name>
 
-# Add the Remote Repository
-If the remote repository is not already added, you can add it using the command below. Replace `<your-username>` and `<repository-name>` with the actual values:
+# Initialize and Update Git Submodules
+# If the project uses Git submodules, initialize and update them:
+git submodule init
+git submodule update --recursive
 
-```bash
-git remote add origin https://github.com/<your-username>/<repository-name>.git
-```
+# (Optional) Add the Remote Repository if working with an existing local, unversioned project
+# This step is typically not needed if you cloned the repository.
+# It's for connecting a local project to a new remote repository on GitHub.
+# git remote add origin https://github.com/<your-username>/<repository-name>.git
 
 # Update All Items in the Input Directory
-Ensure all files in the `input/docx` directory are updated as needed:
+# Ensure all necessary files in the `input/docx` directory are up-to-date.
+# This directory should be relative to your project root:
+# <your-project-directory>/input/docx
 
-```plaintext
-C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\input\docx
-```
+echo "Please ensure the content of 'input/docx' is correctly populated."
 
-# Additional Files in the Project
-Here is a list of other important files in the project directory:
+# Key Files and Directories in the Project
+# Here is a list of other important files and directories at the project root:
+# (Paths are relative to the project root, e.g., <repository-name>/)
 
-```plaintext
-C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\fix_errors.py
-C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\full_integration.py
-C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\GIT_push.py
-C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\git_setup.md
-C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\global_config.yaml
-C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\project_cleanup.py
-C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\project_manifest.md
-C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\project_update.py
-C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\verify_setup.py
-```
+# ```plaintext
+# fix_errors.py
+# full_integration.py
+# GIT_push.py
+# git_setup.md
+# global_config.yaml
+# project_cleanup.py
+# project_manifest.md
+# project_update.py
+# verify_setup.py
+# src/
+# tests/
+# output/
+# docs/
+# config/
+# input/
+# ```
 
-# Add all files to the repository
-git add .
-
-# Make the initial commit
-git commit -m "Initial commit"
-
-# Push to GitHub (main branch)
-git push -u origin main
+# Setup is complete. You can now run the project according to its main README or usage instructions.

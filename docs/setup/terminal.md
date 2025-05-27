@@ -34,11 +34,11 @@ dir /s *.py | find /c "py"  # Windows
 find . -name "*.py" | wc -l  # Linux/Mac
 
 # View markdown output
-type output\markdown\MASTER_1805_1144.md  # Windows
+type output/markdown/MASTER_1805_1144.md  # Windows
 cat output/markdown/MASTER_1805_1144.md   # Linux/Mac
 
-# View yaml output 
-type output\yaml\MASTER_outline.yaml      # Windows
+# View yaml output
+type output/yaml/MASTER_outline.yaml      # Windows
 cat output/yaml/MASTER_outline.yaml       # Linux/Mac
 
 # Create logs directory if it doesn't exist
@@ -48,7 +48,7 @@ mkdir -p logs
 python run.py > logs/pipeline_run.log 2>&1
 
 # Check for errors
-findstr "Error" logs\pipeline_run.log     # Windows
+findstr "Error" logs/pipeline_run.log     # Windows
 grep "Error" logs/pipeline_run.log        # Linux/Mac
 
 # Check for running Python processes
@@ -71,11 +71,19 @@ pandoc --version
 # Simply run the pipeline script
 python run_pipeline.py
 
+# Common Git Workflow & Submodule Management
+
 # Clone the repository
 git clone <https://github.com/GBOGEB/DOCX_RTM_Automation.git>
 
 # Navigate into the cloned directory
 cd DOCX_RTM_Automation
+
+# Initialize Git submodules (if the project uses them)
+git submodule init
+
+# Update Git submodules to the latest commit (if the project uses them)
+git submodule update --recursive --remote
 
 # Check the status
 git status

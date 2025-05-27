@@ -1,3 +1,1 @@
-"""
-Modules module for DOCX RTM Automation
-"""
+# This file makes the directory a Python package

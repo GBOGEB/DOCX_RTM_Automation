@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+"""
+Quick fix for toc-depth parameter issue.
+This script finds and fixes all hardcoded toc-depth values > 6 in the codebase.
+"""
+
+import os
+import re
+import glob
+
+
+def fix_toc_depth_in_file(file_path):
+    """Fix toc-depth values in a single file"""
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        original_content = content
+
+        # Fix various toc-depth patterns
+        patterns = [
+            (r"--toc-depth=([789]\d*)", "--toc-depth=6"),
+            (r"--toc-depth=([789])", "--toc-depth=6"),
+            (r'"toc-depth":\s*([789]\d*)', '"toc-depth": 6'),
+            (r"toc_depth:\s*([789]\d*)", "toc_depth: 6"),
+            (r"toc_depth\s*=\s*([789]\d*)", "toc_depth=6"),
+            (r"TOC_DEPTH\s*=\s*([789]\d*)", "TOC_DEPTH=6"),
+        ]
+
+        changes_made = 0
+        for pattern, replacement in patterns:
+            new_content = re.sub(pattern, replacement, content)
+            if new_content != content:
+                changes_made += 1
+                content = new_content
+
+        if content != original_content:
+            # Create backup
+            backup_path = f"{file_path}.toc_backup"
+            with open(backup_path, "w", encoding="utf-8") as f:
+                f.write(original_content)
+
+            # Write fixed content
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(content)
+
+            print(f"✅ FIXED: {file_path} ({changes_made} changes)")
+            return True
+        else:
+            print(f"⏭️ SKIP: {file_path} (no changes needed)")
+            return False
+
+    except Exception as e:
+        print(f"❌ ERROR: {file_path} - {e}")
+        return False
+
+
+def main():
+    """Main function to fix toc-depth issues"""
+    print("🔧 Quick Fix: TOC Depth Parameter")
+    print("=" * 40)
+
+    # Find all Python files that might contain toc-depth settings
+    file_patterns = [
+        "code/*.py",
+        "src/**/*.py",
+        "scripts/*.py",
+        "config/*.yaml",
+        "config/*.yml",
+        "*.py",
+    ]
+
+    files_to_check = []
+    for pattern in file_patterns:
+        files_to_check.extend(glob.glob(pattern, recursive=True))
+
+    # Remove duplicates
+    files_to_check = list(set(files_to_check))
+
+    # Filter to existing files
+    files_to_check = [f for f in files_to_check if os.path.isfile(f)]
+
+    print(f"Checking {len(files_to_check)} files...")
+
+    fixed_count = 0
+    for file_path in files_to_check:
+        if fix_toc_depth_in_file(file_path):
+            fixed_count += 1
+
+    print("\n" + "=" * 40)
+    print(f"🎉 Fixed {fixed_count} files")
+
+    # Special handling for main.py if it still has issues
+    main_py_path = "code/main.py"
+    if os.path.exists(main_py_path):
+        print(f"\n🔍 Double-checking {main_py_path}...")
+        with open(main_py_path, "r") as f:
+            content = f.read()
+
+        # Look for the specific problematic line
+        if "--toc-depth=6" in content:
+            print("⚠️ Found hardcoded --toc-depth=6 in main.py")
+            content = content.replace("--toc-depth=6", "--toc-depth=6")
+
+            with open(main_py_path, "w") as f:
+                f.write(content)
+            print("✅ Fixed --toc-depth=6 → --toc-depth=6")
+        else:
+            print("✅ No hardcoded toc-depth=7 found")
+
+    print("\n🚀 You can now run: python code/main.py")
+
+
+if __name__ == "__main__":
+    main()

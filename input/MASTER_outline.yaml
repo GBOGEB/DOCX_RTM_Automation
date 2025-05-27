@@ -25,13 +25,13 @@
 
   with open('/c:/Users/gbonthuy/Downloads/DOCX_RTM_Automation_v1.0/input/MASTER_outline.yaml', 'r') as file:
     outline = yaml.safe_load(file)
-    
+
   # Print the structure
   for item in outline:
     print(f"- {item['title']}")
     for child in item.get('children', []):
       print(f"  - {child['title']}")
-    
+
 - title: Nature of the Procurement
   children: []
 - title: Scope of Work by the Contractor
