@@ -36,7 +36,7 @@ DOCX_RTM_Automation_v1.0/
    # Windows: Download from https://pandoc.org/installing.html
    # macOS: brew install pandoc
    # Linux: sudo apt-get install pandoc
-   
+
    # Install Python dependencies
    pip install -r requirements.txt
    ```
@@ -46,7 +46,7 @@ DOCX_RTM_Automation_v1.0/
    # Clone the repository
    git clone <repository-url>
    cd DOCX_RTM_Automation_v1.0
-   
+
    # Run the setup script
    python project_update.py
    ```
