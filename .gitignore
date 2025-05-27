@@ -1,4 +1,5 @@
 # DOCX RTM Automation - Git Ignore File
+.vs/
 
 # Python
 __pycache__/
