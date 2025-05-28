@@ -1,0 +1,134 @@
+external_md_input: C:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GitHub/LOCAL_FOLDER_automation_files_OOdrive/output.md
+github:
+  branch: main
+  commit_message: Update from RTM automation pipeline
+  enabled: false
+  local_path: ''
+  repo_url: https://github.com/GBOGEB/DOCX_RTM_Automation.git
+  user_email: gerkotze.bonthuys@sckcen.be
+  user_name: GBOGEB
+json_output: C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\output\MASTER_1805_1144.json
+lcp_phases:
+  '0': Procurement
+  '1': Concept
+  '2': Detailed Design (FEED)
+  '3': Construction & Factory Acceptance
+  '4': Installation & Hook-up
+  '5': Commissioning & RCM Start
+  '6': SAT & RCM Training
+  '7': Operational & User Commissioning
+  '8': Integrated Commissioning
+local_numbered_outline_json: C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\input\MASTER_numbered_outline.json
+local_numbered_outline_yaml: C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\input\MASTER_numbered_outline.yaml
+md_output: C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\output\MASTER_1805_1144.md
+metadata:
+  generated_date: null
+  generator: DOCX RTM Automation
+  version: '1.0'
+numbered_outline_json_external: c:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GitHub/LOCAL_FOLDER_automation_files_OOdrive/MASTER_numbered_outline.json
+numbered_outline_yaml_external: c:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GitHub/LOCAL_FOLDER_automation_files_OOdrive/MASTER_numbered_outline.yaml
+outline_json: output/MASTER_outline.json
+outline_json_external: c:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GitHub/LOCAL_FOLDER_automation_files_OOdrive/MASTER_outline.json
+outline_yaml: output/yaml/MASTER_outline.yaml
+outline_yaml_external: c:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GitHub/LOCAL_FOLDER_automation_files_OOdrive/MASTER_outline.yaml
+pandoc_options:
+  toc: true
+  toc_depth: 6
+  number_sections: true
+  standalone: true
+  lua_filter: config/filters/extend_headings.lua
+pandoc_path: C:/Users/gbonthuy/Downloads/pandoc-3.6.3-windows-x86_64/pandoc-3.6.3/pandoc.exe
+pipeline:
+  steps:
+  - name: word_to_md
+    script: src/core/word_to_md.py
+    enabled: true
+    args:
+    - ${word_master}
+    - -o
+    - ${md_output}
+  - name: extract_outline
+    script: src/extractors/extract_outline.py
+    enabled: true
+  - name: extract_rtm
+    script: src/extractors/extract_rtm.py
+    enabled: true
+  - name: md_to_json_yaml
+    script: src/core/md_to_json_yaml.py
+    enabled: true
+  - name: sync_outline_files
+    script: src/utils/sync_outline_files.py
+    enabled: true
+  - name: clean_outline
+    script: clean_outline.py
+    enabled: true
+python_path: C:/Python311/python.exe
+requirements:
+- id: REQ-001
+  lcp_phase: '1'
+  priority: high
+  section: Security Requirements
+  status: proposed
+  text: The system shall provide user authentication
+rtm_yaml: output/rtm/RTM_QQQ.yaml
+secrets:
+  openai_key_path: C:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GPT_Automation/openai_key.txt
+sections:
+- level: 1
+  number: '1'
+  title: Chapter 1
+- level: 2
+  number: '1.1'
+  title: Section 1.1
+- level: 3
+  number: 1.1.1
+  title: Subsection 1.1.1
+- level: 4
+  number: 1.1.1.1
+  title: Sub-subsection 1.1.1.1
+- level: 5
+  number: 1.1.1.1.1
+  title: Deep section 1.1.1.1.1
+- level: 6
+  number: 1.1.1.1.1.1
+  title: Deeper section 1.1.1.1.1.1
+- level: 7
+  title: Deepest level
+  number: 1.1.1.1.1.1.1
+title: Requirements Traceability Matrix
+word_master: C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\input\MASTER_1805_1144.docx
+yaml_output: C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\output\MASTER_1805_1144.yaml
+project:
+  name: DOCX RTM Automation
+  version: 1.0.0
+  description: Automated DOCX to RTM conversion pipeline
+paths:
+  input_dir: docs/requirements
+  output_dir: output
+  logs_dir: logs
+  config_dir: config
+pandoc_modules:
+  init: c:/Users/gbonthuy/Downloads/pandoc-3.6.3-windows-x86_64/pandoc-3.6.3/venv/Lib/site-packages/pip/__init__.py
+  main: c:/Users/gbonthuy/Downloads/pandoc-3.6.3-windows-x86_64/pandoc-3.6.3/venv/Lib/site-packages/pip/__main__.py
+  runner: c:/Users/gbonthuy/Downloads/pandoc-3.6.3-windows-x86_64/pandoc-3.6.3/venv/Lib/site-packages/pip/__pip-runner__.py
+
+example_pipelines:
+  full_setup_and_run:
+    description: "Sets up the project, runs import, then executes the main RTM process."
+    steps:
+      - name: Setup Project Environment
+        command: "./shell_scripts/run_script.sh ./shell_scripts/setup_project.sh"
+        # In a real task runner, you might have more options:
+        # working_directory: "${PROJECT_ROOT}"
+        # depends_on: []
+      - name: Run Important Import
+        command: "./shell_scripts/run_script.sh ./DOCX_RTM_Automation/config/Import from SRC_Master/Important_Import.sh"
+        # depends_on: ["Setup Project Environment"]
+      - name: Execute RTM Process
+        command: "./shell_scripts/run_script.sh ./shell_scripts/run_rtm.sh --some-arg-for-python-script"
+        # depends_on: ["Run Important Import"]
+    # This is a conceptual representation. Actual execution would depend on a
+    # task runner tool that can interpret this YAML structure.
+    # The command to invoke this conceptual pipeline might be:
+    # my_task_runner --pipeline full_setup_and_run
+    # Or, this YAML could be used by a Python script to generate the chained shell command.

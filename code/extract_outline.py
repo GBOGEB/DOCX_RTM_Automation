@@ -1,13 +1,34 @@
 #!/usr/bin/env python3
 """
-Extract Document Outline
-Extract hierarchical structure from markdown files
+Converts Word (DOCX) documents to Markdown format.
 """
+
+
+def convert_docx_to_md(input_file, output_file=None):
+    """Convert DOCX to Markdown."""
+    if not output_file:
+        output_file = os.path.splitext(input_file)[0] + '.md'
+
+    print(f"Converting {input_file} to {output_file}")
+    # Implementation would go here
+    return output_file
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python word_to_md.py input.docx [output.md]")
+        sys.exit(1)
+
+    input_file = sys.argv[1]
+    output_file = sys.argv[2] if len(sys.argv) > 2 else None
+
+    result = convert_docx_to_md(input_file, output_file)
+    print(f"Conversion complete: {result}")
 
 import re
 import yaml
 from pathlib import Path
 import sys
+import os
 
 # Determine project root (assuming this script is in code/ subdirectory)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent

@@ -1,168 +1,220 @@
+#!/usr/bin/env python3
+"""
+Synchronize document outline files across multiple formats (YAML, JSON, etc.)
+"""
+import os
 import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+import json
 import yaml
-import os
+import glob
+import argparse
 import logging
-import difflib
 from pathlib import Path
-from typing import List, Dict, Any
+
+# Add project root to path for imports
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 
-def get_logger():
-    """Get a logger if not already configured."""
-    if not logging.getLogger().hasHandlers():
-        logging.basicConfig(
-            level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-        )
-    return logging.getLogger(__name__)
-
-
-def load_config(config_path: str = "config/paths.yaml") -> Dict[str, Any]:
+def sync_outline_files(source_file, output_formats=None, output_dir=None):
     """
-    Load configuration from YAML file.
+    Sync document outline across multiple formats.
 
     Args:
-        config_path: Path to the configuration file
+        source_file: Path to source outline file (YAML or JSON)
+        output_formats: List of output formats ('yaml', 'json', etc.)
+        output_dir: Directory for output files (default is same dir as source)
 
     Returns:
-        Dict containing configuration settings
+        Dictionary with paths to generated files
     """
-    logger = get_logger()
-    config_path = Path(config_path)
+    source_path = Path(source_file)
 
-    if not config_path.exists():
-        logger.error(f"Configuration file not found: {config_path}")
-        raise FileNotFoundError(f"Configuration file not found: {config_path}")
+    if not source_path.exists():
+        logger.error(f"Source file not found: {source_file}")
+        return None
 
+    # Determine source format
+    source_format = source_path.suffix.lower().replace('.', '')
+
+    # Set defaults
+    if output_formats is None:
+        output_formats = ['yaml', 'json']
+
+    if output_dir is None:
+        output_dir = source_path.parent
+    else:
+        output_dir = Path(output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Load source data
     try:
-        with open(config_path) as file:
-            return yaml.safe_load(file)
+        outline_data = load_outline(source_path)
     except Exception as e:
-        logger.error(f"Failed to load configuration: {str(e)}")
-        raise
+        logger.error(f"Failed to load source file: {e}")
+        return None
+
+    # Generate output files
+    output_files = {}
+    stem = source_path.stem
+
+    # If stem ends with _outline or _json, remove that part
+    stem = stem.replace('_outline', '').replace('_json', '')
+
+    for output_format in output_formats:
+        if output_format.lower() == source_format.lower():
+            # Skip if same as source format
+            output_files[output_format] = str(source_path)
+            continue
+
+        try:
+            output_file = output_dir / f"{stem}_outline.{output_format.lower()}"
+            save_outline(outline_data, output_file)
+            output_files[output_format] = str(output_file)
+        except Exception as e:
+            logger.error(f"Failed to save {output_format} file: {e}")
+
+    logger.info(f"Synchronized outline to formats: {', '.join(output_files.keys())}")
+    return output_files
 
 
-def read_outline_file(file_path: Path) -> List[str]:
+def load_outline(file_path):
+    """Load outline data from file."""
+    suffix = file_path.suffix.lower()
+
+    with open(file_path, 'r', encoding='utf-8') as f:
+        if suffix == '.json':
+            return json.load(f)
+        elif suffix in ('.yaml', '.yml'):
+            return yaml.safe_load(f)
+        else:
+            raise ValueError(f"Unsupported file format: {suffix}")
+
+
+def save_outline(data, file_path):
+    """Save outline data to file."""
+    suffix = file_path.suffix.lower()
+
+    with open(file_path, 'w', encoding='utf-8') as f:
+        if suffix == '.json':
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        elif suffix in ('.yaml', '.yml'):
+            yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
+        else:
+            raise ValueError(f"Unsupported file format: {suffix}")
+
+
+def process_outline_files(input_dir, output_dir=None, output_formats=None):
     """
-    Read an outline file and return its content as a list of lines.
+    Process all outline files in a directory.
 
     Args:
-        file_path: Path to the outline file
+        input_dir: Directory containing outline files
+        output_dir: Directory for output files
+        output_formats: List of output formats
 
     Returns:
-        List of lines in the file
+        List of paths to output files
     """
-    logger = get_logger()
-    try:
-        with open(file_path, "r", encoding="utf-8") as file:
-            return file.readlines()
-    except Exception as e:
-        logger.error(f"Failed to read outline file {file_path}: {str(e)}")
-        raise
+    # Set defaults
+    if output_formats is None:
+        output_formats = ['yaml', 'json']
+
+    if output_dir is None:
+        output_dir = os.path.join(PROJECT_ROOT, "output", "outlines")
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Find all outline files
+    outline_files = []
+    for fmt in ('json', 'yaml', 'yml'):
+        pattern = os.path.join(input_dir, f"*_outline.{fmt}")
+        outline_files.extend(glob.glob(pattern))
+
+    if not outline_files:
+        logger.warning(f"No outline files found in {input_dir}")
+        return []
+
+    logger.info(f"Found {len(outline_files)} outline files to process")
+
+    output_files = []
+    for outline_file in outline_files:
+        results = sync_outline_files(outline_file, output_formats, output_dir)
+        if results:
+            output_files.extend(results.values())
+
+    return output_files
 
 
-def write_outline_file(file_path: Path, content: List[str]) -> None:
-    """
-    Write content to an outline file.
+def parse_arguments():
+    """Parse command-line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Synchronize document outline across formats"
+    )
+    parser.add_argument("--source", help="Source outline file (YAML or JSON)")
+    parser.add_argument(
+        "-f", "--formats", nargs="+", choices=['yaml', 'json', 'yml'],
+        help="Output formats (default: all formats)"
+    )
+    parser.add_argument(
+        "-o", "--output-dir", help="Output directory (default: source file directory)"
+    )
+    parser.add_argument("--input-dir", help="Directory containing input files")
+    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
+    return parser.parse_args()
 
-    Args:
-        file_path: Path to the outline file
-        content: List of lines to write
-    """
-    logger = get_logger()
-    try:
-        with open(file_path, "w", encoding="utf-8") as file:
-            file.writelines(content)
-        logger.info(f"Updated outline file: {file_path}")
-    except Exception as e:
-        logger.error(f"Failed to write outline file {file_path}: {str(e)}")
-        raise
 
+def main():
+    """Main function."""
+    args = parse_arguments()
 
-def sync_outline_files():
-    """
-    Synchronizes outline files that were extracted in previous steps.
-    This function compares outline files and ensures consistency between them.
-    """
-    logger = get_logger()
+    # Set log level based on verbose flag
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+        logger.debug("Verbose logging enabled")
 
-    try:
-        # Load configuration
-        logger.info("Loading configuration from paths.yaml")
-        paths = load_config()
+    # Standardize format names
+    if args.formats:
+        for i, fmt in enumerate(args.formats):
+            if fmt == 'yml':
+                args.formats[i] = 'yaml'
 
-        # Extract relevant paths from configuration
-        outline_dir = Path(paths.get("output_dir", "./output")) / "outlines"
+    # Process a single file
+    if args.source:
+        output_files = sync_outline_files(args.source, args.formats, args.output_dir)
 
-        logger.info(f"Synchronizing outline files in {outline_dir}")
+        if output_files:
+            logger.info("Outline synchronized to formats:")
+            for fmt, path in output_files.items():
+                logger.info(f"  - {fmt}: {path}")
+            return 0
+        else:
+            logger.error("Outline synchronization failed.")
+            return 1
 
-        # Check if outline directory exists
-        if not outline_dir.exists():
-            logger.error(f"Outline directory does not exist: {outline_dir}")
-            return
+    # Process directory if specified
+    if args.input_dir:
+        input_dir = args.input_dir
+    else:
+        input_dir = os.path.join(PROJECT_ROOT, "output")
 
-        # Get all outline files
-        outline_files = list(outline_dir.glob("*.md"))
-        logger.info(f"Found {len(outline_files)} outline files")
+    results = process_outline_files(input_dir, args.output_dir, args.formats)
 
-        if not outline_files:
-            logger.warning("No outline files found to synchronize")
-            return
-
-        # Read all outline files
-        file_contents = {}
-        for file_path in outline_files:
-            file_contents[file_path] = read_outline_file(file_path)
-
-        # Find a reference file (the most complete one)
-        reference_file = max(
-            file_contents.items(), key=lambda x: len("".join(x[1]).strip())
-        )[0]
-
-        logger.info(
-            f"Using {reference_file.name} as reference for synchronization")
-
-        # Compare and synchronize files
-        reference_content = file_contents[reference_file]
-
-        for file_path, content in file_contents.items():
-            if file_path == reference_file:
-                continue
-
-            logger.info(f"Comparing {file_path.name} with reference")
-
-            # Calculate and log differences
-            diff = list(
-                difflib.unified_diff(
-                    content,
-                    reference_content,
-                    fromfile=str(file_path),
-                    tofile=str(reference_file),
-                    n=0,
-                )
-            )
-
-            if diff:
-                logger.info(
-                    f"Found {len(diff)} differences in {file_path.name}")
-                # Implement your synchronization logic here
-                # For example:
-                # write_outline_file(file_path, reference_content)
-            else:
-                logger.info(f"No differences found in {file_path.name}")
-
-        logger.info("Outline files synchronization completed successfully")
-
-    except Exception as e:
-        logger.error(f"Error in sync_outline_files: {str(e)}")
-        raise
+    if results:
+        logger.info(f"Successfully processed {len(results)} files")
+        return 0
+    else:
+        logger.warning("No files were processed.")
+        return 0
 
 
 if __name__ == "__main__":
-    # Allow running this module directly for testing
-    sync_outline_files()
+    sys.exit(main())

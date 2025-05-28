@@ -1,121 +1,284 @@
 #!/usr/bin/env python3
 """
-Main entry point for DOCX RTM Automation
+DOCX RTM (Requirements Traceability Matrix) Automation
+Main entry point for the RTM automation process.
+
+This script orchestrates the entire RTM generation pipeline.
 """
 
 import os
 import sys
 import logging
+import argparse
+import yaml
+import json
+import subprocess
+from datetime import datetime
 from pathlib import Path
-import yaml  # Added for YAML processing
 
-# Determine Project Root assuming main.py is in a subdirectory like 'code/'
-PROJECT_ROOT_DIR = Path(__file__).parent.parent.resolve()
+# Add project root to path for imports
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
-def setup_logging():
-    """Setup logging with automatic directory creation"""
-    logs_dir = PROJECT_ROOT_DIR / "logs"  # Use project root for logs
-    logs_dir.mkdir(exist_ok=True)
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler(logs_dir / "process.log", mode="a"),
-            logging.StreamHandler(sys.stdout)
-        ]
-    )
-    return logging.getLogger(__name__)
+# Configure logging
+log_dir = os.path.join(PROJECT_ROOT, "logs")
+os.makedirs(log_dir, exist_ok=True)
+log_filename = os.path.join(log_dir, "process.log")
 
-def load_openai_key():
-    """Load the OpenAI API key from the path specified in config/paths.yaml."""
-    logger = logging.getLogger(__name__)  # Use existing logger setup
-    config_file_path = PROJECT_ROOT_DIR / "config" / "paths.yaml"
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler(log_filename),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 
-    if not config_file_path.exists():
-        logger.error(f"Configuration file not found: {config_file_path}")
-        raise FileNotFoundError(f"Configuration file not found: {config_file_path}")
+logger = logging.getLogger(__name__)
 
-    try:
-        with open(config_file_path, 'r', encoding='utf-8') as f:
-            config_data = yaml.safe_load(f)
-    except yaml.YAMLError as e:
-        logger.error(f"Error parsing YAML configuration file {config_file_path}: {e}")
-        raise ValueError(f"Error parsing YAML configuration file: {e}")
-    except Exception as e:
-        logger.error(f"Unexpected error reading configuration file {config_file_path}: {e}")
-        raise
+def load_config(config_path=None):
+    """Load configuration from YAML file."""
+    if not config_path:
+        config_path = os.path.join(PROJECT_ROOT, "config", "paths.yaml")
 
     try:
-        openai_key_file_path_str = config_data['secrets']['openai_key_path']
-        openai_key_file_path = Path(os.path.expandvars(openai_key_file_path_str))
-
-        if not openai_key_file_path.is_absolute():
-            pass
-
-        if not openai_key_file_path.exists():
-            logger.error(f"OpenAI API key file not found: {openai_key_file_path}")
-            raise FileNotFoundError(f"OpenAI API key file not found: {openai_key_file_path}")
-
-        with open(openai_key_file_path, 'r', encoding='utf-8') as key_file:
-            openai_key = key_file.read().strip()
-        
-        if not openai_key:
-            logger.error(f"OpenAI API key file is empty: {openai_key_file_path}")
-            raise ValueError(f"OpenAI API key file is empty: {openai_key_file_path}")
-            
-        return openai_key
-
-    except KeyError:
-        logger.error("'openai_key_path' not found in secrets section of config/paths.yaml")
-        raise KeyError("'openai_key_path' not found in secrets section of config/paths.yaml")
-    except FileNotFoundError:
-        raise
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = yaml.safe_load(f)
+            logger.info(f"Configuration loaded from {config_path}")
+            return config
     except Exception as e:
-        logger.error(f"An unexpected error occurred while loading the OpenAI key: {e}")
-        raise
+        logger.error(f"Failed to load configuration: {e}")
+        return None
 
-def commit_outputs_to_git(files_to_commit, config_data):
-    """Commit output files to git"""
-    logger = setup_logging()
-    original_cwd = os.getcwd()
-    os.chdir(PROJECT_ROOT_DIR)  # Change to actual project root for git operations
-
-    absolute_files_to_commit = []
-    for f_rel in files_to_commit:
-        abs_path = (PROJECT_ROOT_DIR / f_rel).resolve()
-        if abs_path.exists():
-            absolute_files_to_commit.append(str(abs_path))
+def load_openai_api_key(config):
+    """Load OpenAI API key from the file specified in config."""
+    try:
+        if not config or 'openai' not in config or 'api_key_file' not in config['openai']:
+            # Check for secrets section as fallback
+            if config and 'secrets' in config and 'openai_key_path' in config['secrets']:
+                api_key_path = config['secrets']['openai_key_path']
+            else:
+                logger.error("'api_key_file' not found in config/paths.yaml.")
+                return None
         else:
-            logger.warning(f"File {abs_path} not found for git add. Skipping.")
-    if not absolute_files_to_commit:
-        logger.warning("No existing files to commit. Skipping git add/commit.")
-        os.chdir(original_cwd)
-        return
-    # Add your git add/commit logic here
+            api_key_path = config['openai']['api_key_file']
+
+        # Convert to absolute path if it's a relative path
+        if not os.path.isabs(api_key_path):
+            api_key_path = os.path.join(PROJECT_ROOT, api_key_path)
+
+        # Read the API key from the file
+        with open(api_key_path, 'r', encoding='utf-8') as f:
+            api_key = f.read().strip()
+
+        if not api_key or api_key.startswith("sk-your-openai-api-key-goes-here"):
+            logger.warning(f"API key file at {api_key_path} contains a placeholder value.")
+            return None
+
+        logger.info(f"OpenAI API key loaded successfully from {api_key_path}.")
+        return api_key
+    except FileNotFoundError:
+        logger.error(f"API key file not found: {api_key_path}")
+        return None
+    except Exception as e:
+        logger.error(f"Error loading OpenAI API key: {str(e)}")
+        return None
+
+def parse_arguments():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(description="DOCX RTM Automation")
+
+    # Input and output options
+    parser.add_argument("--input-dir", help="Directory containing input files")
+    parser.add_argument("--output-dir", help="Directory for output files")
+    parser.add_argument("--config", help="Path to configuration file")
+
+    # Pipeline options
+    parser.add_argument("--steps", nargs="+", help="Specific pipeline steps to run")
+    parser.add_argument("--skip-steps", nargs="+", help="Pipeline steps to skip")
+
+    # Miscellaneous options
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be done without executing")
+
+    return parser.parse_args()
+
+def execute_pipeline_step_via_python(script_path, input_dir, output_dir):
+    """Execute a Python script directly using sys.argv modification."""
+    import importlib.util
+
+    try:
+        # Add directory containing the script to sys.path
+        script_dir = os.path.dirname(script_path)
+        sys.path.insert(0, script_dir)
+
+        # Load the module
+        module_name = os.path.splitext(os.path.basename(script_path))[0]
+        spec = importlib.util.spec_from_file_location(module_name, script_path)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
+
+        # Execute the module
+        spec.loader.exec_module(module)
+
+        # Backup sys.argv and replace with our arguments
+        old_argv = sys.argv.copy()
+        sys.argv = [script_path, "--input-dir", input_dir, "--output-dir", output_dir]
+
+        # Execute the main function if it exists
+        if hasattr(module, 'main'):
+            module.main()
+
+        # Restore sys.argv
+        sys.argv = old_argv
+
+        return True
+    except Exception as e:
+        logger.error(f"Error executing Python script {script_path}: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+def execute_pipeline(config, args):
+    """Execute the RTM automation pipeline based on configuration."""
+    logger.info("Executing RTM automation pipeline...")
+
+    # Get pipeline steps from config
+    pipeline_steps = []
+    if config and 'pipeline' in config and 'steps' in config['pipeline']:
+        pipeline_steps = config['pipeline']['steps']
+
+    if not pipeline_steps:
+        logger.error("No pipeline steps defined in configuration")
+        return False
+
+    # Filter steps based on command line arguments
+    if args.steps:
+        pipeline_steps = [step for step in pipeline_steps if step['name'] in args.steps]
+    if args.skip_steps:
+        pipeline_steps = [step for step in pipeline_steps if step['name'] not in args.skip_steps]
+
+    # Get input and output directories
+    input_dir = args.input_dir
+    if not input_dir and 'paths' in config and 'input_dir' in config['paths']:
+        input_dir = os.path.join(PROJECT_ROOT, config['paths']['input_dir'])
+    else:
+        input_dir = os.path.join(PROJECT_ROOT, "input")
+
+    output_dir = args.output_dir
+    if not output_dir and 'paths' in config and 'output_dir' in config['paths']:
+        output_dir = os.path.join(PROJECT_ROOT, config['paths']['output_dir'])
+    else:
+        output_dir = os.path.join(PROJECT_ROOT, "output")
+
+    # Execute each enabled pipeline step
+    for step in pipeline_steps:
+        if step.get('enabled', True):
+            step_name = step.get('name', 'unnamed_step')
+            script_path = step.get('script')
+
+            if not script_path:
+                logger.warning(f"No script defined for step '{step_name}', skipping")
+                continue
+
+            # Convert to absolute path if it's a relative path
+            if not os.path.isabs(script_path):
+                script_path = os.path.join(PROJECT_ROOT, script_path)
+
+            if not os.path.exists(script_path):
+                logger.error(f"Script not found for step '{step_name}': {script_path}")
+                continue
+
+            if args.dry_run:
+                logger.info(f"[DRY RUN] Would execute: {script_path}")
+                continue
+
+            logger.info(f"Executing pipeline step '{step_name}': {script_path}")
+            try:
+                # Direct Python execution for better handling of arguments
+                success = execute_pipeline_step_via_python(script_path, input_dir, output_dir)
+
+                if not success:
+                    logger.error(f"Step '{step_name}' failed")
+                    return False
+
+                logger.info(f"Step '{step_name}' completed successfully")
+            except Exception as e:
+                logger.error(f"Error executing step '{step_name}': {e}")
+                return False
+
+    logger.info("Pipeline execution completed successfully")
+    return True
 
 def main():
-    """Main function"""
-    os.chdir(PROJECT_ROOT_DIR)  # Ensure CWD is project root
-    logger = setup_logging()
-    logger.info("Starting DOCX RTM Automation")
-    print("DOCX RTM Automation - Main Entry Point")
+    """Main function."""
+    logger.info("Starting DOCX RTM Automation process...")
 
-    required_dirs = ["input", "output", "config", "src", "logs"]
-    for dir_name in required_dirs:
-        if Path(dir_name).exists():
-            logger.info(f"Directory exists: {dir_name}")
-        else:
-            logger.warning(f"Directory missing: {dir_name}")
+    # Parse command line arguments
+    args = parse_arguments()
 
-    try:
-        openai_key = load_openai_key()
-        logger.info("OpenAI key loaded successfully")
-    except FileNotFoundError as e:
-        logger.error(e)
+    # Set log level based on verbose flag
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+        logger.debug("Verbose logging enabled")
+
+    # Load configuration
+    config = load_config(args.config)
+    if not config:
+        logger.critical("Failed to load configuration. Exiting.")
         return 1
 
-    print("Hello")
+    # Load OpenAI API key if needed
+    api_key = load_openai_api_key(config)
+    if not api_key:
+        # This is now just a warning as OpenAI might not be required
+        logger.warning("Failed to load OpenAI API key. Some features might not work.")
 
+    # Process input and output directories
+    if args.input_dir:
+        input_dir = args.input_dir
+    elif config and 'paths' in config and 'input_dir' in config['paths']:
+        input_dir = os.path.join(PROJECT_ROOT, config['paths']['input_dir'])
+    else:
+        input_dir = os.path.join(PROJECT_ROOT, "input")
+
+    if args.output_dir:
+        output_dir = args.output_dir
+    elif config and 'paths' in config and 'output_dir' in config['paths']:
+        output_dir = os.path.join(PROJECT_ROOT, config['paths']['output_dir'])
+    else:
+        output_dir = os.path.join(PROJECT_ROOT, "output")
+
+    # Ensure directories exist
+    os.makedirs(input_dir, exist_ok=True)
+    os.makedirs(output_dir, exist_ok=True)
+
+    logger.info(f"Using input directory: {input_dir}")
+    logger.info(f"Using output directory: {output_dir}")
+
+    # Check for input files
+    input_files = [
+        f for f in os.listdir(input_dir)
+        if os.path.isfile(os.path.join(input_dir, f)) and
+        (f.endswith('.docx') or f.endswith('.md'))
+    ]
+
+    if not input_files:
+        logger.warning("No input files (.docx or .md) found in input directory")
+    else:
+        logger.info(f"Found {len(input_files)} input files: {', '.join(input_files)}")
+
+    # Execute pipeline
+    if not args.dry_run:
+        success = execute_pipeline(config, args)
+        if not success:
+            logger.error("Pipeline execution failed")
+            return 1
+    else:
+        logger.info("Dry run completed. No actions were performed.")
+
+    logger.info("DOCX RTM Automation process finished.")
     return 0
 
 if __name__ == "__main__":

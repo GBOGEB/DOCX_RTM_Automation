@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# Basic pre-commit hook for RTM Automation project
+
+echo "Running basic pre-commit checks..."
+
+# Check for debug prints
+GREP_CMD=$(which grep 2>/dev/null)
+if [ -x "$GREP_CMD" ]; then
+    if [ $(git diff --cached | grep -E "\+.*print\(" | wc -l) -gt 0 ]; then
+        echo "WARNING: Possible debug print statements detected. Please review:"
+        git diff --cached | grep -E "\+.*print\(" | grep -v "__"
+        echo "Continue with commit? (y/n)"
+        read -r RESPONSE
+        if [ "$RESPONSE" != "y" ]; then
+            echo "Commit aborted. Please remove debug prints."
+            exit 1
+        fi
+    fi
+fi
+
+# Check for large files
+git diff --cached --name-only | while read FILE; do
+    if [ -f "$FILE" ]; then
+        FILE_SIZE=$(stat --printf="%s" "$FILE" 2>/dev/null || stat -f "%z" "$FILE")
+        if [ $FILE_SIZE -gt 1000000 ]; then  # 1MB
+            echo "WARNING: Large file detected: $FILE ($FILE_SIZE bytes)"
+            echo "Continue with commit? (y/n)"
+            read -r RESPONSE
+            if [ "$RESPONSE" != "y" ]; then
+                echo "Commit aborted. Please review large files."
+                exit 1
+            fi
+        fi
+    fi
+done
+
+# Check for trailing whitespace
+if command -v python &> /dev/null; then
+    python -c "
+import sys, re
+count = 0
+for file in sys.argv[1:]:
+    try:
+        with open(file, 'r') as f:
+            for i, line in enumerate(f, 1):
+                if re.search(r'[ \t]+$', line):
+                    print(f'{file}:{i}: Trailing whitespace')
+                    count += 1
+    except:
+        pass
+if count > 0:
+    print(f'Found {count} lines with trailing whitespace')
+    exit_code = input('Continue with commit? (y/n): ')
+    if exit_code.lower() != 'y':
+        sys.exit(1)
+" $(git diff --cached --name-only)
+fi
+
+echo "Pre-commit checks completed successfully."
+exit 0

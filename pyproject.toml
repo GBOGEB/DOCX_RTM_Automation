@@ -1,0 +1,91 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+# Exclude commonly ignored directories
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+# Line length and indentation settings (same as Black)
+line-length = 88
+indent-width = 4
+
+# Target Python version
+target-version = "py39"
+
+[tool.ruff.lint]
+# Enable Pyflakes, pycodestyle errors, and flake8-bugbear rules
+select = ["E4", "E7", "E9", "F", "B"]
+
+# Ignore line length violations
+ignore = ["E501"]
+
+# Allow fixing for all enabled rules except bugbear
+fixable = ["ALL"]
+unfixable = ["B"]
+
+# Allow unused variables when underscore-prefixed
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Per-file ignore configurations
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402"]  # Allow imports not at top of file in __init__.py
+"**/tests/**" = ["E402"]  # Allow imports not at top of file in tests
+"**/docs/**" = ["E402"]   # Allow imports not at top of file in docs
+"**/tools/**" = ["E402"]  # Allow imports not at top of file in tools
+
+[tool.ruff.format]
+# Formatting settings
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = false
+docstring-code-line-length = "dynamic"
+
+[tool.black]
+line-length = 88
+target-version = ["py39"]
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"

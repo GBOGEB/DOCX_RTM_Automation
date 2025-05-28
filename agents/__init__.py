@@ -1,39 +1,15 @@
-# This file can be used to initialize the `agents` package.
+"""
+Agent system for DOCX RTM Automation.
 
-from .agent_common import (
-    BaseAgent,
-    AgentRole,
-    AgentMessage,
-    AgentPriority,
-    AgentCapability,
-    StandardAgentResponse,
-    validate_input,
-    log_message
-)
+This package contains all agents used within the system to facilitate
+automation tasks, including orchestrating workflows, managing Git operations,
+and handling agent-specific roles and capabilities.
+"""
+
+# Import key agent classes for convenience
+from .agent_common import AgentRole, AgentCapability, BaseAgent, AgentMessage
+
+# Import all agents
+# Note the cyclic import is mitigated by the if __name__ == "__main__" guard in agent_orchestrator.py
 from .agent_orchestrator import AgentOrchestrator
-from .copilot_agent import CopilotAgent, FileType, ConversionType
-from .dmaic_cicd_agent import DMAICCICDAgent, PipelineMetrics
-from .git_agent import GitAgent, GitOperation
-from .requirement_analyzer import RequirementAnalysisAgent, TraceabilityAnalysisAgent
-
-
-__all__ = [
-    "BaseAgent",
-    "AgentRole",
-    "AgentMessage",
-    "AgentPriority",
-    "AgentCapability",
-    "StandardAgentResponse",
-    "validate_input",
-    "log_message",
-    "AgentOrchestrator",
-    "CopilotAgent",
-    "FileType",
-    "ConversionType",
-    "DMAICCICDAgent",
-    "PipelineMetrics",
-    "GitAgent",
-    "GitOperation",
-    "RequirementAnalysisAgent",
-    "TraceabilityAnalysisAgent",
-]
+from .git_agent import GitAgent

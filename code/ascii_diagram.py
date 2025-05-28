@@ -4,12 +4,14 @@ ASCII Diagram Generator
 Generate text-based structure diagrams from documents
 """
 
-import re
+
 from pathlib import Path
-import sys
+import re  # For regex-based header parsing
+import sys  # For command-line arguments
 
 # Determine project root (assuming this script is in code/ subdirectory)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 
 def generate_structure_diagram(md_file_path_str: str, output_file_str: str = None):
     """Generate ASCII structure diagram from markdown file"""
@@ -30,49 +32,41 @@ def generate_structure_diagram(md_file_path_str: str, output_file_str: str = Non
 
     try:
         with open(md_file_path, "r", encoding="utf-8") as f:
-            content = f.read()
+            lines = f.readlines()
 
         structure_lines = []
-        structure_lines.append("Document Structure")
-        structure_lines.append("==================")
+        structure_lines.append(f"Document Structure: {md_file_path.name}")
+        structure_lines.append(
+            "=" * (len(structure_lines[0]))
+        )  # Underline matches title length
         structure_lines.append("")
 
         # Extract headers
-        header_pattern = r"^(#{1,6})\s+(.*?)$"
-        prev_level = 0
+        header_pattern = r"^(#{1,6})\s+(.*?)$"  # Matches lines starting with 1 to 6 '#'
 
-        for match in re.finditer(header_pattern, content, re.MULTILINE):
-            level = len(match.group(1))
-            title = match.group(2).strip()
+        for line in lines:
+            match = re.match(header_pattern, line)
+            if match:
+                level = len(match.group(1))  # Number of '#' indicates level
+                title = match.group(2).strip()
 
-            # Create indentation
-            indent = "  " * (level - 1)
+                # Basic indentation for hierarchy
+                indent = "  " * (level - 1)
+                prefix = "└─ " if level > 1 else ""  # Simple prefix for sub-levels
+                if level == 1:
+                    prefix = "■─ "  # Different prefix for top-level
 
-            # Create tree structure
-            if level > prev_level:
-                prefix = "├── " if level > 1 else ""
-            else:
-                prefix = "├── " if level > 1 else ""
+                structure_lines.append(f"{indent}{prefix}{title} (H{level})")
 
-            # Clean title
-            clean_title = re.sub(r"^\d+(?:\.\d+)*\s*", "", title)
+        if not any(re.match(header_pattern, line) for line in lines):
+            structure_lines.append("No headers found in the document.")
 
-            structure_lines.append(f"{indent}{prefix}{clean_title}")
-            prev_level = level
-
-        structure_lines.append("")
-        structure_lines.append("Requirements Summary")
-        structure_lines.append("==================")
-
-        # Count requirements
-        req_count = len(re.findall(r"shall|must|will", content, re.IGNORECASE))
-        structure_lines.append(f"Estimated requirements: {req_count}")
-
-        with open(output_file_path, "w", encoding="utf-8") as f:
-            f.write("\n".join(structure_lines))
+        with open(output_file_path, "w", encoding="utf-8") as out_f:
+            for s_line in structure_lines:
+                out_f.write(s_line + "\n")
 
     except Exception as e:
-        print(f"Error generating structure diagram for {md_file_path.name}: {e}")
+        print(f"Error processing file {md_file_path}: {e}")
         return False
 
     print(f"Structure diagram for {md_file_path.name} saved to {output_file_path}")
@@ -81,16 +75,36 @@ def generate_structure_diagram(md_file_path_str: str, output_file_str: str = Non
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        input_md_file = Path(sys.argv[1])
-        if not input_md_file.is_absolute():
-            input_md_file = PROJECT_ROOT / input_md_file
+        input_file = sys.argv[1]
+        output_file_arg = sys.argv[2] if len(sys.argv) > 2 else None
 
-        custom_output_file = Path(sys.argv[2]) if len(sys.argv) > 2 else None
-        if custom_output_file and not custom_output_file.is_absolute():
-            custom_output_file = PROJECT_ROOT / custom_output_file
+        # Make input_file relative to project root if not absolute
+        input_path = Path(input_file)
+        if not input_path.is_absolute():
+            input_path = PROJECT_ROOT / input_file
 
-        generate_structure_diagram(str(input_md_file), str(custom_output_file) if custom_output_file else None)
+        print(f"Generating diagram for: {input_path}")
+        if output_file_arg:
+            output_path_arg = Path(output_file_arg)
+            if not output_path_arg.is_absolute():
+                output_path_arg = PROJECT_ROOT / output_file_arg
+            generate_structure_diagram(str(input_path), str(output_path_arg))
+        else:
+            generate_structure_diagram(str(input_path))
     else:
-        default_input_md = PROJECT_ROOT / "output" / "MASTER_1805_1144.md" # Example path
-        print(f"No input file provided. Trying default: {default_input_md}")
-        generate_structure_diagram(str(default_input_md))
+        print("Usage: python ascii_diagram.py <markdown_file_path> [output_file_path]")
+        print(
+            "\nExample: python code/ascii_diagram.py docs/sample.md output/diagrams/sample_structure.txt"
+        )
+        # Create a dummy markdown file for easy testing if it doesn't exist
+        dummy_md_path = PROJECT_ROOT / "docs" / "sample_diagram_test.md"
+        dummy_md_path.parent.mkdir(parents=True, exist_ok=True)
+        if not dummy_md_path.exists():
+            with open(dummy_md_path, "w", encoding="utf-8") as f_dummy:
+                f_dummy.write(
+                    "# Main Title\n\n## Section 1\n\n### Subsection 1.1\n\n## Section 2\n"
+                )
+            print(f"\nCreated a dummy file for testing: {dummy_md_path}")
+            print(
+                f"You can try running: python code/ascii_diagram.py {dummy_md_path.relative_to(PROJECT_ROOT)}"
+            )
