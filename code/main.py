@@ -10,11 +10,10 @@ import os
 import sys
 import logging
 import argparse
-import yaml
-import json
-import subprocess
-from datetime import datetime
 from pathlib import Path
+import importlib.util
+import traceback
+import yaml
 
 # Add project root to path for imports
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -43,10 +42,10 @@ def load_config(config_path=None):
     try:
         with open(config_path, "r", encoding="utf-8") as f:
             config = yaml.safe_load(f)
-            logger.info(f"Configuration loaded from {config_path}")
+            logger.info("Configuration loaded from %s", config_path)
             return config
-    except Exception as e:
-        logger.error(f"Failed to load configuration: {e}")
+    except Exception as e:  # pylint: disable=broad-except
+        logger.error("Failed to load configuration: %s", e)
         return None
 
 
@@ -81,17 +80,17 @@ def load_openai_api_key(config):
 
         if not api_key or api_key.startswith("sk-your-openai-api-key-goes-here"):
             logger.warning(
-                f"API key file at {api_key_path} contains a placeholder value."
+                "API key file at %s contains a placeholder value.", api_key_path
             )
             return None
 
-        logger.info(f"OpenAI API key loaded successfully from {api_key_path}.")
+        logger.info("OpenAI API key loaded successfully from %s.", api_key_path)
         return api_key
     except FileNotFoundError:
-        logger.error(f"API key file not found: {api_key_path}")
+        logger.error("API key file not found: %s", api_key_path)
         return None
-    except Exception as e:
-        logger.error(f"Error loading OpenAI API key: {str(e)}")
+    except Exception as e:  # pylint: disable=broad-except
+        logger.error("Error loading OpenAI API key: %s", str(e))
         return None
 
 
@@ -121,8 +120,6 @@ def parse_arguments():
 
 def execute_pipeline_step_via_python(script_path, input_dir, output_dir):
     """Execute a Python script directly using sys.argv modification."""
-    import importlib.util
-
     try:
         # Add directory containing the script to sys.path
         script_dir = os.path.dirname(script_path)
@@ -149,10 +146,8 @@ def execute_pipeline_step_via_python(script_path, input_dir, output_dir):
         sys.argv = old_argv
 
         return True
-    except Exception as e:
-        logger.error(f"Error executing Python script {script_path}: {e}")
-        import traceback
-
+    except Exception as e:  # pylint: disable=broad-except
+        logger.error("Error executing Python script %s: %s", script_path, e)
         traceback.print_exc()
         return False
 
@@ -198,7 +193,7 @@ def execute_pipeline(config, args):
             script_path = step.get("script")
 
             if not script_path:
-                logger.warning(f"No script defined for step '{step_name}', skipping")
+                logger.warning("No script defined for step '%s', skipping", step_name)
                 continue
 
             # Convert to absolute path if it's a relative path
@@ -206,14 +201,14 @@ def execute_pipeline(config, args):
                 script_path = os.path.join(PROJECT_ROOT, script_path)
 
             if not os.path.exists(script_path):
-                logger.error(f"Script not found for step '{step_name}': {script_path}")
+                logger.error("Script not found for step '%s': %s", step_name, script_path)
                 continue
 
             if args.dry_run:
-                logger.info(f"[DRY RUN] Would execute: {script_path}")
+                logger.info("[DRY RUN] Would execute: %s", script_path)
                 continue
 
-            logger.info(f"Executing pipeline step '{step_name}': {script_path}")
+            logger.info("Executing pipeline step '%s': %s", step_name, script_path)
             try:
                 # Direct Python execution for better handling of arguments
                 success = execute_pipeline_step_via_python(
@@ -221,12 +216,12 @@ def execute_pipeline(config, args):
                 )
 
                 if not success:
-                    logger.error(f"Step '{step_name}' failed")
+                    logger.error("Step '%s' failed", step_name)
                     return False
 
-                logger.info(f"Step '{step_name}' completed successfully")
-            except Exception as e:
-                logger.error(f"Error executing step '{step_name}': {e}")
+                logger.info("Step '%s' completed successfully", step_name)
+            except Exception as e:  # pylint: disable=broad-except
+                logger.error("Error executing step '%s': %s", step_name, e)
                 return False
 
     logger.info("Pipeline execution completed successfully")
@@ -276,8 +271,8 @@ def main():
     os.makedirs(input_dir, exist_ok=True)
     os.makedirs(output_dir, exist_ok=True)
 
-    logger.info(f"Using input directory: {input_dir}")
-    logger.info(f"Using output directory: {output_dir}")
+    logger.info("Using input directory: %s", input_dir)
+    logger.info("Using output directory: %s", output_dir)
 
     # Check for input files
     input_files = [
@@ -290,7 +285,7 @@ def main():
     if not input_files:
         logger.warning("No input files (.docx or .md) found in input directory")
     else:
-        logger.info(f"Found {len(input_files)} input files: {', '.join(input_files)}")
+        logger.info("Found %d input files: %s", len(input_files), ', '.join(input_files))
 
     # Execute pipeline
     if not args.dry_run:

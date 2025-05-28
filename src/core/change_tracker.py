@@ -6,12 +6,13 @@ Provides version history management and change reporting.
 import os
 import sys
 import json
-import yaml
-import difflib
 import logging
 import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Union
+import shutil
+from typing import Dict, List, Any, Optional
+
+import yaml
 
 # Add project root to path for imports
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -48,18 +49,7 @@ class ChangeTracker:
                       version: str,
                       files: Dict[str, str] = None,
                       metadata: Dict[str, Any] = None) -> Dict[str, Any]:
-        """
-        Record a new version of a document.
-
-        Args:
-            document_path: Path to the main document
-            version: Version identifier
-            files: Dictionary of related files to save
-            metadata: Additional metadata to record
-
-        Returns:
-            Dictionary with version information
-        """
+        """Record a new version of a document."""
         # Generate timestamp
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -73,7 +63,6 @@ class ChangeTracker:
 
         # Save main document
         doc_copy_path = os.path.join(version_dir, doc_basename)
-        import shutil
         shutil.copy2(document_path, doc_copy_path)
 
         # Save related files
@@ -106,7 +95,7 @@ class ChangeTracker:
         with open(metadata_path, 'w', encoding='utf-8') as f:
             json.dump(version_data, f, indent=2)
 
-        logger.info(f"Recorded version {version} of {doc_name} in {version_dir}")
+        logger.info("Recorded version %s of %s in %s", version, doc_name, version_dir)
 
         return {
             "version": version,
@@ -118,15 +107,7 @@ class ChangeTracker:
         }
 
     def get_document_versions(self, document_name: str) -> List[Dict[str, Any]]:
-        """
-        Get all recorded versions of a document.
-
-        Args:
-            document_name: Base name of the document (without extension)
-
-        Returns:
-            List of version dictionaries, sorted by timestamp
-        """
+        """Get all recorded versions of a document."""
         versions = []
 
         if not os.path.exists(self.history_dir):
@@ -145,8 +126,8 @@ class ChangeTracker:
                         with open(metadata_path, 'r', encoding='utf-8') as f:
                             metadata = json.load(f)
                         versions.append(metadata)
-                    except Exception as e:
-                        logger.warning(f"Error reading metadata from {metadata_path}: {e}")
+                    except Exception as e:  # pylint: disable=broad-except
+                        logger.warning("Error reading metadata from %s: %s", metadata_path, e)
 
         # Sort versions by timestamp
         versions.sort(key=lambda x: x.get("timestamp", ""))
@@ -157,17 +138,7 @@ class ChangeTracker:
                           document_name: str,
                           output_path: Optional[str] = None,
                           format_type: str = "markdown") -> Optional[str]:
-        """
-        Generate a changelog for a document.
-
-        Args:
-            document_name: Name of the document
-            output_path: Path to save the changelog
-            format_type: Output format (markdown, html, json)
-
-        Returns:
-            Path to the generated changelog file
-        """
+        """Generate a changelog for a document."""
         # Get all versions
         versions = self.get_document_versions(document_name)
 
@@ -188,26 +159,58 @@ class ChangeTracker:
         # Create output directory if it doesn't exist
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
+        # Generate content based on format type
         if format_type.lower() == "markdown":
             content = self._generate_markdown_changelog(document_name, versions)
         elif format_type.lower() == "html":
-            content = self._generate_html_changelog(document_name, versions)
+            content = self._generate_html_changelog(
+                document_name, versions
+            )
         elif format_type.lower() in ["json", "yaml"]:
-            content = self._generate_data_changelog(document_name, versions, format_type.lower())
+            content = self._generate_data_changelog(
+                document_name, versions, format_type.lower()
+            )
         else:
-            logger.error(f"Unsupported format type: {format_type}")
-            return None
+            logger.error("Unsupported format type: %s", format_type)
 
         # Write changelog
         try:
             with open(output_path, 'w', encoding='utf-8') as f:
                 f.write(content)
 
-            logger.info(f"Generated changelog for {document_name} at {output_path}")
+            logger.info("Generated changelog for %s at %s", document_name, output_path)
             return output_path
-        except Exception as e:
-            logger.error(f"Error writing changelog: {e}")
+        except Exception as e:  # pylint: disable=broad-except
+            logger.error("Error writing changelog: %s", e)
             return None
+
+    def _generate_html_changelog(self, document_name: str, versions: List[Dict[str, Any]]) -> str:
+        """Generate HTML changelog."""
+        content = f"<html><head><title>Changelog for {document_name}</title></head><body>"
+        content += f"<h1>Changelog for {document_name}</h1>"
+        content += f"<p>Generated on {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>"
+
+        # Add an entry for each version
+        for version in versions:
+            v_name = version.get("version", "unknown")
+            v_time = version.get("timestamp", "unknown")
+            content += f"<div><h2>Version: {v_name}</h2><p>Timestamp: {v_time}</p></div>"
+
+        content += "</body></html>"
+        return content
+
+    def _generate_data_changelog(self, document_name: str, versions: List[Dict[str, Any]], format_type: str) -> str:
+        """Generate JSON or YAML changelog."""
+        changelog_data = {
+            "document": document_name,
+            "generated_at": datetime.datetime.now().isoformat(),
+            "versions": versions
+        }
+
+        if format_type == "json":
+            return json.dumps(changelog_data, indent=2)
+        else:  # YAML
+            return yaml.dump(changelog_data, default_flow_style=False)
 
     def _generate_markdown_changelog(self, document_name: str, versions: List[Dict[str, Any]]) -> str:
         """Generate Markdown changelog."""
@@ -218,3 +221,9 @@ class ChangeTracker:
         for i, version in enumerate(versions):
             v_name = version.get("version", "unknown")
             v_time = version.get("timestamp", "unknown")
+
+            content += f"## Version {i + 1}: {v_name}\n"
+            content += f"- Timestamp: {v_time}\n\n"
+
+        # Return the generated content
+        return content

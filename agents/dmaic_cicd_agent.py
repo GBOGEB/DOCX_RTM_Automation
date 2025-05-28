@@ -3,13 +3,11 @@ DMAIC CI/CD Agent for the RTM Automation system.
 Handles CI/CD operations in the DMAIC framework.
 """
 
-import os
 import sys
-import logging
-import json
 import time
+import logging
 from pathlib import Path
-from typing import Dict, Any, List, Optional, Tuple, Union
+from typing import Dict, Any, Optional
 from enum import Enum
 
 # Add project root to path for imports
@@ -17,13 +15,17 @@ project_root = Path(__file__).resolve().parents[1]
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-# Import base agent components
-from agents.agent_common import BaseAgent, AgentRole, AgentCapability, AgentMessage, validate_input
-from dmaic import DMAICHandler, DMAICPhase
-from utils.output_handler import OutputHandler
+# Import modules from project
+# These imports are placed after sys.path modification
+from agents.agent_common import BaseAgent, AgentRole, AgentCapability, AgentMessage  # pylint: disable=wrong-import-position # noqa: E402
+from dmaic import DMAICHandler  # pylint: disable=wrong-import-position # noqa: E402
+from utils.output_handler import OutputHandler  # pylint: disable=wrong-import-position # noqa: E402
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -44,7 +46,7 @@ class PipelineMetrics(Enum):
             PipelineMetrics.BUILD_TIME.value,
             PipelineMetrics.CHANGE_FAILURE_RATE.value,
             PipelineMetrics.MTTR.value,
-            PipelineMetrics.LEAD_TIME.value  # Assuming lower lead time is better
+            PipelineMetrics.LEAD_TIME.value
         ]
 
 
@@ -87,9 +89,9 @@ class DMAICCICDAgent(BaseAgent):
         self.baseline_metrics: Dict[str, Any] = {}
 
         if output_handler:
-            self.output_handler.log_info(f"DMAICCICDAgent {self.agent_id} initialized")
+            self.output_handler.log_info("DMAICCICDAgent %s initialized", self.agent_id)
         else:
-            logger.info(f"DMAICCICDAgent {self.agent_id} initialized without output_handler")
+            logger.info("DMAICCICDAgent %s initialized without output_handler", self.agent_id)
 
     def process_message(self, message: AgentMessage) -> Dict[str, Any]:
         """
@@ -110,19 +112,19 @@ class DMAICCICDAgent(BaseAgent):
         elif message.message_type == "deploy_request":
             return self._handle_deploy(message.content)
         elif message.message_type == "initialize_cicd_project":
-            return self.handle_initialize_project(message)
+            return self._handle_initialize_project(message.content)
         elif message.message_type == "collect_cicd_baseline":
-            return self.handle_collect_baseline_metrics(message)
+            return self.handle_collect_baseline_metrics(message.content)
         elif message.message_type == "analyze_cicd_performance":
-            return self.handle_analyze_pipeline_performance(message)
+            return self._handle_analyze_pipeline_performance(message.content)
         elif message.message_type == "generate_cicd_improvement_plan":
-            return self.handle_generate_improvement_plan(message)
+            return self._handle_generate_improvement_plan(message.content)
         elif message.message_type == "establish_cicd_control_plan":
-            return self.handle_establish_control_plan(message)
+            return self._handle_establish_control_plan(message.content)
         elif message.message_type == "analyze_cicd_build_failure":
-            return self.handle_analyze_build_failure(message)
+            return self._handle_analyze_build_failure(message.content)
         elif message.message_type == "compare_cicd_metrics":
-            return self.handle_compare_metrics(message)
+            return self._handle_compare_metrics(message.content)
         else:
             return {
                 "status": "error",
@@ -176,10 +178,11 @@ class DMAICCICDAgent(BaseAgent):
 
             return {
                 "status": "success",
-                "message": f"Pipeline setup successfully",
+                "message": "Pipeline setup successfully",
                 "data": pipeline_config
             }
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
+            # In production code, catch more specific exceptions
             return {"status": "error", "message": f"Failed to set up pipeline: {e}"}
 
     def _handle_run_pipeline(self, content: Dict[str, Any]) -> Dict[str, Any]:
@@ -208,11 +211,225 @@ class DMAICCICDAgent(BaseAgent):
 
             return {
                 "status": "success",
-                "message": f"Pipeline run successfully",
+                "message": "Pipeline run successfully",
                 "data": run_result
             }
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
+            # In production code, catch more specific exceptions
             return {"status": "error", "message": f"Failed to run pipeline: {e}"}
+
+    def handle_collect_baseline_metrics(self, _content: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=unused-argument
+        """
+        Handle request to collect baseline CI/CD metrics.
+
+        Args:
+            _content: Request content (placeholder, not used in this simulation)
+        """
+        try:
+            # Simulate metric collection
+            baseline_metrics = {
+                "build_time": 120,
+                "test_coverage": 85.5,
+                "test_success_rate": 98.0,
+                "deployment_frequency": 5,
+                "lead_time": 24,
+                "change_failure_rate": 0.02,
+                "mean_time_to_recovery": 2
+            }
+            self.baseline_metrics = baseline_metrics
+
+            if self.output_handler:
+                self.output_handler.log_info("Baseline metrics collected successfully")
+
+            return {
+                "status": "success",
+                "message": "Baseline metrics collected",
+                "data": baseline_metrics
+            }
+        except Exception as e:  # pylint: disable=broad-except
+            # In production code, catch more specific exceptions
+            return {"status": "error", "message": f"Failed to collect baseline metrics: {e}"}
+
+    def _handle_analyze_build_failure(self, _content: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=unused-argument
+        """
+        Handle request to analyze CI/CD build failures.
+
+        Args:
+            _content: Request content (placeholder, not used in this simulation)
+        """
+        try:
+            # Simulate build failure analysis
+            build_failure_analysis = {
+                "failure_rate": 0.05,
+                "common_issues": ["dependency errors", "timeout issues"],
+                "recommendations": ["update dependencies", "optimize build scripts"]
+            }
+
+            if self.output_handler:
+                self.output_handler.log_info("Build failure analysis completed successfully")
+
+            return {
+                "status": "success",
+                "message": "Build failure analysis completed",
+                "data": build_failure_analysis
+            }
+        except Exception as e:  # pylint: disable=broad-except
+            # In production code, catch more specific exceptions
+            return {"status": "error", "message": f"Failed to analyze build failure: {e}"}
+
+    def _handle_establish_control_plan(self, _content: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=unused-argument
+        """
+        Handle request to establish a CI/CD control plan.
+
+        Args:
+            _content: Request content (placeholder, not used in this simulation)
+        """
+        try:
+            # Simulate control plan establishment
+            control_plan = {
+                "monitoring_tools": ["Prometheus", "Grafana"],
+                "alerting_thresholds": {"build_time": 150, "test_coverage": 80},
+                "review_schedule": "weekly"
+            }
+
+            if self.output_handler:
+                self.output_handler.log_info("Control plan established successfully")
+
+            return {
+                "status": "success",
+                "message": "Control plan established",
+                "data": control_plan
+            }
+        except Exception as e:  # pylint: disable=broad-except
+            # In production code, catch more specific exceptions
+            return {"status": "error", "message": f"Failed to establish control plan: {e}"}
+
+    def _handle_generate_improvement_plan(self, _content: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=unused-argument
+        """
+        Handle request to generate a CI/CD improvement plan.
+
+        Args:
+            _content: Request content (placeholder, not used in this simulation)
+        """
+        try:
+            # Simulate improvement plan generation
+            improvement_plan = {
+                "actions": [
+                    {"action": "Increase test coverage", "priority": "high"},
+                    {"action": "Optimize build scripts", "priority": "medium"},
+                    {"action": "Automate deployment process", "priority": "high"}
+                ],
+                "expected_outcomes": {
+                    "test_coverage": "+10%",
+                    "build_time": "-20%",
+                    "deployment_frequency": "+2 per week"
+                }
+            }
+
+            if self.output_handler:
+                self.output_handler.log_info("Improvement plan generated successfully")
+
+            return {
+                "status": "success",
+                "message": "Improvement plan generated",
+                "data": improvement_plan
+            }
+        except Exception as e:  # pylint: disable=broad-except
+            # In production code, catch more specific exceptions
+            return {"status": "error", "message": f"Failed to generate improvement plan: {e}"}
+
+    def _handle_analyze_pipeline_performance(self, _content: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=unused-argument
+        """
+        Handle request to analyze CI/CD pipeline performance.
+
+        Args:
+            _content: Request content (placeholder, not used in this simulation)
+        """
+        try:
+            # Simulate pipeline performance analysis
+            performance_analysis = {
+                "build_time": {"average": 120, "trend": "decreasing"},
+                "test_coverage": {"average": 85.5, "trend": "increasing"},
+                "deployment_frequency": {"average": 5, "trend": "stable"}
+            }
+
+            if self.output_handler:
+                self.output_handler.log_info("Pipeline performance analysis completed successfully")
+
+            return {
+                "status": "success",
+                "message": "Pipeline performance analysis completed",
+                "data": performance_analysis
+            }
+        except Exception as e:  # pylint: disable=broad-except
+            # In production code, catch more specific exceptions
+            return {"status": "error", "message": f"Failed to analyze pipeline performance: {e}"}
+
+    def _handle_initialize_project(self, _content: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=unused-argument
+        """
+        Handle request to initialize a CI/CD project.
+
+        Args:
+            _content: Request content (placeholder, not used in this simulation)
+        """
+        try:
+            # Simulate project initialization
+            project_details = {
+                "project_name": "New CI/CD Project",
+                "repository": "https://example.com/repo.git",
+                "pipeline_configured": True
+            }
+
+            if self.output_handler:
+                self.output_handler.log_info("Project initialized successfully")
+
+            return {
+                "status": "success",
+                "message": "Project initialized",
+                "data": project_details
+            }
+        except Exception as e:  # pylint: disable=broad-except
+            # In production code, catch more specific exceptions
+            return {"status": "error", "message": f"Failed to initialize project: {e}"}
+
+    def _handle_compare_metrics(self, _content: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=unused-argument
+        """
+        Handle request to compare CI/CD metrics.
+
+        Args:
+            _content: Request content (placeholder, not used in this simulation)
+        """
+        try:
+            # Simulate metric comparison logic
+            current_metrics = self.pipeline_metrics
+            baseline_metrics = self.baseline_metrics
+
+            if not current_metrics or not baseline_metrics:
+                return {
+                    "status": "error",
+                    "message": "Metrics not available for comparison"
+                }
+
+            comparison_result = {
+                metric: {
+                    "baseline": baseline_metrics.get(metric),
+                    "current": current_metrics.get(metric),
+                    "improvement": current_metrics.get(metric, 0) - baseline_metrics.get(metric, 0)
+                }
+                for metric in baseline_metrics
+            }
+
+            if self.output_handler:
+                self.output_handler.log_info("Metrics compared successfully")
+
+            return {
+                "status": "success",
+                "message": "Metrics compared",
+                "data": comparison_result
+            }
+        except Exception as e:  # pylint: disable=broad-except
+            # In production code, catch more specific exceptions
+            return {"status": "error", "message": f"Failed to compare metrics: {e}"}
 
     def _handle_deploy(self, content: Dict[str, Any]) -> Dict[str, Any]:
         """Handle request to deploy to an environment."""
@@ -241,5 +458,6 @@ class DMAICCICDAgent(BaseAgent):
                 "message": f"Deployment to {environment} successful",
                 "data": deployment_result
             }
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
+            # In production code, catch more specific exceptions
             return {"status": "error", "message": f"Failed to deploy: {e}"}

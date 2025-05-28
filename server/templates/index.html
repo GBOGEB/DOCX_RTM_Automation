@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOCX RTM Automation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            background-color: #1a73e8;
+            color: white;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 5px;
+        }
+        h1 {
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .upload-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #0d61cb;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #e6f4ea;
+            color: #137333;
+        }
+        .error {
+            background-color: #fce8e6;
+            color: #c5221f;
+        }
+        .hidden {
+            display: none;
+        }
+        progress {
+            width: 100%;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadButton = document.getElementById('upload-button');
+            const fileInput = document.getElementById('file-input');
+            const uploadStatus = document.getElementById('upload-status');
+            const processButton = document.getElementById('process-button');
+            const processingStatus = document.getElementById('processing-status');
+            const processingProgress = document.getElementById('processing-progress');
+            const resultsContainer = document.getElementById('results-container');
+
+            let currentJobId = null;
+
+            // Upload files
+            uploadButton.addEventListener('click', function() {
+                if (fileInput.files.length === 0) {
+                    showStatus(uploadStatus, 'Please select files to upload.', 'error');
+                    return;
+                }
+
+                showStatus(uploadStatus, 'Uploading files...', '');
+
+                const formData = new FormData();
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    formData.append('files[]', fileInput.files[i]);
+                }
+
+                fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showStatus(uploadStatus, data.message, 'success');
+                        currentJobId = data.job_id;
+                        processButton.disabled = false;
+                    } else {
+                        showStatus(uploadStatus, data.error || 'Upload failed', 'error');
+                    }
+                })
+                .catch(error => {
+                    showStatus(uploadStatus, 'Error: ' + error.message, 'error');
+                });
+            });
+
+            // Process files
+            processButton.addEventListener('click', function() {
+                if (!currentJobId) {
+                    showStatus(processingStatus, 'Please upload files first.', 'error');
+                    return;
+                }
+
+                processingStatus.textContent = 'Processing files...';
+                processingStatus.className = 'status';
+                processingProgress.className = '';
+                processButton.disabled = true;
+
+                const options = {
+                    convertToMd: document.getElementById('convert-to-md').checked,
+                    extractOutline: document.getElementById('extract-outline').checked,
+                    extractRequirements: document.getElementById('extract-requirements').checked,
+                    extractTestCases: document.getElementById('extract-test-cases').checked,
+                    generateRtm: document.getElementById('generate-rtm').checked
+                };
+
+                fetch('/api/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        job_id: currentJobId,
+                        options: options
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Redirect to status page
+                        window.location.href = '/status/' + currentJobId;
+                    } else {
+                        showStatus(processingStatus, data.error || 'Processing failed', 'error');
+                        processButton.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    showStatus(processingStatus, 'Error: ' + error.message, 'error');
+                    processButton.disabled = false;
+                });
+            });
+
+            function showStatus(element, message, type) {
+                element.textContent = message;
+                element.className = `status ${type}`;
+            }
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <h1>DOCX RTM Automation Tool</h1>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>Upload Documents</h2>
+            <div class="upload-section">
+                <p>Upload DOCX or Markdown files to process:</p>
+                <input type="file" id="file-input" multiple accept=".docx,.md">
+                <button id="upload-button">Upload Files</button>
+                <div id="upload-status" class="status hidden"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Process Options</h2>
+            <div>
+                <p>Select the processing options:</p>
+                <div>
+                    <input type="checkbox" id="convert-to-md" checked>
+                    <label for="convert-to-md">Convert DOCX to Markdown</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="extract-outline" checked>
+                    <label for="extract-outline">Extract Document Outline</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="extract-requirements">
+                    <label for="extract-requirements">Extract Requirements</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="extract-test-cases">
+                    <label for="extract-test-cases">Extract Test Cases</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="generate-rtm">
+                    <label for="generate-rtm">Generate RTM</label>
+                </div>
+                <button id="process-button" disabled>Process Files</button>
+            </div>
+            <div id="processing-status" class="status hidden"></div>
+            <progress id="processing-progress" class="hidden" value="0" max="100"></progress>
+        </div>
+
+        <div class="card">
+            <h2>Results</h2>
+            <div id="results-container">
+                <p>Results will appear here after processing.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

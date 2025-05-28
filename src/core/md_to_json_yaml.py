@@ -3,14 +3,15 @@
 Convert Markdown documents to JSON and YAML formats.
 """
 import os
-import glob  # Add missing import
-import re
 import sys
 import json
-import yaml
+import re
 import argparse
 import logging
 from pathlib import Path
+import glob  # Added import
+
+import yaml  # Moved yaml import after standard library
 
 # Add project root to path for imports
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -39,14 +40,14 @@ def convert_md_to_structured(md_file, output_format=None, output_file=None):
     """
     md_path = Path(md_file)
     if not md_path.exists():
-        logger.error(f"Input file not found: {md_file}")
+        logger.error("Input file not found: %s", md_file)
         return None
 
     # Parse Markdown to structured data
     try:
         md_structure = parse_markdown(md_path)
-    except Exception as e:
-        logger.error(f"Failed to parse Markdown file: {e}")
+    except Exception as e:  # pylint: disable=broad-except
+        logger.error("Failed to parse Markdown file: %s", e)
         return None
 
     # Determine output file(s)
@@ -67,28 +68,33 @@ def convert_md_to_structured(md_file, output_format=None, output_file=None):
         try:
             with open(json_path, 'w', encoding='utf-8') as f:
                 json.dump(md_structure, f, indent=2, ensure_ascii=False)
-            logger.info(f"Saved JSON structure to {json_path}")
+            logger.info("Saved JSON structure to %s", json_path)
             output_files['json'] = str(json_path)
-        except Exception as e:
-            logger.error(f"Failed to save JSON file: {e}")
+        except Exception as e:  # pylint: disable=broad-except
+            logger.error("Failed to save JSON file: %s", e)
 
     if output_format is None or output_format.lower() in ('yaml', 'yml'):
         yaml_path = output_dir / f"{output_stem}.yaml"
         try:
             with open(yaml_path, 'w', encoding='utf-8') as f:
                 yaml.dump(md_structure, f, default_flow_style=False, allow_unicode=True)
-            logger.info(f"Saved YAML structure to {yaml_path}")
+            logger.info("Saved YAML structure to %s", yaml_path)
             output_files['yaml'] = str(yaml_path)
-        except Exception as e:
-            logger.error(f"Failed to save YAML file: {e}")
+        except Exception as e:  # pylint: disable=broad-except
+            logger.error("Failed to save YAML file: %s", e)
 
     return output_files
 
 
 def parse_markdown(md_path):
     """Parse Markdown file to structured data."""
-    with open(md_path, 'r', encoding='utf-8') as f:
-        content = f.read()
+    try:
+        with open(md_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        logger.info("Successfully read Markdown file: %s", md_path)
+    except Exception as e:  # pylint: disable=broad-except
+        logger.error("Error reading Markdown file %s: %s", md_path, e)
+        return None
 
     # Extract document title (first H1)
     title_match = re.search(r'^# (.+)$', content, re.MULTILINE)
@@ -166,6 +172,18 @@ def parse_markdown(md_path):
     return document
 
 
+def save_to_yaml(data, output_path):
+    """Save data to a YAML file."""
+    try:
+        with open(output_path, "w", encoding="utf-8") as f:
+            yaml.dump(data, f, sort_keys=False, allow_unicode=True)
+        logger.info("Successfully wrote YAML to %s", output_path)
+        return True
+    except Exception as e:  # pylint: disable=broad-except
+        logger.error("Error writing YAML to %s: %s", output_path, e)
+        return False
+
+
 def process_all_md_files(input_dir, output_dir=None, output_format=None):
     """
     Process all Markdown files in a directory.
@@ -178,9 +196,17 @@ def process_all_md_files(input_dir, output_dir=None, output_format=None):
     Returns:
         List of paths to output files
     """
-    # Create output directory if needed
+    if not input_dir:
+        input_dir = os.path.join(
+            PROJECT_ROOT, "output"
+        )
+        logger.info("Input directory not specified, using default: %s", input_dir)
+
     if not output_dir:
-        output_dir = os.path.join(PROJECT_ROOT, "output", "structured")
+        output_dir = os.path.join(
+            PROJECT_ROOT, "output", "structured"
+        )
+        logger.info("Output directory not specified, using default: %s", output_dir)
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -189,10 +215,10 @@ def process_all_md_files(input_dir, output_dir=None, output_format=None):
     md_files.extend(glob.glob(os.path.join(os.path.join(input_dir, "**"), "*.md")))
 
     if not md_files:
-        logger.warning(f"No Markdown files found in {input_dir}")
+        logger.warning("No Markdown files found in %s", input_dir)
         return []
 
-    logger.info(f"Found {len(md_files)} Markdown files to process")
+    logger.info("Found %d Markdown files to process.", len(md_files))
 
     output_files = []
     for md_file in md_files:
@@ -203,6 +229,10 @@ def process_all_md_files(input_dir, output_dir=None, output_format=None):
         results = convert_md_to_structured(md_file, output_format, output_file)
         if results:
             output_files.extend(results.values())
+
+    logger.info(
+        "Processing complete. JSON/YAML files saved in %s", output_dir
+    )
 
     return output_files
 
@@ -236,7 +266,7 @@ def main():
         if output_files:
             logger.info("Conversion successful:")
             for fmt, path in output_files.items():
-                logger.info(f"  - {fmt.upper()}: {path}")
+                logger.info("  - %s: %s", fmt.upper(), path)
             return 0
         else:
             logger.error("Conversion failed.")
@@ -256,9 +286,9 @@ def main():
     results = process_all_md_files(input_dir, output_dir, format_arg)
 
     if results:
-        logger.info(f"Successfully processed {len(results)} files:")
+        logger.info("Successfully processed %d files:", len(results))
         for result in results:
-            logger.info(f"  - {result}")
+            logger.info("  - %s", result)
         return 0
     else:
         logger.warning("No files were processed.")

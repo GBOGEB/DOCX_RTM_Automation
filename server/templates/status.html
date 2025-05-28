@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTM Job Status</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            background-color: #1a73e8;
+            color: white;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 5px;
+        }
+        h1 {
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-uploaded {
+            background-color: #9AA0A6;
+        }
+        .status-processing {
+            background-color: #F9AB00;
+        }
+        .status-completed {
+            background-color: #34A853;
+        }
+        .status-failed, .status-error {
+            background-color: #EA4335;
+        }
+        .file-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .file-list li {
+            padding: 8px;
+            margin-bottom: 4px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+        .file-list a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        .file-list a:hover {
+            text-decoration: underline;
+        }
+        .refresh-btn {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .refresh-btn:hover {
+            background-color: #0d61cb;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>RTM Processing Status</h1>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>Job Status: <span id="job-status">Loading...</span></h2>
+            <p id="job-message">Please wait while we load job information...</p>
+            <div id="job-time"></div>
+            <button class="refresh-btn" onclick="checkJobStatus()">Refresh Status</button>
+            <div id="auto-refresh" style="margin-top: 10px;">
+                <input type="checkbox" id="auto-refresh-toggle" checked>
+                <label for="auto-refresh-toggle">Auto-refresh (every 5 seconds)</label>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Input Files</h2>
+            <ul id="input-files" class="file-list">
+                <li>Loading input files...</li>
+            </ul>
+        </div>
+
+        <div id="output-container" class="card hidden">
+            <h2>Output Files</h2>
+            <ul id="output-files" class="file-list">
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Get job ID from URL
+        const jobId = '{{ job_id }}';
+        let autoRefreshInterval;
+
+        // Check job status immediately and start auto-refresh
+        document.addEventListener('DOMContentLoaded', function() {
+            checkJobStatus();
+            startAutoRefresh();
+
+            // Handle auto-refresh toggle
+            document.getElementById('auto-refresh-toggle').addEventListener('change', function(e) {
+                if (e.target.checked) {
+                    startAutoRefresh();
+                } else {
+                    stopAutoRefresh();
+                }
+            });
+        });
+
+        function startAutoRefresh() {
+            if (!autoRefreshInterval) {
+                autoRefreshInterval = setInterval(checkJobStatus, 5000);
+            }
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
+        }
+
+        function checkJobStatus() {
+            fetch(`/api/job/${jobId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Job not found');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updateJobInfo(data);
+                })
+                .catch(error => {
+                    document.getElementById('job-status').textContent = 'Error';
+                    document.getElementById('job-message').textContent = error.message;
+                });
+        }
+
+        function updateJobInfo(job) {
+            // Update status
+            const statusElement = document.getElementById('job-status');
+            statusElement.innerHTML = `<span class="status-indicator status-${job.status}"></span>${job.status.charAt(0).toUpperCase() + job.status.slice(1)}`;
+
+            // Update message
+            document.getElementById('job-message').textContent = job.message || '';
+
+            // Update timing info
+            let timeInfo = `Created: ${new Date(job.created_at * 1000).toLocaleString()}`;
+            if (job.started_at) {
+                timeInfo += `<br>Started: ${new Date(job.started_at * 1000).toLocaleString()}`;
+            }
+            if (job.completed_at) {
+                timeInfo += `<br>Completed: ${new Date(job.completed_at * 1000).toLocaleString()}`;
+
+                // Calculate duration
+                const duration = Math.round((job.completed_at - job.started_at) * 10) / 10;
+                timeInfo += `<br>Duration: ${duration} seconds`;
+
+                // Stop auto-refresh if job is complete
+                if (job.status === 'completed' || job.status === 'failed' || job.status === 'error') {
+                    stopAutoRefresh();
+                    document.getElementById('auto-refresh-toggle').checked = false;
+                }
+            }
+            document.getElementById('job-time').innerHTML = timeInfo;
+
+            // Update input files
+            updateFileList('input-files', job.files || []);
+
+            // Update output files if complete
+            if ((job.status === 'completed' || job.status === 'failed') && job.files) {
+                document.getElementById('output-container').classList.remove('hidden');
+                updateFileList('output-files', job.files);
+            }
+        }
+
+        function updateFileList(elementId, files) {
+            const element = document.getElementById(elementId);
+            if (!files || files.length === 0) {
+                element.innerHTML = '<li>No files available</li>';
+                return;
+            }
+
+            element.innerHTML = '';
+            files.forEach(file => {
+                const li = document.createElement('li');
+
+                if (typeof file === 'string') {
+                    li.textContent = file;
+                } else if (file.url) {
+                    const link = document.createElement('a');
+                    link.href = file.url;
+                    link.textContent = file.name;
+                    link.download = file.name;
+                    li.appendChild(link);
+                } else {
+                    li.textContent = file.name || 'Unknown file';
+                }
+
+                element.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>

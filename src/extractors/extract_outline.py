@@ -1,72 +1,169 @@
 #!/usr/bin/env python3
 """
-Extract Document Outline
-Extract hierarchical structure from markdown files
+Extract document outline from Markdown files.
+
+This script parses Markdown files and extracts heading structure to create
+a document outline that can be used for the RTM.
 """
 
+import os
+import sys
 import re
-import yaml
+import json
+import argparse
+import logging
 from pathlib import Path
 
+# Add project root to path for imports
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
-def extract_outline_from_md(md_file, output_file="output/document_outline.yaml"):
-    """Extract document outline from markdown file"""
+from src.utils.config_loader import load_config  # pylint: disable=wrong-import-position # noqa: E402
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.StreamHandler()],
+)
+
+logger = logging.getLogger("extract_outline")
+
+
+def extract_headings(markdown_text):
+    """Extract all headings from markdown text and create a hierarchical structure."""
+    heading_pattern = re.compile(
+        r'^(#{1,6})\s+(.+?)(?:\s+\{#([a-zA-Z0-9_-]+)\})?\s*$', re.MULTILINE
+    )
+    headings = []
+
+    for match in heading_pattern.finditer(markdown_text):
+        level = len(match.group(1))
+        text = match.group(2).strip()
+        anchor = match.group(3) if match.group(3) else None
+
+        headings.append({
+            "level": level,
+            "text": text,
+            "anchor": anchor,
+        })
+
+    return headings
+
+
+def build_outline(headings):
+    """Build a hierarchical outline from a flat list of headings."""
+    if not headings:
+        return []
+
+    # Create hierarchical structure
+    outline = []
+    stack = []  # Stack to track the parent relationships
+
+    for heading in headings:
+        # Create node for current heading
+        node = {
+            "text": heading["text"],
+            "level": heading["level"],
+            "anchor": heading["anchor"],
+            "children": []
+        }
+
+        # Find correct parent for this heading
+        while stack and stack[-1]["level"] >= heading["level"]:
+            stack.pop()
+
+        if not stack:
+            # This is a top-level heading
+            outline.append(node)
+        else:
+            # This is a child heading
+            stack[-1]["children"].append(node)
+
+        # Add current node to stack
+        stack.append(node)
+
+    return outline
+
+
+def process_markdown_file(file_path):
+    """Process a single Markdown file and extract its outline."""
     try:
-        with open(md_file, "r", encoding="utf-8") as f:
+        with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
 
-        outline = []
+        # Extract headings from content
+        headings = extract_headings(content)
 
-        # Extract headers
-        header_pattern = r"^(#{1,6})\s+(.*?)$"
+        # Build hierarchical outline
+        outline = build_outline(headings)
 
-        for match in re.finditer(header_pattern, content, re.MULTILINE):
-            level = len(match.group(1))
-            title = match.group(2).strip()
+        # Extract filename without extension for outline structure
+        filename = os.path.basename(file_path)
+        name, _ = os.path.splitext(filename)
 
-            # Extract section number if present
-            section_match = re.match(r"^(\d+(?:\.\d+)*)\s+(.*)", title)
-            if section_match:
-                section_num = section_match.group(1)
-                clean_title = section_match.group(2)
-            else:
-                section_num = ""
-                clean_title = title
+        return {
+            "filename": filename,
+            "name": name,
+            "outline": outline
+        }
+    except Exception as e:  # pylint: disable=broad-except
+        logger.error("Error processing %s: %s", file_path, str(e))
+        return None
 
-            outline.append(
-                {
-                    "level": level,
-                    "section": section_num,
-                    "title": clean_title,
-                    "raw_title": title,
-                }
-            )
 
-        # Save outline
-        Path(output_file).parent.mkdir(parents=True, exist_ok=True)
-        with open(output_file, "w", encoding="utf-8") as f:
-            yaml.dump(
-                {"document_outline": outline, "total_sections": len(outline)},
-                f,
-                default_flow_style=False,
-                allow_unicode=True,
-            )
+def main():
+    """Main function to extract outlines from Markdown files."""
+    parser = argparse.ArgumentParser(description='Extract document outline from Markdown files')
+    parser.add_argument('--input-dir', help='Directory containing Markdown files')
+    parser.add_argument('--output-dir', help='Output directory for extracted outlines')
 
-        return True
+    args = parser.parse_args()
 
-    except Exception as e:
-        print(f"Error extracting outline: {e}")
-        return False
+    # Load configuration
+    config = load_config()
+
+    # Determine input and output directories
+    input_dir = args.input_dir
+    if not input_dir:
+        input_dir = os.path.join(
+            PROJECT_ROOT, config.get("paths", {}).get("output_dir", "output")
+        )
+
+    output_dir = args.output_dir
+    if not output_dir:
+        output_dir = os.path.join(PROJECT_ROOT, config.get("paths", {}).get("outline_dir", "outlines"))
+
+    # Create output directory if it doesn't exist
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Find all Markdown files in the input directory
+    md_files = [f for f in os.listdir(input_dir) if f.endswith('.md')]
+
+    if not md_files:
+        logger.warning("No Markdown files found in %s", input_dir)
+        return
+
+    logger.info("Found %d Markdown files to process", len(md_files))
+
+    # Process each file and save its outline
+    outlines = {}
+    for md_file in md_files:
+        input_path = os.path.join(input_dir, md_file)
+        logger.info("Processing %s", input_path)
+
+        result = process_markdown_file(input_path)
+        if result:
+            outlines[result["name"]] = result
+
+    # Save all outlines to a JSON file
+    output_path = os.path.join(output_dir, "document_outlines.json")
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(outlines, f, indent=2)
+
+    logger.info("Outlines extracted and saved to %s", output_path)
 
 
 if __name__ == "__main__":
-    import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-    if len(sys.argv) > 1:
-        extract_outline_from_md(sys.argv[1])
-    else:
-        extract_outline_from_md("output/MASTER_1805_1144.md")
+    main()
