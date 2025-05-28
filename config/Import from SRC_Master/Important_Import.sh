@@ -246,17 +246,41 @@ fi
 EOF
 chmod +x "$SCRIPTS_DIR/github_push.sh"
 
-echo "Project structure for '$PROJECT_NAME' has been created successfully."
-echo "Next steps:"
-echo "1. cd $PROJECT_NAME"
-else
-echo "2. Initialize Git repository: git init"
-echo "3. Create a virtual environment and install requirements (see README.md)."
-echo "4. Start developing!"
-    echo "Error pushing to GitHub."
-fi
+# Create Important_Import.sh script
+cat > "$SCRIPTS_DIR/Important_Import.sh" << 'EOF'
+#!/bin/bash
+
+# Script: Important_Import.sh
+# Description: Placeholder for an important import or data processing task.
+
+set -e # Exit on error
+
+# Determine the directory of this script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT_DIR_GUESS="$(cd "${SCRIPT_DIR}/../../../../.." && pwd)" # Adjust based on actual depth
+
+echo "[INFO] Running Important_Import.sh from ${SCRIPT_DIR}"
+echo "[INFO] Guessed Project Root: ${PROJECT_ROOT_DIR_GUESS}"
+
+# Example: Define source and target paths relative to this script or project root
+# SOURCE_DATA_PATH="${PROJECT_ROOT_DIR_GUESS}/data/source_data.csv"
+# TARGET_LOCATION="${PROJECT_ROOT_DIR_GUESS}/output/imported_data/"
+
+echo "[INFO] Placeholder: This script would perform an important import operation."
+# Add actual import commands here, e.g.:
+# mkdir -p "$TARGET_LOCATION"
+# if [ -f "$SOURCE_DATA_PATH" ]; then
+#   echo "[INFO] Copying $SOURCE_DATA_PATH to $TARGET_LOCATION..."
+#   cp "$SOURCE_DATA_PATH" "$TARGET_LOCATION/imported_$(date +%Y%m%d).csv"
+#   echo "[INFO] Import successful."
+# else
+#   echo "[ERROR] Source data file not found: $SOURCE_DATA_PATH"
+#   exit 1
+# fi
+
+echo "[INFO] Important_Import.sh finished."
 EOF
-chmod +x "$SCRIPTS_DIR/github_push.sh"
+chmod +x "$SCRIPTS_DIR/Important_Import.sh"
 
 echo "Project structure for '$PROJECT_NAME' has been created successfully."
 echo "Next steps:"
