@@ -6,7 +6,7 @@ automation tasks, including orchestrating workflows, managing Git operations,
 and handling agent-specific roles and capabilities.
 """
 
-# Import key agent classes for convenience
+# Import key agent classes for convenience - using relative imports
 from .agent_common import AgentRole, AgentCapability, BaseAgent, AgentMessage
 
 # Import all agents

@@ -5,7 +5,6 @@ Debugging port configuration helper for RTM Automation.
 This script helps configure and test ports needed for debugging,
 and creates necessary configuration files for VSCode.
 """
-
 import os
 import sys
 import socket
@@ -18,7 +17,7 @@ def check_port_availability(port):
     """Check if a port is available for listening."""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         try:
-            s.bind(("127.0.0.1", port))
+            s.bind(('127.0.0.1', port))
             return True  # Port is available
         except OSError:
             return False  # Port is in use
@@ -29,7 +28,7 @@ def test_port_connectivity(port):
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.settimeout(1)
-            result = s.connect_ex(("127.0.0.1", port))
+            result = s.connect_ex(('127.0.0.1', port))
             if result == 0:
                 return True  # Port is open and connectable
             else:
@@ -40,10 +39,10 @@ def test_port_connectivity(port):
 
 def create_vscode_launch_config():
     """Create or update VSCode launch.json for debugging."""
-    vscode_dir = Path(".vscode")
+    vscode_dir = Path('.vscode')
     vscode_dir.mkdir(exist_ok=True)
 
-    launch_path = vscode_dir / "launch.json"
+    launch_path = vscode_dir / 'launch.json'
 
     # Default configuration
     debug_configs = {
@@ -56,17 +55,15 @@ def create_vscode_launch_config():
                 "program": "${file}",
                 "console": "integratedTerminal",
                 "justMyCode": False,
-                "env": {"PYTHONPATH": "${workspaceFolder}"},
+                "env": {"PYTHONPATH": "${workspaceFolder}"}
             },
             {
                 "name": "Python: Remote Attach (Port 5678)",
                 "type": "python",
                 "request": "attach",
                 "connect": {"host": "localhost", "port": 5678},
-                "pathMappings": [
-                    {"localRoot": "${workspaceFolder}", "remoteRoot": "."}
-                ],
-                "justMyCode": False,
+                "pathMappings": [{"localRoot": "${workspaceFolder}", "remoteRoot": "."}],
+                "justMyCode": False
             },
             {
                 "name": "Python: Web Server (Port 8000)",
@@ -75,7 +72,7 @@ def create_vscode_launch_config():
                 "program": "${workspaceFolder}/path/to/your/server.py",  # Change this to your server script
                 "console": "integratedTerminal",
                 "env": {"PORT": "8000"},
-                "args": ["--port", "8000"],
+                "args": ["--port", "8000"]
             },
             {
                 "name": "Python: Debug Test",
@@ -84,23 +81,22 @@ def create_vscode_launch_config():
                 "program": "${file}",
                 "purpose": ["debug-test"],
                 "console": "integratedTerminal",
-                "justMyCode": False,
-            },
-        ],
+                "justMyCode": False
+            }
+        ]
     }
 
     # Try to load existing config
     if launch_path.exists():
         try:
-            with open(launch_path, "r") as f:
+            with open(launch_path, 'r') as f:
                 existing_config = json.load(f)
 
             # Merge with existing configurations
             if "configurations" in existing_config:
                 # Keep non-python configurations and add our debug configs
                 non_python_configs = [
-                    cfg
-                    for cfg in existing_config["configurations"]
+                    cfg for cfg in existing_config["configurations"]
                     if cfg.get("type") != "python"
                 ]
 
@@ -111,7 +107,7 @@ def create_vscode_launch_config():
             print("Creating new launch.json file")
 
     # Write the configuration
-    with open(launch_path, "w") as f:
+    with open(launch_path, 'w') as f:
         json.dump(debug_configs, f, indent=4)
 
     print(f"Created VSCode launch configuration in {launch_path}")
@@ -119,7 +115,7 @@ def create_vscode_launch_config():
 
 def create_debug_sample_script():
     """Create a sample script for testing debugging."""
-    sample_path = Path("debug_sample.py")
+    sample_path = Path('debug_sample.py')
 
     script_content = """#!/usr/bin/env python3
 \"\"\"
@@ -181,7 +177,7 @@ if __name__ == "__main__":
     main()
 """
 
-    with open(sample_path, "w") as f:
+    with open(sample_path, 'w') as f:
         f.write(script_content)
 
     print(f"Created debugging sample script: {sample_path}")
@@ -198,14 +194,11 @@ def check_firewall_for_ports(ports):
     try:
         result = subprocess.run(
             ["netsh", "advfirewall", "firewall", "show", "rule", "name=all"],
-            capture_output=True,
-            text=True,
+            capture_output=True, text=True
         )
 
         if result.returncode != 0:
-            print(
-                "Error checking firewall rules. You may need administrator privileges."
-            )
+            print("Error checking firewall rules. You may need administrator privileges.")
             return
 
         rules = result.stdout
@@ -215,9 +208,7 @@ def check_firewall_for_ports(ports):
             if f"LocalPort={port}" in rules:
                 print(f"✅ Port {port} is configured in Windows Firewall")
             else:
-                print(
-                    f"❌ Port {port} is not explicitly configured in Windows Firewall"
-                )
+                print(f"❌ Port {port} is not explicitly configured in Windows Firewall")
 
     except Exception as e:
         print(f"Error checking firewall: {e}")
@@ -225,7 +216,7 @@ def check_firewall_for_ports(ports):
 
 def create_firewall_rule_script():
     """Create a script to add firewall rules for debugging ports."""
-    script_path = Path("allow_debug_ports.bat")
+    script_path = Path('allow_debug_ports.bat')
 
     script_content = """@echo off
 REM This script needs to be run as Administrator
@@ -256,13 +247,11 @@ echo.
 pause
 """
 
-    with open(script_path, "w") as f:
+    with open(script_path, 'w') as f:
         f.write(script_content)
 
     print(f"\nCreated firewall rule script: {script_path}")
-    print(
-        "Run this script as Administrator to open debugging ports in Windows Firewall"
-    )
+    print("Run this script as Administrator to open debugging ports in Windows Firewall")
 
 
 def main():
@@ -302,9 +291,7 @@ def main():
     print("\nTo enable debugging:")
     print("1. Install debugpy: pip install debugpy")
     print("2. Run the sample script: python debug_sample.py")
-    print(
-        "3. In VSCode, open the Debug panel and select 'Python: Remote Attach (Port 5678)'"
-    )
+    print("3. In VSCode, open the Debug panel and select 'Python: Remote Attach (Port 5678)'")
     print("4. Set breakpoints and click Start Debugging (F5)")
     print("\nTo open debugging ports in Windows Firewall:")
     print("- Run 'allow_debug_ports.bat' as Administrator")

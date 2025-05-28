@@ -29,13 +29,11 @@ log_filename = os.path.join(log_dir, "process.log")
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler(log_filename),
-        logging.StreamHandler(sys.stdout)
-    ]
+    handlers=[logging.FileHandler(log_filename), logging.StreamHandler(sys.stdout)],
 )
 
 logger = logging.getLogger(__name__)
+
 
 def load_config(config_path=None):
     """Load configuration from YAML file."""
@@ -43,7 +41,7 @@ def load_config(config_path=None):
         config_path = os.path.join(PROJECT_ROOT, "config", "paths.yaml")
 
     try:
-        with open(config_path, 'r', encoding='utf-8') as f:
+        with open(config_path, "r", encoding="utf-8") as f:
             config = yaml.safe_load(f)
             logger.info(f"Configuration loaded from {config_path}")
             return config
@@ -51,29 +49,40 @@ def load_config(config_path=None):
         logger.error(f"Failed to load configuration: {e}")
         return None
 
+
 def load_openai_api_key(config):
     """Load OpenAI API key from the file specified in config."""
     try:
-        if not config or 'openai' not in config or 'api_key_file' not in config['openai']:
+        if (
+            not config
+            or "openai" not in config
+            or "api_key_file" not in config["openai"]
+        ):
             # Check for secrets section as fallback
-            if config and 'secrets' in config and 'openai_key_path' in config['secrets']:
-                api_key_path = config['secrets']['openai_key_path']
+            if (
+                config
+                and "secrets" in config
+                and "openai_key_path" in config["secrets"]
+            ):
+                api_key_path = config["secrets"]["openai_key_path"]
             else:
                 logger.error("'api_key_file' not found in config/paths.yaml.")
                 return None
         else:
-            api_key_path = config['openai']['api_key_file']
+            api_key_path = config["openai"]["api_key_file"]
 
         # Convert to absolute path if it's a relative path
         if not os.path.isabs(api_key_path):
             api_key_path = os.path.join(PROJECT_ROOT, api_key_path)
 
         # Read the API key from the file
-        with open(api_key_path, 'r', encoding='utf-8') as f:
+        with open(api_key_path, "r", encoding="utf-8") as f:
             api_key = f.read().strip()
 
         if not api_key or api_key.startswith("sk-your-openai-api-key-goes-here"):
-            logger.warning(f"API key file at {api_key_path} contains a placeholder value.")
+            logger.warning(
+                f"API key file at {api_key_path} contains a placeholder value."
+            )
             return None
 
         logger.info(f"OpenAI API key loaded successfully from {api_key_path}.")
@@ -84,6 +93,7 @@ def load_openai_api_key(config):
     except Exception as e:
         logger.error(f"Error loading OpenAI API key: {str(e)}")
         return None
+
 
 def parse_arguments():
     """Parse command line arguments."""
@@ -100,9 +110,14 @@ def parse_arguments():
 
     # Miscellaneous options
     parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be done without executing")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be done without executing",
+    )
 
     return parser.parse_args()
+
 
 def execute_pipeline_step_via_python(script_path, input_dir, output_dir):
     """Execute a Python script directly using sys.argv modification."""
@@ -127,7 +142,7 @@ def execute_pipeline_step_via_python(script_path, input_dir, output_dir):
         sys.argv = [script_path, "--input-dir", input_dir, "--output-dir", output_dir]
 
         # Execute the main function if it exists
-        if hasattr(module, 'main'):
+        if hasattr(module, "main"):
             module.main()
 
         # Restore sys.argv
@@ -137,8 +152,10 @@ def execute_pipeline_step_via_python(script_path, input_dir, output_dir):
     except Exception as e:
         logger.error(f"Error executing Python script {script_path}: {e}")
         import traceback
+
         traceback.print_exc()
         return False
+
 
 def execute_pipeline(config, args):
     """Execute the RTM automation pipeline based on configuration."""
@@ -146,8 +163,8 @@ def execute_pipeline(config, args):
 
     # Get pipeline steps from config
     pipeline_steps = []
-    if config and 'pipeline' in config and 'steps' in config['pipeline']:
-        pipeline_steps = config['pipeline']['steps']
+    if config and "pipeline" in config and "steps" in config["pipeline"]:
+        pipeline_steps = config["pipeline"]["steps"]
 
     if not pipeline_steps:
         logger.error("No pipeline steps defined in configuration")
@@ -155,28 +172,30 @@ def execute_pipeline(config, args):
 
     # Filter steps based on command line arguments
     if args.steps:
-        pipeline_steps = [step for step in pipeline_steps if step['name'] in args.steps]
+        pipeline_steps = [step for step in pipeline_steps if step["name"] in args.steps]
     if args.skip_steps:
-        pipeline_steps = [step for step in pipeline_steps if step['name'] not in args.skip_steps]
+        pipeline_steps = [
+            step for step in pipeline_steps if step["name"] not in args.skip_steps
+        ]
 
     # Get input and output directories
     input_dir = args.input_dir
-    if not input_dir and 'paths' in config and 'input_dir' in config['paths']:
-        input_dir = os.path.join(PROJECT_ROOT, config['paths']['input_dir'])
+    if not input_dir and "paths" in config and "input_dir" in config["paths"]:
+        input_dir = os.path.join(PROJECT_ROOT, config["paths"]["input_dir"])
     else:
         input_dir = os.path.join(PROJECT_ROOT, "input")
 
     output_dir = args.output_dir
-    if not output_dir and 'paths' in config and 'output_dir' in config['paths']:
-        output_dir = os.path.join(PROJECT_ROOT, config['paths']['output_dir'])
+    if not output_dir and "paths" in config and "output_dir" in config["paths"]:
+        output_dir = os.path.join(PROJECT_ROOT, config["paths"]["output_dir"])
     else:
         output_dir = os.path.join(PROJECT_ROOT, "output")
 
     # Execute each enabled pipeline step
     for step in pipeline_steps:
-        if step.get('enabled', True):
-            step_name = step.get('name', 'unnamed_step')
-            script_path = step.get('script')
+        if step.get("enabled", True):
+            step_name = step.get("name", "unnamed_step")
+            script_path = step.get("script")
 
             if not script_path:
                 logger.warning(f"No script defined for step '{step_name}', skipping")
@@ -197,7 +216,9 @@ def execute_pipeline(config, args):
             logger.info(f"Executing pipeline step '{step_name}': {script_path}")
             try:
                 # Direct Python execution for better handling of arguments
-                success = execute_pipeline_step_via_python(script_path, input_dir, output_dir)
+                success = execute_pipeline_step_via_python(
+                    script_path, input_dir, output_dir
+                )
 
                 if not success:
                     logger.error(f"Step '{step_name}' failed")
@@ -210,6 +231,7 @@ def execute_pipeline(config, args):
 
     logger.info("Pipeline execution completed successfully")
     return True
+
 
 def main():
     """Main function."""
@@ -238,15 +260,15 @@ def main():
     # Process input and output directories
     if args.input_dir:
         input_dir = args.input_dir
-    elif config and 'paths' in config and 'input_dir' in config['paths']:
-        input_dir = os.path.join(PROJECT_ROOT, config['paths']['input_dir'])
+    elif config and "paths" in config and "input_dir" in config["paths"]:
+        input_dir = os.path.join(PROJECT_ROOT, config["paths"]["input_dir"])
     else:
         input_dir = os.path.join(PROJECT_ROOT, "input")
 
     if args.output_dir:
         output_dir = args.output_dir
-    elif config and 'paths' in config and 'output_dir' in config['paths']:
-        output_dir = os.path.join(PROJECT_ROOT, config['paths']['output_dir'])
+    elif config and "paths" in config and "output_dir" in config["paths"]:
+        output_dir = os.path.join(PROJECT_ROOT, config["paths"]["output_dir"])
     else:
         output_dir = os.path.join(PROJECT_ROOT, "output")
 
@@ -259,9 +281,10 @@ def main():
 
     # Check for input files
     input_files = [
-        f for f in os.listdir(input_dir)
-        if os.path.isfile(os.path.join(input_dir, f)) and
-        (f.endswith('.docx') or f.endswith('.md'))
+        f
+        for f in os.listdir(input_dir)
+        if os.path.isfile(os.path.join(input_dir, f))
+        and (f.endswith(".docx") or f.endswith(".md"))
     ]
 
     if not input_files:
@@ -280,6 +303,7 @@ def main():
 
     logger.info("DOCX RTM Automation process finished.")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

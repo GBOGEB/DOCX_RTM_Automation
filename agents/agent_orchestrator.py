@@ -19,7 +19,6 @@ from utils.paths_manager import PathsManager
 # Import base agent components from the new common file
 # Ensure the agents package is accessible and agent_common module exists
 from agents.agent_common import (
-from agents.agent_common import (
     BaseAgent,  # Ensure this class exists in agents.agent_common
     AgentRole,
     AgentMessage,  # Ensure this class exists in agents.agent_common

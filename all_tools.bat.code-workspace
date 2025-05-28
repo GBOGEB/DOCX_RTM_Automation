@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"problems.autoReveal": true,
+		"problems.showCurrentInStatus": true,
+		"task.problemMatchers.neverPrompt": true,
+		"workbench.statusBar.visible": true,
+		"window.title": "${dirty}${activeEditorShort}${separator}${rootName} - Problems: ${problems}"
+	}
+}

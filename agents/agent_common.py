@@ -104,6 +104,34 @@ def validate_input(value: Any, expected_type: Union[type, List[type]],
 
 
 @dataclass
+class AgentMessage:
+    """Message that can be passed between agents."""
+    source: str
+    target: str
+    message_type: str
+    content: Dict[str, Any]
+    id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    correlation_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: float = field(default_factory=time.time)
+    priority: AgentPriority = field(default=AgentPriority.MEDIUM)
+    requires_response: bool = False
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert the message to a dictionary representation."""
+        return {
+            "id": self.id,
+            "source": self.source,
+            "target": self.target,
+            "message_type": self.message_type,
+            "content": self.content,
+            "timestamp": self.timestamp,
+            "priority": self.priority.value,
+            "correlation_id": self.correlation_id,
+            "requires_response": self.requires_response
+        }
+
+
+@dataclass
 class Agent:
     """
     Represents an agent in the system with its role, capabilities, and priority.
@@ -119,3 +147,124 @@ class Agent:
         Convert the agent instance to a dictionary representation.
         """
         return asdict(self)
+
+
+class BaseAgent:
+    """Base class for all agents in the system."""
+
+    def __init__(self, agent_id: str = None, role: AgentRole = AgentRole.WORKER):
+        """
+        Initialize a base agent.
+
+        Args:
+            agent_id: Unique identifier for this agent
+            role: The role this agent fulfills in the system
+        """
+        self.agent_id = agent_id or f"{role.name}_{str(uuid.uuid4())[:8]}"
+        self.role = role
+        self.capabilities: Set[AgentCapability] = set()
+        self.status = "initialized"
+        self.last_activity = time.time()
+        self.inbox = queue.Queue()
+        self.output_handler = None  # Will be set by orchestrator
+
+    def receive_message(self, message: AgentMessage) -> bool:
+        """
+        Receive a message and add it to the agent's inbox.
+
+        Args:
+            message: The message to receive
+
+        Returns:
+            True if the message was successfully queued, False otherwise
+        """
+        try:
+            self.inbox.put(message)
+            self.last_activity = time.time()
+            return True
+        except Exception as e:
+            if self.output_handler:
+                self.output_handler.log_error(f"Error queueing message: {e}")
+            return False
+
+    def process_inbox(self) -> int:
+        """
+        Process messages in the agent's inbox.
+
+        Returns:
+            Number of messages processed
+        """
+        processed = 0
+
+        try:
+            while not self.inbox.empty():
+                message = self.inbox.get_nowait()
+                self.process_message(message)
+                processed += 1
+                self.last_activity = time.time()
+        except queue.Empty:
+            pass  # Inbox is empty
+        except Exception as e:
+            if self.output_handler:
+                self.output_handler.log_error(f"Error processing inbox: {e}")
+
+        return processed
+
+    def process_message(self, message: AgentMessage) -> Optional[AgentMessage]:
+        """
+        Process a single message.
+
+        Args:
+            message: The message to process
+
+        Returns:
+            Response message if applicable, None otherwise
+        """
+        # Handle system messages like ping
+        if message.message_type == PING_REQUEST:
+            # Create a response
+            return self._handle_ping(message)
+
+        # Log that we received a message but don't know how to handle it
+        if self.output_handler:
+            self.output_handler.log_warning(
+                f"Agent {self.agent_id} doesn't know how to handle message type: {message.message_type}"
+            )
+        return None
+
+    def _handle_ping(self, message: AgentMessage) -> AgentMessage:
+        """Handle a ping request."""
+        response = AgentMessage(
+            source=self.agent_id,
+            target=message.source,
+            message_type=f"{PING_REQUEST}_response",
+            content={"status": "ok", "time": time.time()},
+            correlation_id=message.correlation_id,
+        )
+
+        # Optionally log the ping
+        if self.output_handler:
+            self.output_handler.log_debug(f"Agent {self.agent_id} received ping, responding with pong")
+
+        return response
+
+    def update(self) -> Dict[str, Any]:
+        """
+        Update the agent state (called periodically).
+
+        Returns:
+            Dictionary with status information
+        """
+        # Process any pending messages
+        processed = self.process_inbox()
+
+        # Perform any agent-specific update logic
+        # This is meant to be overridden by subclasses
+
+        return {
+            "agent_id": self.agent_id,
+            "status": self.status,
+            "last_activity": self.last_activity,
+            "messages_processed": processed,
+            "inbox_size": self.inbox.qsize(),
+        }
