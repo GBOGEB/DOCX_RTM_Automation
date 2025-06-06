@@ -2,8 +2,14 @@
 """
 Convert Markdown documents to JSON and YAML formats.
 """
+
 import os
 import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import json
 import re
 import argparse
@@ -20,8 +26,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -63,23 +68,23 @@ def convert_md_to_structured(md_file, output_format=None, output_file=None):
     # Save in specified format(s)
     output_files = {}
 
-    if output_format is None or output_format.lower() == 'json':
+    if output_format is None or output_format.lower() == "json":
         json_path = output_dir / f"{output_stem}.json"
         try:
-            with open(json_path, 'w', encoding='utf-8') as f:
+            with open(json_path, "w", encoding="utf-8") as f:
                 json.dump(md_structure, f, indent=2, ensure_ascii=False)
             logger.info("Saved JSON structure to %s", json_path)
-            output_files['json'] = str(json_path)
+            output_files["json"] = str(json_path)
         except Exception as e:  # pylint: disable=broad-except
             logger.error("Failed to save JSON file: %s", e)
 
-    if output_format is None or output_format.lower() in ('yaml', 'yml'):
+    if output_format is None or output_format.lower() in ("yaml", "yml"):
         yaml_path = output_dir / f"{output_stem}.yaml"
         try:
-            with open(yaml_path, 'w', encoding='utf-8') as f:
+            with open(yaml_path, "w", encoding="utf-8") as f:
                 yaml.dump(md_structure, f, default_flow_style=False, allow_unicode=True)
             logger.info("Saved YAML structure to %s", yaml_path)
-            output_files['yaml'] = str(yaml_path)
+            output_files["yaml"] = str(yaml_path)
         except Exception as e:  # pylint: disable=broad-except
             logger.error("Failed to save YAML file: %s", e)
 
@@ -89,7 +94,7 @@ def convert_md_to_structured(md_file, output_format=None, output_file=None):
 def parse_markdown(md_path):
     """Parse Markdown file to structured data."""
     try:
-        with open(md_path, 'r', encoding='utf-8') as f:
+        with open(md_path, "r", encoding="utf-8") as f:
             content = f.read()
         logger.info("Successfully read Markdown file: %s", md_path)
     except Exception as e:  # pylint: disable=broad-except
@@ -97,16 +102,16 @@ def parse_markdown(md_path):
         return None
 
     # Extract document title (first H1)
-    title_match = re.search(r'^# (.+)$', content, re.MULTILINE)
+    title_match = re.search(r"^# (.+)$", content, re.MULTILINE)
     title = title_match.group(1) if title_match else "Untitled Document"
 
     # Extract headers and their content
     sections = []
     current_section = None
-    lines = content.split('\n')
+    lines = content.split("\n")
 
     for line in lines:
-        header_match = re.match(r'^(#{1,6}) (.+)$', line)
+        header_match = re.match(r"^(#{1,6}) (.+)$", line)
 
         if header_match:
             # Start a new section
@@ -114,7 +119,7 @@ def parse_markdown(md_path):
             heading = header_match.group(2)
 
             # Extract section number if present
-            section_match = re.match(r'^(\d+(?:\.\d+)*)\s+(.*)', heading)
+            section_match = re.match(r"^(\d+(?:\.\d+)*)\s+(.*)", heading)
             if section_match:
                 section_num = section_match.group(1)
                 heading_text = section_match.group(2)
@@ -126,7 +131,7 @@ def parse_markdown(md_path):
                 "level": level,
                 "heading": heading_text,
                 "section_num": section_num,
-                "content": ""
+                "content": "",
             }
 
             sections.append(new_section)
@@ -144,29 +149,23 @@ def parse_markdown(md_path):
 
         # Extract code blocks
         code_blocks = []
-        code_pattern = r'```([a-zA-Z0-9]*)\n(.*?)\n```'
+        code_pattern = r"```([a-zA-Z0-9]*)\n(.*?)\n```"
         for match in re.finditer(code_pattern, content, re.DOTALL):
             language = match.group(1) or "text"
             code = match.group(2)
-            code_blocks.append({
-                "language": language,
-                "code": code
-            })
+            code_blocks.append({"language": language, "code": code})
 
         section["code_blocks"] = code_blocks
 
         # Remove code blocks from content for plain text analysis
-        content_without_code = re.sub(code_pattern, '', content, flags=re.DOTALL)
+        content_without_code = re.sub(code_pattern, "", content, flags=re.DOTALL)
         section["plain_text"] = content_without_code.strip()
 
     # Build the final structure
     document = {
         "title": title,
         "sections": sections,
-        "metadata": {
-            "source_file": str(md_path),
-            "section_count": len(sections)
-        }
+        "metadata": {"source_file": str(md_path), "section_count": len(sections)},
     }
 
     return document
@@ -197,15 +196,11 @@ def process_all_md_files(input_dir, output_dir=None, output_format=None):
         List of paths to output files
     """
     if not input_dir:
-        input_dir = os.path.join(
-            PROJECT_ROOT, "output"
-        )
+        input_dir = os.path.join(PROJECT_ROOT, "output")
         logger.info("Input directory not specified, using default: %s", input_dir)
 
     if not output_dir:
-        output_dir = os.path.join(
-            PROJECT_ROOT, "output", "structured"
-        )
+        output_dir = os.path.join(PROJECT_ROOT, "output", "structured")
         logger.info("Output directory not specified, using default: %s", output_dir)
 
     os.makedirs(output_dir, exist_ok=True)
@@ -223,16 +218,13 @@ def process_all_md_files(input_dir, output_dir=None, output_format=None):
     output_files = []
     for md_file in md_files:
         output_file = os.path.join(
-            output_dir,
-            os.path.splitext(os.path.basename(md_file))[0]
+            output_dir, os.path.splitext(os.path.basename(md_file))[0]
         )
         results = convert_md_to_structured(md_file, output_format, output_file)
         if results:
             output_files.extend(results.values())
 
-    logger.info(
-        "Processing complete. JSON/YAML files saved in %s", output_dir
-    )
+    logger.info("Processing complete. JSON/YAML files saved in %s", output_dir)
 
     return output_files
 
@@ -241,11 +233,18 @@ def main():
     """Main function."""
     parser = argparse.ArgumentParser(description="Convert Markdown to JSON and/or YAML")
     parser.add_argument("--input", help="Input Markdown file")
-    parser.add_argument("-f", "--format", choices=['json', 'yaml', 'yml'], help="Output format (default: both)")
+    parser.add_argument(
+        "-f",
+        "--format",
+        choices=["json", "yaml", "yml"],
+        help="Output format (default: both)",
+    )
     parser.add_argument("-o", "--output", help="Output file path (without extension)")
     parser.add_argument("--input-dir", help="Directory containing input files")
     parser.add_argument("--output-dir", help="Directory for output files")
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose output"
+    )
 
     args = parser.parse_args()
 
@@ -256,8 +255,8 @@ def main():
 
     # Standardize format name
     format_arg = args.format
-    if format_arg == 'yml':
-        format_arg = 'yaml'
+    if format_arg == "yml":
+        format_arg = "yaml"
 
     # Process a single file
     if args.input:

@@ -1,148 +1,65 @@
 # DOCX RTM Automation
 
-A tool for automating Requirements Traceability Matrix (RTM) creation and management.
+A tool for extracting Requirements Traceability Matrix (RTM) from DOCX documents and converting them to various formats.
 
-## Features
+## Repository Structure
 
-- Extract content from DOCX files
-- Convert to Markdown format
-- Parse Markdown to structured JSON/YAML
-- Extract Requirements Traceability Matrix (RTM) data
-- Visualize RTM data with an interactive HTML report
+```
+/DOCX_RTM_Automation
++-- config/                # All configuration files
+|   +-- paths.yaml         # Main configuration 
+|   +-- filters/           # Pandoc Lua filters
+|   +-- secrets/           # For API keys (gitignored)
++-- src/                   # All source code
+|   +-- core/              # Core processing modules
+|   +-- extractors/        # Document extraction modules
+|   +-- utils/             # Utility functions
+|   +-- modules/           # Additional modules
++-- scripts/               # Runner scripts
+|   +-- run_pipeline.py    # Main pipeline runner
+|   +-- commands.sh        # Shell commands
++-- input/                 # Input documents
+|   +-- docx/              # Original Word documents
+|   +-- external/          # External input files
++-- output/                # Generated outputs
+|   +-- markdown/          # Markdown outputs
+|   +-- json/              # JSON outputs
+|   +-- yaml/              # YAML outputs
+|   +-- rtm/               # RTM specific outputs
++-- docs/                  # Documentation
+|   +-- guides/            # User guides
+|   +-- setup/             # Setup instructions
++-- tests/                 # Unit tests
++-- tools/                 # Additional tools
+```
 
-## Installation
+## Quick Start
 
-### Prerequisites
-
-- Python 3.8 or higher
-- Git (for version control)
-- Microsoft Word documents containing requirements and test cases
-
-### Setup
-
-1. **Clone the repository** (if you haven't already):
-   ```bash
-   git clone https://github.com/yourusername/DOCX_RTM_Automation.git
-   cd DOCX_RTM_Automation
-   ```
-
-2. **Create and activate a virtual environment**:
-   ```bash
-   # Create virtual environment
-   python -m venv .venv
-
-   # Activate (Windows)
-   .\.venv\Scripts\activate
-
-   # Activate (Unix/macOS)
-   source .venv/bin/activate
-   ```
-
-3. **Install dependencies**:
-   ```bash
-   ./install_dependencies.sh
-   ```
-
-4. **Configure OpenAI API** (if using AI-assisted features):
-   - Edit `config/openai_key.txt` and add your OpenAI API key
-
-## Usage
-
-### Convert Markdown to JSON/YAML
+1. Place your input DOCX files in the `input/docx/` directory
+2. Update the paths in `config/paths.yaml` if needed
+3. Run the pipeline:
 
 ```bash
-./run.sh md-to-json path/to/file.md
+python scripts/run_pipeline.py
 ```
 
-### Extract RTM from Markdown
+## GitHub Integration
+
+The pipeline supports automatic GitHub integration for CI/CD workflows. See `docs/setup/git_setup.md` for details.
+
+## Testing
+
+Run the automated tests to verify functionality:
 
 ```bash
-./run.sh extract-rtm path/to/file.md
+# Run all tests
+python run_tests.py
+
+# Run a specific test file
+python -m unittest tests/test_pipeline.py
 ```
 
-### Extract RTM from all Markdown files in a directory
-
-```bash
-./run.sh extract-rtm-dir path/to/directory
-```
-
-### Visualize RTM data
-
-```bash
-./run.sh visualize-rtm path/to/rtm_data.json
-```
-
-### Processing Documents
-
-To process a DOCX document and extract RTM information:
-
-1. **Place your DOCX files** in the `input/` directory
-
-2. **Run the RTM pipeline**:
-   ```bash
-   ./shell_scripts/run_rtm.sh
-   ```
-
-3. **View the results** in the `output/` directory:
-   - `output/*.md` - Markdown versions of your documents
-   - `output/*.json` - JSON structured data
-   - `output/*.yaml` - YAML structured data
-   - `output/rtm/` - Generated RTM artifacts
-
-## Development
-
-### Run Tests
-
-```bash
-./run_tests.sh
-```
-
-### Code Quality
-
-```bash
-./lint.sh
-```
-
-## RTM Format
-
-Requirements and test cases should follow these formats in your Markdown files:
-
-- Requirements: `REQ-123` or `REQ-1-2-3`
-- Test Cases: `TC-123` or `TC-1-2-3`
-
-Links between requirements and test cases can be specified using the following syntax:
-
-```
-[REQ-123] -> [TC-456]
-```
-
-## Troubleshooting
-
-If you encounter issues:
-
-1. **Run the fix script**:
-   ```bash
-   ./shell_scripts/fix_critical_issues.sh
-   ```
-
-2. **Check logs for errors**:
-   ```bash
-   ./shell_scripts/rtm_status.sh --full-report
-   ```
-
-3. **Common issues**:
-   - **Missing OpenAI API key**: Check `config/openai_key.txt`
-   - **Script errors**: Make sure all scripts are executable (`chmod +x`)
-   - **Import errors**: Verify all dependencies are installed correctly
-
-## License
-
-Copyright (c) 2025
-
-## Contributing
-
-[Contribution guidelines]
-
----
-
-*Powered by OpenAI's language models for enhanced requirement analysis.*
+Tests cover:
+- Pipeline integration
+- Module functionality
+- Data extraction and conversion

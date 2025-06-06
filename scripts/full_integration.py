@@ -57,8 +57,7 @@ def run_command(cmd, description):
         duration = time.time() - start_time
 
         print(f"{Colors.GREEN}Command succeeded in {duration:.2f} seconds{Colors.ENDC}")
-        logger.info(
-            f"Command succeeded: {description} in {duration:.2f} seconds")
+        logger.info(f"Command succeeded: {description} in {duration:.2f} seconds")
         return True
     except subprocess.CalledProcessError as e:
         print(f"{Colors.RED}Command failed: {e}{Colors.ENDC}")
@@ -119,8 +118,77 @@ def run_system_diagnostic():
         return True
 
 
+def analyze_requirements_integration(requirements_file):
+    """Analyze requirements and generate traceability matrix"""
+    print_header("Analyzing Requirements and Building Traceability Matrix")
+
+    try:
+        # Import requirement analysis functions dynamically
+        # This allows looser coupling between modules
+        import sys
+        import importlib.util
+
+        # Get the absolute path to the Project Requirements.py file
+        project_root = Path(__file__).parent.parent
+        req_script_path = project_root / "Project Requirements.py"
+
+        # Import the module dynamically
+        spec = importlib.util.spec_from_file_location(
+            "project_requirements", req_script_path
+        )
+        req_module = importlib.util.module_from_spec(spec)
+        sys.modules["project_requirements"] = req_module
+        spec.loader.exec_module(req_module)
+
+        # Use functions from the imported module
+        content, _ = req_module.parse_markdown(requirements_file)
+        requirements = req_module.extract_requirements(content)
+
+        # Find all project files
+        all_files = req_module.get_project_files(str(project_root))
+        print(f"Found {len(all_files)} files to analyze for requirement references")
+
+        # Find requirements in code
+        requirements_with_files = req_module.find_requirements_in_code(
+            all_files, requirements
+        )
+
+        # Analyze requirements
+        analysis_data = req_module.analyze_requirements(content)
+
+        # Write outputs
+        req_module.write_summary(analysis_data, requirements_with_files)
+        req_module.generate_traceability_matrix(requirements_with_files)
+
+        print(f"{Colors.GREEN}Requirements analysis complete{Colors.ENDC}")
+        return True
+    except Exception as e:
+        print(f"{Colors.RED}Error analyzing requirements: {e}{Colors.ENDC}")
+        import traceback
+
+        traceback.print_exc()
+        return False
+
+
 def run_pipeline():
-    """Run the main pipeline"""
+    """Run the main pipeline with enhanced requirements traceability"""
+    print_header("Running Enhanced Pipeline With Requirements Traceability")
+
+    # Define paths
+    input_dir = Path("input")
+    requirements_file = input_dir / "requirements.md"
+
+    if not requirements_file.exists():
+        print(
+            f"{Colors.RED}Requirements file not found: {requirements_file}{Colors.ENDC}"
+        )
+        print("Creating sample requirements file...")
+        create_sample_files()  # This will create a sample requirements file
+
+    # First, analyze requirements and build traceability matrix
+    analyze_requirements_integration(requirements_file)
+
+    # Then run the original pipeline
     return run_command([sys.executable, "run_pipeline.py"], "Main pipeline execution")
 
 
@@ -147,8 +215,7 @@ def create_sample_files():
             doc.add_heading("Requirements", level=1)
             doc.add_paragraph("The system shall provide user authentication.")
             doc.save(str(sample_docx))
-            print(
-                f"{Colors.GREEN}Created sample DOCX file: {sample_docx}{Colors.ENDC}")
+            print(f"{Colors.GREEN}Created sample DOCX file: {sample_docx}{Colors.ENDC}")
     except ImportError:
         print(
             f"{Colors.YELLOW}python-docx not installed, skipping DOCX creation{Colors.ENDC}"
@@ -423,28 +490,25 @@ def run_script(script_name):
 
 def main():
     """Main function"""
-    parser = argparse.ArgumentParser(
-        description="DOCX RTM Automation Integration")
-    parser.add_argument("--clean", action="store_true",
-                        help="Run repository cleanup")
+    parser = argparse.ArgumentParser(description="DOCX RTM Automation Integration")
+    parser.add_argument("--clean", action="store_true", help="Run repository cleanup")
     parser.add_argument(
         "--force", action="store_true", help="Apply cleanup changes (not just simulate)"
     )
     parser.add_argument(
         "--diagnostic", action="store_true", help="Run system diagnostic"
     )
-    parser.add_argument("--pipeline", action="store_true",
-                        help="Run the main pipeline")
-    parser.add_argument("--samples", action="store_true",
-                        help="Create sample files")
+    parser.add_argument("--pipeline", action="store_true", help="Run the main pipeline")
+    parser.add_argument("--samples", action="store_true", help="Create sample files")
     parser.add_argument("--all", action="store_true", help="Run everything")
     parser.add_argument(
         "--git-check", action="store_true", help="Check Git connectivity"
     )
+    parser.add_argument("--clone", help="Clone a Git repository", metavar="REPO_URL")
     parser.add_argument(
-        "--clone", help="Clone a Git repository", metavar="REPO_URL")
-    parser.add_argument(
-        "--recurse-submodules", action="store_true", help="When cloning, also initialize and update submodules."
+        "--recurse-submodules",
+        action="store_true",
+        help="When cloning, also initialize and update submodules.",
     )
     parser.add_argument(
         "--push", action="store_true", help="Push changes to Git repository"
@@ -485,7 +549,9 @@ def main():
 
     # Clone repository if requested
     if args.clone:
-        success = clone_repository(args.clone, recurse_submodules=args.recurse_submodules)
+        success = clone_repository(
+            args.clone, recurse_submodules=args.recurse_submodules
+        )
         if not success:
             print(f"{Colors.RED}Failed to clone repository{Colors.ENDC}")
             return 1
@@ -493,11 +559,21 @@ def main():
     # Conceptual: Input Source Discovery and Preparation
     print_header("Input Source Discovery and Preparation")
     logger.info("Conceptual step: Discovering inputs from various sources.")
-    print(f"{Colors.BLUE}Note: The following are conceptual checks for a full integration:{Colors.ENDC}")
-    print(f"{Colors.YELLOW}- Scanning configured input paths (including those within potential sub-repositories).{Colors.ENDC}")
-    print(f"{Colors.YELLOW}- If GitHub URLs were provided as direct inputs, they would be downloaded/processed here.{Colors.ENDC}")
-    print(f"{Colors.YELLOW}- Markdown files are treated as primary inputs for RTM generation by the downstream pipeline.{Colors.ENDC}")
-    print(f"{Colors.YELLOW}- OpenAI interactions for analysis/generation are handled within specific pipeline steps or agents.{Colors.ENDC}")
+    print(
+        f"{Colors.BLUE}Note: The following are conceptual checks for a full integration:{Colors.ENDC}"
+    )
+    print(
+        f"{Colors.YELLOW}- Scanning configured input paths (including those within potential sub-repositories).{Colors.ENDC}"
+    )
+    print(
+        f"{Colors.YELLOW}- If GitHub URLs were provided as direct inputs, they would be downloaded/processed here.{Colors.ENDC}"
+    )
+    print(
+        f"{Colors.YELLOW}- Markdown files are treated as primary inputs for RTM generation by the downstream pipeline.{Colors.ENDC}"
+    )
+    print(
+        f"{Colors.YELLOW}- OpenAI interactions for analysis/generation are handled within specific pipeline steps or agents.{Colors.ENDC}"
+    )
     # Actual implementation would involve more detailed logic, potentially using a PathsManager
     # or dedicated functions for fetching remote content and scanning submodules.
 

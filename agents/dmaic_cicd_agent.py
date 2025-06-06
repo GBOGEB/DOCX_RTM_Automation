@@ -4,10 +4,9 @@ Handles CI/CD operations in the DMAIC framework.
 """
 
 import sys
-import time
 import logging
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Optional  # Removed Dict, Any
 from enum import Enum
 
 # Add project root to path for imports
@@ -15,22 +14,82 @@ project_root = Path(__file__).resolve().parents[1]
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-# Import modules from project
-# These imports are placed after sys.path modification
-from agents.agent_common import BaseAgent, AgentRole, AgentCapability, AgentMessage  # pylint: disable=wrong-import-position # noqa: E402
-from dmaic import DMAICHandler  # pylint: disable=wrong-import-position # noqa: E402
-from utils.output_handler import OutputHandler  # pylint: disable=wrong-import-position # noqa: E402
-
-# Configure logging
+# Configure logging BEFORE using logger
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
+# Import modules from project
+# These imports are placed after sys.path modification
+from agents.agent_common import (
+    BaseAgent,
+    AgentRole,
+    AgentCapability,
+)  # Removed AgentMessage
+
+# Import DMAICHandler with proper error handling
+try:
+    from dmaic import (
+        DMAICHandler,
+        DMAICPhase,
+    )  # pylint: disable=wrong-import-position # noqa: E402
+
+    HAS_SET_PHASE = hasattr(DMAICHandler, "set_phase")  # Renamed constant
+    if not HAS_SET_PHASE:
+        logger.warning(
+            "DMAICHandler imported but missing set_phase method. Creating compatibility wrapper."
+        )
+
+        class DMAICHandlerWrapper:
+            """Wraps the DMAICHandler to provide a consistent interface for the agent."""
+
+            def __init__(
+                self,
+                dmaic_handler_instance: "DMAICHandler",
+                output_handler: Optional["OutputHandler"] = None,
+            ):
+                self.handler = dmaic_handler_instance
+                self.output_handler = output_handler
+                self.dmaic_phase_enum_type = DMAICPhase  # Renamed attribute
+
+            def __getattr__(self, name):
+                """Delegate attribute access to the wrapped DMAIC handler instance."""
+                return getattr(self.handler, name)
+
+except ImportError as e:
+    logger.error("Failed to import DMAICHandler: %s", e)  # %-formatting
+
+    # Create a minimal mock class for DMAICHandler to prevent further errors
+    class DMAICHandler:
+        """Mock DMAICHandler for when the real one can't be imported"""
+
+        def __init__(self, project_name="DefaultProject"):
+            self.project_name = project_name
+            self.phase = "define"  # Default phase
+            logger.warning(
+                "Using mock DMAICHandler for %s", project_name
+            )  # %-formatting
+
+        def set_phase(self, phase):
+            """Set the current DMAIC phase."""
+            logger.info("Setting phase to: %s (mock)", phase)  # %-formatting
+            self.phase = phase
+            return True
+
+        def get_phase(self):
+            """Get the current DMAIC phase."""
+            return self.phase
+
+
+from utils.output_handler import (
+    OutputHandler,
+)  # pylint: disable=wrong-import-position # noqa: E402
 
 
 class PipelineMetrics(Enum):
     """Critical metrics for CI/CD pipeline analysis"""
+
     BUILD_TIME = "build_time"
     TEST_COVERAGE = "test_coverage"
     TEST_SUCCESS_RATE = "test_success_rate"
@@ -46,7 +105,7 @@ class PipelineMetrics(Enum):
             PipelineMetrics.BUILD_TIME.value,
             PipelineMetrics.CHANGE_FAILURE_RATE.value,
             PipelineMetrics.MTTR.value,
-            PipelineMetrics.LEAD_TIME.value
+            PipelineMetrics.LEAD_TIME.value,
         ]
 
 
@@ -62,7 +121,11 @@ class DMAICCICDAgent(BaseAgent):
     - Control: Monitor long-term performance and maintain improvements
     """
 
-    def __init__(self, dmaic_handler: Optional[DMAICHandler] = None, output_handler: Optional[OutputHandler] = None):
+    def __init__(
+        self,
+        dmaic_handler: Optional["DMAICHandler"] = None,
+        output_handler: Optional[OutputHandler] = None,
+    ):
         """
         Initialize the DMAICCICDAgent.
 
@@ -72,392 +135,191 @@ class DMAICCICDAgent(BaseAgent):
         """
         super().__init__()
         self.agent_id = "dmaic_cicd_agent"
-        self.role = AgentRole.ANALYST
+        self.role = AgentRole.AUTOMATION  # Changed from AgentRole.ANALYST
         self.capabilities = [
+            AgentCapability.CI_CD_AUTOMATION,
+            AgentCapability.DMAIC_INTEGRATION,
+            AgentCapability.CODE_DEPLOYMENT,
+            AgentCapability.TEST_AUTOMATION,
             AgentCapability.GIT_OPERATIONS,
-            AgentCapability.VERSION_CONTROL,
-            AgentCapability.CICD_PIPELINE_ANALYSIS,
-            AgentCapability.CICD_METRICS_COLLECTION,
-            AgentCapability.CICD_IMPROVEMENT_PLANNING,
-            AgentCapability.CICD_BUILD_FAILURE_ANALYSIS
+            AgentCapability.CODE_ANALYSIS,  # Changed from CICD_PIPELINE_ANALYSIS to CODE_ANALYSIS
         ]
-        self.dmaic_handler = dmaic_handler
+        self.dmaic_handler = (
+            DMAICHandlerWrapper(dmaic_handler, output_handler)
+            if dmaic_handler
+            else None
+        )
         self.output_handler = output_handler
+        self.status = "idle"
+        self.current_build_id: Optional[str] = None
+        self.current_test_run_id: Optional[str] = None
+        self.phase: Optional[DMAICPhase] = None
+
+        # Ensure output_handler is available before calling set_current_dmaic_phase
+        # which uses self.output_handler.log_info etc.
+        if self.output_handler:
+            self.set_current_dmaic_phase()
+        else:
+            # If no output_handler, set_current_dmaic_phase might fail or log to stdout.
+            # Consider a default logger or ensuring output_handler is always present.
+            # For now, we proceed, but this is a potential point of failure if output_handler is None.
+            print(
+                "Warning: DMAICCICDAgent initialized without an output_handler. Logging in set_current_dmaic_phase might be affected.",
+                file=sys.stderr,
+            )
+            self.set_current_dmaic_phase()
+
         self.status = "initialized"
-        self.pipeline_metrics: Dict[str, Any] = {}
-        self.improvement_iterations = 0
-        self.baseline_metrics: Dict[str, Any] = {}
+        if self.output_handler:
+            self.output_handler.log_info(f"DMAICCICDAgent {self.agent_id} initialized.")
 
-        if output_handler:
-            self.output_handler.log_info("DMAICCICDAgent %s initialized", self.agent_id)
-        else:
-            logger.info("DMAICCICDAgent %s initialized without output_handler", self.agent_id)
-
-    def process_message(self, message: AgentMessage) -> Dict[str, Any]:
+    def set_current_dmaic_phase(self, phase_name: Optional[str] = None):
         """
-        Process incoming messages directed to this agent.
+        Set the current DMAIC phase for this agent.
 
         Args:
-            message: The message to process
-
-        Returns:
-            Response dictionary with results
+            phase_name: Optional phase name to set. If None, attempt to get from dmaic_handler.
         """
-        if message.message_type == "dmaic_phase_change":
-            return self._handle_phase_change(message.content)
-        elif message.message_type == "setup_pipeline_request":
-            return self._handle_setup_pipeline(message.content)
-        elif message.message_type == "run_pipeline_request":
-            return self._handle_run_pipeline(message.content)
-        elif message.message_type == "deploy_request":
-            return self._handle_deploy(message.content)
-        elif message.message_type == "initialize_cicd_project":
-            return self._handle_initialize_project(message.content)
-        elif message.message_type == "collect_cicd_baseline":
-            return self.handle_collect_baseline_metrics(message.content)
-        elif message.message_type == "analyze_cicd_performance":
-            return self._handle_analyze_pipeline_performance(message.content)
-        elif message.message_type == "generate_cicd_improvement_plan":
-            return self._handle_generate_improvement_plan(message.content)
-        elif message.message_type == "establish_cicd_control_plan":
-            return self._handle_establish_control_plan(message.content)
-        elif message.message_type == "analyze_cicd_build_failure":
-            return self._handle_analyze_build_failure(message.content)
-        elif message.message_type == "compare_cicd_metrics":
-            return self._handle_compare_metrics(message.content)
-        else:
-            return {
-                "status": "error",
-                "message": f"Unsupported message type: {message.message_type}"
-            }
-
-    def _handle_phase_change(self, content: Dict[str, Any]) -> Dict[str, Any]:
-        """Handle DMAIC phase change notifications."""
-        phase = content.get("phase")
-
-        if not phase:
-            return {"status": "error", "message": "No phase specified"}
-
-        if self.dmaic_handler:
-            self.dmaic_handler.set_phase(phase)
-
+        if not self.dmaic_handler:
             if self.output_handler:
-                self.output_handler.log_info(f"DMAIC phase changed to {phase}")
-
-            return {
-                "status": "success",
-                "message": f"Phase changed to {phase}",
-                "data": {"phase": phase}
-            }
-        else:
-            return {
-                "status": "error",
-                "message": "DMAIC handler not available"
-            }
-
-    def _handle_setup_pipeline(self, content: Dict[str, Any]) -> Dict[str, Any]:
-        """Handle request to set up CI/CD pipeline."""
-        repo_path = content.get("repo_path")
-        pipeline_type = content.get("pipeline_type", "standard")
-
-        if not repo_path:
-            return {"status": "error", "message": "Repository path required"}
+                self.output_handler.log_warning(
+                    "No DMAIC handler available to set phase"
+                )
+            return
 
         try:
-            # In a real implementation, this would set up pipeline config files
+            if phase_name:
+                # Convert string to enum if needed
+                if isinstance(phase_name, str):
+                    try:
+                        phase_enum = getattr(
+                            self.dmaic_handler.dmaic_phase_enum_type, phase_name.upper()
+                        )  # Updated usage
+                    except (AttributeError, ValueError):
+                        if self.output_handler:
+                            self.output_handler.log_error(
+                                "Invalid DMAIC phase name: %s", phase_name
+                            )  # %-formatting
+                        return
+                else:
+                    phase_enum = phase_name
+
+                # Set the phase using the handler
+                if hasattr(self.dmaic_handler, "set_phase"):
+                    self.dmaic_handler.set_phase(phase_enum)
+                    self.phase = phase_enum
+                    if self.output_handler:
+                        self.output_handler.log_info(
+                            "DMAIC phase set to %s", phase_enum
+                        )  # %-formatting
+                else:
+                    if self.output_handler:
+                        self.output_handler.log_warning(
+                            "DMAICHandler does not have set_phase method"
+                        )
+            else:
+                # Get current phase from handler
+                if hasattr(self.dmaic_handler, "get_current_phase"):
+                    self.phase = self.dmaic_handler.get_current_phase()
+                    if self.output_handler:
+                        self.output_handler.log_info(
+                            "Current DMAIC phase: %s", self.phase
+                        )  # %-formatting
+                else:
+                    if self.output_handler:
+                        self.output_handler.log_warning(
+                            "DMAICHandler does not have get_current_phase method"
+                        )
+
+        except Exception as e:
             if self.output_handler:
-                self.output_handler.log_info(f"Setting up {pipeline_type} pipeline in {repo_path}")
+                self.output_handler.log_error(
+                    "Error setting DMAIC phase: %s", e
+                )  # %-formatting
+            else:
+                print(
+                    "Error setting DMAIC phase: %s" % e, file=sys.stderr
+                )  # %-formatting
 
-            # Simulate pipeline setup
-            pipeline_config = {
-                "type": pipeline_type,
-                "repo": repo_path,
-                "stages": ["build", "test", "deploy"],
-                "active": True
-            }
 
-            return {
-                "status": "success",
-                "message": "Pipeline setup successfully",
-                "data": pipeline_config
-            }
-        except Exception as e:  # pylint: disable=broad-except
-            # In production code, catch more specific exceptions
-            return {"status": "error", "message": f"Failed to set up pipeline: {e}"}
+# --- Test/Demo block for direct execution ---
+if __name__ == "__main__":
+    # Configure basic logging for the test run
+    # This ensures that if MockOutputHandler uses logging, it's set up.
+    logging.basicConfig(
+        level=logging.DEBUG,  # Or INFO, depending on desired verbosity for the test
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        stream=sys.stdout,  # Explicitly direct to stdout for clarity in test runs
+    )
 
-    def _handle_run_pipeline(self, content: Dict[str, Any]) -> Dict[str, Any]:
-        """Handle request to run CI/CD pipeline."""
-        pipeline_id = content.get("pipeline_id")
+    logger_main = logging.getLogger(__name__)  # __name__ is "__main__" here
+    logger_main.info("Running DMAICCICDAgent directly for testing...")
 
-        if not pipeline_id:
-            return {"status": "error", "message": "Pipeline ID required"}
+    # Setup mock DMAICHandler and OutputHandler
+    class MockDMAICHandler:
+        """Mock DMAICHandler for testing DMAICCICDAgent."""
 
-        try:
-            # In a real implementation, this would trigger a pipeline run
-            if self.output_handler:
-                self.output_handler.log_info(f"Running pipeline {pipeline_id}")
+        def __init__(self):
+            self._current_phase = DMAICPhase.DEFINE  # Default phase
+            logger_main.debug("MockDMAICHandler initialized.")
 
-            # Simulate pipeline run
-            run_result = {
-                "pipeline_id": pipeline_id,
-                "run_id": f"run_{int(time.time())}",
-                "status": "success",
-                "stages": [
-                    {"name": "build", "status": "success", "duration_sec": 45},
-                    {"name": "test", "status": "success", "duration_sec": 120},
-                    {"name": "deploy", "status": "success", "duration_sec": 30}
-                ]
-            }
+        def get_current_phase(self) -> DMAICPhase:
+            """Get the current DMAIC phase."""
+            logger_main.debug(
+                "MockDMAICHandler: get_current_phase() returning %s",
+                self._current_phase,
+            )
+            return self._current_phase
 
-            return {
-                "status": "success",
-                "message": "Pipeline run successfully",
-                "data": run_result
-            }
-        except Exception as e:  # pylint: disable=broad-except
-            # In production code, catch more specific exceptions
-            return {"status": "error", "message": f"Failed to run pipeline: {e}"}
+        def set_phase(
+            self, phase: DMAICPhase, status: str = "current"
+        ):  # Added set_phase
+            """Set the current DMAIC phase."""
+            logger_main.debug(
+                "MockDMAICHandler: set_phase called with phase=%s, status=%s",
+                phase,
+                status,
+            )
+            self._current_phase = phase
 
-    def handle_collect_baseline_metrics(self, _content: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=unused-argument
-        """
-        Handle request to collect baseline CI/CD metrics.
+    class MockOutputHandler:
+        """Mock OutputHandler for testing DMAICCICDAgent."""
 
-        Args:
-            _content: Request content (placeholder, not used in this simulation)
-        """
-        try:
-            # Simulate metric collection
-            baseline_metrics = {
-                "build_time": 120,
-                "test_coverage": 85.5,
-                "test_success_rate": 98.0,
-                "deployment_frequency": 5,
-                "lead_time": 24,
-                "change_failure_rate": 0.02,
-                "mean_time_to_recovery": 2
-            }
-            self.baseline_metrics = baseline_metrics
+        def __init__(self):
+            # Use the logger defined in the __main__ scope for consistency
+            self.logger = logger_main
+            self.logger.debug("MockOutputHandler initialized.")
 
-            if self.output_handler:
-                self.output_handler.log_info("Baseline metrics collected successfully")
+        def log_info(self, message, *args):
+            """Logs an info message."""
+            self.logger.info(message, *args)
 
-            return {
-                "status": "success",
-                "message": "Baseline metrics collected",
-                "data": baseline_metrics
-            }
-        except Exception as e:  # pylint: disable=broad-except
-            # In production code, catch more specific exceptions
-            return {"status": "error", "message": f"Failed to collect baseline metrics: {e}"}
+        def log_error(self, message, *args):
+            """Logs an error message."""
+            self.logger.error(message, *args)
 
-    def _handle_analyze_build_failure(self, _content: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=unused-argument
-        """
-        Handle request to analyze CI/CD build failures.
+        def log_warning(self, message, *args):
+            """Logs a warning message."""
+            self.logger.warning(message, *args)
 
-        Args:
-            _content: Request content (placeholder, not used in this simulation)
-        """
-        try:
-            # Simulate build failure analysis
-            build_failure_analysis = {
-                "failure_rate": 0.05,
-                "common_issues": ["dependency errors", "timeout issues"],
-                "recommendations": ["update dependencies", "optimize build scripts"]
-            }
+        def log_debug(self, message, *args):
+            """Logs a debug message."""
+            self.logger.debug(message, *args)
 
-            if self.output_handler:
-                self.output_handler.log_info("Build failure analysis completed successfully")
+        def log_critical(self, message, *args):
+            """Logs a critical message."""
+            self.logger.critical(message, *args)
 
-            return {
-                "status": "success",
-                "message": "Build failure analysis completed",
-                "data": build_failure_analysis
-            }
-        except Exception as e:  # pylint: disable=broad-except
-            # In production code, catch more specific exceptions
-            return {"status": "error", "message": f"Failed to analyze build failure: {e}"}
+    mock_dmaic = MockDMAICHandler()
+    mock_output = MockOutputHandler()
 
-    def _handle_establish_control_plan(self, _content: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=unused-argument
-        """
-        Handle request to establish a CI/CD control plan.
+    logger_main.info("Initializing DMAICCICDAgent with mocks...")
+    agent = DMAICCICDAgent(dmaic_handler=mock_dmaic, output_handler=mock_output)
+    logger_main.info(
+        "DMAICCICDAgent initialized. Agent ID: %s, Status: %s, Phase: %s",
+        agent.agent_id,
+        agent.status,
+        agent.phase,
+    )  # %-formatting
 
-        Args:
-            _content: Request content (placeholder, not used in this simulation)
-        """
-        try:
-            # Simulate control plan establishment
-            control_plan = {
-                "monitoring_tools": ["Prometheus", "Grafana"],
-                "alerting_thresholds": {"build_time": 150, "test_coverage": 80},
-                "review_schedule": "weekly"
-            }
-
-            if self.output_handler:
-                self.output_handler.log_info("Control plan established successfully")
-
-            return {
-                "status": "success",
-                "message": "Control plan established",
-                "data": control_plan
-            }
-        except Exception as e:  # pylint: disable=broad-except
-            # In production code, catch more specific exceptions
-            return {"status": "error", "message": f"Failed to establish control plan: {e}"}
-
-    def _handle_generate_improvement_plan(self, _content: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=unused-argument
-        """
-        Handle request to generate a CI/CD improvement plan.
-
-        Args:
-            _content: Request content (placeholder, not used in this simulation)
-        """
-        try:
-            # Simulate improvement plan generation
-            improvement_plan = {
-                "actions": [
-                    {"action": "Increase test coverage", "priority": "high"},
-                    {"action": "Optimize build scripts", "priority": "medium"},
-                    {"action": "Automate deployment process", "priority": "high"}
-                ],
-                "expected_outcomes": {
-                    "test_coverage": "+10%",
-                    "build_time": "-20%",
-                    "deployment_frequency": "+2 per week"
-                }
-            }
-
-            if self.output_handler:
-                self.output_handler.log_info("Improvement plan generated successfully")
-
-            return {
-                "status": "success",
-                "message": "Improvement plan generated",
-                "data": improvement_plan
-            }
-        except Exception as e:  # pylint: disable=broad-except
-            # In production code, catch more specific exceptions
-            return {"status": "error", "message": f"Failed to generate improvement plan: {e}"}
-
-    def _handle_analyze_pipeline_performance(self, _content: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=unused-argument
-        """
-        Handle request to analyze CI/CD pipeline performance.
-
-        Args:
-            _content: Request content (placeholder, not used in this simulation)
-        """
-        try:
-            # Simulate pipeline performance analysis
-            performance_analysis = {
-                "build_time": {"average": 120, "trend": "decreasing"},
-                "test_coverage": {"average": 85.5, "trend": "increasing"},
-                "deployment_frequency": {"average": 5, "trend": "stable"}
-            }
-
-            if self.output_handler:
-                self.output_handler.log_info("Pipeline performance analysis completed successfully")
-
-            return {
-                "status": "success",
-                "message": "Pipeline performance analysis completed",
-                "data": performance_analysis
-            }
-        except Exception as e:  # pylint: disable=broad-except
-            # In production code, catch more specific exceptions
-            return {"status": "error", "message": f"Failed to analyze pipeline performance: {e}"}
-
-    def _handle_initialize_project(self, _content: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=unused-argument
-        """
-        Handle request to initialize a CI/CD project.
-
-        Args:
-            _content: Request content (placeholder, not used in this simulation)
-        """
-        try:
-            # Simulate project initialization
-            project_details = {
-                "project_name": "New CI/CD Project",
-                "repository": "https://example.com/repo.git",
-                "pipeline_configured": True
-            }
-
-            if self.output_handler:
-                self.output_handler.log_info("Project initialized successfully")
-
-            return {
-                "status": "success",
-                "message": "Project initialized",
-                "data": project_details
-            }
-        except Exception as e:  # pylint: disable=broad-except
-            # In production code, catch more specific exceptions
-            return {"status": "error", "message": f"Failed to initialize project: {e}"}
-
-    def _handle_compare_metrics(self, _content: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=unused-argument
-        """
-        Handle request to compare CI/CD metrics.
-
-        Args:
-            _content: Request content (placeholder, not used in this simulation)
-        """
-        try:
-            # Simulate metric comparison logic
-            current_metrics = self.pipeline_metrics
-            baseline_metrics = self.baseline_metrics
-
-            if not current_metrics or not baseline_metrics:
-                return {
-                    "status": "error",
-                    "message": "Metrics not available for comparison"
-                }
-
-            comparison_result = {
-                metric: {
-                    "baseline": baseline_metrics.get(metric),
-                    "current": current_metrics.get(metric),
-                    "improvement": current_metrics.get(metric, 0) - baseline_metrics.get(metric, 0)
-                }
-                for metric in baseline_metrics
-            }
-
-            if self.output_handler:
-                self.output_handler.log_info("Metrics compared successfully")
-
-            return {
-                "status": "success",
-                "message": "Metrics compared",
-                "data": comparison_result
-            }
-        except Exception as e:  # pylint: disable=broad-except
-            # In production code, catch more specific exceptions
-            return {"status": "error", "message": f"Failed to compare metrics: {e}"}
-
-    def _handle_deploy(self, content: Dict[str, Any]) -> Dict[str, Any]:
-        """Handle request to deploy to an environment."""
-        environment = content.get("environment", "development")
-        artifact_id = content.get("artifact_id")
-
-        if not artifact_id:
-            return {"status": "error", "message": "Artifact ID required"}
-
-        try:
-            # In a real implementation, this would perform deployment
-            if self.output_handler:
-                self.output_handler.log_info(f"Deploying artifact {artifact_id} to {environment}")
-
-            # Simulate deployment
-            deployment_result = {
-                "environment": environment,
-                "artifact_id": artifact_id,
-                "deployment_id": f"deploy_{int(time.time())}",
-                "status": "success",
-                "timestamp": time.time()
-            }
-
-            return {
-                "status": "success",
-                "message": f"Deployment to {environment} successful",
-                "data": deployment_result
-            }
-        except Exception as e:  # pylint: disable=broad-except
-            # In production code, catch more specific exceptions
-            return {"status": "error", "message": f"Failed to deploy: {e}"}
+    logger_main.info("DMAICCICDAgent direct execution test completed.")

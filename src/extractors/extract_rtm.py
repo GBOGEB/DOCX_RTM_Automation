@@ -2,9 +2,15 @@
 """
 Extract Requirements Traceability Matrix data from Markdown files.
 """
+
 import os
 import re
 import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import json
 import glob
 import argparse
@@ -18,10 +24,10 @@ if str(PROJECT_ROOT) not in sys.path:
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
 
 class RTMExtractor:
     """
@@ -53,11 +59,11 @@ class RTMExtractor:
             return None
 
         if output_file is None:
-            output_file = input_path.with_suffix('.rtm.json')
+            output_file = input_path.with_suffix(".rtm.json")
 
         # Read the input file
         try:
-            with open(input_path, 'r', encoding='utf-8') as f:
+            with open(input_path, "r", encoding="utf-8") as f:
                 content = f.read()
         except FileNotFoundError as e:
             logger.error(f"Failed to read input file: {e}")
@@ -71,7 +77,7 @@ class RTMExtractor:
             output_path = Path(output_file)
             output_path.parent.mkdir(parents=True, exist_ok=True)
 
-            with open(output_path, 'w', encoding='utf-8') as f:
+            with open(output_path, "w", encoding="utf-8") as f:
                 json.dump(rtm_data, f, indent=2)
 
             logger.info(f"RTM data extracted and saved to {output_file}")
@@ -106,8 +112,8 @@ class RTMExtractor:
             "stats": {
                 "requirements_count": len(requirements),
                 "test_cases_count": len(test_cases),
-                "links_count": len(links)
-            }
+                "links_count": len(links),
+            },
         }
 
     def _extract_requirements(self, content):
@@ -171,28 +177,33 @@ class RTMExtractor:
         # Find direct links using [REQ-xxx] -> [TC-yyy] syntax
         for match in re.finditer(self.link_pattern, content):
             link_text = match.group(0)
-            link_parts = re.findall(r"\[({}|{})\]".format(self.req_pattern, self.test_pattern), link_text)
+            link_parts = re.findall(
+                r"\[({}|{})\]".format(self.req_pattern, self.test_pattern), link_text
+            )
 
             if len(link_parts) >= 2:
                 source_id = link_parts[0][0]
                 target_id = link_parts[1][0]
 
                 # Determine link type (req->test or test->req)
-                if re.match(self.req_pattern, source_id) and re.match(self.test_pattern, target_id):
+                if re.match(self.req_pattern, source_id) and re.match(
+                    self.test_pattern, target_id
+                ):
                     link_type = "validates"
-                elif re.match(self.test_pattern, source_id) and re.match(self.req_pattern, target_id):
+                elif re.match(self.test_pattern, source_id) and re.match(
+                    self.req_pattern, target_id
+                ):
                     link_type = "verifies"
                 else:
                     # Both are the same type, use "references"
                     link_type = "references"
 
-                links.append({
-                    "source": source_id,
-                    "target": target_id,
-                    "type": link_type
-                })
+                links.append(
+                    {"source": source_id, "target": target_id, "type": link_type}
+                )
 
         return links
+
 
 def process_all_md_files(input_dir, output_dir=None):
     """
@@ -226,14 +237,14 @@ def process_all_md_files(input_dir, output_dir=None):
 
     for md_file in md_files:
         output_file = os.path.join(
-            output_dir,
-            os.path.splitext(os.path.basename(md_file))[0] + "_rtm.json"
+            output_dir, os.path.splitext(os.path.basename(md_file))[0] + "_rtm.json"
         )
         result = extractor.extract_from_file(md_file, output_file)
         if result:
             output_files.append(output_file)
 
     return output_files
+
 
 def parse_arguments():
     """Parse command-line arguments."""
@@ -242,7 +253,9 @@ def parse_arguments():
     parser.add_argument("-o", "--output", help="Output JSON file")
     parser.add_argument("--input-dir", help="Directory containing input files")
     parser.add_argument("--output-dir", help="Directory for output files")
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose output"
+    )
 
     return parser.parse_args()
 
@@ -262,9 +275,11 @@ def main():
         rtm_data = extractor.extract_from_file(args.input, args.output)
 
         if rtm_data:
-            logger.info(f"Extracted {rtm_data['stats']['requirements_count']} requirements, "
-                  f"{rtm_data['stats']['test_cases_count']} test cases, and "
-                  f"{rtm_data['stats']['links_count']} links.")
+            logger.info(
+                f"Extracted {rtm_data['stats']['requirements_count']} requirements, "
+                f"{rtm_data['stats']['test_cases_count']} test cases, and "
+                f"{rtm_data['stats']['links_count']} links."
+            )
             return 0
         else:
             logger.error("RTM extraction failed.")

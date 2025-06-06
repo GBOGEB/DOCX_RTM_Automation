@@ -1,8 +1,6 @@
 import sys  # Added: sys is used in the sys.path modification block
 import pandas as pd  # Added: pandas is used later in the script
 from pathlib import Path
-import json  # Added: For JSON operations if needed, good practice
-import os  # Added: For OS path operations if needed
 
 # --- Start of sys.path modification ---
 # Assuming this script is in DOCX_RTM_Automation_v1.0/pipelines/
@@ -12,13 +10,11 @@ if str(_PROJECT_ROOT_PIPELINE) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT_PIPELINE))  # Added this line
 # --- End of sys.path modification ---
 
-from config.openai_integration import initialize_openai
 from agents.requirement_analyzer import (
     analyze_requirement_function as analyze_requirement,
     check_traceability_function as check_traceability,
 )
 from markdown_it import MarkdownIt
-from markdown_it.token import Token
 
 
 def extract_requirements_from_markdown_table(document_path):
@@ -48,7 +44,9 @@ def extract_requirements_from_markdown_table(document_path):
             ):
                 in_requirements_section = True
             else:
-                in_requirements_section = False  # Reset if not the "Requirements" heading
+                in_requirements_section = (
+                    False  # Reset if not the "Requirements" heading
+                )
 
         if in_requirements_section:
             # Look for the table immediately following the "Requirements" heading
@@ -69,7 +67,9 @@ def extract_requirements_from_markdown_table(document_path):
     current_cell_texts = []
 
     is_processing_header = True
-    in_cell_token = False  # Tracks if we are inside a th_open/td_open and th_close/td_close
+    in_cell_token = (
+        False  # Tracks if we are inside a th_open/td_open and th_close/td_close
+    )
 
     for token_idx in range(table_tokens_start_index, len(tokens)):
         token = tokens[token_idx]

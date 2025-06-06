@@ -1,4 +1,3 @@
-import os
 import sys
 from typing import Dict, Any, Optional
 from datetime import datetime
@@ -34,7 +33,9 @@ class PathsManager:
         self._load_config()
 
         self.input_dir = self._get_path("paths.input_dir", self.project_root / "input")
-        self.output_dir = self._get_path("paths.output_dir", self.project_root / "output")
+        self.output_dir = self._get_path(
+            "paths.output_dir", self.project_root / "output"
+        )
         self.logs_dir = self._get_path("paths.logs_dir", self.project_root / "logs")
         self.data_dir = self._get_path("paths.data_dir", self.project_root / "data")
         self.docs_dir = self._get_path("paths.docs_dir", self.project_root / "docs")
@@ -47,16 +48,24 @@ class PathsManager:
             with open(self.config_file_path, "r", encoding="utf-8") as f:
                 self.paths_config = yaml.safe_load(f)
             if not isinstance(self.paths_config, dict):
-                print(f"Warning: Paths configuration in '{self.config_file_path}' is not a dictionary. Using defaults.")
+                print(
+                    f"Warning: Paths configuration in '{self.config_file_path}' is not a dictionary. Using defaults."
+                )
                 self.paths_config = {}
         except FileNotFoundError:
-            print(f"Warning: Paths configuration file '{self.config_file_path}' not found. Using default paths.")
+            print(
+                f"Warning: Paths configuration file '{self.config_file_path}' not found. Using default paths."
+            )
             self.paths_config = {}
         except yaml.YAMLError as e:
-            print(f"Error parsing YAML from '{self.config_file_path}': {e}. Using default paths.")
+            print(
+                f"Error parsing YAML from '{self.config_file_path}': {e}. Using default paths."
+            )
             self.paths_config = {}
         except Exception as e:
-            print(f"An unexpected error occurred loading '{self.config_file_path}': {e}. Using default paths.")
+            print(
+                f"An unexpected error occurred loading '{self.config_file_path}': {e}. Using default paths."
+            )
             self.paths_config = {}
 
     def _get_path_from_config(self, key_path: str) -> Optional[Path]:
@@ -65,7 +74,7 @@ class PathsManager:
         Example: "github.local_path"
         Returns an absolute Path object if found, otherwise None.
         """
-        keys = key_path.split('.')
+        keys = key_path.split(".")
         current_level = self.paths_config
         for key in keys:
             if isinstance(current_level, dict) and key in current_level:
@@ -100,7 +109,7 @@ class PathsManager:
             self.logs_dir,
             self.config_dir,
             self.data_dir,
-            self.docs_dir
+            self.docs_dir,
         ]
         for directory in core_dirs:
             try:
@@ -143,7 +152,9 @@ class PathsManager:
 
         return default
 
-    def get_timestamped_output_path(self, prefix: str = "output", suffix: str = ".txt") -> Path:
+    def get_timestamped_output_path(
+        self, prefix: str = "output", suffix: str = ".txt"
+    ) -> Path:
         """Generates a timestamped path in the output directory."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"{prefix}_{timestamp}{suffix}"
@@ -154,7 +165,7 @@ class PathsManager:
         Retrieves any value from the loaded configuration using a dot-separated key.
         Example: "github.user_name"
         """
-        keys = key_path.split('.')
+        keys = key_path.split(".")
         current_level = self.paths_config
         for key in keys:
             if isinstance(current_level, dict) and key in current_level:
@@ -169,20 +180,26 @@ if __name__ == "__main__":
     print(f"--- Running PathsManager Directly ({Path(__file__).name}) ---")
     print(f"Python executable: {sys.executable}")
     print(f"Current working directory: {Path.cwd()}")
-    print(f"Detected Project Root (_PROJECT_ROOT_PATHS_MANAGER): {_PROJECT_ROOT_PATHS_MANAGER}")
-    print(f"System Path (sys.path includes):")
+    print(
+        f"Detected Project Root (_PROJECT_ROOT_PATHS_MANAGER): {_PROJECT_ROOT_PATHS_MANAGER}"
+    )
+    print("System Path (sys.path includes):")
     for p in sys.path:
         print(f"  - {p}")
     print("---")
 
     try:
-        paths_manager = PathsManager() # Uses default "paths.yaml"
-        print(f"\nPathsManager initialized successfully.")
+        paths_manager = PathsManager()  # Uses default "paths.yaml"
+        print("\nPathsManager initialized successfully.")
         print(f"  Config file expected at: {paths_manager.config_file_path}")
         if paths_manager.paths_config:
-            print(f"  Successfully loaded configuration from: {paths_manager.config_file_path}")
+            print(
+                f"  Successfully loaded configuration from: {paths_manager.config_file_path}"
+            )
         else:
-            print(f"  Could not load or parse configuration from: {paths_manager.config_file_path}. Using defaults or empty config.")
+            print(
+                f"  Could not load or parse configuration from: {paths_manager.config_file_path}. Using defaults or empty config."
+            )
 
         print("\n--- Resolved Paths ---")
         print(f"Project Root: {paths_manager.get_project_root()}")
@@ -195,18 +212,28 @@ if __name__ == "__main__":
 
         print("\n--- Specific Config Value Retrieval ---")
         # Test a value expected to be at the root of paths.yaml
-        pandoc_exe_from_config = paths_manager.get_config_value("pandoc_path", "pandoc_path_not_in_config")
+        pandoc_exe_from_config = paths_manager.get_config_value(
+            "pandoc_path", "pandoc_path_not_in_config"
+        )
         print(f"Value for 'pandoc_path' (from root): {pandoc_exe_from_config}")
 
         # Test a nested value
-        github_repo_url = paths_manager.get_config_value("github.repo_url", "github.repo_url_not_in_config")
+        github_repo_url = paths_manager.get_config_value(
+            "github.repo_url", "github.repo_url_not_in_config"
+        )
         print(f"Value for 'github.repo_url': {github_repo_url}")
 
         # Test a value from the 'paths' section specifically using get_path_config
-        input_dir_from_paths_section = paths_manager.get_path_config("input_dir", "paths.input_dir_not_in_config")
-        print(f"Value for 'input_dir' (from 'paths' section via get_path_config): {input_dir_from_paths_section}")
+        input_dir_from_paths_section = paths_manager.get_path_config(
+            "input_dir", "paths.input_dir_not_in_config"
+        )
+        print(
+            f"Value for 'input_dir' (from 'paths' section via get_path_config): {input_dir_from_paths_section}"
+        )
 
-        openai_key_path_val = paths_manager.get_config_value("secrets.openai_key_path", "secrets.openai_key_path_not_in_config")
+        openai_key_path_val = paths_manager.get_config_value(
+            "secrets.openai_key_path", "secrets.openai_key_path_not_in_config"
+        )
         print(f"Value for 'secrets.openai_key_path': {openai_key_path_val}")
 
         print("\n--- Timestamped Path Generation ---")
@@ -219,10 +246,11 @@ if __name__ == "__main__":
         print("\n--- PathsManager Direct Run Test Complete ---")
 
     except Exception as e:
-        print(f"\n--- ERROR during PathsManager direct run ---")
+        print("\n--- ERROR during PathsManager direct run ---")
         print(f"Error type: {type(e).__name__}")
         print(f"Error message: {e}")
         import traceback
+
         print("\n--- Traceback ---")
         traceback.print_exc()
         print("--- End of Error Report ---")

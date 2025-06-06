@@ -10,7 +10,9 @@ import os
 import logging
 
 # Set up logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 # Add the current directory (scripts/) to the Python path
@@ -32,10 +34,12 @@ sys.path.insert(0, modules_path)
 # Import dummy placeholders for demonstration if modules not available
 # In a real implementation, these would be properly implemented modules
 
+
 def dummy_convert_document(input_file):
     """Dummy implementation for demonstration"""
     print(f"[DEMO] Converting document: {input_file}")
     return True
+
 
 def dummy_generate_ascii_diagram():
     """Dummy implementation for demonstration"""
@@ -50,10 +54,12 @@ def dummy_generate_ascii_diagram():
     +----------------+
     """
 
+
 def dummy_lint_markdown(file_path):
     """Dummy implementation for demonstration"""
     print(f"[DEMO] Linting markdown file: {file_path}")
     return True
+
 
 # Try to import real modules, fall back to dummy implementations
 print("Warning: pandoc_integration module not found. Using dummy implementation.")
@@ -111,7 +117,9 @@ except ImportError as e:
 def main():
     if len(sys.argv) < 2:
         print("Usage: master.py <command> [arguments]")
-        print("Available commands: convert, diagram, lint, rtm, outline, check-deps, debug, github, pipeline")
+        print(
+            "Available commands: convert, diagram, lint, rtm, outline, check-deps, debug, github, pipeline"
+        )
         sys.exit(1)
 
     command = sys.argv[1]
@@ -137,11 +145,11 @@ def main():
         original_argv = list(sys.argv)
         # Set sys.argv for generate_rtm.py's argparse
         # The first arg is script name, then the rest are parameters for generate_rtm.py
-        sys.argv = ['generate_rtm.py'] + args_for_command
+        sys.argv = ["generate_rtm.py"] + args_for_command
         try:
             rtm_exit_code = generate_rtm_main()
         finally:
-            sys.argv = original_argv # Restore original sys.argv
+            sys.argv = original_argv  # Restore original sys.argv
 
         if rtm_exit_code != 0:
             print(f"RTM generation failed with exit code {rtm_exit_code}")
@@ -152,11 +160,11 @@ def main():
         print(f"Executing outline extraction with args: {args_for_command}")
         original_argv = list(sys.argv)
         # Set sys.argv for extract_outline.py's argparse
-        sys.argv = ['extract_outline.py'] + args_for_command
+        sys.argv = ["extract_outline.py"] + args_for_command
         try:
             outline_exit_code = extract_outline_main()
         finally:
-            sys.argv = original_argv # Restore original sys.argv
+            sys.argv = original_argv  # Restore original sys.argv
 
         if outline_exit_code != 0:
             print(f"Outline extraction failed with exit code {outline_exit_code}")
@@ -218,7 +226,9 @@ def main():
         config_data = load_config()
 
         try:
-            success, summary = run_pipeline(config_data, verbose="--verbose" in args_for_command)
+            success, summary = run_pipeline(
+                config_data, verbose="--verbose" in args_for_command
+            )
 
             if success:
                 print("Pipeline execution completed successfully.")

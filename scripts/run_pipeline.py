@@ -12,8 +12,12 @@ import yaml
 import os
 import subprocess
 import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import re
-from pathlib import Path
 import logging
 import time
 
@@ -29,8 +33,7 @@ logger = logging.getLogger("rtm-pipeline")
 def git_operation(command, error_message, check=True):
     """Execute a git command and handle errors"""
     try:
-        result = subprocess.run(command, check=check,
-                                capture_output=True, text=True)
+        result = subprocess.run(command, check=check, capture_output=True, text=True)
         if result.returncode == 0:
             logger.info(f"Git command successful: {' '.join(command)}")
         else:
@@ -86,8 +89,7 @@ def setup_git_environment(config):
         logger.info(f"Initializing new Git repository in {repo_path}")
 
         # Initialize the repository
-        output, code = git_operation(
-            ["git", "init"], "Failed to initialize repository")
+        output, code = git_operation(["git", "init"], "Failed to initialize repository")
         if code != 0:
             return False
 
@@ -112,8 +114,7 @@ def setup_git_environment(config):
         if code != 0:
             # Add the remote if it doesn't exist
             output, code = git_operation(
-                ["git", "remote", "add", "origin",
-                    repo_url], "Failed to add remote"
+                ["git", "remote", "add", "origin", repo_url], "Failed to add remote"
             )
             if code != 0:
                 return False
@@ -143,8 +144,7 @@ def setup_git_environment(config):
         if code != 0:
             # Create the branch if it doesn't exist
             output, code = git_operation(
-                ["git", "checkout", "-b",
-                    branch], f"Failed to create branch {branch}"
+                ["git", "checkout", "-b", branch], f"Failed to create branch {branch}"
             )
             if code != 0:
                 return False
@@ -174,8 +174,7 @@ def commit_changes(config, message="Pipeline execution results"):
     logger.info("Committing changes to GitHub")
 
     # Add all changes
-    output, code = git_operation(
-        ["git", "add", "."], "Failed to stage changes")
+    output, code = git_operation(["git", "add", "."], "Failed to stage changes")
     if code != 0:
         return False
 
@@ -287,8 +286,7 @@ def run_pipeline():
             name = step.get("name", script_path)
 
             if not script_path:
-                logger.warning(
-                    f"No script defined for step '{name}', skipping.")
+                logger.warning(f"No script defined for step '{name}', skipping.")
                 continue
 
             step_start_time = time.time()
@@ -326,8 +324,7 @@ def run_pipeline():
         except Exception as e:
             logger.warning(f"Could not compare output formats: {e}")
     else:
-        logger.warning(
-            "Format comparison script not found. Skipping comparison.")
+        logger.warning("Format comparison script not found. Skipping comparison.")
 
     # Commit changes if CI integration is enabled and pipeline was successful
     if config.get("github", {}).get("enabled", False) and all_steps_success:

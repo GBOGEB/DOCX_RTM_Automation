@@ -1,15 +1,16 @@
-import os
 import json
-import subprocess
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 from enum import Enum, auto
+
 
 class CICDStage(Enum):
     """Enumeration of CI/CD pipeline stages"""
+
     BUILD = auto()
     TEST = auto()
     ANALYZE = auto()
     DEPLOY = auto()
+
 
 class DMAICCICDIntegration:
     """Integrates DMAIC methodology with CI/CD pipelines"""
@@ -25,11 +26,13 @@ class DMAICCICDIntegration:
             CICDStage.BUILD: "DEFINE",
             CICDStage.TEST: "MEASURE",
             CICDStage.ANALYZE: "ANALYZE",
-            CICDStage.DEPLOY: "IMPROVE"
+            CICDStage.DEPLOY: "IMPROVE",
         }
         return mapping.get(stage, "CONTROL")
 
-    def process_pipeline_results(self, stage: CICDStage, results: Dict[str, Any]) -> Dict[str, Any]:
+    def process_pipeline_results(
+        self, stage: CICDStage, results: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Process CI/CD pipeline results using DMAIC methodology"""
         dmaic_phase = self.map_stage_to_phase(stage)
 
@@ -48,24 +51,29 @@ class DMAICCICDIntegration:
             "dmaic_phase": dmaic_phase,
             "raw_results": results,
             "dmaic_insights": response,
-            "recommendations": self._extract_recommendations(response)
+            "recommendations": self._extract_recommendations(response),
         }
 
     def _extract_recommendations(self, dmaic_response: str) -> List[str]:
         """Extract actionable recommendations from DMAIC response"""
         # Simple extraction - in a real implementation, use more sophisticated NLP
         recommendations = []
-        for line in dmaic_response.split('\n'):
-            if any(keyword in line.lower() for keyword in ['recommend', 'suggest', 'should', 'improve']):
+        for line in dmaic_response.split("\n"):
+            if any(
+                keyword in line.lower()
+                for keyword in ["recommend", "suggest", "should", "improve"]
+            ):
                 recommendations.append(line.strip())
         return recommendations
 
-    def generate_report(self, all_stage_results: Dict[str, Any], output_path: str) -> str:
+    def generate_report(
+        self, all_stage_results: Dict[str, Any], output_path: str
+    ) -> str:
         """Generate a comprehensive CI/CD pipeline report with DMAIC insights"""
         report = {
             "summary": "DMAIC Analysis of CI/CD Pipeline Results",
             "stages": all_stage_results,
-            "overall_recommendations": []
+            "overall_recommendations": [],
         }
 
         # Consolidate recommendations

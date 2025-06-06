@@ -3,11 +3,11 @@
 DOCX RTM Automation Dashboard
 Interactive dashboard to navigate and use the RTM Automation tools
 """
+
 import os
 import sys
 import subprocess
 import webbrowser
-from pathlib import Path
 
 try:
     from rich.console import Console
@@ -15,9 +15,11 @@ try:
     from rich.panel import Panel
     from rich.markdown import Markdown
     from rich.syntax import Syntax
+
     HAS_RICH = True
 except ImportError:
     HAS_RICH = False
+    
     print("Rich library not found. Install for better UI: pip install rich")
 
 
@@ -27,7 +29,7 @@ class RTMDashboard:
     def __init__(self):
         """Initialize the dashboard."""
         self.project_dir = os.path.dirname(os.path.abspath(__file__))
-        self.is_windows = sys.platform.startswith('win')
+        self.is_windows = sys.platform.startswith("win")
         self.console = Console() if HAS_RICH else None
 
     def check_environment(self):
@@ -37,22 +39,25 @@ class RTMDashboard:
             "venv_active": self._is_venv_active(),
             "git_available": self._check_command("git --version"),
             "pandoc_available": self._check_command("pandoc --version"),
-            "config_valid": os.path.isfile(os.path.join(self.project_dir, "config", "paths.yaml")),
+            "config_valid": os.path.isfile(
+                os.path.join(self.project_dir, "config", "paths.yaml")
+            ),
         }
 
         return results
 
     def _is_venv_active(self):
         """Check if a virtual environment is active."""
-        return (hasattr(sys, 'real_prefix') or
-                (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix))
+        return hasattr(sys, "real_prefix") or (
+            hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix
+        )
 
     def _check_command(self, command):
         """Check if a command is available."""
         try:
-            subprocess.run(command.split(),
-                          stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE)
+            subprocess.run(
+                command.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
             return True
         except (subprocess.SubprocessError, FileNotFoundError):
             return False
@@ -70,8 +75,12 @@ class RTMDashboard:
         env_check = self.check_environment()
 
         # Title
-        self.console.print(Panel.fit("[bold blue]DOCX RTM Automation Dashboard[/bold blue]",
-                                     border_style="cyan"))
+        self.console.print(
+            Panel.fit(
+                "[bold blue]DOCX RTM Automation Dashboard[/bold blue]",
+                border_style="cyan",
+            )
+        )
 
         # Environment status
         self.console.print("\n[bold]Environment Status:[/bold]")
@@ -80,14 +89,38 @@ class RTMDashboard:
         env_table.add_column("Status")
 
         env_table.add_row("Python Version", f"{env_check['python_version']}")
-        env_table.add_row("Virtual Env", "[green]Active[/green]" if env_check['venv_active']
-                           else "[red]Inactive[/red] (Run setup_venv.sh)")
-        env_table.add_row("Git", "[green]Available[/green]" if env_check['git_available']
-                          else "[red]Not Found[/red]")
-        env_table.add_row("Pandoc", "[green]Available[/green]" if env_check['pandoc_available']
-                          else "[red]Not Found[/red] (Run shell_scripts/install_pandoc.sh)")
-        env_table.add_row("Configuration", "[green]Valid[/green]" if env_check['config_valid']
-                          else "[red]Missing/Invalid[/red]")
+        env_table.add_row(
+            "Virtual Env",
+            (
+                "[green]Active[/green]"
+                if env_check["venv_active"]
+                else "[red]Inactive[/red] (Run setup_venv.sh)"
+            ),
+        )
+        env_table.add_row(
+            "Git",
+            (
+                "[green]Available[/green]"
+                if env_check["git_available"]
+                else "[red]Not Found[/red]"
+            ),
+        )
+        env_table.add_row(
+            "Pandoc",
+            (
+                "[green]Available[/green]"
+                if env_check["pandoc_available"]
+                else "[red]Not Found[/red] (Run shell_scripts/install_pandoc.sh)"
+            ),
+        )
+        env_table.add_row(
+            "Configuration",
+            (
+                "[green]Valid[/green]"
+                if env_check["config_valid"]
+                else "[red]Missing/Invalid[/red]"
+            ),
+        )
 
         self.console.print(env_table)
 
@@ -97,9 +130,15 @@ class RTMDashboard:
         workflow_table.add_column("Command", style="cyan")
         workflow_table.add_column("Description")
 
-        workflow_table.add_row("run.sh rtm-pipeline", "Complete RTM generation workflow")
-        workflow_table.add_row("run.sh word-to-md-dir", "Convert Word documents to Markdown")
-        workflow_table.add_row("run.sh extract-rtm-dir output", "Extract RTM from Markdown files")
+        workflow_table.add_row(
+            "run.sh rtm-pipeline", "Complete RTM generation workflow"
+        )
+        workflow_table.add_row(
+            "run.sh word-to-md-dir", "Convert Word documents to Markdown"
+        )
+        workflow_table.add_row(
+            "run.sh extract-rtm-dir output", "Extract RTM from Markdown files"
+        )
         workflow_table.add_row("run.sh visualize-rtm", "Generate RTM visualizations")
 
         self.console.print(workflow_table)
@@ -128,7 +167,9 @@ class RTMDashboard:
         docs_table.add_row("QUICK_START.md", "Getting started guide")
         docs_table.add_row("docs/openai_integration.md", "OpenAI integration guide")
         docs_table.add_row("docs/troubleshooting.md", "Troubleshooting common issues")
-        docs_table.add_row("docs/workflow_execution_guide.md", "Detailed workflow guide")
+        docs_table.add_row(
+            "docs/workflow_execution_guide.md", "Detailed workflow guide"
+        )
 
         self.console.print(docs_table)
 
@@ -152,10 +193,16 @@ class RTMDashboard:
 
         print("Environment Status:")
         print(f"- Python Version: {env_check['python_version']}")
-        print(f"- Virtual Env: {'Active' if env_check['venv_active'] else 'Inactive (Run setup_venv.sh)'}")
+        print(
+            f"- Virtual Env: {'Active' if env_check['venv_active'] else 'Inactive (Run setup_venv.sh)'}"
+        )
         print(f"- Git: {'Available' if env_check['git_available'] else 'Not Found'}")
-        print(f"- Pandoc: {'Available' if env_check['pandoc_available'] else 'Not Found (Run shell_scripts/install_pandoc.sh)'}")
-        print(f"- Configuration: {'Valid' if env_check['config_valid'] else 'Missing/Invalid'}")
+        print(
+            f"- Pandoc: {'Available' if env_check['pandoc_available'] else 'Not Found (Run shell_scripts/install_pandoc.sh)'}"
+        )
+        print(
+            f"- Configuration: {'Valid' if env_check['config_valid'] else 'Missing/Invalid'}"
+        )
 
         print("\nAvailable Workflows:")
         print("- run.sh rtm-pipeline            # Complete RTM generation workflow")
@@ -208,8 +255,11 @@ class RTMDashboard:
                 self.show_dashboard()
 
             elif choice == 3:
-                self._run_command("run.sh rtm-pipeline" if not self.is_windows else
-                                "run.bat rtm-pipeline")
+                self._run_command(
+                    "run.sh rtm-pipeline"
+                    if not self.is_windows
+                    else "run.bat rtm-pipeline"
+                )
                 input("Press Enter to continue...")
                 self.show_dashboard()
 
@@ -242,7 +292,7 @@ class RTMDashboard:
             return
 
         if HAS_RICH:
-            with open(filepath, 'r', encoding='utf-8') as f:
+            with open(filepath, "r", encoding="utf-8") as f:
                 markdown = Markdown(f.read())
                 self.console.print(markdown)
         else:
@@ -254,14 +304,14 @@ class RTMDashboard:
                     webbrowser.open(f"file://{filepath}")
             except:
                 # Fallback to displaying raw content
-                with open(filepath, 'r', encoding='utf-8') as f:
+                with open(filepath, "r", encoding="utf-8") as f:
                     print(f.read())
 
     def _run_command(self, command):
         """Run a shell command."""
         print(f"Running: {command}")
         try:
-            if self.is_windows and not command.endswith('.bat'):
+            if self.is_windows and not command.endswith(".bat"):
                 # For Windows, make sure to use batch files
                 command = command.replace("run.sh", "run.bat")
 
@@ -277,11 +327,17 @@ class RTMDashboard:
         # Check virtual environment
         if not self._is_venv_active():
             print("Virtual environment not active. Setting up...")
-            self._run_command("setup_venv.sh" if not self.is_windows else "setup_venv.bat")
+            self._run_command(
+                "setup_venv.sh" if not self.is_windows else "setup_venv.bat"
+            )
 
         # Install dependencies
         print("Installing dependencies...")
-        self._run_command("install_dependencies.sh" if not self.is_windows else "pip install -r requirements.txt")
+        self._run_command(
+            "install_dependencies.sh"
+            if not self.is_windows
+            else "pip install -r requirements.txt"
+        )
 
         # Create directory structure if needed
         for directory in ["input", "output", "output/rtm", "output/rtm_viz"]:
@@ -295,7 +351,7 @@ class RTMDashboard:
         if not os.path.isfile(config_path):
             print("Configuration file missing. Creating default...")
             os.makedirs(os.path.join(self.project_dir, "config"), exist_ok=True)
-            with open(config_path, 'w') as f:
+            with open(config_path, "w") as f:
                 f.write("input_dir: input\n")
                 f.write("output_dir: output\n")
 
@@ -308,8 +364,11 @@ class RTMDashboard:
             print("Examples directory not found.")
             return
 
-        example_files = [f for f in os.listdir(examples_dir)
-                         if os.path.isfile(os.path.join(examples_dir, f))]
+        example_files = [
+            f
+            for f in os.listdir(examples_dir)
+            if os.path.isfile(os.path.join(examples_dir, f))
+        ]
 
         print("\nAvailable Example Files:")
         for i, example in enumerate(example_files, 1):
@@ -323,7 +382,7 @@ class RTMDashboard:
             if choice == 0:
                 return
             elif 1 <= choice <= len(example_files):
-                example_file = os.path.join(examples_dir, example_files[choice-1])
+                example_file = os.path.join(examples_dir, example_files[choice - 1])
                 self._view_file(example_file)
         except (ValueError, IndexError):
             print("Invalid selection.")
@@ -333,6 +392,7 @@ def main():
     """Main function to run the dashboard."""
     dashboard = RTMDashboard()
     dashboard.show_dashboard()
+
 
 if __name__ == "__main__":
     main()

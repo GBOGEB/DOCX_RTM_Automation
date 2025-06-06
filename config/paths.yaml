@@ -1,71 +1,50 @@
-# DOCX RTM Automation Configuration
-
-# Path Configuration
 paths:
-  input_dir: "input"
-  output_dir: "output"
-  logs_dir: "logs"
-  temp_dir: "temp"
-  data_dir: "data"
-
-# OpenAI API Configuration
+  input_dir: input
+  output_dir: output
+  logs_dir: logs
+  temp_dir: temp
+  data_dir: data
 openai:
-  api_key_file: "config/openai_key.txt"
-  organization_id: ""  # Optional: Your OpenAI organization ID
-  model: "gpt-4"  # Default model to use
+  api_key_file: config/openai_key.txt
+  organization_id: ''
+  model: gpt-4
   temperature: 0.7
   max_tokens: 2048
-
-# Pandoc Configuration
 pandoc:
   toc: true
   toc_depth: 6
   number_sections: true
-  lua_filter: "config/extend_headings.lua"
-  wrap: "none"
-
-# Pipeline Configuration
+  lua_filter: config/extend_headings.lua
+  wrap: none
 pipeline:
   steps:
-    - name: word_to_md
-      script: src/core/word_to_md.py
-      enabled: true
-
-    - name: extract_outline
-      script: src/extractors/extract_outline.py
-      enabled: true
-
-    - name: extract_rtm
-      script: src/extractors/extract_rtm.py
-      enabled: true
-
-    - name: md_to_json_yaml
-      script: src/core/md_to_json_yaml.py
-      enabled: true
-
-    - name: sync_outline_files
-      script: src/utils/sync_outline_files.py
-      enabled: true
-
-# Git Configuration for outputs
+  - name: word_to_md
+    script: src/core/word_to_md.py
+    enabled: true
+  - name: extract_outline
+    script: src/extractors/extract_outline.py
+    enabled: true
+  - name: extract_rtm
+    script: src/extractors/extract_rtm.py
+    enabled: true
+  - name: md_to_json_yaml
+    script: src/core/md_to_json_yaml.py
+    enabled: true
+  - name: sync_outline_files
+    script: src/utils/sync_outline_files.py
+    enabled: true
 git:
   auto_commit: false
-  commit_message: "Update RTM outputs"
+  commit_message: Update RTM outputs
   push_changes: false
-  branch: "main"
-
-# Logging Configuration
+  branch: main
 logging:
-  level: "INFO"
-  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  level: INFO
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
   file_enabled: true
   console_enabled: true
-
-# Environment Variables
 env:
-  PYTHONPATH: "${PROJECT_ROOT}"
-  PYTHONIOENCODING: "utf-8"
-
-# Secrets configuration (for main.py compatibility)
+  PYTHONPATH: ${PROJECT_ROOT}
+  PYTHONIOENCODING: utf-8
 secrets:
-  openai_key_path: "config/openai_key.txt"  # Path to OpenAI API key file
+  openai_key_path: config/openai_key.txt

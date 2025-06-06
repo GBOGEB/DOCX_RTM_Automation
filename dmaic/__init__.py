@@ -3,10 +3,11 @@
 from .dmaic_handler import DMAICHandler, DMAICPhase
 from typing import List, Dict, Any, Optional
 
+
 def rerun_dmaic_with_openai(
     handler: DMAICHandler,
     phases: List[DMAICPhase] = None,
-    openai_config: Dict[str, Any] = None
+    openai_config: Dict[str, Any] = None,
 ) -> Dict[str, Any]:
     """
     Rerun specific or all DMAIC phases with OpenAI integration.
@@ -20,9 +21,13 @@ def rerun_dmaic_with_openai(
         Results from the rerun phases
     """
     if phases is None:
-        phases = [DMAICPhase.DEFINE, DMAICPhase.MEASURE,
-                 DMAICPhase.ANALYZE, DMAICPhase.IMPROVE,
-                 DMAICPhase.CONTROL]
+        phases = [
+            DMAICPhase.DEFINE,
+            DMAICPhase.MEASURE,
+            DMAICPhase.ANALYZE,
+            DMAICPhase.IMPROVE,
+            DMAICPhase.CONTROL,
+        ]
 
     if openai_config is None:
         openai_config = {}
@@ -33,11 +38,13 @@ def rerun_dmaic_with_openai(
 
     return results
 
+
 class DMAICFactorizer:
     """
     Helper class for factorizing common operations across DMAIC phases.
     These methods are placeholders for future optimization logic.
     """
+
     @staticmethod
     def extract_common_patterns(data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -64,6 +71,7 @@ class DMAICFactorizer:
         # Implementation for prompt optimization
         print("Placeholder: Optimizing prompts.")
         return [f"optimized_{p}" for p in prompts if p]
+
 
 # Add the new functionality to package exports
 __all__ = ["DMAICHandler", "DMAICPhase", "rerun_dmaic_with_openai", "DMAICFactorizer"]

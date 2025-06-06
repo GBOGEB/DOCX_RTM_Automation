@@ -7,7 +7,6 @@ It is intended to be run from the root of the Git repository it manages.
 """
 
 import os
-import sys
 import subprocess
 import argparse
 import webbrowser
@@ -41,7 +40,9 @@ def run_command(command: list, verbose=True, working_dir=None):
         print(f"Full command: {command_str_for_log}")
         return None
     except Exception as e_gen:
-        print(f"An unexpected error occurred with command: {command_str_for_log}: {e_gen}")
+        print(
+            f"An unexpected error occurred with command: {command_str_for_log}: {e_gen}"
+        )
         return None
 
 
@@ -156,10 +157,14 @@ def check_repo_exists(repo_url):
             )
             return result and result.strip() == "200"
         except Exception as e:
-            print(f"Failed to check repo existence with curl: {e}. Assuming it might not exist or curl is unavailable.")
+            print(
+                f"Failed to check repo existence with curl: {e}. Assuming it might not exist or curl is unavailable."
+            )
             return False
     else:
-        print(f"Repo check currently only supports https://github.com/ URLs. URL: {repo_url}")
+        print(
+            f"Repo check currently only supports https://github.com/ URLs. URL: {repo_url}"
+        )
         return False
 
 
@@ -314,8 +319,12 @@ if __name__ == "__main__":
     parser.add_argument("--url", help="Repository URL for clone or remote setup")
     parser.add_argument("--dir", help="Target directory for clone")
     parser.add_argument("--branch", default="main", help="Branch for push operation")
-    parser.add_argument("--https", action="store_true", help="Use HTTPS for remote URL (default)")
-    parser.add_argument("--ssh", action="store_false", dest="use_https", help="Use SSH for remote URL")
+    parser.add_argument(
+        "--https", action="store_true", help="Use HTTPS for remote URL (default)"
+    )
+    parser.add_argument(
+        "--ssh", action="store_false", dest="use_https", help="Use SSH for remote URL"
+    )
 
     args = parser.parse_args()
 

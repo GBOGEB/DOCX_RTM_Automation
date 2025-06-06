@@ -11,12 +11,12 @@ import logging
 # Configure logging more robustly
 # Set default logging level; can be overridden by application using this module
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
-logger = logging.getLogger(__name__) # Use __name__ for module-specific logger
+logger = logging.getLogger(__name__)  # Use __name__ for module-specific logger
 
-def generate_ascii_diagram(diagram_type: str = "rtm") -> str: # Added type hints
+
+def generate_ascii_diagram(diagram_type: str = "rtm") -> str:  # Added type hints
     """
     Generate an ASCII diagram based on the specified type.
 
@@ -48,7 +48,7 @@ def generate_ascii_diagram(diagram_type: str = "rtm") -> str: # Added type hints
         | Output Formats |<-------------+
         +----------------+
         """
-    elif diagram_type == "rtm": # Explicitly check for "rtm"
+    elif diagram_type == "rtm":  # Explicitly check for "rtm"
         return r"""
         +----------------------+
         |   Markdown Files     |
@@ -74,10 +74,13 @@ def generate_ascii_diagram(diagram_type: str = "rtm") -> str: # Added type hints
         +----------------------+
         """
     else:
-        logger.warning(f"Unknown diagram type: '{diagram_type}'. Returning empty diagram.")
+        logger.warning(
+            f"Unknown diagram type: '{diagram_type}'. Returning empty diagram."
+        )
         return "Unknown diagram type specified."
 
-def draw_rectangle(width: int, height: int): # Added type hints
+
+def draw_rectangle(width: int, height: int):  # Added type hints
     """
     Draws an ASCII rectangle with the given width and height.
     Prints directly to console.
@@ -97,7 +100,8 @@ def draw_rectangle(width: int, height: int): # Added type hints
         print(middle)
     print(top_bottom)
 
-def draw_triangle(height: int): # Added type hints
+
+def draw_triangle(height: int):  # Added type hints
     """
     Draws an ASCII right-angled triangle with the given height.
     Prints directly to console.
@@ -105,12 +109,13 @@ def draw_triangle(height: int): # Added type hints
     if not isinstance(height, int):
         logger.error("Height must be an integer.")
         raise TypeError("Height must be an integer.")
-    if height < 1: # Allow height of 1 for a single '*'
+    if height < 1:  # Allow height of 1 for a single '*'
         logger.error(f"Height ({height}) must be at least 1.")
         raise ValueError("Height must be at least 1.")
 
     for i in range(1, height + 1):
         print("*" * i)
+
 
 if __name__ == "__main__":
     logger.info("Running ASCII Diagram module directly for demonstration.")
@@ -128,7 +133,7 @@ if __name__ == "__main__":
         logger.error(f"Error drawing triangle: {e}")
 
     print("\nDefault RTM diagram:")
-    print(generate_ascii_diagram()) # Default is "rtm"
+    print(generate_ascii_diagram())  # Default is "rtm"
 
     print("\nPipeline diagram:")
     print(generate_ascii_diagram("pipeline"))

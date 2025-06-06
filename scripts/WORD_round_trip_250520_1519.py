@@ -146,8 +146,7 @@ def main():
                         extract_structure_from_md,
                     )
 
-                    logger.info(
-                        f"Generating document structure to {structure_output}")
+                    logger.info(f"Generating document structure to {structure_output}")
                     extract_structure_from_md(output_file, structure_output)
                 except ImportError:
                     logger.warning(

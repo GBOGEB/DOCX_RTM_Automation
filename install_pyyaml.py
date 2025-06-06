@@ -2,9 +2,10 @@
 """
 Simple script to install PyYAML package.
 """
+
 import subprocess
 import sys
-import os
+
 
 def install_pyyaml():
     """Install PyYAML package."""
@@ -17,10 +18,12 @@ def install_pyyaml():
         print(f"Error installing PyYAML: {e}")
         return False
 
+
 def verify_installation():
     """Verify that PyYAML is installed and working."""
     try:
         import yaml
+
         print(f"PyYAML version {yaml.__version__} is installed.")
 
         # Create a simple YAML test
@@ -29,7 +32,9 @@ def verify_installation():
         loaded_data = yaml.safe_load(yaml_str)
 
         if loaded_data == test_data:
-            print("PyYAML working correctly - successfully dumped and loaded test data.")
+            print(
+                "PyYAML working correctly - successfully dumped and loaded test data."
+            )
             return True
         else:
             print("PyYAML test failed - loaded data doesn't match original!")
@@ -41,15 +46,16 @@ def verify_installation():
         print(f"PyYAML verification failed: {e}")
         return False
 
+
 def main():
     """Main entry point."""
     # Check if virtual environment is active
-    in_venv = hasattr(sys, 'real_prefix') or sys.base_prefix != sys.prefix
+    in_venv = hasattr(sys, "real_prefix") or sys.base_prefix != sys.prefix
 
     if not in_venv:
         print("Warning: Not running in a virtual environment!")
         response = input("Continue anyway? (y/n): ")
-        if response.lower() != 'y':
+        if response.lower() != "y":
             print("Aborted. Please activate a virtual environment first.")
             return 1
 
@@ -68,6 +74,7 @@ def main():
     print("yaml.dump(data, open('output.yaml', 'w'))")
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

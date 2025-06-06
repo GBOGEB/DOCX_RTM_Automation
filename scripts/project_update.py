@@ -11,7 +11,6 @@ This script performs a comprehensive update of the DOCX RTM Automation project:
 5. GitHub repository preparation
 """
 
-import os
 import sys
 import json
 import yaml
@@ -45,7 +44,10 @@ class ProjectUpdater:
         self.sub_repo_paths = []
         if self.config:
             self.sub_repo_paths = [
-                self.project_root / Path(p) for p in self.config.get("repository_settings", {}).get("sub_repositories", [])
+                self.project_root / Path(p)
+                for p in self.config.get("repository_settings", {}).get(
+                    "sub_repositories", []
+                )
             ]
 
     def _load_global_config(self):
@@ -80,9 +82,9 @@ class ProjectUpdater:
 
     def print_header(self, text, color=Colors.BLUE):
         """Print formatted header"""
-        print(f"\n{color}{Colors.BOLD}{'='*60}{Colors.ENDC}")
+        print(f"\n{color}{Colors.BOLD}{'=' * 60}{Colors.ENDC}")
         print(f"{color}{Colors.BOLD}{text.center(60)}{Colors.ENDC}")
-        print(f"{color}{Colors.BOLD}{'='*60}{Colors.ENDC}")
+        print(f"{color}{Colors.BOLD}{'=' * 60}{Colors.ENDC}")
 
     def print_status(self, status, message, details=None):
         """Print status with color coding"""
@@ -128,15 +130,13 @@ class ProjectUpdater:
             full_path = self.project_root / dir_path
             if full_path.exists():
                 existing_dirs.append(dir_path)
-                self.print_status(
-                    "INFO", f"Directory exists: {dir_path}", description)
+                self.print_status("INFO", f"Directory exists: {dir_path}", description)
             else:
                 missing_dirs.append(dir_path)
                 self.issues_found.append(f"Missing directory: {dir_path}")
 
         if missing_dirs:
-            self.print_status(
-                "WARNING", f"Missing {len(missing_dirs)} directories")
+            self.print_status("WARNING", f"Missing {len(missing_dirs)} directories")
             for missing in missing_dirs:
                 self.print_status("WARNING", f"  - {missing}")
 
@@ -147,10 +147,15 @@ class ProjectUpdater:
                 if sub_repo_path.exists() and sub_repo_path.is_dir():
                     self.print_status("INFO", f"Sub-repository found: {sub_repo_path}")
                 else:
-                    self.print_status("WARNING", f"Sub-repository not found or not a directory: {sub_repo_path}")
+                    self.print_status(
+                        "WARNING",
+                        f"Sub-repository not found or not a directory: {sub_repo_path}",
+                    )
                     self.issues_found.append(f"Missing sub-repository: {sub_repo_path}")
         else:
-            self.print_status("INFO", "No sub-repositories configured in global_config.yaml")
+            self.print_status(
+                "INFO", "No sub-repositories configured in global_config.yaml"
+            )
 
         return existing_dirs, missing_dirs, expected_structure
 
@@ -164,7 +169,7 @@ class ProjectUpdater:
                 full_path.mkdir(parents=True, exist_ok=True)
 
                 # Create README.md for documentation
-                readme_content = f"""# {dir_path.replace('/', ' - ').title()}
+                readme_content = f"""# {dir_path.replace("/", " - ").title()}
 
 {expected_structure[dir_path]}
 
@@ -178,7 +183,7 @@ This directory is part of the DOCX RTM Automation project structure.
 - [Add usage instructions here]
 
 ---
-*Created by project_update.py on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*
+*Created by project_update.py on {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}*
 """
                 readme_path = full_path / "README.md"
                 if not readme_path.exists():
@@ -200,7 +205,9 @@ This directory is part of the DOCX RTM Automation project structure.
         # Add files from sub-repositories
         for sub_repo_path in self.sub_repo_paths:
             if sub_repo_path.exists() and sub_repo_path.is_dir():
-                self.print_status("INFO", f"Scanning Python files in sub-repository: {sub_repo_path}")
+                self.print_status(
+                    "INFO", f"Scanning Python files in sub-repository: {sub_repo_path}"
+                )
                 python_files_to_scan.extend(list(sub_repo_path.rglob("*.py")))
 
         # Remove duplicates that might arise if sub_repo_path is within project_root (e.g. "./submodule")
@@ -231,7 +238,9 @@ This directory is part of the DOCX RTM Automation project structure.
 
                 # Check for toc-depth issues (values > 6)
                 # This regex looks for toc-depth followed by a colon or equals, then a number 7,8,9 or any 2+ digit number.
-                if re.search(r'toc-depth\s*[:=]\s*([7-9]|\d{2,})', content, re.IGNORECASE):
+                if re.search(
+                    r"toc-depth\s*[:=]\s*([7-9]|\d{2,})", content, re.IGNORECASE
+                ):
                     issues["toc_depth_issues"].append(str(py_file))
 
                 # Basic syntax check
@@ -252,8 +261,7 @@ This directory is part of the DOCX RTM Automation project structure.
                 for file in files[:5]:  # Show first 5
                     self.print_status("WARNING", f"  - {file}")
                 if len(files) > 5:
-                    self.print_status(
-                        "WARNING", f"  ... and {len(files) - 5} more")
+                    self.print_status("WARNING", f"  ... and {len(files) - 5} more")
 
         return issues
 
@@ -263,7 +271,10 @@ This directory is part of the DOCX RTM Automation project structure.
 
         # Fix toc-depth issues
         if issues["toc_depth_issues"]:
-            self.print_status("INFO", f"Attempting to fix toc-depth issues in {len(issues['toc_depth_issues'])} files...")
+            self.print_status(
+                "INFO",
+                f"Attempting to fix toc-depth issues in {len(issues['toc_depth_issues'])} files...",
+            )
         for file_path_str in issues["toc_depth_issues"]:
             file_path = Path(file_path_str)
             try:
@@ -274,24 +285,26 @@ This directory is part of the DOCX RTM Automation project structure.
                 # Patterns to fix toc-depth values > 6
                 # Targets values 7,8,9 and any multi-digit numbers (e.g., 10, 12)
                 patterns = [
-                    (r'--toc-depth=([7-9]\d*|\d{2,})', '--toc-depth=6'),
-                    (r'--toc-depth=([7-9])', '--toc-depth=6'),
+                    (r"--toc-depth=([7-9]\d*|\d{2,})", "--toc-depth=6"),
+                    (r"--toc-depth=([7-9])", "--toc-depth=6"),
                     (r'"toc-depth":\s*([7-9]\d*|\d{2,})', '"toc-depth": 6'),
                     (r'"toc-depth":\s*([7-9])', '"toc-depth": 6'),
-                    (r'toc_depth:\s*([7-9]\d*|\d{2,})', 'toc_depth: 6'),
-                    (r'toc_depth:\s*([7-9])', 'toc_depth: 6'),
-                    (r'toc_depth\s*=\s*([7-9]\d*|\d{2,})', 'toc_depth=6'),
-                    (r'toc_depth\s*=\s*([7-9])', 'toc_depth=6'),
-                    (r'TOC_DEPTH\s*=\s*([7-9]\d*|\d{2,})', 'TOC_DEPTH=6'),
-                    (r'TOC_DEPTH\s*=\s*([7-9])', 'TOC_DEPTH=6'),
+                    (r"toc_depth:\s*([7-9]\d*|\d{2,})", "toc_depth: 6"),
+                    (r"toc_depth:\s*([7-9])", "toc_depth: 6"),
+                    (r"toc_depth\s*=\s*([7-9]\d*|\d{2,})", "toc_depth=6"),
+                    (r"toc_depth\s*=\s*([7-9])", "toc_depth=6"),
+                    (r"TOC_DEPTH\s*=\s*([7-9]\d*|\d{2,})", "TOC_DEPTH=6"),
+                    (r"TOC_DEPTH\s*=\s*([7-9])", "TOC_DEPTH=6"),
                 ]
 
                 modified_content = content
                 changes_made_count = 0
                 for pattern, replacement in patterns:
-                    new_content_after_sub = re.sub(pattern, replacement, modified_content)
+                    new_content_after_sub = re.sub(
+                        pattern, replacement, modified_content
+                    )
                     if new_content_after_sub != modified_content:
-                        changes_made_count +=1
+                        changes_made_count += 1
                     modified_content = new_content_after_sub
 
                 if modified_content != original_content:
@@ -303,14 +316,21 @@ This directory is part of the DOCX RTM Automation project structure.
                     with open(file_path, "w", encoding="utf-8") as f:
                         f.write(modified_content)
 
-                    self.print_status("FIXED", f"Fixed toc-depth in {file_path} ({changes_made_count} replacements)")
+                    self.print_status(
+                        "FIXED",
+                        f"Fixed toc-depth in {file_path} ({changes_made_count} replacements)",
+                    )
                     self.fixes_applied.append(f"Fixed toc-depth in {file_path}")
                 else:
-                    self.print_status("INFO", f"No toc-depth changes needed for {file_path} after checking patterns.")
-
+                    self.print_status(
+                        "INFO",
+                        f"No toc-depth changes needed for {file_path} after checking patterns.",
+                    )
 
             except Exception as e:
-                self.print_status("ERROR", f"Failed to fix toc-depth in {file_path}: {e}")
+                self.print_status(
+                    "ERROR", f"Failed to fix toc-depth in {file_path}: {e}"
+                )
 
     def update_configuration_files(self):
         """Update and standardize global_config.yaml"""
@@ -320,14 +340,19 @@ This directory is part of the DOCX RTM Automation project structure.
         config_updated = False
 
         if not config_path.exists():
-            self.print_status("WARNING", f"{config_path} not found. Creating with defaults.")
+            self.print_status(
+                "WARNING", f"{config_path} not found. Creating with defaults."
+            )
             config = {}
         else:
             try:
                 with open(config_path, "r", encoding="utf-8") as f:
                     config = yaml.safe_load(f) or {}
             except Exception as e:
-                self.print_status("ERROR", f"Failed to load {config_path}: {e}. Will create with defaults.")
+                self.print_status(
+                    "ERROR",
+                    f"Failed to load {config_path}: {e}. Will create with defaults.",
+                )
                 config = {}
 
         original_config_str = yaml.dump(config)
@@ -364,7 +389,9 @@ This directory is part of the DOCX RTM Automation project structure.
             config["ai_services"] = {}
         if "openai" not in config["ai_services"]:
             config["ai_services"]["openai"] = {}
-        config["ai_services"]["openai"].setdefault("default_model", "gpt-4-turbo-preview")
+        config["ai_services"]["openai"].setdefault(
+            "default_model", "gpt-4-turbo-preview"
+        )
         config["ai_services"]["openai"].setdefault("max_tokens", 4096)
         config["ai_services"]["openai"].setdefault("temperature", 0.7)
 
@@ -375,17 +402,25 @@ This directory is part of the DOCX RTM Automation project structure.
         config["pandoc"].setdefault("number_sections", True)
 
         current_toc_depth = config["pandoc"].get("toc_depth")
-        if current_toc_depth is None: # Set default if not present
+        if current_toc_depth is None:  # Set default if not present
             config["pandoc"]["toc_depth"] = 6
         elif isinstance(current_toc_depth, int) and current_toc_depth > 6:
             config["pandoc"]["toc_depth"] = 6
-            self.print_status("FIXED", "Adjusted pandoc.toc_depth to 6 in global_config.yaml")
+            self.print_status(
+                "FIXED", "Adjusted pandoc.toc_depth to 6 in global_config.yaml"
+            )
             self.fixes_applied.append("Adjusted pandoc.toc_depth in global_config.yaml")
-        elif not isinstance(current_toc_depth, int) or current_toc_depth <=0: # Correct invalid values
-             config["pandoc"]["toc_depth"] = 6
-             self.print_status("FIXED", f"Corrected invalid pandoc.toc_depth (was {current_toc_depth}) to 6 in global_config.yaml")
-             self.fixes_applied.append("Corrected pandoc.toc_depth in global_config.yaml")
-
+        elif (
+            not isinstance(current_toc_depth, int) or current_toc_depth <= 0
+        ):  # Correct invalid values
+            config["pandoc"]["toc_depth"] = 6
+            self.print_status(
+                "FIXED",
+                f"Corrected invalid pandoc.toc_depth (was {current_toc_depth}) to 6 in global_config.yaml",
+            )
+            self.fixes_applied.append(
+                "Corrected pandoc.toc_depth in global_config.yaml"
+            )
 
         if yaml.dump(config) != original_config_str or not config_path.exists():
             config_updated = True
@@ -523,7 +558,7 @@ For issues and questions:
 
 ---
 
-*Last updated: {datetime.now().strftime('%Y-%m-%d')}*
+*Last updated: {datetime.now().strftime("%Y-%m-%d")}*
 """
 
         readme_path = self.project_root / "README.md"
@@ -696,15 +731,13 @@ SOFTWARE.
 
         # Test 3: Directory structure
         required_dirs = ["code", "config", "input", "output", "logs"]
-        all_exist = all((self.project_root / d).exists()
-                        for d in required_dirs)
+        all_exist = all((self.project_root / d).exists() for d in required_dirs)
         test_results["directories_exist"] = all_exist
 
         if all_exist:
             self.print_status("SUCCESS", "All required directories exist")
         else:
-            missing = [d for d in required_dirs if not (
-                self.project_root / d).exists()]
+            missing = [d for d in required_dirs if not (self.project_root / d).exists()]
             self.print_status("ERROR", f"Missing directories: {missing}")
 
         # Test 4: Main script syntax
@@ -750,8 +783,7 @@ SOFTWARE.
         print(f"\n{Colors.GREEN}📊 UPDATE SUMMARY{Colors.ENDC}")
         print(f"   Issues Found: {len(self.issues_found)}")
         print(f"   Fixes Applied: {len(self.fixes_applied)}")
-        print(
-            f"   Tests Passed: {sum(test_results.values())}/{len(test_results)}")
+        print(f"   Tests Passed: {sum(test_results.values())}/{len(test_results)}")
         print(f"   Report Saved: {report_path}")
 
         # Print recommendations
@@ -768,8 +800,7 @@ SOFTWARE.
 
     def run_full_update(self):
         """Run the complete project update process"""
-        self.print_header(
-            "DOCX RTM AUTOMATION - FULL PROJECT UPDATE", Colors.PURPLE)
+        self.print_header("DOCX RTM AUTOMATION - FULL PROJECT UPDATE", Colors.PURPLE)
 
         try:
             # Phase 1: Structure Analysis
@@ -826,8 +857,7 @@ def main():
         return 0
 
     except KeyboardInterrupt:
-        print(
-            f"\n{Colors.YELLOW}⚠️  Update process interrupted by user{Colors.ENDC}")
+        print(f"\n{Colors.YELLOW}⚠️  Update process interrupted by user{Colors.ENDC}")
         return 1
     except Exception as e:
         print(f"\n{Colors.RED}❌ Update process failed: {e}{Colors.ENDC}")

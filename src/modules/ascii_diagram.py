@@ -10,7 +10,7 @@ import os
 import argparse
 import yaml
 import json
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, Any
 import logging
 
 # Configure logging
@@ -257,8 +257,7 @@ def main() -> int:
         default="tree",
         help="Type of diagram to generate (default: tree)",
     )
-    parser.add_argument("--debug", action="store_true",
-                        help="Enable debug output")
+    parser.add_argument("--debug", action="store_true", help="Enable debug output")
 
     args = parser.parse_args()
 

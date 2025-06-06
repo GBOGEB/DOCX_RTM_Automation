@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 import logging
 
@@ -35,6 +34,7 @@ logger = logging.getLogger(__name__)
 # This file (`os_utils.py`) can be used for other OS-related utility functions
 # in the future, provided they do not rely on or cause CWD changes.
 
+
 def get_project_root() -> Path:
     """
     Determines the project root directory.
@@ -45,6 +45,7 @@ def get_project_root() -> Path:
     # Example: If os_utils.py is in /project_root/code/
     project_root = Path(__file__).resolve().parent.parent
     return project_root
+
 
 def ensure_dir_exists(dir_path: Path) -> bool:
     """
@@ -64,9 +65,13 @@ def ensure_dir_exists(dir_path: Path) -> bool:
         logger.error(f"Error creating or accessing directory {dir_path}: {e}")
         return False
 
+
 if __name__ == "__main__":
     # Configure basic logging for standalone execution/testing of this module
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
 
     logger.info("Testing os_utils.py...")
 
@@ -89,4 +94,3 @@ if __name__ == "__main__":
         logger.error(f"Failed to ensure directory exists: {test_output_dir}")
 
     logger.info("os_utils.py test finished.")
-

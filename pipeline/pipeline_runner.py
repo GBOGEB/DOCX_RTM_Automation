@@ -1,6 +1,7 @@
 import os
 import subprocess
 
+
 def run_pipeline(pipeline_script, *args):
     """
     Executes the given pipeline script with optional arguments.
@@ -19,6 +20,7 @@ def run_pipeline(pipeline_script, *args):
     except subprocess.CalledProcessError as e:
         print(f"Error occurred while running the pipeline: {e}")
         return e.stdout, e.stderr
+
 
 if __name__ == "__main__":
     # Example usage

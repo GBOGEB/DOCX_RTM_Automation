@@ -2,8 +2,14 @@
 """
 Synchronize document outline files across multiple formats (YAML, JSON, etc.)
 """
+
 import os
 import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import json
 import yaml
 import glob
@@ -18,8 +24,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -43,11 +48,11 @@ def sync_outline_files(source_file, output_formats=None, output_dir=None):
         return None
 
     # Determine source format
-    source_format = source_path.suffix.lower().replace('.', '')
+    source_format = source_path.suffix.lower().replace(".", "")
 
     # Set defaults
     if output_formats is None:
-        output_formats = ['yaml', 'json']
+        output_formats = ["yaml", "json"]
 
     if output_dir is None:
         output_dir = source_path.parent
@@ -67,7 +72,7 @@ def sync_outline_files(source_file, output_formats=None, output_dir=None):
     stem = source_path.stem
 
     # If stem ends with _outline or _json, remove that part
-    stem = stem.replace('_outline', '').replace('_json', '')
+    stem = stem.replace("_outline", "").replace("_json", "")
 
     for output_format in output_formats:
         if output_format.lower() == source_format.lower():
@@ -90,10 +95,10 @@ def load_outline(file_path):
     """Load outline data from file."""
     suffix = file_path.suffix.lower()
 
-    with open(file_path, 'r', encoding='utf-8') as f:
-        if suffix == '.json':
+    with open(file_path, "r", encoding="utf-8") as f:
+        if suffix == ".json":
             return json.load(f)
-        elif suffix in ('.yaml', '.yml'):
+        elif suffix in (".yaml", ".yml"):
             return yaml.safe_load(f)
         else:
             raise ValueError(f"Unsupported file format: {suffix}")
@@ -103,10 +108,10 @@ def save_outline(data, file_path):
     """Save outline data to file."""
     suffix = file_path.suffix.lower()
 
-    with open(file_path, 'w', encoding='utf-8') as f:
-        if suffix == '.json':
+    with open(file_path, "w", encoding="utf-8") as f:
+        if suffix == ".json":
             json.dump(data, f, indent=2, ensure_ascii=False)
-        elif suffix in ('.yaml', '.yml'):
+        elif suffix in (".yaml", ".yml"):
             yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
         else:
             raise ValueError(f"Unsupported file format: {suffix}")
@@ -126,7 +131,7 @@ def process_outline_files(input_dir, output_dir=None, output_formats=None):
     """
     # Set defaults
     if output_formats is None:
-        output_formats = ['yaml', 'json']
+        output_formats = ["yaml", "json"]
 
     if output_dir is None:
         output_dir = os.path.join(PROJECT_ROOT, "output", "outlines")
@@ -135,7 +140,7 @@ def process_outline_files(input_dir, output_dir=None, output_formats=None):
 
     # Find all outline files
     outline_files = []
-    for fmt in ('json', 'yaml', 'yml'):
+    for fmt in ("json", "yaml", "yml"):
         pattern = os.path.join(input_dir, f"*_outline.{fmt}")
         outline_files.extend(glob.glob(pattern))
 
@@ -161,14 +166,19 @@ def parse_arguments():
     )
     parser.add_argument("--source", help="Source outline file (YAML or JSON)")
     parser.add_argument(
-        "-f", "--formats", nargs="+", choices=['yaml', 'json', 'yml'],
-        help="Output formats (default: all formats)"
+        "-f",
+        "--formats",
+        nargs="+",
+        choices=["yaml", "json", "yml"],
+        help="Output formats (default: all formats)",
     )
     parser.add_argument(
         "-o", "--output-dir", help="Output directory (default: source file directory)"
     )
     parser.add_argument("--input-dir", help="Directory containing input files")
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose output"
+    )
     return parser.parse_args()
 
 
@@ -184,8 +194,8 @@ def main():
     # Standardize format names
     if args.formats:
         for i, fmt in enumerate(args.formats):
-            if fmt == 'yml':
-                args.formats[i] = 'yaml'
+            if fmt == "yml":
+                args.formats[i] = "yaml"
 
     # Process a single file
     if args.source:

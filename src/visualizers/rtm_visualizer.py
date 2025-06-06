@@ -2,6 +2,7 @@
 """
 Visualize Requirements Traceability Matrix data.
 """
+
 import os
 import sys
 import json
@@ -9,7 +10,6 @@ import argparse
 import logging
 import webbrowser
 from pathlib import Path
-from typing import Dict, List, Any
 
 # Add project root to path for imports
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -18,10 +18,10 @@ if str(PROJECT_ROOT) not in sys.path:
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
 
 class RTMVisualizer:
     """
@@ -192,7 +192,7 @@ class RTMVisualizer:
             return None
 
         try:
-            with open(rtm_path, 'r', encoding='utf-8') as f:
+            with open(rtm_path, "r", encoding="utf-8") as f:
                 rtm_data = json.load(f)
         except Exception as e:
             logger.error(f"Failed to load RTM data: {e}")
@@ -200,7 +200,7 @@ class RTMVisualizer:
 
         # Determine output file
         if output_file is None:
-            output_file = rtm_path.with_suffix('.html')
+            output_file = rtm_path.with_suffix(".html")
 
         output_path = Path(output_file)
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -210,7 +210,7 @@ class RTMVisualizer:
 
         # Write HTML file
         try:
-            with open(output_path, 'w', encoding='utf-8') as f:
+            with open(output_path, "w", encoding="utf-8") as f:
                 f.write(html_content)
             logger.info(f"RTM visualization saved to {output_file}")
 
@@ -232,10 +232,10 @@ class RTMVisualizer:
         Returns:
             HTML content as a string
         """
-        requirements = rtm_data.get('requirements', {})
-        test_cases = rtm_data.get('test_cases', {})
-        links = rtm_data.get('links', [])
-        stats = rtm_data.get('stats', {})
+        requirements = rtm_data.get("requirements", {})
+        test_cases = rtm_data.get("test_cases", {})
+        links = rtm_data.get("links", [])
+        stats = rtm_data.get("stats", {})
 
         # Generate requirement rows
         req_rows = ""
@@ -243,19 +243,21 @@ class RTMVisualizer:
             # Find test cases that verify this requirement
             test_coverage = []
             for link in links:
-                if link['target'] == req_id and link['source'] in test_cases:
-                    test_coverage.append(link['source'])
-                elif link['source'] == req_id and link['target'] in test_cases:
-                    test_coverage.append(link['target'])
+                if link["target"] == req_id and link["source"] in test_cases:
+                    test_coverage.append(link["source"])
+                elif link["source"] == req_id and link["target"] in test_cases:
+                    test_coverage.append(link["target"])
 
-            coverage_text = ", ".join([f'<span class="test">{tc}</span>' for tc in test_coverage])
+            coverage_text = ", ".join(
+                [f'<span class="test">{tc}</span>' for tc in test_coverage]
+            )
             if not coverage_text:
                 coverage_text = "<span style='color:red'>No coverage</span>"
 
             req_rows += f"""
             <tr>
                 <td class="req">{req_id}</td>
-                <td>{req_data.get('description', '')}</td>
+                <td>{req_data.get("description", "")}</td>
                 <td>{coverage_text}</td>
             </tr>
             """
@@ -266,19 +268,21 @@ class RTMVisualizer:
             # Find requirements verified by this test case
             verified_reqs = []
             for link in links:
-                if link['source'] == tc_id and link['target'] in requirements:
-                    verified_reqs.append(link['target'])
-                elif link['target'] == tc_id and link['source'] in requirements:
-                    verified_reqs.append(link['source'])
+                if link["source"] == tc_id and link["target"] in requirements:
+                    verified_reqs.append(link["target"])
+                elif link["target"] == tc_id and link["source"] in requirements:
+                    verified_reqs.append(link["source"])
 
-            verified_text = ", ".join([f'<span class="req">{req}</span>' for req in verified_reqs])
+            verified_text = ", ".join(
+                [f'<span class="req">{req}</span>' for req in verified_reqs]
+            )
             if not verified_text:
                 verified_text = "<span style='color:orange'>No requirements</span>"
 
             test_rows += f"""
             <tr>
                 <td class="test">{tc_id}</td>
-                <td>{tc_data.get('description', '')}</td>
+                <td>{tc_data.get("description", "")}</td>
                 <td>{verified_text}</td>
             </tr>
             """
@@ -286,14 +290,14 @@ class RTMVisualizer:
         # Generate link rows
         link_rows = ""
         for link in links:
-            source_class = "req" if link['source'] in requirements else "test"
-            target_class = "req" if link['target'] in requirements else "test"
+            source_class = "req" if link["source"] in requirements else "test"
+            target_class = "req" if link["target"] in requirements else "test"
 
             link_rows += f"""
             <tr>
-                <td class="{source_class}">{link['source']}</td>
-                <td class="{link['type']}">{link['type']}</td>
-                <td class="{target_class}">{link['target']}</td>
+                <td class="{source_class}">{link["source"]}</td>
+                <td class="{link["type"]}">{link["type"]}</td>
+                <td class="{target_class}">{link["target"]}</td>
             </tr>
             """
 
@@ -304,7 +308,7 @@ class RTMVisualizer:
 
         # Add requirement headers
         for req_id in req_ids:
-            matrix_rows += f'<th>{req_id}</th>'
+            matrix_rows += f"<th>{req_id}</th>"
         matrix_rows += "</tr>"
 
         # Add test rows
@@ -315,8 +319,9 @@ class RTMVisualizer:
                 # Check if there is a link between this test and requirement
                 covered = False
                 for link in links:
-                    if ((link['source'] == tc_id and link['target'] == req_id) or
-                        (link['source'] == req_id and link['target'] == tc_id)):
+                    if (link["source"] == tc_id and link["target"] == req_id) or (
+                        link["source"] == req_id and link["target"] == tc_id
+                    ):
                         covered = True
                         break
 
@@ -329,13 +334,13 @@ class RTMVisualizer:
 
         # Fill in the template
         html_content = self.html_template.format(
-            req_count=stats.get('requirements_count', len(requirements)),
-            test_count=stats.get('test_cases_count', len(test_cases)),
-            link_count=stats.get('links_count', len(links)),
+            req_count=stats.get("requirements_count", len(requirements)),
+            test_count=stats.get("test_cases_count", len(test_cases)),
+            link_count=stats.get("links_count", len(links)),
             req_rows=req_rows,
             test_rows=test_rows,
             link_rows=link_rows,
-            matrix_rows=matrix_rows
+            matrix_rows=matrix_rows,
         )
 
         return html_content
@@ -362,7 +367,7 @@ def visualize_all_rtm_files(input_dir, output_dir=None):
     rtm_files = []
     for root, _, files in os.walk(input_dir):
         for file in files:
-            if file.endswith('_rtm.json') or file.endswith('.rtm.json'):
+            if file.endswith("_rtm.json") or file.endswith(".rtm.json"):
                 rtm_files.append(os.path.join(root, file))
 
     if not rtm_files:
@@ -376,10 +381,7 @@ def visualize_all_rtm_files(input_dir, output_dir=None):
 
     for rtm_file in rtm_files:
         rel_path = os.path.relpath(rtm_file, input_dir)
-        output_file = os.path.join(
-            output_dir,
-            os.path.splitext(rel_path)[0] + ".html"
-        )
+        output_file = os.path.join(output_dir, os.path.splitext(rel_path)[0] + ".html")
         result = visualizer.visualize(rtm_file, output_file, open_browser=False)
         if result:
             output_files.append(result)
@@ -398,7 +400,9 @@ def parse_arguments():
     parser.add_argument("-o", "--output", help="Output HTML file")
     parser.add_argument("--input-dir", help="Directory containing input files")
     parser.add_argument("--output-dir", help="Directory for output files")
-    parser.add_argument("--no-browser", action="store_true", help="Don't open in browser")
+    parser.add_argument(
+        "--no-browser", action="store_true", help="Don't open in browser"
+    )
 
     return parser.parse_args()
 
@@ -410,11 +414,7 @@ def main():
     # Process a single file
     if args.input:
         visualizer = RTMVisualizer()
-        output = visualizer.visualize(
-            args.input,
-            args.output,
-            not args.no_browser
-        )
+        output = visualizer.visualize(args.input, args.output, not args.no_browser)
 
         if output:
             logger.info(f"Visualization created: {output}")

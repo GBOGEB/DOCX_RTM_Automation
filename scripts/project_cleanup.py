@@ -3,9 +3,8 @@
 ASCII Diagram Generator for DOCX RTM Automation
 """
 
-import re
 import sys
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any
 
 
 class AsciiDiagramGenerator:
@@ -172,8 +171,7 @@ class AsciiDiagramGenerator:
         requirements = rtm_data.get("requirements", [])
         for req in requirements:
             req_id = req.get("id", "UNKNOWN")
-            description = req.get("text", req.get(
-                "description", "No description"))
+            description = req.get("text", req.get("description", "No description"))
 
             result.append(f"[{req_id}] {description}")
 
@@ -214,8 +212,7 @@ def main():
     parser.add_argument(
         "--output", help="Output file (if not specified, prints to stdout)"
     )
-    parser.add_argument("--debug", action="store_true",
-                        help="Print debug information")
+    parser.add_argument("--debug", action="store_true", help="Print debug information")
 
     args = parser.parse_args()
 

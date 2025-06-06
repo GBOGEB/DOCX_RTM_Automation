@@ -17,10 +17,7 @@ def run_command(command, capture_output=True):
     print(f"Running: {' '.join(command)}")
     try:
         result = subprocess.run(
-            command,
-            capture_output=capture_output,
-            text=True,
-            check=False
+            command, capture_output=capture_output, text=True, check=False
         )
         if result.returncode != 0:
             print(f"Command failed with code {result.returncode}")
@@ -40,6 +37,7 @@ def install_precommit():
     # First check if pre-commit is installed
     try:
         import importlib.util
+
         precommit_spec = importlib.util.find_spec("pre_commit")
         if precommit_spec is not None:
             print("pre-commit is already installed.")
@@ -68,7 +66,7 @@ def create_precommit_config():
     if config_path.exists():
         print(".pre-commit-config.yaml already exists.")
         response = input("Do you want to replace it? (y/n): ")
-        if response.lower() != 'y':
+        if response.lower() != "y":
             print("Keeping existing config file.")
             return
 
@@ -105,7 +103,7 @@ repos:
         verbose: true
 """
 
-    with open(config_path, 'w') as f:
+    with open(config_path, "w") as f:
         f.write(config_content)
 
     print(f"Created {config_path}")
@@ -244,7 +242,7 @@ if __name__ == "__main__":
     sys.exit(main())
 """
 
-    with open(script_path, 'w') as f:
+    with open(script_path, "w") as f:
         f.write(script_content)
 
     # Make executable
@@ -262,7 +260,7 @@ def configure_env_variables():
 
     # Create .env file
     env_path = Path(".env")
-    project_dir = os.path.abspath('.')
+    project_dir = os.path.abspath(".")
     cache_dir = os.path.join(project_dir, ".pre-commit-cache")
     temp_dir = os.path.join(project_dir, ".pre-commit-temp")
 
@@ -273,7 +271,7 @@ TEMP={temp_dir}
 TMP={temp_dir}
 """
 
-    with open(env_path, 'w') as f:
+    with open(env_path, "w") as f:
         f.write(env_content)
 
     print(f"Created {env_path} with local cache settings")
@@ -283,10 +281,10 @@ TMP={temp_dir}
     os.makedirs(temp_dir, exist_ok=True)
 
     # Set environment variables for current process
-    os.environ['PRE_COMMIT_HOME'] = cache_dir
-    os.environ['TMPDIR'] = temp_dir
-    os.environ['TEMP'] = temp_dir
-    os.environ['TMP'] = temp_dir
+    os.environ["PRE_COMMIT_HOME"] = cache_dir
+    os.environ["TMPDIR"] = temp_dir
+    os.environ["TEMP"] = temp_dir
+    os.environ["TMP"] = temp_dir
 
     print(f"Created cache directory: {cache_dir}")
     print(f"Created temp directory: {temp_dir}")
@@ -297,7 +295,7 @@ def clean_cache_dirs():
     print("\n=== Cleaning pre-commit cache directories ===")
 
     # Remove project cache directory
-    project_cache_dir = os.path.join(os.path.abspath('.'), ".pre-commit-cache")
+    project_cache_dir = os.path.join(os.path.abspath("."), ".pre-commit-cache")
     if os.path.exists(project_cache_dir):
         print(f"Removing {project_cache_dir}...")
         try:
@@ -327,7 +325,9 @@ def install_git_hooks():
 
     # Check if this is a git repository
     if not os.path.isdir(".git"):
-        print("Not a Git repository. Run this script from the root of your Git repository.")
+        print(
+            "Not a Git repository. Run this script from the root of your Git repository."
+        )
         return False
 
     # Ensure .git/hooks directory exists
@@ -337,7 +337,8 @@ def install_git_hooks():
     # Install hooks using pre-commit
     try:
         import pre_commit.main
-        pre_commit.main.main(['install'])
+
+        pre_commit.main.main(["install"])
         print("Pre-commit hooks installed via pre-commit framework.")
     except ImportError:
         print("Using direct hook installation...")
@@ -351,17 +352,17 @@ def install_git_hooks():
         if is_windows:
             hook_content = f"""#!/bin/sh
 # Simple pre-commit hook for RTM Automation
-python {os.path.abspath('check_precommit.py')}
+python {os.path.abspath("check_precommit.py")}
 exit $?
 """
         else:
             hook_content = f"""#!/bin/sh
 # Simple pre-commit hook for RTM Automation
-python {os.path.abspath('check_precommit.py')}
+python {os.path.abspath("check_precommit.py")}
 exit $?
 """
 
-        with open(hook_path, 'w') as f:
+        with open(hook_path, "w") as f:
             f.write(hook_content)
 
         # Make executable (may not work on Windows)
@@ -377,10 +378,10 @@ exit $?
             bat_path = os.path.join(hooks_dir, "pre-commit.bat")
             bat_content = f"""@echo off
 REM Pre-commit hook for Windows
-python "{os.path.abspath('check_precommit.py')}"
+python "{os.path.abspath("check_precommit.py")}"
 exit /b %ERRORLEVEL%
 """
-            with open(bat_path, 'w') as f:
+            with open(bat_path, "w") as f:
                 f.write(bat_content)
 
             print(f"Created Windows batch hook at {bat_path}")
@@ -396,9 +397,10 @@ def test_precommit():
     # Try running pre-commit directly
     try:
         import pre_commit.main
+
         print("Running pre-commit check using installed module...")
         try:
-            pre_commit.main.main(['run', '--all-files'])
+            pre_commit.main.main(["run", "--all-files"])
             print("Pre-commit checks completed successfully!")
         except SystemExit as e:
             if e.code == 0:

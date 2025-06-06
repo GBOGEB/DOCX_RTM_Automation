@@ -8,8 +8,7 @@ os.chdir("C:/Users/gbonthuy/Downloads/DOCX_RTM_Automation_v1.0")
 subprocess.run(["git", "init"], check=True)
 
 # Check your Git identity is set
-subprocess.run(["git", "config", "--global",
-               "user.name", "GBOGEB"], check=True)
+subprocess.run(["git", "config", "--global", "user.name", "GBOGEB"], check=True)
 subprocess.run(
     ["git", "config", "--global", "user.email", "gerkotze.bonthuys@sckcen.be"],
     check=True,

@@ -5,7 +5,6 @@ Port management utility for debugging.
 Helps identify and resolve port conflicts for debugging purposes.
 """
 
-import os
 import sys
 import socket
 import subprocess
@@ -16,10 +15,10 @@ from typing import Dict, List, Optional, Tuple, Union
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
 
 class PortManager:
     def __init__(self):
@@ -45,6 +44,7 @@ class PortManager:
         """List all ports managed."""
         return self.ports
 
+
 def check_port_in_use(port: int) -> bool:
     """Check if a port is already in use."""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -54,6 +54,7 @@ def check_port_in_use(port: int) -> bool:
             return False  # Port is available on both addresses
         except OSError:
             return True  # Port is in use
+
 
 def find_available_port(start_port: int, end_port: int = None) -> Optional[int]:
     """Find an available port in a range."""
@@ -66,6 +67,7 @@ def find_available_port(start_port: int, end_port: int = None) -> Optional[int]:
 
     return None
 
+
 def get_process_using_port(port: int) -> Tuple[Optional[int], Optional[str]]:
     """
     Get information about the process using a specific port.
@@ -77,24 +79,27 @@ def get_process_using_port(port: int) -> Tuple[Optional[int], Optional[str]]:
         try:
             # On Windows, use netstat
             output = subprocess.check_output(
-                ["netstat", "-ano", "-p", "TCP"],
-                text=True
+                ["netstat", "-ano", "-p", "TCP"], text=True
             )
 
             # Parse the output to find the process
             for line in output.splitlines():
-                if f":{port}" in line and ("LISTENING" in line or "ESTABLISHED" in line):
+                if f":{port}" in line and (
+                    "LISTENING" in line or "ESTABLISHED" in line
+                ):
                     parts = line.strip().split()
                     if len(parts) >= 5:
                         pid = int(parts[-1])
                         try:
                             proc_info = subprocess.check_output(
                                 ["tasklist", "/FI", f"PID eq {pid}", "/FO", "CSV"],
-                                text=True
+                                text=True,
                             )
                             if '","' in proc_info:
                                 # Extract process name from CSV format
-                                process_name = proc_info.splitlines()[1].split('","')[0].strip('"')
+                                process_name = (
+                                    proc_info.splitlines()[1].split('","')[0].strip('"')
+                                )
                                 return pid, process_name
                         except subprocess.SubprocessError:
                             return pid, "Unknown"
@@ -104,8 +109,7 @@ def get_process_using_port(port: int) -> Tuple[Optional[int], Optional[str]]:
         try:
             # On Unix/Linux, use lsof
             output = subprocess.check_output(
-                ["lsof", "-i", f":{port}", "-P", "-n"],
-                text=True
+                ["lsof", "-i", f":{port}", "-P", "-n"], text=True
             )
 
             if len(output.splitlines()) > 1:  # Header + at least one process
@@ -120,6 +124,7 @@ def get_process_using_port(port: int) -> Tuple[Optional[int], Optional[str]]:
 
     return None, None
 
+
 def kill_process(pid: int) -> bool:
     """Kill a process by PID."""
     try:
@@ -132,17 +137,22 @@ def kill_process(pid: int) -> bool:
         logger.error(f"Error killing process with PID {pid}: {e}")
         return False
 
+
 def release_port(port: int) -> bool:
     """Attempt to release a port that's in use."""
     pid, process_name = get_process_using_port(port)
 
     if pid:
         logger.info(f"Port {port} is used by process {process_name} (PID: {pid})")
-        confirmation = input(f"Do you want to terminate process {process_name} (PID: {pid})? (y/n): ")
+        confirmation = input(
+            f"Do you want to terminate process {process_name} (PID: {pid})? (y/n): "
+        )
 
-        if confirmation.lower() == 'y':
+        if confirmation.lower() == "y":
             if kill_process(pid):
-                logger.info(f"Process {process_name} (PID: {pid}) terminated successfully")
+                logger.info(
+                    f"Process {process_name} (PID: {pid}) terminated successfully"
+                )
 
                 # Verify the port is now free
                 time.sleep(0.5)  # Give OS time to release the port
@@ -160,7 +170,10 @@ def release_port(port: int) -> bool:
 
     return False
 
-def list_debug_ports(debug_ports: List[int] = None) -> Dict[int, Dict[str, Union[bool, int, str]]]:
+
+def list_debug_ports(
+    debug_ports: List[int] = None,
+) -> Dict[int, Dict[str, Union[bool, int, str]]]:
     """List the status of common debug ports."""
     if debug_ports is None:
         debug_ports = [5678, 8000, 9229, 3000, 4000]
@@ -181,22 +194,25 @@ def list_debug_ports(debug_ports: List[int] = None) -> Dict[int, Dict[str, Union
 
         print(f"{port:<8} {status:<12} {pid_str:<8} {process_str}")
 
-        results[port] = {
-            "in_use": in_use,
-            "pid": pid,
-            "process_name": process_name
-        }
+        results[port] = {"in_use": in_use, "pid": pid, "process_name": process_name}
 
     print("\n")
     return results
 
+
 def main():
     """Main function."""
     parser = argparse.ArgumentParser(description="Debug port management utility")
-    parser.add_argument("--list", action="store_true", help="List status of common debug ports")
+    parser.add_argument(
+        "--list", action="store_true", help="List status of common debug ports"
+    )
     parser.add_argument("--check", type=int, help="Check if a specific port is in use")
-    parser.add_argument("--release", type=int, help="Attempt to release a specific port")
-    parser.add_argument("--find", type=int, help="Find available port starting from this number")
+    parser.add_argument(
+        "--release", type=int, help="Attempt to release a specific port"
+    )
+    parser.add_argument(
+        "--find", type=int, help="Find available port starting from this number"
+    )
 
     args = parser.parse_args()
 
@@ -226,9 +242,10 @@ def main():
         if port:
             print(f"Available port found: {port}")
         else:
-            print(f"No available ports found in range {args.find}-{args.find+20}")
+            print(f"No available ports found in range {args.find}-{args.find + 20}")
     else:
         parser.print_help()
+
 
 if __name__ == "__main__":
     main()

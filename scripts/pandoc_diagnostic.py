@@ -11,7 +11,6 @@ This script checks the Pandoc integration and Lua filter functionality:
 import os
 import sys
 import subprocess
-import shutil
 import tempfile
 import argparse
 import yaml
@@ -211,8 +210,7 @@ def check_lua_files():
 
 def test_word_to_markdown_conversion(input_file=None):
     """Test Word to Markdown conversion with the project's pipeline."""
-    result = {"success": False, "output_file": None,
-              "error": None, "rtm_data": None}
+    result = {"success": False, "output_file": None, "error": None, "rtm_data": None}
 
     if not input_file:
         # Create a simple test Word document
@@ -307,8 +305,7 @@ def run_diagnostics(args):
     # Check Lua filters
     lua_files_result = check_lua_files()
     lua_files_success = (
-        len(lua_files_result["found"]) > 0 and len(
-            lua_files_result["missing"]) == 0
+        len(lua_files_result["found"]) > 0 and len(lua_files_result["missing"]) == 0
     )
     results.add_test(
         name="lua_filters",
@@ -372,15 +369,13 @@ def main():
     parser = argparse.ArgumentParser(
         description="Pandoc and Lua Filter Diagnostic Tool"
     )
-    parser.add_argument("--json", action="store_true",
-                        help="Output results as JSON")
+    parser.add_argument("--json", action="store_true", help="Output results as JSON")
     parser.add_argument(
         "--test-conversion",
         action="store_true",
         help="Test Word to Markdown conversion",
     )
-    parser.add_argument(
-        "--input-file", help="Input Word file for conversion test")
+    parser.add_argument("--input-file", help="Input Word file for conversion test")
 
     args = parser.parse_args()
 
@@ -403,8 +398,7 @@ def main():
             status = "PASS" if test["success"] else "FAIL"
             # Green or Red
             color = "\033[92m" if test["success"] else "\033[91m"
-            print(
-                f"{color}{status}\033[0m: {test['name']} - {test['message']}")
+            print(f"{color}{status}\033[0m: {test['name']} - {test['message']}")
 
             if not test["success"] and "error" in test["details"]:
                 print(f"  Error: {test['details']['error']}")

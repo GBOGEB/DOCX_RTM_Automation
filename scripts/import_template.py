@@ -1,6 +1,4 @@
 import os
-import sys
-import json
 import shutil
 import argparse
 from pathlib import Path
@@ -193,16 +191,13 @@ def main():
     )
 
     # Define subparsers for different commands
-    subparsers = parser.add_subparsers(
-        dest="command", help="Command to execute")
+    subparsers = parser.add_subparsers(dest="command", help="Command to execute")
 
     # Create command
-    create_parser = subparsers.add_parser(
-        "create", help="Create a default template")
+    create_parser = subparsers.add_parser("create", help="Create a default template")
 
     # List command
-    list_parser = subparsers.add_parser(
-        "list", help="List available templates")
+    list_parser = subparsers.add_parser("list", help="List available templates")
 
     # Import command
     import_parser = subparsers.add_parser(
@@ -216,8 +211,7 @@ def main():
         "extract", help="Extract template from a markdown file"
     )
     extract_parser.add_argument("source", help="Source markdown file path")
-    extract_parser.add_argument(
-        "--name", help="Name for the extracted template")
+    extract_parser.add_argument("--name", help="Name for the extracted template")
 
     # Parse arguments
     args = parser.parse_args()

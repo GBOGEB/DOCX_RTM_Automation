@@ -124,9 +124,11 @@
                     return;
                 }
 
-                processingStatus.textContent = 'Processing files...';
-                processingStatus.className = 'status';
-                processingProgress.className = '';
+                showStatus(processingStatus, 'Processing files...', ''); // Use showStatus for consistency
+                processingProgress.classList.remove('hidden'); // Show progress bar
+                // Note: To make the progress bar dynamic, its 'value' attribute would need to be updated,
+                // possibly by polling a status endpoint that provides progress percentage.
+                // For now, it will show an indeterminate state or 0 depending on browser.
                 processButton.disabled = true;
 
                 const options = {

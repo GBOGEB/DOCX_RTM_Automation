@@ -3,7 +3,10 @@ from pathlib import Path
 
 YELLOW_MD = "<!-- YELLOW: Check for unmatched or missing brackets below -->"
 YELLOW_YAML_START = "# YELLOW: Check for unmatched or missing brackets below"
-YELLOW_YAML_END = "# YELLOW: End of YAML file, check for unmatched or missing brackets above"
+YELLOW_YAML_END = (
+    "# YELLOW: End of YAML file, check for unmatched or missing brackets above"
+)
+
 
 def process_markdown(filepath: Path):
     with open(filepath, "r", encoding="utf-8") as f:
@@ -22,6 +25,7 @@ def process_markdown(filepath: Path):
     with open(filepath, "w", encoding="utf-8") as f:
         f.writelines(new_lines)
 
+
 def process_yaml(filepath: Path):
     with open(filepath, "r", encoding="utf-8") as f:
         lines = f.readlines()
@@ -32,9 +36,10 @@ def process_yaml(filepath: Path):
     with open(filepath, "w", encoding="utf-8") as f:
         f.writelines(lines)
 
+
 def main():
     root = Path(".")
-    for item_path in root.rglob('*'):
+    for item_path in root.rglob("*"):
         if item_path.is_file():
             if item_path.suffix == ".md":
                 print(f"Processing Markdown: {item_path}")
@@ -42,6 +47,7 @@ def main():
             elif item_path.suffix in [".yml", ".yaml"]:
                 print(f"Processing YAML: {item_path}")
                 process_yaml(item_path)
+
 
 if __name__ == "__main__":
     main()

@@ -7,7 +7,6 @@ import os
 import sys
 import yaml
 import json
-from pathlib import Path
 
 
 def fix_outline_file(input_file, output_file=None):
@@ -132,8 +131,7 @@ def create_sample_outline(output_file):
     try:
         if ext in [".yaml", ".yml"]:
             with open(output_file, "w", encoding="utf-8") as f:
-                yaml.dump(outline, f, default_flow_style=False,
-                          sort_keys=False)
+                yaml.dump(outline, f, default_flow_style=False, sort_keys=False)
         elif ext == ".json":
             with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(outline, f, indent=2)

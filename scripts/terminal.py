@@ -4,7 +4,6 @@ import os
 import sys
 import subprocess
 import yaml
-import json
 import time
 import shutil
 from pathlib import Path
@@ -17,6 +16,7 @@ CONFIG_FILE = BASE_DIR / "global_config.yaml"
 _initial_python_path = sys.executable
 VENV_PATH = BASE_DIR / ".venv"  # Default, can be overridden by config if needed
 
+
 # Function to get the Python executable path
 def get_python_executable():
     config = load_config()
@@ -27,6 +27,7 @@ def get_python_executable():
 
     # 2. Default to system Python (current interpreter)
     return sys.executable
+
 
 PYTHON_PATH = get_python_executable()  # Set initial global PYTHON_PATH
 
@@ -65,7 +66,9 @@ def save_config(config):
 
 def run_command(command, use_venv=True, show_output=True, cwd=None):
     """Run a command with appropriate Python interpreter"""
-    python_exe_to_use = str(VENV_PYTHON) if use_venv and VENV_PYTHON.exists() else PYTHON_PATH
+    python_exe_to_use = (
+        str(VENV_PYTHON) if use_venv and VENV_PYTHON.exists() else PYTHON_PATH
+    )
 
     if isinstance(command, list):
         if command[0] == "python":
@@ -81,11 +84,18 @@ def run_command(command, use_venv=True, show_output=True, cwd=None):
 
     try:
         if show_output:
-            result = subprocess.run(cmd_str, shell=True, check=False, cwd=cwd or BASE_DIR)
+            result = subprocess.run(
+                cmd_str, shell=True, check=False, cwd=cwd or BASE_DIR
+            )
             return result.returncode
         else:
             result = subprocess.run(
-                cmd_str, shell=True, check=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd or BASE_DIR
+                cmd_str,
+                shell=True,
+                check=False,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                cwd=cwd or BASE_DIR,
             )
             return (
                 result.returncode,
@@ -171,7 +181,9 @@ def detect_pandoc():
 
     if current_pandoc_path and Path(current_pandoc_path).exists():
         print(f"Pandoc already configured at: {current_pandoc_path}")
-        if not user_confirm("Do you want to re-detect or change Pandoc path?", default=False):
+        if not user_confirm(
+            "Do you want to re-detect or change Pandoc path?", default=False
+        ):
             return True
 
     pandoc_paths = []
@@ -252,8 +264,7 @@ def display_menu():
         + time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
     )
     print(
-        "Current User: " +
-        os.environ.get("USERNAME", os.environ.get("USER", "Unknown"))
+        "Current User: " + os.environ.get("USERNAME", os.environ.get("USER", "Unknown"))
     )
     print(f"Python Interpreter: {python_to_display}")
     print(f"Pandoc Path: {pandoc_to_display}")
@@ -280,15 +291,22 @@ def main():
 
     if not CONFIG_FILE.exists():
         print(f"{CONFIG_FILE} not found.")
-        if user_confirm("Would you like to run initial setup to create config and environment?", default=True):
+        if user_confirm(
+            "Would you like to run initial setup to create config and environment?",
+            default=True,
+        ):
             setup_environment(force_new=False)
             print("\nInitial setup complete. Press Enter to continue to the main menu.")
             input()
     elif not VENV_PATH.exists():
         print("Virtual environment not found.")
-        if user_confirm("Would you like to set up the virtual environment now?", default=True):
+        if user_confirm(
+            "Would you like to set up the virtual environment now?", default=True
+        ):
             setup_environment(force_new=False)
-            print("\nEnvironment setup complete. Press Enter to continue to the main menu.")
+            print(
+                "\nEnvironment setup complete. Press Enter to continue to the main menu."
+            )
             input()
 
     while True:
@@ -352,24 +370,32 @@ def main():
 
             git_choice = input("Select Git option: ")
             config = load_config()
-            main_repo_path = BASE_DIR / config.get("repository_settings", {}).get("main_repository_path", ".")
+            main_repo_path = BASE_DIR / config.get("repository_settings", {}).get(
+                "main_repository_path", "."
+            )
 
             if git_choice == "1":
                 run_command("git status", cwd=main_repo_path)
             elif git_choice == "2":
                 run_command("git status", cwd=main_repo_path)
                 run_command("git submodule status --recursive", cwd=main_repo_path)
-                sub_repos = config.get("repository_settings", {}).get("sub_repositories", [])
+                sub_repos = config.get("repository_settings", {}).get(
+                    "sub_repositories", []
+                )
                 for sub_repo_rel_path in sub_repos:
                     sub_repo_abs_path = (BASE_DIR / sub_repo_rel_path).resolve()
                     if sub_repo_abs_path.is_dir():
-                        print(f"\n--- Status for Sub-repository: {sub_repo_rel_path} ---")
+                        print(
+                            f"\n--- Status for Sub-repository: {sub_repo_rel_path} ---"
+                        )
                         run_command("git status", cwd=sub_repo_abs_path)
             elif git_choice == "3":
                 run_command("git pull", cwd=main_repo_path)
             elif git_choice == "4":
                 run_command("git pull", cwd=main_repo_path)
-                run_command("git submodule update --remote --recursive", cwd=main_repo_path)
+                run_command(
+                    "git submodule update --remote --recursive", cwd=main_repo_path
+                )
             elif git_choice == "5":
                 username = input("Enter Git username: ")
                 email = input("Enter Git email: ")
@@ -377,12 +403,20 @@ def main():
                 run_command(f'git config user.email "{email}"', cwd=main_repo_path)
                 print("Git user configured for the main repository.")
             elif git_choice == "6":
-                remote_url = input("Enter new remote URL for main repo (e.g., https://github.com/user/repo.git): ")
-                ret_code, stdout, _ = run_command("git remote", use_venv=False, show_output=False, cwd=main_repo_path)
-                if ret_code == 0 and 'origin' in stdout:
-                    run_command(f'git remote set-url origin "{remote_url}"', cwd=main_repo_path)
+                remote_url = input(
+                    "Enter new remote URL for main repo (e.g., https://github.com/user/repo.git): "
+                )
+                ret_code, stdout, _ = run_command(
+                    "git remote", use_venv=False, show_output=False, cwd=main_repo_path
+                )
+                if ret_code == 0 and "origin" in stdout:
+                    run_command(
+                        f'git remote set-url origin "{remote_url}"', cwd=main_repo_path
+                    )
                 else:
-                    run_command(f'git remote add origin "{remote_url}"', cwd=main_repo_path)
+                    run_command(
+                        f'git remote add origin "{remote_url}"', cwd=main_repo_path
+                    )
                 print(f"Remote URL for main repository set to: {remote_url}")
             elif git_choice == "0":
                 pass
@@ -409,7 +443,9 @@ def main():
                 config_choice = input("Select option: ")
 
                 if config_choice == "1":
-                    new_python_path = input(f"Enter Python interpreter path [{PYTHON_PATH}]: ").strip()
+                    new_python_path = input(
+                        f"Enter Python interpreter path [{PYTHON_PATH}]: "
+                    ).strip()
                     if new_python_path and Path(new_python_path).exists():
                         if "paths" not in config:
                             config["paths"] = {}
@@ -427,8 +463,12 @@ def main():
                 elif config_choice == "3":
                     if "paths" not in config:
                         config["paths"] = {}
-                    input_dir = input(f"Enter input directory path [{config.get('paths', {}).get('input_dir', 'input')}]: ") or config.get('paths', {}).get('input_dir', 'input')
-                    output_dir = input(f"Enter output directory path [{config.get('paths', {}).get('output_dir', 'output')}]: ") or config.get('paths', {}).get('output_dir', 'output')
+                    input_dir = input(
+                        f"Enter input directory path [{config.get('paths', {}).get('input_dir', 'input')}]: "
+                    ) or config.get("paths", {}).get("input_dir", "input")
+                    output_dir = input(
+                        f"Enter output directory path [{config.get('paths', {}).get('output_dir', 'output')}]: "
+                    ) or config.get("paths", {}).get("output_dir", "output")
                     config["paths"]["input_dir"] = input_dir
                     config["paths"]["output_dir"] = output_dir
                     save_config(config)
@@ -438,7 +478,9 @@ def main():
                     config[key] = value
                     save_config(config)
                 elif config_choice == "5":
-                    confirm = input("Reset all settings in global_config.yaml to minimal defaults? (y/n): ")
+                    confirm = input(
+                        "Reset all settings in global_config.yaml to minimal defaults? (y/n): "
+                    )
                     if confirm.lower() == "y":
                         default_config = {
                             "paths": {
@@ -448,13 +490,15 @@ def main():
                             },
                             "repository_settings": {
                                 "main_repository_path": ".",
-                                "sub_repositories": []
-                            }
+                                "sub_repositories": [],
+                            },
                         }
                         pandoc_exe_name = "pandoc.exe" if os.name == "nt" else "pandoc"
                         found_pandoc = shutil.which(pandoc_exe_name)
                         if found_pandoc:
-                            default_config["paths"]["pandoc"] = str(Path(found_pandoc).resolve())
+                            default_config["paths"]["pandoc"] = str(
+                                Path(found_pandoc).resolve()
+                            )
 
                         config = default_config
                         save_config(config)

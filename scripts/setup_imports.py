@@ -6,7 +6,6 @@ This script helps configure and test ports needed for debugging,
 and creates necessary configuration files for VSCode.
 """
 
-import os
 import sys
 import socket
 import subprocess

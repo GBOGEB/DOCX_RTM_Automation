@@ -1,9 +1,6 @@
-import os
 import sys
 import importlib
-import subprocess
 from pathlib import Path
-import docx_rtm_automation
 
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -96,8 +93,7 @@ def check_file_structure():
 
         status = "✅" if exists else "❌"
         required_text = "(Required)" if item["required"] else "(Optional)"
-        print(
-            f"{status} {item['type'].capitalize()} {path.name} {required_text}")
+        print(f"{status} {item['type'].capitalize()} {path.name} {required_text}")
 
         if item["required"] and not exists:
             all_required_exist = False

@@ -9,8 +9,9 @@ import sys
 import socket
 import importlib
 import platform
-import subprocess
+import re
 from pathlib import Path
+
 
 def check_python_version():
     """Check Python version."""
@@ -19,9 +20,13 @@ def check_python_version():
     print(f"Python path: {sys.path}")
 
     # Check if it's the expected virtual environment
-    in_venv = hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)
+    in_venv = hasattr(sys, "real_prefix") or (
+        hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix
+    )
     venv_path = os.path.join(Path(__file__).parent, ".venv")
-    is_project_venv = os.path.exists(venv_path) and (venv_path in sys.executable or '.venv' in sys.executable)
+    is_project_venv = os.path.exists(venv_path) and (
+        venv_path in sys.executable or ".venv" in sys.executable
+    )
 
     if in_venv:
         print("✅ Running in a virtual environment")
@@ -31,6 +36,7 @@ def check_python_version():
             print("⚠️ Not using project's virtual environment")
     else:
         print("⚠️ Not running in a virtual environment")
+
 
 def check_project_structure():
     """Check project directory structure."""
@@ -49,7 +55,11 @@ def check_project_structure():
             # For some key directories, list their contents
             if d in ["src", "agents"]:
                 files = list(path.glob("*.py"))
-                subdirs = [p for p in path.iterdir() if p.is_dir() and not p.name.startswith("__")]
+                subdirs = [
+                    p
+                    for p in path.iterdir()
+                    if p.is_dir() and not p.name.startswith("__")
+                ]
 
                 if files:
                     for f in files[:5]:  # Show up to 5 files
@@ -65,9 +75,12 @@ def check_project_structure():
                             for sf in subfiles[:3]:  # Show up to 3 files per subdir
                                 print(f"        |- {sf.name}")
                             if len(subfiles) > 3:
-                                print(f"        |- ... ({len(subfiles) - 3} more files)")
+                                print(
+                                    f"        |- ... ({len(subfiles) - 3} more files)"
+                                )
         else:
             print(f"❌ {d}/ (not found)")
+
 
 def check_imports():
     """Check if key modules can be imported."""
@@ -79,7 +92,7 @@ def check_imports():
         "agents.copilot_agent",
         "src.core.word_to_md",
         "src.extractors.extract_rtm",
-        "src.visualizers.rtm_visualizer"
+        "src.visualizers.rtm_visualizer",
     ]
 
     for module in modules_to_check:
@@ -88,6 +101,7 @@ def check_imports():
             print(f"✅ {module}")
         except ImportError as e:
             print(f"❌ {module}: {e}")
+
 
 def check_network_connection(host="127.0.0.1", ports=[8000, 5678, 9229]):
     """Check if debug ports are open and accessible."""
@@ -103,12 +117,22 @@ def check_network_connection(host="127.0.0.1", ports=[8000, 5678, 9229]):
             print(f"❌ Port {port} is closed or blocked")
         sock.close()
 
+
 def check_dependencies():
     """Check if required Python packages are installed."""
     print("\nChecking dependencies:")
     required_packages = [
-        "pytest", "pyyaml", "docx2python", "markdown", "rich", "lxml",
-        "flake8", "black", "isort", "mypy", "pylint"
+        "pytest",
+        "pyyaml",
+        "docx2python",
+        "markdown",
+        "rich",
+        "lxml",
+        "flake8",
+        "black",
+        "isort",
+        "mypy",
+        "pylint",
     ]
 
     for package in required_packages:
@@ -118,15 +142,18 @@ def check_dependencies():
         except ImportError:
             print(f"❌ {package} not installed")
 
+
 def check_vscode_debugger():
     """Check if VSCode debugger extension is correctly installed."""
     print("\nChecking VSCode debugger:")
     vscode_dir = os.path.expanduser("~/.vscode/extensions")
 
     if os.path.exists(vscode_dir):
-        debugpy_extensions = [d for d in os.listdir(vscode_dir) if "debugpy" in d.lower()]
+        debugpy_extensions = [
+            d for d in os.listdir(vscode_dir) if "debugpy" in d.lower()
+        ]
         if debugpy_extensions:
-            print(f"✅ VSCode Python debugger extensions found:")
+            print("✅ VSCode Python debugger extensions found:")
             for ext in debugpy_extensions:
                 print(f"  - {ext}")
         else:
@@ -137,19 +164,25 @@ def check_vscode_debugger():
     # Check if debugpy can be imported
     try:
         import debugpy
+
         print(f"✅ debugpy module is installed (version {debugpy.__version__})")
     except ImportError:
         print("❌ debugpy module not installed")
     except AttributeError:
         print("✅ debugpy module is installed (version unknown)")
 
+
 def check_file_permissions():
     """Check if key files have execution permission (on Unix systems)."""
-    if os.name == 'posix':  # Unix-like system
+    if os.name == "posix":  # Unix-like system
         print("\nChecking file permissions:")
         scripts = [
-            "run.sh", "run_tests.sh", "setup_venv.sh",
-            "lint.sh", "fix_imports.sh", "install_dependencies.sh"
+            "run.sh",
+            "run_tests.sh",
+            "setup_venv.sh",
+            "lint.sh",
+            "fix_imports.sh",
+            "install_dependencies.sh",
         ]
 
         for script in scripts:
@@ -163,6 +196,52 @@ def check_file_permissions():
             else:
                 print(f"❓ {script} not found")
 
+
+def check_requirements_structure():
+    """Check if requirements file exists and has the expected structure."""
+    print("\nChecking requirements structure:")
+
+    requirements_path = Path(__file__).parent / "input" / "requirements.md"
+    if not requirements_path.exists():
+        print(f"❌ Requirements file not found at {requirements_path}")
+        return
+
+    print(f"✅ Requirements file found at {requirements_path}")
+
+    # Read requirements and check structure
+    try:
+        with open(requirements_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        # Check for different requirement types
+        requirement_types = {
+            "CF": "Core Functionality",
+            "FR": "Functional Requirements",
+            "NFR": "Non-Functional Requirements",
+            "IR": "Interface Requirements",
+            "IM": "Integration Methods",
+        }
+
+        missing_types = []
+        for req_type, description in requirement_types.items():
+            pattern = re.compile(rf"#+\s+{req_type}-\d+")
+            if not pattern.search(content):
+                missing_types.append(f"{req_type} ({description})")
+
+        if missing_types:
+            print(f"❌ Missing requirement types: {', '.join(missing_types)}")
+        else:
+            print("✅ All required requirement types are present")
+
+        # Count requirements
+        pattern = re.compile(r"^#+\s+([A-Z]+-\d+(?:\.\d+)*):.*?$", re.MULTILINE)
+        requirements = pattern.findall(content)
+        print(f"✅ Found {len(requirements)} requirements in total")
+
+    except Exception as e:
+        print(f"❌ Error checking requirements structure: {e}")
+
+
 def run_diagnostics():
     """Run all diagnostic checks."""
     print("==== DOCX RTM Automation Diagnostics ====\n")
@@ -173,6 +252,7 @@ def run_diagnostics():
     check_dependencies()
     check_network_connection()
     check_vscode_debugger()
+    check_requirements_structure()
     check_file_permissions()
 
     print("\n==== End of Diagnostics ====")
@@ -181,6 +261,7 @@ def run_diagnostics():
     print("2. Check if another debugger session is already running")
     print("3. Verify the port isn't blocked by a firewall")
     print("4. Try using a different port for debugging")
+
 
 if __name__ == "__main__":
     run_diagnostics()

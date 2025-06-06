@@ -8,18 +8,40 @@ a document outline that can be used for the RTM.
 
 import os
 import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import re
 import json
 import argparse
 import logging
 from pathlib import Path
 
-# Add project root to path for imports
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+# --- Start of standard boilerplate for scripts in packages ---
+_self_path_extract_outline = Path(__file__).resolve()
+# project_root/src/extractors/extract_outline.py -> project_root is parents[2]
+_project_root_extract_outline = _self_path_extract_outline.parents[2]
 
-from src.utils.config_loader import load_config  # pylint: disable=wrong-import-position # noqa: E402
+if str(_project_root_extract_outline) not in sys.path:
+    sys.path.insert(0, str(_project_root_extract_outline))
+
+if __name__ == "__main__" and not __package__:
+    _package_path = _self_path_extract_outline.parent.relative_to(
+        _project_root_extract_outline
+    )
+    __package__ = str(_package_path).replace(
+        os.sep, "."
+    )  # Changed Path().sep to os.sep
+# --- End of standard boilerplate ---
+
+# Original PROJECT_ROOT definition can be removed or aliased if needed elsewhere:
+# PROJECT_ROOT = _project_root_extract_outline
+
+from src.utils.config_loader import (
+    load_config,
+)  # pylint: disable=wrong-import-position # noqa: E402
 
 # Configure logging
 logging.basicConfig(
@@ -34,7 +56,7 @@ logger = logging.getLogger("extract_outline")
 def extract_headings(markdown_text):
     """Extract all headings from markdown text and create a hierarchical structure."""
     heading_pattern = re.compile(
-        r'^(#{1,6})\s+(.+?)(?:\s+\{#([a-zA-Z0-9_-]+)\})?\s*$', re.MULTILINE
+        r"^(#{1,6})\s+(.+?)(?:\s+\{#([a-zA-Z0-9_-]+)\})?\s*$", re.MULTILINE
     )
     headings = []
 
@@ -43,11 +65,13 @@ def extract_headings(markdown_text):
         text = match.group(2).strip()
         anchor = match.group(3) if match.group(3) else None
 
-        headings.append({
-            "level": level,
-            "text": text,
-            "anchor": anchor,
-        })
+        headings.append(
+            {
+                "level": level,
+                "text": text,
+                "anchor": anchor,
+            }
+        )
 
     return headings
 
@@ -67,7 +91,7 @@ def build_outline(headings):
             "text": heading["text"],
             "level": heading["level"],
             "anchor": heading["anchor"],
-            "children": []
+            "children": [],
         }
 
         # Find correct parent for this heading
@@ -90,7 +114,7 @@ def build_outline(headings):
 def process_markdown_file(file_path):
     """Process a single Markdown file and extract its outline."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Extract headings from content
@@ -103,11 +127,7 @@ def process_markdown_file(file_path):
         filename = os.path.basename(file_path)
         name, _ = os.path.splitext(filename)
 
-        return {
-            "filename": filename,
-            "name": name,
-            "outline": outline
-        }
+        return {"filename": filename, "name": name, "outline": outline}
     except Exception as e:  # pylint: disable=broad-except
         logger.error("Error processing %s: %s", file_path, str(e))
         return None
@@ -115,9 +135,11 @@ def process_markdown_file(file_path):
 
 def main():
     """Main function to extract outlines from Markdown files."""
-    parser = argparse.ArgumentParser(description='Extract document outline from Markdown files')
-    parser.add_argument('--input-dir', help='Directory containing Markdown files')
-    parser.add_argument('--output-dir', help='Output directory for extracted outlines')
+    parser = argparse.ArgumentParser(
+        description="Extract document outline from Markdown files"
+    )
+    parser.add_argument("--input-dir", help="Directory containing Markdown files")
+    parser.add_argument("--output-dir", help="Output directory for extracted outlines")
 
     args = parser.parse_args()
 
@@ -128,18 +150,22 @@ def main():
     input_dir = args.input_dir
     if not input_dir:
         input_dir = os.path.join(
-            PROJECT_ROOT, config.get("paths", {}).get("output_dir", "output")
+            _project_root_extract_outline,
+            config.get("paths", {}).get("output_dir", "output"),
         )
 
     output_dir = args.output_dir
     if not output_dir:
-        output_dir = os.path.join(PROJECT_ROOT, config.get("paths", {}).get("outline_dir", "outlines"))
+        output_dir = os.path.join(
+            _project_root_extract_outline,
+            config.get("paths", {}).get("outline_dir", "outlines"),
+        )
 
     # Create output directory if it doesn't exist
     os.makedirs(output_dir, exist_ok=True)
 
     # Find all Markdown files in the input directory
-    md_files = [f for f in os.listdir(input_dir) if f.endswith('.md')]
+    md_files = [f for f in os.listdir(input_dir) if f.endswith(".md")]
 
     if not md_files:
         logger.warning("No Markdown files found in %s", input_dir)
@@ -159,7 +185,7 @@ def main():
 
     # Save all outlines to a JSON file
     output_path = os.path.join(output_dir, "document_outlines.json")
-    with open(output_path, 'w', encoding='utf-8') as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         json.dump(outlines, f, indent=2)
 
     logger.info("Outlines extracted and saved to %s", output_path)

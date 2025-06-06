@@ -24,8 +24,12 @@ def sync_outline_files():
     file_mappings = {
         paths.get("outline_json_external"): paths.get("outline_json"),
         paths.get("outline_yaml_external"): paths.get("outline_yaml"),
-        paths.get("numbered_outline_json_external"): paths.get("local_numbered_outline_json"),
-        paths.get("numbered_outline_yaml_external"): paths.get("local_numbered_outline_yaml"),
+        paths.get("numbered_outline_json_external"): paths.get(
+            "local_numbered_outline_json"
+        ),
+        paths.get("numbered_outline_yaml_external"): paths.get(
+            "local_numbered_outline_yaml"
+        ),
     }
 
     # Copy files

@@ -1,40 +1,63 @@
+"""
+Agent Orchestrator for managing and coordinating various agents in the system.
+"""
+
 import os
 import sys
 import json
 import time
-import logging
-from typing import Dict, Any, List, Optional, Union, Set, Tuple
+from typing import Dict, Any, List, Optional, Union
 from threading import Lock
+from pathlib import Path
 
-from pathlib import Path  # Add project root to sys.path to allow sibling imports
+# --- Start of standard boilerplate for scripts in packages ---
+_self_path_orchestrator = Path(__file__).resolve()
+# project_root/agents/agent_orchestrator.py -> project_root is parents[1]
+_project_root_orchestrator = _self_path_orchestrator.parents[1]
 
-project_root_path = Path(__file__).resolve().parent.parent
-if str(project_root_path) not in sys.path:
-    sys.path.insert(0, str(project_root_path))  # Ensure priority for imports
+if str(_project_root_orchestrator) not in sys.path:
+    sys.path.insert(0, str(_project_root_orchestrator))
 
-from dmaic import DMAICHandler
-from utils.output_handler import OutputHandler
-from utils.paths_manager import PathsManager
+if __name__ == "__main__" and not __package__:
+    # Calculate the package name based on the file's path relative to the project root
+    _package_path_obj = _self_path_orchestrator.parent.relative_to(
+        _project_root_orchestrator
+    )
+    __package__ = str(_package_path_obj).replace(
+        os.sep, "."
+    )  # Changed Path().sep to os.sep
+# --- End of standard boilerplate ---
 
-# Import base agent components from the new common file
-# Ensure the agents package is accessible and agent_common module exists
-from agents.agent_common import (
-    BaseAgent,  # Ensure this class exists in agents.agent_common
+# Application-specific imports
+from dmaic import DMAICHandler  # pylint: disable=wrong-import-position # noqa: E402
+from utils.output_handler import (
+    OutputHandler,
+)  # pylint: disable=wrong-import-position # noqa: E402
+from utils.paths_manager import (
+    PathsManager,
+)  # pylint: disable=wrong-import-position # noqa: E402
+
+from agents.agent_common import (  # pylint: disable=wrong-import-position # noqa: E402
+    BaseAgent,
     AgentRole,
-    AgentMessage,  # Ensure this class exists in agents.agent_common
+    AgentMessage,
     AgentPriority,
     AgentCapability,
     PING_REQUEST,
 )
-from agents.dmaic_cicd_agent import DMAICCICDAgent
-from agents.git_agent import GitAgent
-from agents.requirement_analyzer import (
+from agents.dmaic_cicd_agent import (
+    DMAICCICDAgent,
+)  # pylint: disable=wrong-import-position # noqa: E402
+from agents.git_agent import (
+    GitAgent,
+)  # pylint: disable=wrong-import-position # noqa: E402
+from agents.requirement_analyzer import (  # pylint: disable=wrong-import-position # noqa: E402
     RequirementAnalysisAgent,
     TraceabilityAnalysisAgent,
 )
-
-# Ensure CopilotAgent is correctly implemented and imported
-from agents.copilot_agent import CopilotAgent
+from agents.copilot_agent import (
+    CopilotAgent,
+)  # pylint: disable=wrong-import-position # noqa: E402
 
 
 class AgentOrchestrator:
@@ -73,7 +96,9 @@ class AgentOrchestrator:
         self.orchestrator_agent.agent_id = "orchestrator"
         self.orchestrator_agent.role = AgentRole.ORCHESTRATOR
         self.orchestrator_agent.output_handler = self.output_handler
-        self.orchestrator_agent.capabilities = []  # Orchestrator might not have specific capabilities
+        self.orchestrator_agent.capabilities = (
+            []
+        )  # Orchestrator might not have specific capabilities
 
         self.register_agent(self.orchestrator_agent)
 
@@ -97,12 +122,14 @@ class AgentOrchestrator:
 
         # Initialize Requirement Agents
         self.req_analysis_agent = RequirementAnalysisAgent(
-            "req_analyzer_01", output_handler=self.output_handler
+            "req_analyzer_01",
+            output_handler_param=self.output_handler,  # Use the correct parameter name
         )
         self.register_agent(self.req_analysis_agent)
 
         self.trace_analysis_agent = TraceabilityAnalysisAgent(
-            "trace_analyzer_01", output_handler=self.output_handler
+            "trace_analyzer_01",
+            output_handler_param=self.output_handler,  # Use the correct parameter name
         )
         self.register_agent(self.trace_analysis_agent)
 
@@ -128,7 +155,7 @@ class AgentOrchestrator:
 
         # Connect agent to orchestrator if the method exists
         if hasattr(agent, "register_with_orchestrator") and callable(
-            getattr(agent, "register_with_orchestrator")
+            agent.register_with_orchestrator
         ):
             try:
                 agent.register_with_orchestrator(self)
@@ -155,9 +182,11 @@ class AgentOrchestrator:
             if isinstance(message.content, dict) and "status" in message.content:
                 log_entry["content_summary"] = {
                     "status": message.content.get("status"),
-                    "message": str(message.content.get("message", ""))[:100] + "..."
-                    if message.content.get("message")
-                    else None,
+                    "message": (
+                        str(message.content.get("message", ""))[:100] + "..."
+                        if message.content.get("message")
+                        else None
+                    ),
                     "has_data": message.content.get("data") is not None,
                     "has_markdown": message.content.get("markdown_content") is not None,
                 }
@@ -222,8 +251,15 @@ class AgentOrchestrator:
 
     def check_message_timeouts(self):
         """Check for and handle timed-out messages"""
-        # Implementation to handle message timeouts
-        pass
+        # Implementation placeholder for handling message timeouts
+        current_time = time.time()
+        with self.message_lock:
+            for msg_id, response_info in list(self.pending_responses.items()):
+                if current_time - response_info["timestamp"] > 30:  # 30 seconds timeout
+                    self.output_handler.log_warning(
+                        f"Message {msg_id} timed out waiting for response"
+                    )
+                    self.pending_responses[msg_id]["status"] = "timeout"
 
     def ping_agent(
         self, target_agent_id: str, timeout_seconds: float = 5.0
@@ -375,9 +411,9 @@ class AgentOrchestrator:
 
                 if not repo_path_result or not os.path.isdir(repo_path_result):
                     workflow_status["steps"][-1]["status"] = "failed"
-                    workflow_status["steps"][-1]["error"] = (
-                        f"Failed to clone/pull repository. Path: {repo_path_result}"
-                    )
+                    workflow_status["steps"][-1][
+                        "error"
+                    ] = f"Failed to clone/pull repository. Path: {repo_path_result}"
                     raise ValueError(
                         f"Failed to clone/pull repository. Path: {repo_path_result}"
                     )
@@ -403,7 +439,9 @@ class AgentOrchestrator:
                         "Copilot agent not initialized for repository_analysis workflow"
                     )
 
-                analysis_summary = self.copilot_agent.analyze_repository(final_repo_path)
+                analysis_summary = self.copilot_agent.analyze_repository(
+                    final_repo_path
+                )
                 workflow_status["steps"][-1]["status"] = "completed"
                 workflow_status["steps"][-1]["output"] = {
                     "analysis_summary": analysis_summary
@@ -503,9 +541,9 @@ class AgentOrchestrator:
                     generated_code_path
                 ):
                     workflow_status["steps"][-1]["status"] = "failed"
-                    workflow_status["steps"][-1]["error"] = (
-                        "Code generation failed or file not saved."
-                    )
+                    workflow_status["steps"][-1][
+                        "error"
+                    ] = "Code generation failed or file not saved."
                     raise ValueError("Code generation failed.")
 
                 workflow_status["steps"][-1]["status"] = "completed"
@@ -570,9 +608,8 @@ class AgentOrchestrator:
                 # Workflow: Analyze a pull request for impact
                 repo_url = workflow_config.get("repository_url")
                 pr_number = workflow_config.get("pr_number")
-                target_branch = workflow_config.get(
-                    "target_branch", "main"
-                )  # Branch PR is merging into
+                # Comment out the unused target_branch variable to avoid linting errors
+                # target_branch = workflow_config.get("target_branch", "main")
 
                 if not repo_url or not pr_number:
                     raise ValueError(
@@ -705,7 +742,9 @@ class AgentOrchestrator:
                     "parsing_summary": parsed_content_summary,
                     "impact_assessment": impact_assessment_result,
                 }
-                with open(report_path.replace(".md", ".json"), "w") as f_json:
+                with open(
+                    report_path.replace(".md", ".json"), "w", encoding="utf-8"
+                ) as f_json:
                     json.dump(report_data_for_generation, f_json, indent=2)
                 report_content = True  # Mock that report was generated
 
@@ -771,9 +810,9 @@ class AgentOrchestrator:
                 "status": agent.status,
                 "queue_size": agent.inbox.qsize(),
                 "last_activity": agent.last_activity,
-                "capabilities": list(agent.capabilities)
-                if hasattr(agent, "capabilities")
-                else [],
+                "capabilities": (
+                    list(agent.capabilities) if hasattr(agent, "capabilities") else []
+                ),
             }
 
         return {
@@ -807,11 +846,11 @@ class AgentOrchestrator:
             }
 
         try:
-            with open(filepath, "w") as f:
+            with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(state, f, indent=2)
             self.output_handler.log_info(f"Agent system state saved to {filepath}")
             return filepath
-        except Exception as e:
+        except IOError as e:
             self.output_handler.log_error(f"Error saving system state: {e}")
             return ""
 
@@ -824,35 +863,63 @@ if __name__ == "__main__":
 
     # Minimal mock for OutputHandler
     class MockOutputHandler:
+        """Mock OutputHandler for testing purposes."""
+
         def __init__(self):
             # Create a temporary output dir for the test if PathsManager needs it via get_output_dir
             # However, PathsManager is instantiated by AgentOrchestrator itself.
             # This mock is primarily for logging.
-            self.test_output_dir = project_root_path / "temp_orchestrator_test_output"
+            self.test_output_dir = (
+                _project_root_orchestrator / "temp_orchestrator_test_output"
+            )  # Changed project_root_path
             os.makedirs(self.test_output_dir, exist_ok=True)
             print(f"MockOutputHandler: Test output directory at {self.test_output_dir}")
 
-        def log_info(self, message):
-            print(f"MOCK_INFO: {message}")
+        def log_info(self, message, *args, **_kwargs):
+            """Log an informational message."""
+            # Handle string formatting with variable arguments
+            if args:
+                formatted_message = message % args
+            else:
+                formatted_message = message
+            print(f"MOCK_INFO: {formatted_message}")
 
-        def log_error(self, message):
-            print(f"MOCK_ERROR: {message}")
+        def log_error(self, message, *args, **_kwargs):
+            """Log an error message."""
+            if args:
+                formatted_message = message % args
+            else:
+                formatted_message = message
+            print(f"MOCK_ERROR: {formatted_message}")
 
-        def log_warning(self, message):
-            print(f"MOCK_WARNING: {message}")
+        def log_warning(self, message, *args, **_kwargs):
+            """Log a warning message."""
+            if args:
+                formatted_message = message % args
+            else:
+                formatted_message = message
+            print(f"MOCK_WARNING: {formatted_message}")
 
-        def log_debug(self, message):
-            print(f"MOCK_DEBUG: {message}")
+        def log_debug(self, message, *args, **_kwargs):
+            """Log a debug message."""
+            if args:
+                formatted_message = message % args
+            else:
+                formatted_message = message
+            print(f"MOCK_DEBUG: {formatted_message}")
 
-        def log_critical(self, message, exc_info=False):
-            print(f"MOCK_CRITICAL: {message}")
-
-        # Add get_output_dir if any direct call from orchestrator or its components needs it from output_handler
-        # For now, PathsManager is used by Orchestrator for paths.
-        # def get_output_dir(self): return str(self.test_output_dir)
+        def log_critical(self, message, *args, **_kwargs):
+            """Log a critical message."""
+            if args:
+                formatted_message = message % args
+            else:
+                formatted_message = message
+            print(f"MOCK_CRITICAL: {formatted_message}")
 
     # Minimal mock for DMAICHandler
     class MockDMAICHandler:
+        """Mock DMAICHandler for testing purposes."""
+
         def __init__(self, project_name):  # Based on previous error for DMAICHandler
             self.project_name = project_name
             print(f"MOCK_DMAICHandler initialized for project: {self.project_name}")
@@ -892,7 +959,6 @@ if __name__ == "__main__":
                 f"Copilot Agent ID: {orchestrator.copilot_agent.agent_id}, Role: {orchestrator.copilot_agent.role}"
             )
         # Add more checks if needed
-
     except Exception as e:
         print(f"ERROR during AgentOrchestrator test: {e}")
         import traceback

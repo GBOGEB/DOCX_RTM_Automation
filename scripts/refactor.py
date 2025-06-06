@@ -4,7 +4,6 @@ import yaml
 import sys
 import time
 import gc
-from pathlib import Path
 
 
 def create_directory_structure():
@@ -91,7 +90,9 @@ def move_files():
                     success_count += 1
                     break  # Success, exit retry loop
                 except PermissionError as e:
-                    print(f"  PermissionError while trying to copy '{src}' to '{dest}': {e}")
+                    print(
+                        f"  PermissionError while trying to copy '{src}' to '{dest}': {e}"
+                    )
                     if attempt < 3:  # Retry if not the last attempt
                         gc.collect()  # Attempt to force garbage collection
                         print(f"  Retrying in 3 seconds (attempt {attempt + 2}/4)...")
@@ -99,18 +100,26 @@ def move_files():
                     else:
                         error_message = f"Failed to move '{src}' to '{dest}' after 4 attempts due to PermissionError: {e}"
                         print(f"  [SKIPPING FILE] {error_message}")
-                        skipped_files.append({"src": src, "dest": dest, "error": error_message})
+                        skipped_files.append(
+                            {"src": src, "dest": dest, "error": error_message}
+                        )
                 except Exception as e_other:
                     error_message = f"An unexpected error occurred while trying to copy '{src}' to '{dest}': {e_other}"
                     print(f"  [SKIPPING FILE] {error_message}")
-                    skipped_files.append({"src": src, "dest": dest, "error": error_message})
+                    skipped_files.append(
+                        {"src": src, "dest": dest, "error": error_message}
+                    )
                     break  # Don't retry for other errors, move to next file
 
-            if not moved_successfully and not any(sf['src'] == src for sf in skipped_files):
+            if not moved_successfully and not any(
+                sf["src"] == src for sf in skipped_files
+            ):
                 if not os.path.exists(dest):  # Double check if it somehow moved
                     error_message = f"Failed to move '{src}' to '{dest}' after retries for an unknown reason."
                     print(f"  [SKIPPING FILE - UNKNOWN REASON] {error_message}")
-                    skipped_files.append({"src": src, "dest": dest, "error": error_message})
+                    skipped_files.append(
+                        {"src": src, "dest": dest, "error": error_message}
+                    )
 
         else:
             print(f"  Warning: Source file not found: {src}")
@@ -139,10 +148,14 @@ def move_files():
         except Exception as e:
             error_message = f"Error creating __init__ file {init_file}: {e}"
             print(f"  [SKIPPING FILE] {error_message}")
-            skipped_files.append({"src": "N/A", "dest": init_file, "error": error_message})
+            skipped_files.append(
+                {"src": "N/A", "dest": init_file, "error": error_message}
+            )
 
     print("\n=== File Operation Summary ===")
-    print(f"Attempted to process: {attempted_files_count + len(init_files)} items (files + __init__.py)")
+    print(
+        f"Attempted to process: {attempted_files_count + len(init_files)} items (files + __init__.py)"
+    )
     print(f"Successfully created/copied: {success_count}")
     print(f"Already existed at destination: {already_exists_count}")
     print(f"Source not found: {not_found_count}")
@@ -157,7 +170,9 @@ def move_files():
             print()
         print("\n⚠️ WARNING: Some files were skipped due to errors.")
         print("   The refactoring process will continue, but may be incomplete.")
-        print("   You may need to manually copy these files or address the errors and restart.")
+        print(
+            "   You may need to manually copy these files or address the errors and restart."
+        )
 
     return True
 
@@ -229,8 +244,7 @@ def update_paths_config():
 
         # Save updated config
         with open(new_config_path, "w", encoding="utf-8") as file:
-            yaml.dump(updated_config, file,
-                      default_flow_style=False, sort_keys=False)
+            yaml.dump(updated_config, file, default_flow_style=False, sort_keys=False)
 
         print(f"Updated configuration file: {new_config_path}")
         return True
@@ -371,7 +385,9 @@ Tests cover:
         print("\nCreated README.md file with UTF-8 encoding.")
         return True
     except UnicodeEncodeError:
-        print("\nUnicodeEncodeError with UTF-8. Trying system default encoding for README.md...")
+        print(
+            "\nUnicodeEncodeError with UTF-8. Trying system default encoding for README.md..."
+        )
         try:
             # Second attempt with system's default encoding
             with open("README.md", "w") as file:  # System default encoding
@@ -379,7 +395,9 @@ Tests cover:
             print("Created README.md file with system default encoding.")
             return True
         except Exception as e_fallback:
-            print(f"Error creating README.md with system default encoding: {e_fallback}")
+            print(
+                f"Error creating README.md with system default encoding: {e_fallback}"
+            )
             # As a last resort, try writing with very basic ASCII-only content
             try:
                 ascii_content = """# DOCX RTM Automation

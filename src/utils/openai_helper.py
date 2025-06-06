@@ -7,15 +7,25 @@ to improve requirements analysis, test coverage analysis, and more.
 """
 
 import os
-import sys
 import json
 import logging
 import time
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Union, Tuple
+from typing import Dict, List, Any, Optional
+
+import sys
+from pathlib import Path
+
+# Add project root to path
+_project_root = Path(__file__).resolve().parent.parent
+if str(_project_root) not in sys.path:
+    sys.path.insert(0, str(_project_root))
+
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 # Default settings
@@ -23,6 +33,7 @@ DEFAULT_MODEL = "gpt-4"
 DEFAULT_TEMPERATURE = 0.3
 MAX_RETRIES = 3
 RETRY_DELAY = 2  # seconds
+
 
 class OpenAIHelper:
     """Helper class for OpenAI API integration."""
@@ -66,12 +77,12 @@ class OpenAIHelper:
     def _read_api_key_from_config(self, config_path: Path) -> Optional[str]:
         """Read API key from configuration file."""
         try:
-            if config_path.suffix.lower() == '.json':
-                with open(config_path, 'r') as f:
+            if config_path.suffix.lower() == ".json":
+                with open(config_path, "r") as f:
                     config = json.load(f)
                 return config.get("api_key")
             else:
-                with open(config_path, 'r') as f:
+                with open(config_path, "r") as f:
                     return f.read().strip()
         except Exception as e:
             logger.error(f"Error reading API key from {config_path}: {e}")
@@ -86,18 +97,24 @@ class OpenAIHelper:
 
                 # Configure the client
                 if not self.api_key:
-                    raise ValueError("OpenAI API key not found. Please set OPENAI_API_KEY environment variable or provide in config file.")
+                    raise ValueError(
+                        "OpenAI API key not found. Please set OPENAI_API_KEY environment variable or provide in config file."
+                    )
 
                 openai.api_key = self.api_key
                 self._client = openai.OpenAI(api_key=self.api_key)
 
             except ImportError:
-                logger.error("OpenAI package not installed. Install with: pip install openai")
+                logger.error(
+                    "OpenAI package not installed. Install with: pip install openai"
+                )
                 raise
 
         return self._client
 
-    def analyze_requirement(self, requirement: str, additional_context: str = "") -> Dict[str, Any]:
+    def analyze_requirement(
+        self, requirement: str, additional_context: str = ""
+    ) -> Dict[str, Any]:
         """
         Analyze a requirement for quality and completeness.
 
@@ -146,7 +163,9 @@ Your analysis should focus on making the requirement more specific, measurable, 
 
             except json.JSONDecodeError:
                 # If not valid JSON, extract scores manually
-                logger.warning("Response was not valid JSON, attempting to extract data manually")
+                logger.warning(
+                    "Response was not valid JSON, attempting to extract data manually"
+                )
 
                 # Fallback result
                 analysis = {
@@ -154,18 +173,17 @@ Your analysis should focus on making the requirement more specific, measurable, 
                     "testability_score": self._extract_score(response, "testability"),
                     "feasibility_score": self._extract_score(response, "feasibility"),
                     "issues": self._extract_list_items(response, "Issues"),
-                    "suggestions": self._extract_list_items(response, "Improvement suggestions"),
-                    "raw_response": response
+                    "suggestions": self._extract_list_items(
+                        response, "Improvement suggestions"
+                    ),
+                    "raw_response": response,
                 }
 
                 return analysis
 
         except Exception as e:
             logger.error(f"Error analyzing requirement: {e}")
-            return {
-                "error": str(e),
-                "requirement": requirement
-            }
+            return {"error": str(e), "requirement": requirement}
 
     def generate_test_cases(self, requirement: str, count: int = 3) -> Dict[str, Any]:
         """
@@ -222,18 +240,16 @@ Return your test cases as JSON with the following structure:
                 logger.warning("Response was not valid JSON")
                 return {
                     "error": "Failed to parse response as JSON",
-                    "raw_response": response
+                    "raw_response": response,
                 }
 
         except Exception as e:
             logger.error(f"Error generating test cases: {e}")
-            return {
-                "error": str(e),
-                "requirement": requirement
-            }
+            return {"error": str(e), "requirement": requirement}
 
-    def analyze_traceability(self, requirements: List[Dict[str, Any]],
-                           test_cases: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def analyze_traceability(
+        self, requirements: List[Dict[str, Any]], test_cases: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """
         Analyze traceability between requirements and test cases.
 
@@ -291,7 +307,7 @@ Return your analysis as JSON with the following structure:
                 logger.warning("Response was not valid JSON")
                 return {
                     "error": "Failed to parse response as JSON",
-                    "raw_response": response
+                    "raw_response": response,
                 }
 
         except Exception as e:
@@ -300,7 +316,12 @@ Return your analysis as JSON with the following structure:
                 "error": str(e),
             }
 
-    def _call_api(self, prompt: str, max_tokens: int = 1024, temperature: float = DEFAULT_TEMPERATURE) -> str:
+    def _call_api(
+        self,
+        prompt: str,
+        max_tokens: int = 1024,
+        temperature: float = DEFAULT_TEMPERATURE,
+    ) -> str:
         """Call OpenAI API with retry logic."""
         retries = 0
 
@@ -309,22 +330,27 @@ Return your analysis as JSON with the following structure:
                 response = self.client.chat.completions.create(
                     model=self.model,
                     messages=[
-                        {"role": "system", "content": "You are a helpful assistant specializing in requirements engineering and software testing."},
-                        {"role": "user", "content": prompt}
+                        {
+                            "role": "system",
+                            "content": "You are a helpful assistant specializing in requirements engineering and software testing.",
+                        },
+                        {"role": "user", "content": prompt},
                     ],
                     max_tokens=max_tokens,
                     temperature=temperature,
                 )
 
                 # Extract the response text
-                if hasattr(response, 'choices') and len(response.choices) > 0:
+                if hasattr(response, "choices") and len(response.choices) > 0:
                     return response.choices[0].message.content.strip()
                 else:
                     raise ValueError("Unexpected response structure from OpenAI API")
 
             except Exception as e:
                 retries += 1
-                logger.warning(f"API call failed (attempt {retries}/{MAX_RETRIES}): {e}")
+                logger.warning(
+                    f"API call failed (attempt {retries}/{MAX_RETRIES}): {e}"
+                )
 
                 if retries <= MAX_RETRIES:
                     # Exponential backoff
@@ -364,9 +390,9 @@ Return your analysis as JSON with the following structure:
 
         # Extract list items (numbered or bullet points)
         items = []
-        for line in section_text.strip().split('\n'):
+        for line in section_text.strip().split("\n"):
             # Remove leading numbers, dashes, asterisks, etc.
-            clean_line = re.sub(r'^\s*(?:\d+\.|\-|\*|\•)\s*', '', line).strip()
+            clean_line = re.sub(r"^\s*(?:\d+\.|\-|\*|\•)\s*", "", line).strip()
             if clean_line:
                 items.append(clean_line)
 
@@ -378,10 +404,16 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="OpenAI integration tools")
-    parser.add_argument("--api-key", help="OpenAI API key (optional, can use environment variable)")
+    parser.add_argument(
+        "--api-key", help="OpenAI API key (optional, can use environment variable)"
+    )
     parser.add_argument("--analyze-requirement", help="Analyze a requirement")
-    parser.add_argument("--generate-tests", help="Generate test cases for a requirement")
-    parser.add_argument("--count", type=int, default=3, help="Number of test cases to generate")
+    parser.add_argument(
+        "--generate-tests", help="Generate test cases for a requirement"
+    )
+    parser.add_argument(
+        "--count", type=int, default=3, help="Number of test cases to generate"
+    )
     parser.add_argument("--model", help="OpenAI model to use", default=DEFAULT_MODEL)
 
     args = parser.parse_args()
@@ -398,6 +430,7 @@ def main():
 
     else:
         parser.print_help()
+
 
 if __name__ == "__main__":
     main()

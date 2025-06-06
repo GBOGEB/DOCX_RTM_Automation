@@ -5,11 +5,19 @@ Configuration loader utility.
 This module provides functions to load configurations from YAML files.
 """
 
-import os
 import logging
 from pathlib import Path
 
 import yaml  # Moved yaml import after standard library
+
+import sys
+from pathlib import Path
+
+# Add project root to path
+_project_root = Path(__file__).resolve().parent.parent
+if str(_project_root) not in sys.path:
+    sys.path.insert(0, str(_project_root))
+
 
 logger = logging.getLogger(__name__)
 
@@ -28,15 +36,29 @@ def load_config(config_path=None):
         Dictionary containing configuration or None if loading fails.
     """
     if not config_path:
-        config_path = os.path.join(PROJECT_ROOT, "config", "paths.yaml")
+        # Ensure config_path is a Path object for consistency
+        config_file = PROJECT_ROOT / "config" / "paths.yaml"
+    else:
+        config_file = Path(config_path)
 
     try:
-        with open(config_path, "r", encoding="utf-8") as f:
+        with open(config_file, "r", encoding="utf-8") as f:
             config = yaml.safe_load(f)
-            logger.info("Configuration loaded from %s", config_path)
+            logger.info("Configuration loaded from %s", config_file)
             return config
+    except FileNotFoundError:
+        logger.error("Configuration file not found: %s", config_file)
+        return {}  # Return empty dict as per original behavior on error
+    except yaml.YAMLError as e:
+        logger.error("Error parsing YAML configuration file %s: %s", config_file, e)
+        return {}
     except Exception as e:  # pylint: disable=broad-except
-        logger.error("Failed to load configuration: %s", e)
+        # Catch any other unexpected errors
+        logger.error(
+            "An unexpected error occurred while loading configuration from %s: %s",
+            config_file,
+            e,
+        )
         return {}
 
 
@@ -53,7 +75,7 @@ def get_config_value(config, path, default=None):
         Value at the specified path or default if not found
     """
     if isinstance(path, str):
-        path = path.split('.')
+        path = path.split(".")
 
     current = config
     for key in path:

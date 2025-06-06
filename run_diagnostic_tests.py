@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-import json
-import time
-import subprocess
 import logging
 
 # --- Start of sys.path modification ---
@@ -18,7 +15,6 @@ sys.path = [_PROJECT_ROOT] + current_sys_path
 # --- End of sys.path modification ---
 
 from agents.agent_orchestrator import AgentOrchestrator
-from agents.agent_common import BaseAgent  # For type hinting if needed
 from dmaic import DMAICHandler
 from utils.paths_manager import PathsManager
 from utils.output_handler import OutputHandler, LogLevel
@@ -30,7 +26,8 @@ def main():
 
     # 0. Diagnostic Plan & CI/CD Considerations
     print("\n--- 0. Diagnostic Plan & CI/CD Considerations ---")
-    print("""
+    print(
+        """
     Diagnostic Run Plan:
     1. Initialize Core Components: Setup paths, output handling, OpenAI client, DMAIC handler, and Agent Orchestrator.
     2. Check OpenAI API Key & Availability: Verify connection and authentication with OpenAI services.
@@ -50,7 +47,8 @@ def main():
     - The pipeline should fail if critical errors are detected during the run (e.g., OpenAI unavailability, agent ping failures, workflow execution failure).
     - The post-run log analysis can be used to determine build status (e.g., fail build if ERROR count > 0).
     - Test results and logs should be archived as build artifacts.
-    """)
+    """
+    )
 
     # 1. Initialize Core Components
     print("\n--- 1. Initializing Core Components ---")
@@ -69,10 +67,10 @@ def main():
     try:
         print(f"DEBUG: Attempting os.makedirs for log_dir: {log_dir}")
         os.makedirs(log_dir, exist_ok=True)  # Ensure log directory exists
-        print(f"DEBUG: os.makedirs for log_dir completed.")
+        print("DEBUG: os.makedirs for log_dir completed.")
         print(f"DEBUG: Attempting os.makedirs for output_dir: {output_dir}")
         os.makedirs(output_dir, exist_ok=True)  # Ensure output directory exists
-        print(f"DEBUG: os.makedirs for output_dir completed.")
+        print("DEBUG: os.makedirs for output_dir completed.")
     except OSError as e:
         print(
             f"CRITICAL_ERROR: Error creating log or output directory: {e}",
@@ -85,12 +83,12 @@ def main():
     print("DEBUG: About to initialize OutputHandler.")
     try:
         output_handler = OutputHandler(
-            output_dir=output_dir,            log_level=LogLevel.INFO,
+            output_dir=output_dir,
+            log_level=LogLevel.INFO,
             log_to_console=True,
             log_to_file=True,
-            log_file_path=os.path.join(
-                log_dir, "diagnostic_run.log"
-            ),        )
+            log_file_path=os.path.join(log_dir, "diagnostic_run.log"),
+        )
         output_handler.log_debug("OutputHandler object created successfully.")
         output_handler.log_debug(
             f"OutputHandler log_file_path configured to: {output_handler.log_file_path if hasattr(output_handler, 'log_file_path') else 'N/A'}"
@@ -183,7 +181,9 @@ def main():
             f"Failed to initialize standard agents: {e}", exc_info=True
         )
         # Decide if to exit or continue. For diagnostics, we might continue.
-        output_handler.log_warning("Continuing diagnostic run despite failure to initialize all standard agents.")
+        output_handler.log_warning(
+            "Continuing diagnostic run despite failure to initialize all standard agents."
+        )
 
     # 2. Check OpenAI API Key & Availability
     print("\n--- 2. Checking OpenAI API Key & Availability ---")
@@ -191,13 +191,19 @@ def main():
         try:
             available, message = check_openai_availability(openai_client)
             if available:
-                output_handler.log_success(f"OpenAI API Key Check: SUCCESSFUL. {message}")
+                output_handler.log_success(
+                    f"OpenAI API Key Check: SUCCESSFUL. {message}"
+                )
             else:
                 output_handler.log_error(f"OpenAI API Key Check: FAILED. {message}")
         except Exception as e:
-            output_handler.log_error(f"Error checking OpenAI availability: {e}", exc_info=True)
+            output_handler.log_error(
+                f"Error checking OpenAI availability: {e}", exc_info=True
+            )
     else:
-        output_handler.log_warning("OpenAI client not initialized. Skipping API key check.")
+        output_handler.log_warning(
+            "OpenAI client not initialized. Skipping API key check."
+        )
 
     # 3. Ping Agents to Check Responsiveness
     print("\n--- 3. Pinging Agents ---")
@@ -215,8 +221,14 @@ def main():
                 output_handler.log_info(f"Pinging {agent_name} (ID: {agent_id})...")
                 ping_result = orchestrator.ping_agent(agent_id, timeout_seconds=5.0)
                 if ping_result.get("status") == "success":
-                    rtt_data = ping_result.get("data", {}).get("round_trip_time_ms", "N/A")
-                    rtt_str = f"{rtt_data:.2f}" if isinstance(rtt_data, float) else str(rtt_data)
+                    rtt_data = ping_result.get("data", {}).get(
+                        "round_trip_time_ms", "N/A"
+                    )
+                    rtt_str = (
+                        f"{rtt_data:.2f}"
+                        if isinstance(rtt_data, float)
+                        else str(rtt_data)
+                    )
                     output_handler.log_success(
                         f"Ping to {agent_name} ({agent_id}) successful. RTT: {rtt_str} ms. Response: {ping_result.get('data', {}).get('pong_content')}"
                     )
@@ -266,7 +278,7 @@ def main():
                 f"Workflow 'repository_analysis' result status: {workflow_result.get('status')}"
             )
             if workflow_result.get("status") == "success":
-                output_handler.log_success( # Changed to log_success for successful workflow
+                output_handler.log_success(  # Changed to log_success for successful workflow
                     f"Workflow 'repository_analysis' completed successfully. Report: {workflow_result.get('results', {}).get('report_path')}"
                 )
                 # Optionally log more details from results if needed
@@ -292,16 +304,25 @@ def main():
                     error_count += 1
                 if "CRITICAL" in line:
                     critical_count += 1
-        output_handler.log_info(f"Log analysis: Found {error_count} ERROR(s) and {critical_count} CRITICAL error(s) in {log_file_to_analyze}.")
+        output_handler.log_info(
+            f"Log analysis: Found {error_count} ERROR(s) and {critical_count} CRITICAL error(s) in {log_file_to_analyze}."
+        )
         if error_count > 0 or critical_count > 0:
-            output_handler.log_warning("Potential issues detected in the log file. Please review.")
+            output_handler.log_warning(
+                "Potential issues detected in the log file. Please review."
+            )
         else:
-            output_handler.log_success("Log analysis: No ERROR or CRITICAL messages found.")
+            output_handler.log_success(
+                "Log analysis: No ERROR or CRITICAL messages found."
+            )
     else:
-        output_handler.log_warning(f"Log file {log_file_to_analyze} not found for analysis.")
+        output_handler.log_warning(
+            f"Log file {log_file_to_analyze} not found for analysis."
+        )
 
     output_handler.log_info("--- Diagnostic Tests Completed ---")
-    logging.shutdown() # Ensure all log handlers are closed properly
+    logging.shutdown()  # Ensure all log handlers are closed properly
+
 
 if __name__ == "__main__":
     main()

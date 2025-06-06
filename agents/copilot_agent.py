@@ -18,7 +18,9 @@ if str(project_root) not in sys.path:
 from agents.agent_common import BaseAgent, AgentRole, AgentCapability, AgentMessage
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -49,7 +51,7 @@ class CopilotAgent(BaseAgent):
             AgentCapability.CODE_ANALYSIS,
             AgentCapability.DOCUMENT_PARSING,
             AgentCapability.DOCUMENT_GENERATION,
-            AgentCapability.IMPACT_ANALYSIS
+            AgentCapability.IMPACT_ANALYSIS,
         ]
         self.dmaic_handler = dmaic_handler
         self.output_handler = output_handler
@@ -58,7 +60,9 @@ class CopilotAgent(BaseAgent):
         if output_handler:
             self.output_handler.log_info(f"CopilotAgent {self.agent_id} initialized")
         else:
-            logger.info(f"CopilotAgent {self.agent_id} initialized without output_handler")
+            logger.info(
+                f"CopilotAgent {self.agent_id} initialized without output_handler"
+            )
 
     def process_message(self, message: AgentMessage) -> Dict[str, Any]:
         """
@@ -81,7 +85,7 @@ class CopilotAgent(BaseAgent):
         else:
             return {
                 "status": "error",
-                "message": f"Unsupported message type: {message.message_type}"
+                "message": f"Unsupported message type: {message.message_type}",
             }
 
     def _handle_code_generation(self, content: Dict[str, Any]) -> Dict[str, Any]:
@@ -91,14 +95,17 @@ class CopilotAgent(BaseAgent):
         output_path = content.get("output_path", None)
 
         if not requirement:
-            return {"status": "error", "message": "No requirement provided for code generation"}
+            return {
+                "status": "error",
+                "message": "No requirement provided for code generation",
+            }
 
         try:
             generated_code = self.generate_code(language, requirement, output_path)
             return {
                 "status": "success",
-                "message": f"Code generated successfully",
-                "data": {"code": generated_code}
+                "message": "Code generated successfully",
+                "data": {"code": generated_code},
             }
         except Exception as e:
             return {"status": "error", "message": f"Failed to generate code: {e}"}
@@ -114,8 +121,8 @@ class CopilotAgent(BaseAgent):
             analysis_result = self.analyze_code(file_path)
             return {
                 "status": "success",
-                "message": f"Code analyzed successfully",
-                "data": analysis_result
+                "message": "Code analyzed successfully",
+                "data": analysis_result,
             }
         except Exception as e:
             return {"status": "error", "message": f"Failed to analyze code: {e}"}
@@ -125,14 +132,17 @@ class CopilotAgent(BaseAgent):
         repo_path = content.get("repo_path", "")
 
         if not repo_path or not os.path.exists(repo_path):
-            return {"status": "error", "message": f"Invalid repository path: {repo_path}"}
+            return {
+                "status": "error",
+                "message": f"Invalid repository path: {repo_path}",
+            }
 
         try:
             analysis_result = self.analyze_repository(repo_path)
             return {
                 "status": "success",
-                "message": f"Repository analyzed successfully",
-                "data": analysis_result
+                "message": "Repository analyzed successfully",
+                "data": analysis_result,
             }
         except Exception as e:
             return {"status": "error", "message": f"Failed to analyze repository: {e}"}
@@ -150,13 +160,15 @@ class CopilotAgent(BaseAgent):
             report_content = self.generate_report(report_type, data, output_path)
             return {
                 "status": "success",
-                "message": f"Report generated successfully",
-                "data": {"report": report_content}
+                "message": "Report generated successfully",
+                "data": {"report": report_content},
             }
         except Exception as e:
             return {"status": "error", "message": f"Failed to generate report: {e}"}
 
-    def generate_code(self, language: str, requirement: str, output_path: Optional[str] = None) -> str:
+    def generate_code(
+        self, language: str, requirement: str, output_path: Optional[str] = None
+    ) -> str:
         """
         Generate code based on a requirement.
 
@@ -171,7 +183,9 @@ class CopilotAgent(BaseAgent):
         # In a real implementation, this would call the Copilot API or use another AI service
         # For now, we'll generate a simple stub based on the requirement
         if self.output_handler:
-            self.output_handler.log_info(f"Generating {language} code for: {requirement}")
+            self.output_handler.log_info(
+                f"Generating {language} code for: {requirement}"
+            )
 
         file_extension = {
             "python": "py",
@@ -180,7 +194,7 @@ class CopilotAgent(BaseAgent):
             "java": "java",
             "csharp": "cs",
             "cpp": "cpp",
-            "shell": "sh"
+            "shell": "sh",
         }.get(language.lower(), "txt")
 
         # Generate a simple stub
@@ -202,7 +216,7 @@ if __name__ == "__main__":
     main()
 '''
         elif language.lower() == "javascript":
-            generated_code = f'''
+            generated_code = f"""
 /**
  * {requirement}
  */
@@ -215,25 +229,27 @@ function main() {{
 }}
 
 main();
-'''
+"""
         else:
-            generated_code = f'''
+            generated_code = f"""
 // {language} implementation for: {requirement}
 // TODO: Implement the actual logic here
-'''
+"""
 
         # Save to file if output path is provided
         if output_path:
             try:
                 os.makedirs(os.path.dirname(output_path), exist_ok=True)
-                with open(output_path, 'w') as f:
+                with open(output_path, "w") as f:
                     f.write(generated_code)
 
                 if self.output_handler:
                     self.output_handler.log_info(f"Code saved to {output_path}")
             except Exception as e:
                 if self.output_handler:
-                    self.output_handler.log_error(f"Failed to save code to {output_path}: {e}")
+                    self.output_handler.log_error(
+                        f"Failed to save code to {output_path}: {e}"
+                    )
                 else:
                     logger.error(f"Failed to save code to {output_path}: {e}")
 
@@ -257,7 +273,7 @@ main();
 
         # Read the file
         try:
-            with open(file_path, 'r') as f:
+            with open(file_path, "r") as f:
                 code = f.read()
         except Exception as e:
             if self.output_handler:
@@ -266,7 +282,7 @@ main();
 
         # Get file extension
         _, ext = os.path.splitext(file_path)
-        ext = ext.lstrip('.')
+        ext = ext.lstrip(".")
 
         # Simple analysis
         line_count = len(code.splitlines())
@@ -275,10 +291,14 @@ main();
         comment_lines = 0
 
         # Calculate comment lines based on file extension
-        if ext in ['py']:
-            comment_lines = sum(1 for line in code.splitlines() if line.strip().startswith('#'))
-        elif ext in ['js', 'ts', 'java', 'cs', 'cpp']:
-            comment_lines = sum(1 for line in code.splitlines() if line.strip().startswith('//'))
+        if ext in ["py"]:
+            comment_lines = sum(
+                1 for line in code.splitlines() if line.strip().startswith("#")
+            )
+        elif ext in ["js", "ts", "java", "cs", "cpp"]:
+            comment_lines = sum(
+                1 for line in code.splitlines() if line.strip().startswith("//")
+            )
 
         return {
             "file_path": file_path,
@@ -289,7 +309,11 @@ main();
             "comment_lines": comment_lines,
             "code_lines": line_count - blank_lines - comment_lines,
             "comments_ratio": comment_lines / line_count if line_count > 0 else 0,
-            "estimated_complexity": "low" if line_count < 100 else ("medium" if line_count < 500 else "high")
+            "estimated_complexity": (
+                "low"
+                if line_count < 100
+                else ("medium" if line_count < 500 else "high")
+            ),
         }
 
     def analyze_repository(self, repo_path: str) -> Dict[str, Any]:
@@ -311,8 +335,8 @@ main();
         # Get all files (excluding .git directory)
         all_files = []
         for root, dirs, files in os.walk(repo_path):
-            if '.git' in dirs:
-                dirs.remove('.git')
+            if ".git" in dirs:
+                dirs.remove(".git")
             for file in files:
                 all_files.append(os.path.join(root, file))
 
@@ -320,9 +344,9 @@ main();
         files_by_ext = {}
         for file_path in all_files:
             _, ext = os.path.splitext(file_path)
-            ext = ext.lstrip('.').lower()
+            ext = ext.lstrip(".").lower()
             if not ext:
-                ext = 'no_extension'
+                ext = "no_extension"
 
             if ext not in files_by_ext:
                 files_by_ext[ext] = []
@@ -335,16 +359,21 @@ main();
             "file_types": {ext: len(files) for ext, files in files_by_ext.items()},
             "largest_files": self._get_largest_files(all_files, 5),
             "estimated_size_kb": sum(os.path.getsize(f) for f in all_files) / 1024,
-            "directory_structure": self._analyze_directory_structure(repo_path)
+            "directory_structure": self._analyze_directory_structure(repo_path),
         }
 
-    def _get_largest_files(self, files: List[str], count: int = 5) -> List[Dict[str, Any]]:
+    def _get_largest_files(
+        self, files: List[str], count: int = 5
+    ) -> List[Dict[str, Any]]:
         """Get the largest files in a list."""
         file_sizes = [(f, os.path.getsize(f)) for f in files]
         file_sizes.sort(key=lambda x: x[1], reverse=True)
 
         return [
-            {"path": os.path.relpath(f, start=os.path.dirname(os.path.dirname(f))), "size_kb": size / 1024}
+            {
+                "path": os.path.relpath(f, start=os.path.dirname(os.path.dirname(f))),
+                "size_kb": size / 1024,
+            }
             for f, size in file_sizes[:count]
         ]
 
@@ -353,18 +382,20 @@ main();
         directories = {}
 
         for root, dirs, files in os.walk(repo_path):
-            if '.git' in dirs:
-                dirs.remove('.git')
+            if ".git" in dirs:
+                dirs.remove(".git")
 
             rel_path = os.path.relpath(root, start=repo_path)
-            if rel_path == '.':
-                rel_path = 'root'
+            if rel_path == ".":
+                rel_path = "root"
 
             directories[rel_path] = len(files)
 
         return directories
 
-    def generate_report(self, report_type: str, data: Dict[str, Any], output_path: Optional[str] = None) -> str:
+    def generate_report(
+        self, report_type: str, data: Dict[str, Any], output_path: Optional[str] = None
+    ) -> str:
         """
         Generate a report based on data.
 
@@ -390,14 +421,16 @@ main();
         if output_path:
             try:
                 os.makedirs(os.path.dirname(output_path), exist_ok=True)
-                with open(output_path, 'w') as f:
+                with open(output_path, "w") as f:
                     f.write(report_content)
 
                 if self.output_handler:
                     self.output_handler.log_info(f"Report saved to {output_path}")
             except Exception as e:
                 if self.output_handler:
-                    self.output_handler.log_error(f"Failed to save report to {output_path}: {e}")
+                    self.output_handler.log_error(
+                        f"Failed to save report to {output_path}: {e}"
+                    )
                 else:
                     logger.error(f"Failed to save report to {output_path}: {e}")
 
@@ -432,7 +465,7 @@ main();
             report += f"| {ext} | {count} |\n"
 
         if len(sorted_file_types) > 10:
-            report += f"| ... | ... |\n"
+            report += "| ... | ... |\n"
 
         report += """
 ## Largest Files

@@ -1,7 +1,5 @@
 # Pandoc Integration Model
 
-import sys
-import os
 import subprocess
 
 # Ensure Pandoc is in your system's PATH.
@@ -13,8 +11,7 @@ pandoc_path = "pandoc"
 def get_pandoc_version():
     """Get the installed Pandoc version."""
     try:
-        result = subprocess.run(["pandoc", "--version"],
-                                capture_output=True, text=True)
+        result = subprocess.run(["pandoc", "--version"], capture_output=True, text=True)
         return result.stdout.split("\n")[0]
     except Exception as e:
         return f"Error getting Pandoc version: {str(e)}"

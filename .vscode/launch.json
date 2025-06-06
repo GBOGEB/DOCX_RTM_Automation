@@ -2,67 +2,29 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
-            "type": "debugpy",
+            "name": "Python: Current File with Project Root",
+            "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": false,
+            "cwd": "${workspaceFolder}",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
             }
         },
         {
-            "name": "Python: RTM Main Script",
-            "type": "debugpy",
+            "name": "Python: Debug RTM Pipeline",
+            "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/code/main.py",
-            "console": "integratedTerminal",
-            "justMyCode": false,
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            }
-        },
-        {
-            "name": "Python: Remote Attach (Port 5678)",
-            "type": "debugpy",
-            "request": "attach",
-            "connect": {
-                "host": "localhost",
-                "port": 5678
-            },
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}",
-                    "remoteRoot": "."
-                }
-            ],
-            "justMyCode": false
-        },
-        {
-            "name": "Python: Web Server (Port 8000)",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/server/app.py",
-            "console": "integratedTerminal",
-            "env": {
-                "PORT": "8000"
-            },
+            "program": "${workspaceFolder}/scripts/full_integration.py",
             "args": [
-                "--port",
-                "8000"
-            ]
-        },
-        {
-            "name": "Python: Debug Test",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${file}",
-            "purpose": [
-                "debug-test"
+                "--pipeline"
             ],
             "console": "integratedTerminal",
-            "justMyCode": false
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
         }
     ]
 }

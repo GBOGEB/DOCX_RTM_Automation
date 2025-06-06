@@ -91,19 +91,13 @@ The script is structured as follows:
     - Run main()
 """
 
+import sys
+from pathlib import Path
+
+# Add project root to path
+_project_root = Path(__file__).resolve().parent.parent
+if str(_project_root) not in sys.path:
+    sys.path.insert(0, str(_project_root))
+
+
 # imports
-import aiohttp  # for making API calls concurrently
-import argparse  # for running script from command line
-import asyncio  # for running API calls concurrently
-import json  # for saving results to a jsonl file
-import logging  # for logging rate limit warnings and other messages
-import os  # for reading API key
-import re  # for matching endpoint from request URL
-import tiktoken  # for counting tokens
-import time  # for sleeping after rate limit is hit
-import sys  # for exiting the script
-import yaml  # for loading API key from config file
-from dataclasses import (
-    dataclass,
-    field,
-)

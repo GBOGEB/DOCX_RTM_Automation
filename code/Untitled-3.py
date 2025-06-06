@@ -16,8 +16,7 @@ def resolve_relative_paths():
         script_dir = Path(os.getcwd()).resolve()
     os.chdir(script_dir)
     logging.getLogger(__name__).info(f"Working directory set to: {script_dir}")
-    logging.getLogger(__name__).debug(
-        f"Current working directory: {os.getcwd()}")
+    logging.getLogger(__name__).debug(f"Current working directory: {os.getcwd()}")
 
 
 # ...existing code...

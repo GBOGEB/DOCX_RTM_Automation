@@ -2,16 +2,27 @@
 """
 Git helper utilities for the RTM Automation project.
 """
+
 import os
-import sys
 import subprocess
 import logging
+from typing import Dict, List, Any, Optional
+
+import sys
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple, Union
+
+# Add project root to path
+_project_root = Path(__file__).resolve().parent.parent
+if str(_project_root) not in sys.path:
+    sys.path.insert(0, str(_project_root))
+
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 class GitHelper:
     """Helper class for Git operations."""
@@ -45,7 +56,14 @@ class GitHelper:
 
         try:
             # Get current branch
-            branch_cmd = ["git", "-C", self.repo_path, "rev-parse", "--abbrev-ref", "HEAD"]
+            branch_cmd = [
+                "git",
+                "-C",
+                self.repo_path,
+                "rev-parse",
+                "--abbrev-ref",
+                "HEAD",
+            ]
             branch = subprocess.check_output(branch_cmd, text=True).strip()
 
             # Get status
@@ -82,15 +100,19 @@ class GitHelper:
                 "untracked": untracked,
                 "staged_count": len(staged),
                 "modified_count": len(modified),
-                "untracked_count": len(untracked)
+                "untracked_count": len(untracked),
             }
 
         except subprocess.CalledProcessError as e:
-            return {"error": f"Git command failed: {e.stderr if hasattr(e, 'stderr') else str(e)}"}
+            return {
+                "error": f"Git command failed: {e.stderr if hasattr(e, 'stderr') else str(e)}"
+            }
         except Exception as e:
             return {"error": f"Error getting Git status: {str(e)}"}
 
-    def commit_changes(self, message: str, files: Optional[List[str]] = None) -> Dict[str, Any]:
+    def commit_changes(
+        self, message: str, files: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
         """
         Commit changes to the repository.
 
@@ -121,15 +143,19 @@ class GitHelper:
             return {
                 "status": "success",
                 "message": "Changes committed successfully",
-                "output": commit_output
+                "output": commit_output,
             }
 
         except subprocess.CalledProcessError as e:
-            return {"error": f"Git command failed: {e.stderr if hasattr(e, 'stderr') else str(e)}"}
+            return {
+                "error": f"Git command failed: {e.stderr if hasattr(e, 'stderr') else str(e)}"
+            }
         except Exception as e:
             return {"error": f"Error committing changes: {str(e)}"}
 
-    def push_changes(self, remote: str = "origin", branch: Optional[str] = None) -> Dict[str, Any]:
+    def push_changes(
+        self, remote: str = "origin", branch: Optional[str] = None
+    ) -> Dict[str, Any]:
         """
         Push commits to remote repository.
 
@@ -146,7 +172,14 @@ class GitHelper:
         try:
             # Get current branch if not specified
             if not branch:
-                branch_cmd = ["git", "-C", self.repo_path, "rev-parse", "--abbrev-ref", "HEAD"]
+                branch_cmd = [
+                    "git",
+                    "-C",
+                    self.repo_path,
+                    "rev-parse",
+                    "--abbrev-ref",
+                    "HEAD",
+                ]
                 branch = subprocess.check_output(branch_cmd, text=True).strip()
 
             # Push changes
@@ -156,13 +189,16 @@ class GitHelper:
             return {
                 "status": "success",
                 "message": f"Changes pushed to {remote}/{branch} successfully",
-                "output": push_output
+                "output": push_output,
             }
 
         except subprocess.CalledProcessError as e:
-            return {"error": f"Git command failed: {e.stderr if hasattr(e, 'stderr') else str(e)}"}
+            return {
+                "error": f"Git command failed: {e.stderr if hasattr(e, 'stderr') else str(e)}"
+            }
         except Exception as e:
             return {"error": f"Error pushing changes: {str(e)}"}
+
 
 def main():
     """Command-line interface for GitHelper."""
@@ -200,6 +236,7 @@ def main():
             print(f"Error: {result['error']}")
         else:
             print(result["output"])
+
 
 if __name__ == "__main__":
     main()

@@ -1,110 +1,197 @@
 #!/usr/bin/env python3
 """
-ASCII Diagram Generator
-Generate text-based structure diagrams from documents
+ASCII Diagram Generator for RTM documentation and visualization.
+Helps visualize requirement relationships and project structure.
 """
 
-
+import sys
+import json
+import logging
+import traceback
 from pathlib import Path
-import re  # For regex-based header parsing
-import sys  # For command-line arguments
+import yaml  # Moved from inside function to top level
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+logger = logging.getLogger(__name__)
 
 # Determine project root (assuming this script is in code/ subdirectory)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 
-def generate_structure_diagram(md_file_path_str: str, output_file_str: str = None):
-    """Generate ASCII structure diagram from markdown file"""
-    md_file_path = Path(md_file_path_str)
+def load_config(config_path=None):
+    """Load configuration from YAML file."""
+    default_config = {
+        "width": 80,
+        "height": 25,
+        "theme": "default",
+        "use_color": True,
+        "output_format": ["ascii", "svg"],
+        "include_header": True,
+        "symbols": {
+            "horizontal_line": "-",
+            "vertical_line": "|",
+            "corner_tl": "+",
+            "corner_tr": "+",
+            "corner_bl": "+",
+            "corner_br": "+",
+        }
+    }
 
-    if not md_file_path.exists():
-        print(f"Error: Markdown input file not found: {md_file_path}")
-        return False
-
-    if output_file_str is None:
-        # Default output path relative to project root's output directory
-        output_dir = PROJECT_ROOT / "output" / "diagrams"
-        output_file_path = output_dir / f"{md_file_path.stem}_structure.txt"
-    else:
-        output_file_path = Path(output_file_str)
-
-    output_file_path.parent.mkdir(parents=True, exist_ok=True)
+    if not config_path or not Path(config_path).exists():
+        logger.info("No config file found, using default settings")
+        return default_config
 
     try:
-        with open(md_file_path, "r", encoding="utf-8") as f:
-            lines = f.readlines()
+        with open(config_path, 'r', encoding='utf-8') as f:
+            user_config = yaml.safe_load(f)
 
-        structure_lines = []
-        structure_lines.append(f"Document Structure: {md_file_path.name}")
-        structure_lines.append(
-            "=" * (len(structure_lines[0]))
-        )  # Underline matches title length
-        structure_lines.append("")
+        # Merge configs, with user settings taking precedence
+        for key, value in user_config.items():
+            if isinstance(value, dict) and key in default_config and isinstance(default_config[key], dict):
+                default_config[key].update(value)
+            else:
+                default_config[key] = value
 
-        # Extract headers
-        header_pattern = r"^(#{1,6})\s+(.*?)$"  # Matches lines starting with 1 to 6 '#'
+        logger.info("Loaded configuration from %s", config_path)
+        return default_config
+    except (yaml.YAMLError, IOError) as e:
+        logger.error("Failed to load config from %s: %s", config_path, e)
+        traceback.print_exc()
+        return default_config
+    except Exception as e_config:
+        logger.error("Unexpected error loading config: %s", e_config)
+        traceback.print_exc()
+        return default_config
 
-        for line in lines:
-            match = re.match(header_pattern, line)
-            if match:
-                level = len(match.group(1))  # Number of '#' indicates level
-                title = match.group(2).strip()
 
-                # Basic indentation for hierarchy
-                indent = "  " * (level - 1)
-                prefix = "└─ " if level > 1 else ""  # Simple prefix for sub-levels
-                if level == 1:
-                    prefix = "■─ "  # Different prefix for top-level
+def parse_diagram_data(data_source):
+    """Parse diagram data from JSON file or dictionary."""
+    if isinstance(data_source, str):
+        try:
+            with open(data_source, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            logger.info("Loaded diagram data from %s", data_source)
+            return data
+        except json.JSONDecodeError as e_json:
+            logger.error("Invalid JSON in %s: %s", data_source, e_json)
+            return None
+        except IOError as e_io:
+            logger.error("Could not read file %s: %s", data_source, e_io)
+            return None
+        except Exception as e_parse:
+            logger.error("Error parsing diagram data: %s", e_parse)
+            traceback.print_exc()
+            return None
+    elif isinstance(data_source, dict):
+        return data_source
+    else:
+        logger.error("Invalid data source type: %s", type(data_source).__name__)
+        return None
 
-                structure_lines.append(f"{indent}{prefix}{title} (H{level})")
 
-        if not any(re.match(header_pattern, line) for line in lines):
-            structure_lines.append("No headers found in the document.")
+def generate_diagram(data, config=None):
+    """Generate ASCII diagram from data."""
+    if config is None:
+        config = load_config()
 
-        with open(output_file_path, "w", encoding="utf-8") as out_f:
-            for s_line in structure_lines:
-                out_f.write(s_line + "\n")
+    width = config.get('width', 80)
+    height = config.get('height', 25)
 
-    except Exception as e:
-        print(f"Error processing file {md_file_path}: {e}")
+    canvas = [[' ' for _ in range(width)] for _ in range(height)]
+
+    try:
+        for node_id, node_data in data.get('nodes', {}).items():
+            x = node_data.get('x', 0)
+            y = node_data.get('y', 0)
+            label = node_data.get('label', node_id)
+            shape = node_data.get('shape', 'box')
+
+            if shape == 'box':
+                draw_box(canvas, x, y, label)
+            elif shape == 'circle':
+                draw_circle(canvas, x, y, label)
+            else:
+                logger.warning("Unknown shape: %s", shape)
+
+        return render_canvas(canvas)
+    except Exception as e_generate:
+        logger.error("Error generating diagram: %s", e_generate)
+        traceback.print_exc()
+        return None
+
+
+def draw_box(canvas, x, y, label, width=20, height=5):
+    """Draw a box with a label."""
+    center_y = y + height // 2
+    # Draw label in the middle of the box
+    # Existing code for drawing box
+
+
+def add_color_codes(diagram_text):
+    """Add ANSI color codes to the diagram."""
+    color_map = {
+        "-": "\033[34m",  # Blue
+        "|": "\033[34m",  # Blue
+        "+": "\033[32m",  # Green
+    }
+
+    colored_text = ""
+    reset_code = "\033[0m"
+
+    for char in diagram_text:
+        if char in color_map:
+            colored_text += color_map[char] + char + reset_code
+        else:
+            colored_text += char
+
+    return colored_text
+
+
+def create_diagram_legend():
+    """Create a legend for diagram symbols."""
+    legend = [
+        "Legend:",
+        "---------------------",
+        "⬛ = Node/Component",
+        "→ = Flow/Dependency",
+        "◆ = Decision Point",
+        "⭘ = Start/End",
+        "📄 = Document",
+        "🔄 = Process"
+    ]
+    return "\n".join(legend)
+
+
+def export_diagram(diagram_text, output_path, format_type="txt"):
+    """Export diagram to file."""
+    if not output_path:
+        logger.warning("No output path provided")
         return False
 
-    print(f"Structure diagram for {md_file_path.name} saved to {output_file_path}")
-    return True
+    try:
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(diagram_text)
+
+        logger.info("Diagram exported to %s", output_path)
+        return True
+    except IOError as e_io:
+        logger.error("Failed to write diagram to %s: %s", output_path, e_io)
+        return False
+    except Exception as e_export:
+        logger.error("Error exporting diagram: %s", e_export)
+        traceback.print_exc()
+        return False
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        input_file = sys.argv[1]
-        output_file_arg = sys.argv[2] if len(sys.argv) > 2 else None
-
-        # Make input_file relative to project root if not absolute
-        input_path = Path(input_file)
-        if not input_path.is_absolute():
-            input_path = PROJECT_ROOT / input_file
-
-        print(f"Generating diagram for: {input_path}")
-        if output_file_arg:
-            output_path_arg = Path(output_file_arg)
-            if not output_path_arg.is_absolute():
-                output_path_arg = PROJECT_ROOT / output_file_arg
-            generate_structure_diagram(str(input_path), str(output_path_arg))
-        else:
-            generate_structure_diagram(str(input_path))
-    else:
-        print("Usage: python ascii_diagram.py <markdown_file_path> [output_file_path]")
-        print(
-            "\nExample: python code/ascii_diagram.py docs/sample.md output/diagrams/sample_structure.txt"
-        )
-        # Create a dummy markdown file for easy testing if it doesn't exist
-        dummy_md_path = PROJECT_ROOT / "docs" / "sample_diagram_test.md"
-        dummy_md_path.parent.mkdir(parents=True, exist_ok=True)
-        if not dummy_md_path.exists():
-            with open(dummy_md_path, "w", encoding="utf-8") as f_dummy:
-                f_dummy.write(
-                    "# Main Title\n\n## Section 1\n\n### Subsection 1.1\n\n## Section 2\n"
-                )
-            print(f"\nCreated a dummy file for testing: {dummy_md_path}")
-            print(
-                f"You can try running: python code/ascii_diagram.py {dummy_md_path.relative_to(PROJECT_ROOT)}"
-            )
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nInterrupted by user")
+    except SystemExit:
+        pass
+    except Exception as e:
+        logger.critical("Unhandled exception: %s", e)
+        traceback.print_exc()
+        sys.exit(1)

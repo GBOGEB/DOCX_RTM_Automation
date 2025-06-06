@@ -7,6 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent
 INPUT_DIR = BASE_DIR / "input"
 OUTPUT_DIR = BASE_DIR / "output"
 
+
 def create_requirements_doc():
     """Create sample requirements document in both MD and DOCX formats"""
     # Create input directory if it doesn't exist
@@ -40,7 +41,7 @@ The system shall respond within 2 seconds.
 
     # Write markdown file
     md_req_path = INPUT_DIR / "requirements.md"
-    with open(md_req_path, 'w', encoding='utf-8') as f:
+    with open(md_req_path, "w", encoding="utf-8") as f:
         f.write(md_content)
     print(f"Created sample requirements markdown: {md_req_path}")
 
@@ -50,14 +51,14 @@ The system shall respond within 2 seconds.
     # Add heading styles
     styles = doc.styles
     for level in range(1, 5):
-        style_name = f'Heading {level}'
+        style_name = f"Heading {level}"
         if style_name not in styles:
             style = styles.add_style(style_name, WD_STYLE_TYPE.PARAGRAPH)
         else:
             style = styles[style_name]
 
         font = style.font
-        font.size = Pt(16 - level*2)  # Decreasing font size for lower headings
+        font.size = Pt(16 - level * 2)  # Decreasing font size for lower headings
 
     # Add content to Word document
     doc.add_heading("Requirements Document", 0)
@@ -89,6 +90,7 @@ The system shall respond within 2 seconds.
     doc.save(docx_req_path)
     print(f"Created sample requirements document: {docx_req_path}")
 
+
 def create_test_case_doc():
     """Create sample test case document in DOCX format"""
     # Create input directory if it doesn't exist
@@ -100,14 +102,14 @@ def create_test_case_doc():
     # Add heading styles
     styles = doc.styles
     for level in range(1, 5):
-        style_name = f'Heading {level}'
+        style_name = f"Heading {level}"
         if style_name not in styles:
             style = styles.add_style(style_name, WD_STYLE_TYPE.PARAGRAPH)
         else:
             style = styles[style_name]
 
         font = style.font
-        font.size = Pt(16 - level*2)  # Decreasing font size for lower headings
+        font.size = Pt(16 - level * 2)  # Decreasing font size for lower headings
 
     # Add content to Word document
     doc.add_heading("Test Cases", 0)
@@ -132,6 +134,7 @@ def create_test_case_doc():
     doc.save(docx_tc_path)
     print(f"Created sample test cases document: {docx_tc_path}")
 
+
 def create_test_files():
     """Create additional files and directories needed for testing"""
     # Create output directory if it doesn't exist
@@ -141,9 +144,10 @@ def create_test_files():
     # Here you could create any additional files needed for testing
     # Example: placeholder for any configuration files
     sample_config_path = INPUT_DIR / "config.json"
-    with open(sample_config_path, 'w', encoding='utf-8') as f:
+    with open(sample_config_path, "w", encoding="utf-8") as f:
         f.write('{\n  "version": "1.0"\n}')
     print(f"Created sample config file: {sample_config_path}")
+
 
 if __name__ == "__main__":
     print("Creating sample files for DOCX RTM Automation...")
@@ -151,7 +155,9 @@ if __name__ == "__main__":
         create_requirements_doc()
         create_test_case_doc()
         create_test_files()
-        print("Sample files created successfully. You can now run the RTM automation tool.")
+        print(
+            "Sample files created successfully. You can now run the RTM automation tool."
+        )
     except ImportError:
         print("Error: Missing required packages. Please install them with:")
         print("pip install python-docx pandas openpyxl")

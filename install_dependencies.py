@@ -2,8 +2,8 @@
 """
 Script to install required dependencies for RTM Automation
 """
+
 import sys
-import os
 import subprocess
 import time
 from pathlib import Path
@@ -28,11 +28,13 @@ OPTIONAL_PACKAGES = [
     "requests>=2.31.0",
 ]
 
+
 def print_section(title):
     """Print a section header"""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print(f"  {title}")
-    print("="*80)
+    print("=" * 80)
+
 
 def install_package(package, upgrade=False, quiet=False):
     """Install a Python package using pip"""
@@ -48,11 +50,7 @@ def install_package(package, upgrade=False, quiet=False):
 
     try:
         result = subprocess.run(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            check=False
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False
         )
 
         if result.returncode == 0:
@@ -67,13 +65,17 @@ def install_package(package, upgrade=False, quiet=False):
         print(f"✗ Failed (Exception: {str(e)})")
         return False
 
+
 def ensure_venv_activated():
     """Check if running in virtual environment"""
-    if not hasattr(sys, 'real_prefix') and (not hasattr(sys, 'base_prefix') or sys.base_prefix == sys.prefix):
+    if not hasattr(sys, "real_prefix") and (
+        not hasattr(sys, "base_prefix") or sys.base_prefix == sys.prefix
+    ):
         print("Warning: Not running in a virtual environment!")
         choice = input("Continue anyway? (y/N): ").strip().lower()
-        if choice != 'y':
+        if choice != "y":
             sys.exit(1)
+
 
 def main():
     """Main function"""
@@ -84,9 +86,11 @@ def main():
 
     # Upgrade pip first
     print("Upgrading pip...")
-    subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "pip"],
-                  stdout=subprocess.PIPE,
-                  stderr=subprocess.PIPE)
+    subprocess.run(
+        [sys.executable, "-m", "pip", "install", "--upgrade", "pip"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
 
     # Install required packages
     print_section("Installing Required Packages")
@@ -108,7 +112,7 @@ def main():
         print(f"  {i}. {package}")
 
     choice = input("\nInstall optional packages? (y/N): ").strip().lower()
-    if choice == 'y':
+    if choice == "y":
         for package in OPTIONAL_PACKAGES:
             install_package(package, quiet=True)
 
@@ -139,6 +143,7 @@ def main():
     print("  ./shell_scripts/run_rtm.sh")
     print("\nIf you encounter any issues, try running:")
     print("  ./shell_scripts/fix_critical_issues.sh")
+
 
 if __name__ == "__main__":
     main()

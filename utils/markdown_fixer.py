@@ -1,61 +1,198 @@
-import re
+#!/usr/bin/env python3
+"""
+Markdown enhancement utilities.
+Provides functions to improve markdown formatting and structure.
+"""
+
 import os
+import re
+import sys
+import argparse
+from pathlib import Path
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+logger = logging.getLogger(__name__)
+
 
 def fix_markdown_headers(file_path):
     """
-    Fixes markdown headers in a file by ensuring there is a space after the '#' characters.
+    Fix markdown headers to ensure proper spacing and formatting.
 
     Args:
-        file_path (str): Path to the markdown file to be fixed.
+        file_path: Path to the markdown file to fix
+
+    Returns:
+        True if file was modified, False otherwise
     """
     try:
-        with open(file_path, 'r', encoding='utf-8') as file:
-            lines = file.readlines()
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
 
-        fixed_lines = []
-        for line in lines:
-            fixed_line = re.sub(r'^(#+)([^\s#])', r'\1 \2', line)
-            fixed_lines.append(fixed_line)
+        # Find headers with incorrect spacing after hash marks
+        pattern = re.compile(r'^(#+)([^ \n])', re.MULTILINE)
+        fixed_content = pattern.sub(r'\1 \2', content)
 
-        with open(file_path, 'w', encoding='utf-8') as file:
-            file.writelines(fixed_lines)
-
-        print(f"Markdown headers fixed in file: {file_path}")
+        # Check if changes were made
+        if fixed_content != content:
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(fixed_content)
+            logger.info(f"Fixed header spacing in {file_path}")
+            return True
+        return False
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logger.error(f"Error fixing markdown headers in {file_path}: {e}")
+        return False
 
-if __name__ == "__main__":
-    # Example usage:
-    # To use this script directly, uncomment the following lines:
-    # file_to_fix_input = input("Enter the path to the markdown file: ").strip()
-    # if os.path.isfile(file_to_fix_input):
-    #     fix_markdown_headers(file_to_fix_input)
-    # else:
-    #     print(f"File not found: {file_to_fix_input")
 
-    # Test Markdown Fixer
+def enhance_markdown_file(markdown_file, output_file=None):
+    """
+    Enhance a markdown file with various formatting improvements.
+
+    Args:
+        markdown_file: Path to the markdown file
+        output_file: Path to save enhanced markdown (default: overwrite input)
+
+    Returns:
+        Path to the enhanced file
+    """
+    if not os.path.exists(markdown_file):
+        logger.error(f"File not found: {markdown_file}")
+        return None
+
+    if output_file is None:
+        output_file = markdown_file
+
+    # Add parent directories to path to find enhance_document_parsing
+    sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+    try:
+        from enhance_document_parsing import post_process_markdown
+        enhanced_file = post_process_markdown(markdown_file, output_file)
+        logger.info(f"Enhanced markdown file: {enhanced_file}")
+        return enhanced_file
+    except ImportError:
+        logger.warning("Could not import enhance_document_parsing module. Using basic enhancements only.")
+        # Perform basic fixes
+        fix_markdown_headers(markdown_file)
+
+        # If output file is different from input, make a copy
+        if output_file != markdown_file:
+            import shutil
+            shutil.copy2(markdown_file, output_file)
+
+        return output_file
+
+
+def process_all_markdown_files(directory, recursive=True):
+    """
+    Process all markdown files in a directory.
+
+    Args:
+        directory: Directory containing markdown files
+        recursive: Whether to process subdirectories
+
+    Returns:
+        Number of files processed
+    """
+    directory = Path(directory)
+    if not directory.is_dir():
+        logger.error(f"Not a directory: {directory}")
+        return 0
+
+    processed = 0
+    pattern = '**/*.md' if recursive else '*.md'
+
+    for md_file in directory.glob(pattern):
+        if fix_markdown_headers(md_file):
+            processed += 1
+
+    logger.info(f"Processed {processed} markdown files in {directory}")
+    return processed
+
+
+def run_test():
+    """Run a quick test for the markdown fixer."""
     print("Running test for fix_markdown_headers...")
-    dummy_md_filename = "test_markdown_fixer_temp_file.md"
-    original_content = "##Header1\n#Header2\n###NoSpace\nText\n#### Valid Header\n"
-    expected_fixed_content = "## Header1\n# Header2\n### NoSpace\nText\n#### Valid Header\n"
 
-    with open(dummy_md_filename, "w", encoding="utf-8") as f:
-        f.write(original_content)
+    # Create a test file with incorrect headers
+    test_content = """#Title without space
+## Subtitle with space
+###Another header without space
+#### This one has space
+"""
 
-    fix_markdown_headers(dummy_md_filename)
+    test_file = "test_markdown_fixer_temp_file.md"
+    with open(test_file, "w", encoding="utf-8") as f:
+        f.write(test_content)
 
-    with open(dummy_md_filename, "r", encoding="utf-8") as f:
+    # Fix the headers
+    fix_markdown_headers(test_file)
+
+    # Verify the fix
+    with open(test_file, "r", encoding="utf-8") as f:
         fixed_content = f.read()
 
-    if fixed_content == expected_fixed_content:
-        print(f"✓ Test passed: Markdown headers in '{dummy_md_filename}' fixed correctly.")
+    expected = """# Title without space
+## Subtitle with space
+### Another header without space
+#### This one has space
+"""
+
+    if fixed_content == expected:
+        print(f"✓ Test passed: Markdown headers in '{test_file}' fixed correctly.")
     else:
-        print(f"✗ Test failed: Markdown headers in '{dummy_md_filename}' not fixed as expected.")
+        print(f"✗ Test failed: Headers not fixed correctly.")
         print("Expected:")
-        print(expected_fixed_content)
+        print(expected)
         print("Got:")
         print(fixed_content)
 
-    if os.path.exists(dummy_md_filename):
-        os.remove(dummy_md_filename)
+    # Clean up
+    os.unlink(test_file)
     print("Test finished.")
+
+
+def main():
+    """Main entry point for command line usage."""
+    parser = argparse.ArgumentParser(description="Fix and enhance markdown files")
+    parser.add_argument("input", nargs='?', help="Markdown file or directory to process")
+    parser.add_argument("-o", "--output", help="Output file (for single file processing)")
+    parser.add_argument("-r", "--recursive", action="store_true", help="Process directories recursively")
+    parser.add_argument("--test", action="store_true", help="Run a test")
+
+    # Only parse args when run directly
+    if __name__ == "__main__":
+        args = parser.parse_args()
+    else:
+        return 0
+
+    # Run test if requested
+    if args.test:
+        run_test()
+        return 0
+
+    # Process input
+    if not args.input:
+        parser.print_help()
+        return 1
+
+    input_path = Path(args.input)
+    if input_path.is_dir():
+        processed = process_all_markdown_files(input_path, args.recursive)
+        print(f"Processed {processed} markdown files")
+    else:
+        result = enhance_markdown_file(input_path, args.output)
+        if result:
+            print(f"Enhanced markdown saved to: {result}")
+        else:
+            print(f"Failed to process {input_path}")
+            return 1
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+

@@ -7,6 +7,7 @@ RTM Roundtrip Controller - Manages the full Word to RTM roundtrip process:
 4. Generate improved output in both MD and Word formats
 5. Track and compare changes
 """
+
 import os
 import sys
 import json
@@ -16,7 +17,7 @@ import shutil
 import subprocess
 import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple, Union
+from typing import Dict, List, Any, Optional
 
 # Add project root to path for imports
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -30,10 +31,10 @@ from src.visualizers.rtm_visualizer import RTMVisualizer
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
 
 class RTMRoundtrip:
     """
@@ -70,7 +71,12 @@ class RTMRoundtrip:
         self.rtm_visualizer = RTMVisualizer()
 
         # Ensure directories exist
-        for directory in [self.input_dir, self.output_dir, self.temp_dir, self.history_dir]:
+        for directory in [
+            self.input_dir,
+            self.output_dir,
+            self.temp_dir,
+            self.history_dir,
+        ]:
             os.makedirs(directory, exist_ok=True)
 
     def _load_config(self, config_path: Optional[str]) -> Dict[str, Any]:
@@ -83,7 +89,7 @@ class RTMRoundtrip:
             return {}
 
         try:
-            with open(config_path, 'r', encoding='utf-8') as f:
+            with open(config_path, "r", encoding="utf-8") as f:
                 config = yaml.safe_load(f)
             logger.info(f"Configuration loaded from {config_path}")
             return config or {}
@@ -91,7 +97,9 @@ class RTMRoundtrip:
             logger.error(f"Failed to load configuration: {e}")
             return {}
 
-    def process_document(self, doc_path: str, version_tag: Optional[str] = None) -> Dict[str, Any]:
+    def process_document(
+        self, doc_path: str, version_tag: Optional[str] = None
+    ) -> Dict[str, Any]:
         """
         Process a single document through the complete roundtrip.
 
@@ -120,39 +128,40 @@ class RTMRoundtrip:
         self.word_converter.convert_file(doc_path, md_path)
 
         # Step 2: Extract JSON/YAML structured data
-        logger.info(f"Step 2: Converting Markdown to structured data (JSON/YAML)")
+        logger.info("Step 2: Converting Markdown to structured data (JSON/YAML)")
         structured_data = convert_md_to_structured(md_path)
 
         # Step 3: Extract RTM data
-        logger.info(f"Step 3: Extracting RTM data")
+        logger.info("Step 3: Extracting RTM data")
         rtm_path = os.path.join(self.output_dir, "rtm", f"{doc_name}_rtm.json")
         rtm_data = self.rtm_extractor.extract_from_file(md_path, rtm_path)
 
         # Step 4: Generate visualization
-        logger.info(f"Step 4: Generating RTM visualization")
+        logger.info("Step 4: Generating RTM visualization")
         viz_path = os.path.join(self.output_dir, "rtm_viz", f"{doc_name}_rtm.html")
         self.rtm_visualizer.visualize(rtm_path, viz_path, open_browser=False)
 
         # Step 5: Analyze and enhance the content
-        logger.info(f"Step 5: Analyzing and enhancing content")
+        logger.info("Step 5: Analyzing and enhancing content")
         enhanced_md_path = os.path.join(self.output_dir, f"{doc_name}_enhanced.md")
         enhanced_md = self.enhance_markdown(md_path, rtm_data)
 
-        with open(enhanced_md_path, 'w', encoding='utf-8') as f:
+        with open(enhanced_md_path, "w", encoding="utf-8") as f:
             f.write(enhanced_md)
 
         # Step 6: Generate improved Word document using Pandoc
-        logger.info(f"Step 6: Converting enhanced Markdown back to Word")
+        logger.info("Step 6: Converting enhanced Markdown back to Word")
         enhanced_docx_path = os.path.join(self.output_dir, f"{doc_name}_enhanced.docx")
         self.md_to_docx(enhanced_md_path, enhanced_docx_path)
 
         # Step 7: Save version history
-        logger.info(f"Step 7: Saving version history")
-        history_entry = self.save_history(doc_path, md_path, enhanced_md_path, rtm_path,
-                                          version_tag, timestamp)
+        logger.info("Step 7: Saving version history")
+        history_entry = self.save_history(
+            doc_path, md_path, enhanced_md_path, rtm_path, version_tag, timestamp
+        )
 
         # Step 8: Generate changelog
-        logger.info(f"Step 8: Generating changelog")
+        logger.info("Step 8: Generating changelog")
         changelog_path = os.path.join(self.output_dir, f"{doc_name}_changelog.md")
         self.generate_changelog(doc_name, changelog_path)
 
@@ -169,10 +178,12 @@ class RTMRoundtrip:
             "changelog": changelog_path,
             "history_entry": history_entry,
             "version": version_tag,
-            "timestamp": timestamp
+            "timestamp": timestamp,
         }
 
-    def enhance_markdown(self, md_path: str, rtm_data: Optional[Dict[str, Any]] = None) -> str:
+    def enhance_markdown(
+        self, md_path: str, rtm_data: Optional[Dict[str, Any]] = None
+    ) -> str:
         """
         Analyze and enhance Markdown content with improvements.
 
@@ -184,7 +195,7 @@ class RTMRoundtrip:
             Enhanced Markdown content
         """
         # Read original markdown
-        with open(md_path, 'r', encoding='utf-8') as f:
+        with open(md_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         enhanced_content = content
@@ -204,23 +215,19 @@ version: automated-enhancement
 
         # Standardize requirement IDs (REQ-123) that aren't already in bold
         enhanced_content = re.sub(
-            r'(?<!\*\*)(REQ-\d+(?:-\d+)*)(?!\*\*)',
-            r'**\1**',
-            enhanced_content
+            r"(?<!\*\*)(REQ-\d+(?:-\d+)*)(?!\*\*)", r"**\1**", enhanced_content
         )
 
         # Standardize test case IDs (TC-123) that aren't already in bold
         enhanced_content = re.sub(
-            r'(?<!\*\*)(TC-\d+(?:-\d+)*)(?!\*\*)',
-            r'**\1**',
-            enhanced_content
+            r"(?<!\*\*)(TC-\d+(?:-\d+)*)(?!\*\*)", r"**\1**", enhanced_content
         )
 
         # Enhancement 3: Improve traceability links
         enhanced_content = re.sub(
-            r'(\*\*REQ-\d+(?:-\d+)*\*\*)\s*->\s*(\*\*TC-\d+(?:-\d+)*\*\*)',
-            r'[\1] -> [\2]',
-            enhanced_content
+            r"(\*\*REQ-\d+(?:-\d+)*\*\*)\s*->\s*(\*\*TC-\d+(?:-\d+)*\*\*)",
+            r"[\1] -> [\2]",
+            enhanced_content,
         )
 
         # Enhancement 4: Add RTM summary if we have rtm_data
@@ -260,14 +267,20 @@ This document contains:
             # Check for custom reference document
             reference_doc = os.path.join(self.project_root, "config", "reference.docx")
             if os.path.exists(reference_doc):
-                cmd = ["pandoc", md_path, "-o", docx_path, f"--reference-doc={reference_doc}"]
+                cmd = [
+                    "pandoc",
+                    md_path,
+                    "-o",
+                    docx_path,
+                    f"--reference-doc={reference_doc}",
+                ]
 
             result = subprocess.run(
                 cmd,
                 check=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True
+                text=True,
             )
 
             if os.path.exists(docx_path):
@@ -281,11 +294,20 @@ This document contains:
             logger.error(f"Pandoc conversion failed: {e.stderr}")
             return False
         except FileNotFoundError:
-            logger.error("Pandoc not found. Please install Pandoc to enable MD to DOCX conversion.")
+            logger.error(
+                "Pandoc not found. Please install Pandoc to enable MD to DOCX conversion."
+            )
             return False
 
-    def save_history(self, docx_path: str, md_path: str, enhanced_md_path: str,
-                     rtm_path: str, version_tag: str, timestamp: str) -> Dict[str, Any]:
+    def save_history(
+        self,
+        docx_path: str,
+        md_path: str,
+        enhanced_md_path: str,
+        rtm_path: str,
+        version_tag: str,
+        timestamp: str,
+    ) -> Dict[str, Any]:
         """
         Save document artifacts to version history.
 
@@ -309,7 +331,7 @@ This document contains:
             (docx_path, "original.docx"),
             (md_path, "markdown.md"),
             (enhanced_md_path, "enhanced.md"),
-            (rtm_path, "rtm.json")
+            (rtm_path, "rtm.json"),
         ]:
             if os.path.exists(src_path):
                 dest_path = os.path.join(version_dir, name)
@@ -322,11 +344,11 @@ This document contains:
             "version": version_tag,
             "timestamp": timestamp,
             "processed_date": datetime.datetime.now().isoformat(),
-            "files": list(history_files.keys())
+            "files": list(history_files.keys()),
         }
 
         metadata_path = os.path.join(version_dir, "metadata.json")
-        with open(metadata_path, 'w', encoding='utf-8') as f:
+        with open(metadata_path, "w", encoding="utf-8") as f:
             json.dump(metadata, f, indent=2)
 
         return {
@@ -334,7 +356,7 @@ This document contains:
             "timestamp": timestamp,
             "directory": version_dir,
             "files": history_files,
-            "metadata": metadata_path
+            "metadata": metadata_path,
         }
 
     def generate_changelog(self, doc_name: str, output_path: str) -> bool:
@@ -356,7 +378,7 @@ This document contains:
                 metadata_path = os.path.join(item_path, "metadata.json")
                 if os.path.exists(metadata_path):
                     try:
-                        with open(metadata_path, 'r', encoding='utf-8') as f:
+                        with open(metadata_path, "r", encoding="utf-8") as f:
                             metadata = json.load(f)
                         versions.append((item, metadata))
                     except:
@@ -382,43 +404,56 @@ This document contains:
 
             # If not the first version, compare with previous
             if i > 0:
-                prev_version_dir, prev_metadata = versions[i-1]
+                prev_version_dir, prev_metadata = versions[i - 1]
                 prev_version = prev_metadata.get("version", "unknown")
 
                 # Compare Markdown files
-                prev_md_path = os.path.join(self.history_dir, prev_version_dir, "markdown.md")
-                curr_md_path = os.path.join(self.history_dir, version_dir, "markdown.md")
+                prev_md_path = os.path.join(
+                    self.history_dir, prev_version_dir, "markdown.md"
+                )
+                curr_md_path = os.path.join(
+                    self.history_dir, version_dir, "markdown.md"
+                )
 
                 if os.path.exists(prev_md_path) and os.path.exists(curr_md_path):
                     changelog_content += f"### Changes from version {prev_version}\n\n"
 
                     try:
                         # Use a simple diff comparison
-                        with open(prev_md_path, 'r', encoding='utf-8') as f:
+                        with open(prev_md_path, "r", encoding="utf-8") as f:
                             prev_content = f.readlines()
 
-                        with open(curr_md_path, 'r', encoding='utf-8') as f:
+                        with open(curr_md_path, "r", encoding="utf-8") as f:
                             curr_content = f.readlines()
 
                         # Get differences
                         import difflib
-                        diff = list(difflib.unified_diff(prev_content, curr_content, n=1))
+
+                        diff = list(
+                            difflib.unified_diff(prev_content, curr_content, n=1)
+                        )
 
                         if diff:
-                            changelog_content += "```diff\n" + "".join(diff) + "\n```\n\n"
+                            changelog_content += (
+                                "```diff\n" + "".join(diff) + "\n```\n\n"
+                            )
                         else:
-                            changelog_content += "No significant content changes detected.\n\n"
+                            changelog_content += (
+                                "No significant content changes detected.\n\n"
+                            )
 
                     except Exception as e:
                         changelog_content += f"Error comparing files: {str(e)}\n\n"
                 else:
-                    changelog_content += "Cannot compare - previous version files not found.\n\n"
+                    changelog_content += (
+                        "Cannot compare - previous version files not found.\n\n"
+                    )
 
             changelog_content += "---\n\n"
 
         # Write changelog
         try:
-            with open(output_path, 'w', encoding='utf-8') as f:
+            with open(output_path, "w", encoding="utf-8") as f:
                 f.write(changelog_content)
             logger.info(f"Changelog generated: {output_path}")
             return True
@@ -426,7 +461,9 @@ This document contains:
             logger.error(f"Failed to write changelog: {e}")
             return False
 
-    def process_directory(self, input_dir: Optional[str] = None, version_tag: Optional[str] = None) -> List[Dict[str, Any]]:
+    def process_directory(
+        self, input_dir: Optional[str] = None, version_tag: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
         """
         Process all DOCX files in a directory.
 
@@ -447,7 +484,7 @@ This document contains:
         # Find all DOCX files
         docx_files = []
         for file in os.listdir(input_dir):
-            if file.lower().endswith('.docx') and not file.startswith('~$'):
+            if file.lower().endswith(".docx") and not file.startswith("~$"):
                 docx_files.append(os.path.join(input_dir, file))
 
         if not docx_files:

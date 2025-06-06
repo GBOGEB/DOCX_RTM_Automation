@@ -7,7 +7,6 @@ This script runs the complete project update process.
 Run this from your project root directory.
 """
 
-import os
 import sys
 from pathlib import Path
 

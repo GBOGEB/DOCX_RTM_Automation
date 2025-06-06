@@ -1,0 +1,247 @@
+#!/usr/bin/env python3
+"""
+Main RTM Automation Pipeline
+
+This script integrates all components into a unified workflow:
+- DOCX to Markdown conversion
+- Document structure analysis
+- Requirement extraction
+- Digital twin creation
+- RTM generation
+
+The pipeline connects with utility modules and configuration scripts
+to provide a complete requirements traceability solution.
+"""
+
+import os
+import sys
+import argparse
+import logging
+import json
+import yaml
+from pathlib import Path
+import importlib.util
+
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+)
+logger = logging.getLogger("rtm_pipeline")
+
+# Import utility modules dynamically to handle potential missing modules
+def import_module(module_path, module_name):
+    """Dynamically import a module."""
+    try:
+        # Try direct import first
+        module = __import__(module_name)
+        return module
+    except ImportError:
+        # Try loading from file path
+        try:
+            if os.path.exists(module_path):
+                spec = importlib.util.spec_from_file_location(module_name, module_path)
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                return module
+        except Exception as e:
+            logger.warning(f"Could not load module {module_name}: {e}")
+
+    return None
+
+# Import utility modules
+utils_dir = Path("utils")
+docx_converter = import_module(utils_dir / "docx_converter.py", "docx_converter")
+document_parser = import_module(utils_dir / "document_parser.py", "document_parser")
+markdown_fixer = import_module(utils_dir / "markdown_fixer.py", "markdown_fixer")
+markdown_generator = import_module(utils_dir / "markdown_generator.py", "markdown_generator")
+ci_cd_integration = import_module(utils_dir / "ci_cd_integration.py", "ci_cd_integration")
+
+# Fallback to local modules if utils modules aren't found
+if not docx_converter:
+    logger.info("Using local converter modules")
+    try:
+        import rtm_pipeline
+        import enhanced_word_to_md
+        import pandoc_converter
+        import try_word_to_md
+        import exact_docx_to_md
+    except ImportError:
+        logger.warning("Some local modules could not be imported")
+
+def main():
+    parser = argparse.ArgumentParser(description="RTM Automation Pipeline")
+    parser.add_argument("input_file", nargs='?', help="Input DOCX file")
+    parser.add_argument("-o", "--output", help="Output directory")
+    parser.add_argument(
+        "--converter",
+        choices=["auto", "pandoc", "python-docx", "enhanced", "exact"],
+        default="auto",
+        help="Document converter to use (default: auto)"
+    )
+    parser.add_argument(
+        "--skip-enhance",
+        action="store_true",
+        help="Skip markdown enhancement"
+    )
+    parser.add_argument(
+        "--skip-requirements",
+        action="store_true",
+        help="Skip requirement extraction"
+    )
+    parser.add_argument(
+        "--skip-digital-twin",
+        action="store_true",
+        help="Skip digital twin creation"
+    )
+    parser.add_argument(
+        "--skip-rtm",
+        action="store_true",
+        help="Skip RTM generation"
+    )
+    parser.add_argument(
+        "--ci-checks",
+        action="store_true",
+        help="Run CI/CD integration checks"
+    )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debug logging"
+    )
+    parser.add_argument(
+        "--list-files",
+        action="store_true",
+        help="List available DOCX files"
+    )
+
+    args = parser.parse_args()
+
+    # Set logging level
+    if args.debug:
+        logger.setLevel(logging.DEBUG)
+        logging.getLogger().setLevel(logging.DEBUG)
+
+    # If --list-files is specified, show available files and exit
+    if args.list_files:
+        try:
+            from run_conversion import list_available_docx_files
+            print("\nAvailable DOCX files:")
+            docx_files = list_available_docx_files()
+
+            if not docx_files:
+                print("No DOCX files found in the input directory or current directory.")
+                return 1
+
+            for i, file_path in enumerate(docx_files, 1):
+                print(f"  {i}. {file_path}")
+
+            print("\nTo process a file, run:")
+            print("  python main.py path/to/file.docx")
+            return 0
+        except ImportError:
+            print("Could not import required module. Please ensure run_conversion.py exists.")
+            return 1
+
+    # Set output directory
+    output_dir = Path(args.output) if args.output else Path("output")
+    output_dir.mkdir(exist_ok=True, parents=True)
+
+    # If no input file specified, try to find one
+    if not args.input_file:
+        from run_conversion import find_document
+
+        # Try to find a sample input file
+        input_files = list(Path("input").glob("*.docx"))
+        if input_files:
+            args.input_file = str(input_files[0])
+            logger.info(f"Using found document: {args.input_file}")
+        else:
+            sample_markdown = Path("input/requirements.md")
+            if sample_markdown.exists():
+                logger.info(f"No DOCX found, using sample markdown: {sample_markdown}")
+                # Skip conversion for markdown
+                conversion_result = {'markdown': sample_markdown}
+            else:
+                logger.error("No input file specified and no sample files found")
+                return 1
+
+    try:
+        # Track pipeline results
+        results = {}
+
+        # Step 1: Convert document if input is DOCX
+        if args.input_file and Path(args.input_file).suffix.lower() in ['.docx', '.doc']:
+            conversion_result = run_document_conversion(
+                args.input_file,
+                output_file=output_dir / f"{Path(args.input_file).stem}.md",
+                converter_type=args.converter
+            )
+            results['conversion'] = conversion_result
+        elif args.input_file and Path(args.input_file).suffix.lower() in ['.md', '.markdown']:
+            # Input is already markdown, skip conversion
+            conversion_result = {'markdown': args.input_file}
+            logger.info(f"Input is already markdown, skipping conversion: {args.input_file}")
+        else:
+            # Use the conversion_result from the sample markdown fallback
+            pass
+
+        markdown_file = conversion_result.get('markdown')
+        if not markdown_file or not os.path.exists(markdown_file):
+            logger.error("Conversion failed or output file not found")
+            return 1
+
+        # Step 2: Enhance markdown formatting
+        if not args.skip_enhance:
+            enhanced_file = enhance_markdown(
+                markdown_file,
+                output_file=output_dir / f"{Path(markdown_file).stem}_enhanced.md"
+            )
+            results['enhanced_markdown'] = enhanced_file
+            # Use enhanced file for further processing
+            markdown_file = enhanced_file
+
+        # Step 3: Extract requirements
+        if not args.skip_requirements:
+            outline_json = conversion_result.get('outline_json')
+            requirements_file = extract_requirements(markdown_file, outline_json)
+            results['requirements'] = requirements_file
+        else:
+            # Try to find existing requirements file
+            req_files = list(output_dir.glob("*requirements*.json"))
+            requirements_file = req_files[0] if req_files else None
+
+        # Step 4: Create digital twin
+        if not args.skip_digital_twin and markdown_file:
+            digital_twin_files = create_digital_twin(markdown_file, requirements_file)
+            results['digital_twin'] = digital_twin_files
+
+        # Step 5: Generate RTM
+        if not args.skip_rtm and requirements_file:
+            rtm_files = generate_rtm(requirements_file)
+            results['rtm'] = rtm_files
+
+        # Step 6: Run CI/CD checks
+        if args.ci_checks and 'rtm' in results:
+            ci_results = run_ci_cd_checks(results['rtm'])
+            results['ci_checks'] = ci_results
+
+        # Print summary
+        logger.info("\n=== RTM PIPELINE SUMMARY ===")
+        logger.info(f"- Input: {args.input_file or 'sample markdown'}")
+        logger.info(f"- Markdown file: {markdown_file}")
+        if 'requirements' in results:
+            logger.info(f"- Requirements file: {results['requirements']}")
+        if 'rtm' in results and results['rtm']:
+            logger.info(f"- RTM Report: {results['rtm'].get('rtm_report', 'Not generated')}")
+
+        return 0
+
+    except Exception as e:
+        logger.error(f"Pipeline error: {e}")
+        import traceback
+        logger.debug(traceback.format_exc())
+        return 1
+
+if __name__ == "__main__":
+    sys.exit(main())

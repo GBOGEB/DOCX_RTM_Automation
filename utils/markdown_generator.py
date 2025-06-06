@@ -16,16 +16,17 @@ markdown_generator = create_agent(
 Your task is to generate clear, well-formatted markdown documentation based on the provided information.
 Ensure that all markdown elements, especially headers (e.g., '# Header'), lists, and code blocks, are correctly formatted according to standard markdown syntax.
 Pay attention to spacing and structure for optimal readability.""",
-    client=client
+    client=client,
 )
+
 
 def generate_requirement_report(requirement_data):
     """Generate markdown documentation for requirement analysis"""
     prompt = f"""
     Generate a markdown report for the following requirement analysis:
 
-    Requirement: {requirement_data['requirement']}
-    Analysis: {requirement_data['analysis']}
+    Requirement: {requirement_data["requirement"]}
+    Analysis: {requirement_data["analysis"]}
 
     Use proper markdown formatting with headers, bullet points, and tables where appropriate.
     """
@@ -33,8 +34,9 @@ def generate_requirement_report(requirement_data):
     markdown_content, _ = markdown_generator(prompt)
     return markdown_content
 
+
 def save_markdown_report(content, output_path):
     """Save markdown content to file"""
-    with open(output_path, 'w') as f:
+    with open(output_path, "w") as f:
         f.write(content)
     print(f"Report saved to {output_path}")

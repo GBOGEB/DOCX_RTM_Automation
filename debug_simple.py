@@ -1,25 +1,33 @@
 """
 Simple debugging test script to troubleshoot attachment issues.
 """
-import os
+
 import sys
 import time
 import logging
+import traceback
+try:
+    import debugpy
+except ImportError:
+    debugpy = None  # type: ignore
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
 
 def test_debugging():
     """Run a simple test function to debug."""
     logger.info("Starting simple debug test")
 
     # Import debugpy here to avoid issues if it's not installed
+    if debugpy is None:
+        logger.error("debugpy module not found. Install with: pip install debugpy")
+        return
+
     try:
-        import debugpy
         logger.info("debugpy successfully imported")
 
         # Configure debugpy to wait for the debugger
@@ -31,12 +39,8 @@ def test_debugging():
         debugpy.wait_for_client()
         logger.info("Debugger attached!")
 
-    except ImportError:
-        logger.error("debugpy module not found. Install with: pip install debugpy")
-        return
     except Exception as e:
-        logger.error(f"Error setting up debugger: {e}")
-        import traceback
+        logger.error("Error setting up debugger: %s", e)
         traceback.print_exc()
         return
 
@@ -46,16 +50,17 @@ def test_debugging():
 
     # Good place for a breakpoint
     result = a + b
-    logger.info(f"Result: {result}")
+    logger.info("Result: %s", result)
 
     # Loop for testing stepping through code
     for i in range(5):
         # Another good breakpoint location
         value = i * 10
-        logger.info(f"Loop {i}: value = {value}")
+        logger.info("Loop %s: value = %s", i, value)
         time.sleep(0.5)  # Slow down the loop for easier debugging
 
     logger.info("Debug test completed")
+
 
 if __name__ == "__main__":
     print("\nSimple Debug Test")

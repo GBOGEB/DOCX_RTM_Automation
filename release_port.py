@@ -5,7 +5,7 @@ Enhanced port release utility for persistent port conflicts.
 This script addresses situations where a port remains in use
 even after terminating the process that was initially detected.
 """
-import os
+
 import sys
 import time
 import socket
@@ -15,10 +15,10 @@ import argparse
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
+
 
 def check_port_in_use(port):
     """Check if a port is already in use."""
@@ -35,16 +35,14 @@ def check_port_in_use(port):
         except OSError:
             return True  # Port is in use on 127.0.0.1
 
+
 def get_all_processes_using_port_windows(port):
     """Get all processes using a specific port on Windows."""
     processes = []
 
     try:
         # Use netstat to find processes using the port
-        output = subprocess.check_output(
-            ["netstat", "-ano", "-p", "TCP"],
-            text=True
-        )
+        output = subprocess.check_output(["netstat", "-ano", "-p", "TCP"], text=True)
 
         # Parse output to find PIDs
         for line in output.splitlines():
@@ -57,11 +55,13 @@ def get_all_processes_using_port_windows(port):
                     try:
                         proc_info = subprocess.check_output(
                             ["tasklist", "/FI", f"PID eq {pid}", "/FO", "CSV"],
-                            text=True
+                            text=True,
                         )
                         if '","' in proc_info:
                             # Extract process name from CSV format
-                            process_name = proc_info.splitlines()[1].split('","')[0].strip('"')
+                            process_name = (
+                                proc_info.splitlines()[1].split('","')[0].strip('"')
+                            )
                             processes.append((pid, process_name))
                     except subprocess.SubprocessError:
                         processes.append((pid, "Unknown"))
@@ -69,6 +69,7 @@ def get_all_processes_using_port_windows(port):
         logger.error(f"Error executing netstat: {e}")
 
     return processes
+
 
 def get_all_processes_using_port(port):
     """Get all processes using a specific port."""
@@ -79,8 +80,7 @@ def get_all_processes_using_port(port):
         processes = []
         try:
             output = subprocess.check_output(
-                ["lsof", "-i", f":{port}", "-P", "-n"],
-                text=True
+                ["lsof", "-i", f":{port}", "-P", "-n"], text=True
             )
 
             # Skip header line
@@ -95,6 +95,7 @@ def get_all_processes_using_port(port):
 
         return processes
 
+
 def force_kill_process_windows(pid):
     """Forcefully kill a process on Windows."""
     try:
@@ -104,6 +105,7 @@ def force_kill_process_windows(pid):
     except subprocess.SubprocessError as e:
         logger.error(f"Error killing process with PID {pid}: {e}")
         return False
+
 
 def force_kill_process(pid):
     """Forcefully kill a process."""
@@ -117,6 +119,7 @@ def force_kill_process(pid):
         except subprocess.SubprocessError as e:
             logger.error(f"Error killing process with PID {pid}: {e}")
             return False
+
 
 def release_port_aggressively(port):
     """
@@ -133,7 +136,9 @@ def release_port_aggressively(port):
     processes = get_all_processes_using_port(port)
 
     if not processes:
-        logger.warning(f"Could not identify processes using port {port}, but port is in use")
+        logger.warning(
+            f"Could not identify processes using port {port}, but port is in use"
+        )
         return False
 
     logger.info(f"Found {len(processes)} processes using port {port}")
@@ -157,6 +162,7 @@ def release_port_aggressively(port):
 
     return not check_port_in_use(port)
 
+
 def run_special_commands():
     """Run special commands to resolve persistent port issues."""
     logger.info("Attempting special cleanup steps for persistent port issues")
@@ -167,7 +173,9 @@ def run_special_commands():
             logger.info("Resetting TCP/IP stack... (this may take a moment)")
             subprocess.run(
                 ["netsh", "winsock", "reset"],
-                capture_output=True, text=True, check=False
+                capture_output=True,
+                text=True,
+                check=False,
             )
             logger.info("Winsock reset completed")
         except Exception as e:
@@ -176,14 +184,12 @@ def run_special_commands():
         # On Unix systems we might use different approaches
         logger.info("No special commands defined for this platform")
 
+
 def display_process_info_windows():
     """Display extended process info for Windows."""
     try:
         # List all TCP connections and listeners
-        tcp_info = subprocess.check_output(
-            ["netstat", "-ano", "-p", "TCP"],
-            text=True
-        )
+        tcp_info = subprocess.check_output(["netstat", "-ano", "-p", "TCP"], text=True)
 
         print("\nActive TCP Connections:")
         print("=" * 80)
@@ -191,16 +197,26 @@ def display_process_info_windows():
     except Exception as e:
         logger.error(f"Error getting TCP connection info: {e}")
 
+
 def main():
     """Main function."""
     parser = argparse.ArgumentParser(description="Enhanced Port Release Utility")
     parser.add_argument("port", type=int, help="Port number to release")
-    parser.add_argument("--force", "-f", action="store_true",
-                        help="Use aggressive methods to release port")
-    parser.add_argument("--advanced", "-a", action="store_true",
-                        help="Run advanced system commands that may require restart")
-    parser.add_argument("--info", "-i", action="store_true",
-                        help="Display extended process information")
+    parser.add_argument(
+        "--force",
+        "-f",
+        action="store_true",
+        help="Use aggressive methods to release port",
+    )
+    parser.add_argument(
+        "--advanced",
+        "-a",
+        action="store_true",
+        help="Run advanced system commands that may require restart",
+    )
+    parser.add_argument(
+        "--info", "-i", action="store_true", help="Display extended process information"
+    )
 
     args = parser.parse_args()
 
@@ -235,7 +251,9 @@ def main():
             if args.advanced:
                 print("\nAttempting special system commands...")
                 run_special_commands()
-                print("\nSystem commands completed. Some changes may require a restart.")
+                print(
+                    "\nSystem commands completed. Some changes may require a restart."
+                )
                 print("Please check if port is released after these operations.")
     else:
         print("\nTo forcefully release this port, use:")
@@ -244,6 +262,7 @@ def main():
         print(f"  python release_port.py {port} --advanced")
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())
