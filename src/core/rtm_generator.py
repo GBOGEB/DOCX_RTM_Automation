@@ -12,7 +12,6 @@ from datetime import datetime, timezone
 from typing import Dict, List, Any
 
 import sys
-from pathlib import Path
 
 # Add project root to path
 _project_root = Path(__file__).resolve().parent.parent
@@ -232,7 +231,7 @@ class RTMGenerator:
                 default_status = attr_conf.get("default", default_status)
 
         requirement_patterns_config = self.config.get("requirement_patterns", [])
-        num_patterns = len(requirement_patterns_config)
+        len(requirement_patterns_config)
 
         # Compile patterns for more efficient matching
         import re

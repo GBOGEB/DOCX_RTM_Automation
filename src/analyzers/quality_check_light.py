@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 import time
 
+
 def light_quality_check():
     """Run essential quality checks quickly."""
     print("🚀 Light Code Quality Check")
@@ -17,16 +18,13 @@ def light_quality_check():
     start_time = time.time()
 
     # Essential files only
-    core_files = [
-        "enhance_document_parsing.py",
-        "digital_twin_parser.py"
-    ]
+    core_files = ["enhance_document_parsing.py", "digital_twin_parser.py"]
 
     # Basic flake8 config - only catch serious issues
     light_config = [
         "--max-line-length=100",  # More lenient
         "--extend-ignore=E203,W503,E501,W293,E302",  # Ignore style issues
-        "--select=E9,F63,F7,F82"  # Only syntax errors and undefined names
+        "--select=E9,F63,F7,F82",  # Only syntax errors and undefined names
     ]
 
     total_issues = 0
@@ -40,11 +38,13 @@ def light_quality_check():
             try:
                 result = subprocess.run(
                     ["flake8"] + light_config + [file_path],
-                    capture_output=True, text=True, timeout=10
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
                 )
 
                 if result.stdout.strip():
-                    issues = len(result.stdout.strip().split('\n'))
+                    issues = len(result.stdout.strip().split("\n"))
                     total_issues += issues
                     print(f"❌ {issues} critical issues")
                 else:
@@ -57,7 +57,7 @@ def light_quality_check():
 
     duration = time.time() - start_time
 
-    print(f"\n⚡ Quick Summary:")
+    print("\n⚡ Quick Summary:")
     print(f"   Critical issues: {total_issues}")
     print(f"   Check time: {duration:.1f}s")
 
@@ -67,6 +67,7 @@ def light_quality_check():
         print("   🔧 Consider running heavy check for details")
 
     return total_issues
+
 
 if __name__ == "__main__":
     sys.exit(light_quality_check())

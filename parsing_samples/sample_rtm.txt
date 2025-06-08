@@ -1,0 +1,9 @@
+RTM Sample Text Document
+
+REQUIREMENT REQ-001: System shall authenticate users
+TESTCASE TC-001: Verify login functionality
+TRACE LINK: TC-001 -> REQ-001
+
+REQUIREMENT REQ-002: System shall validate inputs
+TESTCASE TC-002: Verify input validation
+TRACE LINK: TC-002 -> REQ-002

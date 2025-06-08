@@ -2,15 +2,19 @@
 DMAIC (Define, Measure, Analyze, Improve, Control) handler module.
 This is a placeholder implementation.
 """
+
 from enum import Enum
+
 
 class DMAICPhase(Enum):
     """DMAIC methodology phases"""
+
     DEFINE = "define"
     MEASURE = "measure"
     ANALYZE = "analyze"
     IMPROVE = "improve"
     CONTROL = "control"
+
 
 class DMAICHandler:
     def __init__(self, project_name):
@@ -24,7 +28,9 @@ class DMAICHandler:
                 self.phase = DMAICPhase(phase.lower())
             except ValueError:
                 valid_phases = [p.name for p in DMAICPhase]
-                raise ValueError(f"Invalid phase: {phase}. Valid phases are: {valid_phases}")
+                raise ValueError(
+                    f"Invalid phase: {phase}. Valid phases are: {valid_phases}"
+                )
         elif isinstance(phase, DMAICPhase):
             self.phase = phase
         else:

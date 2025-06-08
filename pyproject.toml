@@ -1,0 +1,97 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "docx-rtm-automation"
+version = "1.0.0"
+description = "Document Requirements Traceability Matrix (RTM) Automation System"
+authors = [
+    {name = "RTM Automation System", email = "rtm@example.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Office Suites",
+    "Topic :: Text Processing :: Markup",
+]
+keywords = ["rtm", "requirements", "traceability", "docx", "automation"]
+
+dependencies = [
+    "python-docx>=0.8.11",
+    "markdown>=3.4.0",
+    "beautifulsoup4>=4.11.0",
+    "lxml>=4.9.0",
+    "pathlib2>=2.3.0; python_version<'3.4'",
+    "typing-extensions>=4.0.0; python_version<'3.8'",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=22.0.0",
+    "flake8>=5.0.0",
+    "mypy>=1.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/rtm-automation/docx-rtm-automation"
+Documentation = "https://github.com/rtm-automation/docx-rtm-automation/wiki"
+Repository = "https://github.com/rtm-automation/docx-rtm-automation"
+"Bug Tracker" = "https://github.com/rtm-automation/docx-rtm-automation/issues"
+
+[project.scripts]
+rtm-pipeline = "main_organized:main"
+rtm-status = "find_output_files:main"
+
+[tool.setuptools]
+packages = ["rtm_automation"]
+package-dir = {"" = "src"}
+
+[tool.setuptools.package-data]
+rtm_automation = ["templates/*.html", "templates/*.md", "config/*.json"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+  | temp_processing
+  | output
+)/
+'''
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests",
+    "integration",
+]

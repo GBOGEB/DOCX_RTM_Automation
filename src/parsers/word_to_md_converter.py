@@ -2,6 +2,7 @@
 """
 Simple Word to Markdown conversion utility
 """
+
 import os
 import sys
 from pathlib import Path

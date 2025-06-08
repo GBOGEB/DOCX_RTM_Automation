@@ -5,7 +5,7 @@ Simple Quality Check - Encoding-safe version for RTM system verification
 
 import sys
 from pathlib import Path
-import json
+
 
 def check_rtm_system_health():
     """Check RTM system health without subprocess calls."""
@@ -22,7 +22,7 @@ def check_rtm_system_health():
         "enhance_document_parsing.py",
         "digital_twin_parser.py",
         "extension_manager.py",
-        "Project Requirements.py"
+        "Project Requirements.py",
     ]
 
     core_files_found = 0
@@ -47,7 +47,7 @@ def check_rtm_system_health():
         md_files = list(input_dir.glob("*.md"))
 
         # Filter out temp files
-        docx_files = [f for f in docx_files if not f.name.startswith('~$')]
+        docx_files = [f for f in docx_files if not f.name.startswith("~$")]
 
         total_input_files = len(docx_files) + len(md_files)
 
@@ -67,7 +67,7 @@ def check_rtm_system_health():
     else:
         print("   ❌ Input directory not found")
         issues.append("Input directory missing")
-        print(f"   📊 Input Files Score: 0/20")
+        print("   📊 Input Files Score: 0/20")
 
     # Check 3: Output Files Generated (25 points)
     print("\n📁 Checking Output Files...")
@@ -102,7 +102,7 @@ def check_rtm_system_health():
     else:
         print("   ❌ Output directory not found")
         issues.append("Output directory missing")
-        print(f"   📊 Output Files Score: 0/25")
+        print("   📊 Output Files Score: 0/25")
 
     # Check 4: AI Integration (15 points)
     print("\n🤖 Checking AI Integration...")
@@ -128,7 +128,7 @@ def check_rtm_system_health():
         print(f"   📊 AI Integration Score: {ai_score}/15")
     else:
         print("   ℹ️ Ariana directory not found (AI not integrated)")
-        print(f"   📊 AI Integration Score: 0/15")
+        print("   📊 AI Integration Score: 0/15")
 
     # Check 5: System Dependencies (10 points)
     print("\n📦 Checking System Dependencies...")
@@ -150,10 +150,10 @@ def check_rtm_system_health():
     print(f"   📊 Dependencies Score: {deps_score:.1f}/10")
 
     # Final Health Assessment
-    print(f"\n🎯 FINAL HEALTH ASSESSMENT:")
+    print("\n🎯 FINAL HEALTH ASSESSMENT:")
     print("=" * 40)
     print(f"   Total Score: {health_score:.1f}/{max_score}")
-    print(f"   Percentage: {(health_score/max_score)*100:.1f}%")
+    print(f"   Percentage: {(health_score / max_score) * 100:.1f}%")
 
     if health_score >= 80:
         status = "🟢 EXCELLENT"
@@ -178,13 +178,14 @@ def check_rtm_system_health():
 
     # Determine if system is ready
     if health_score >= 60:
-        print(f"\n✅ SYSTEM STATUS: READY FOR USE")
-        print(f"   Your RTM automation system is operational!")
+        print("\n✅ SYSTEM STATUS: READY FOR USE")
+        print("   Your RTM automation system is operational!")
     else:
-        print(f"\n⚠️ SYSTEM STATUS: NEEDS ATTENTION")
-        print(f"   Address the issues above before using for production.")
+        print("\n⚠️ SYSTEM STATUS: NEEDS ATTENTION")
+        print("   Address the issues above before using for production.")
 
     return health_score >= 60
+
 
 def main():
     """Main quality check function."""
@@ -194,9 +195,10 @@ def main():
 
     is_ready = check_rtm_system_health()
 
-    print(f"\n🎉 Quality check complete!")
+    print("\n🎉 Quality check complete!")
 
     return 0 if is_ready else 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

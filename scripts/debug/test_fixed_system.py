@@ -7,6 +7,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 def test_rtm_system():
     """Test the RTM system after fixes."""
     print("🧪 Testing Fixed RTM System")
@@ -15,9 +16,12 @@ def test_rtm_system():
     # Test 1: Fix the parser error
     print("1️⃣ Fixing division by zero error...")
     try:
-        result = subprocess.run([
-            sys.executable, "fix_pandoc_error.py"
-        ], capture_output=True, text=True, timeout=30)
+        result = subprocess.run(
+            [sys.executable, "fix_pandoc_error.py"],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
         print("   ✅ Error fix applied")
     except Exception as e:
         print(f"   ⚠️ Fix issue: {e}")
@@ -25,10 +29,18 @@ def test_rtm_system():
     # Test 2: Process your MASTER document
     print("\n2️⃣ Processing MASTER document...")
     try:
-        result = subprocess.run([
-            sys.executable, "enhance_document_parsing.py",
-            "input/MASTER_1805_1144.docx", "-f", "json"
-        ], capture_output=True, text=True, timeout=120)
+        result = subprocess.run(
+            [
+                sys.executable,
+                "enhance_document_parsing.py",
+                "input/MASTER_1805_1144.docx",
+                "-f",
+                "json",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
 
         if result.returncode == 0:
             print("   ✅ MASTER document processed successfully")
@@ -41,10 +53,18 @@ def test_rtm_system():
     print("\n3️⃣ Creating digital twin...")
     if Path("input/requirements.md").exists():
         try:
-            result = subprocess.run([
-                sys.executable, "digital_twin_parser.py",
-                "input/requirements.md", "-o", "output/test_twin"
-            ], capture_output=True, text=True, timeout=120)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "digital_twin_parser.py",
+                    "input/requirements.md",
+                    "-o",
+                    "output/test_twin",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
 
             if result.returncode == 0:
                 print("   ✅ Digital twin created successfully")
@@ -55,10 +75,18 @@ def test_rtm_system():
     else:
         print("   ℹ️ No requirements.md found - using converted file")
         try:
-            result = subprocess.run([
-                sys.executable, "digital_twin_parser.py",
-                "output/requirements.md", "-o", "output/test_twin"
-            ], capture_output=True, text=True, timeout=120)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "digital_twin_parser.py",
+                    "output/requirements.md",
+                    "-o",
+                    "output/test_twin",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
 
             if result.returncode == 0:
                 print("   ✅ Digital twin created from converted file")
@@ -70,9 +98,12 @@ def test_rtm_system():
     # Test 4: System verification
     print("\n4️⃣ Running system verification...")
     try:
-        result = subprocess.run([
-            sys.executable, "verify_rtm_ready.py"
-        ], capture_output=True, text=True, timeout=120)
+        result = subprocess.run(
+            [sys.executable, "verify_rtm_ready.py"],
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
 
         if "READY FOR USE" in result.stdout or "PRODUCTION READY" in result.stdout:
             print("   ✅ System verification: PASSED")
@@ -105,6 +136,7 @@ def test_rtm_system():
     print("   ✅ Digital twin creation: Working")
     print("   ✅ Multi-format output: Working")
     print("   🚀 Ready for enterprise RTM automation!")
+
 
 if __name__ == "__main__":
     test_rtm_system()

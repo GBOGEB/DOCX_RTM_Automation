@@ -1,9 +1,9 @@
 """Script to manage and trace project requirements."""
+
 import os
 import re
 import json
 import subprocess
-import markdown
 
 # Constants
 INPUT_DIR = r"C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\input"
@@ -91,7 +91,9 @@ def find_requirements_in_code(code_files, requirements_local):
 
                 for req_id in requirements_local:
                     if req_id in content_local:
-                        requirements_local[req_id]["implementation_files"].append(file_path)
+                        requirements_local[req_id]["implementation_files"].append(
+                            file_path
+                        )
                         requirements_local[req_id]["status"] = "Implemented"
         except OSError as e:
             print(f"Error reading file {file_path}: {e}")
@@ -130,7 +132,9 @@ def write_summary(analysis_data_param, requirements_with_files_param):
         file.write("Summary and Analysis\n")
         file.write("====================\n")
         file.write(f"Total Lines: {analysis_data_param['total_lines']}\n")
-        file.write(f"Total Requirements: {analysis_data_param['total_requirements']}\n\n")
+        file.write(
+            f"Total Requirements: {analysis_data_param['total_requirements']}\n\n"
+        )
 
         file.write("Requirement Types:\n")
         for req_type, count in analysis_data_param["requirement_types"].items():

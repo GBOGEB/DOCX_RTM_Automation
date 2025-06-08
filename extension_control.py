@@ -6,10 +6,12 @@ RTM Extension Control Interface - Simple commands to manage extensions
 import sys
 from extension_manager import ExtensionManager
 
+
 def main():
     """Simple command-line interface for extension control."""
     if len(sys.argv) < 2:
-        print("""
+        print(
+            """
 🔧 RTM Extension Control
 ========================
 
@@ -29,7 +31,8 @@ Examples:
   python extension_control.py list
   python extension_control.py activate digital_twin_parser
   python extension_control.py status enhance_document_parsing
-""")
+"""
+        )
         return 1
 
     manager = ExtensionManager()
@@ -40,7 +43,13 @@ Examples:
         print("=" * 40)
 
         for name, ext in manager.extensions.items():
-            status_icon = "✅" if ext.status == "active" else "⏸️" if ext.status == "inactive" else "❌"
+            status_icon = (
+                "✅"
+                if ext.status == "active"
+                else "⏸️"
+                if ext.status == "inactive"
+                else "❌"
+            )
             print(f"  {status_icon} {name} ({ext.extension_type})")
             if ext.description:
                 print(f"     {ext.description[:60]}...")
@@ -64,9 +73,9 @@ Examples:
             print(f"   Last Used: {status['last_used'] or 'Never'}")
             print(f"   Error Count: {status['error_count']}")
 
-            if status['dependencies']:
-                print(f"   Dependencies:")
-                for dep, available in status['dependencies_available'].items():
+            if status["dependencies"]:
+                print("   Dependencies:")
+                for dep, available in status["dependencies_available"].items():
                     icon = "✅" if available else "❌"
                     print(f"     {icon} {dep}")
 
@@ -86,17 +95,19 @@ Examples:
 
     elif command == "dashboard":
         from src.dashboard.extension_dashboard import main as dashboard_main
+
         dashboard_main()
 
     elif command == "report":
         report = manager.generate_report()
-        print(f"📊 Extension report generated")
+        print("📊 Extension report generated")
         print(f"   Total Extensions: {report['summary']['total_extensions']}")
-        print(f"   Report saved to: extension_report.json")
+        print("   Report saved to: extension_report.json")
 
     elif command == "health":
         summary = manager.get_summary()
         from src.dashboard.extension_dashboard import calculate_health_score
+
         health = calculate_health_score(summary)
 
         print(f"🎯 RTM System Health: {health}/100")
@@ -117,6 +128,7 @@ Examples:
         return 1
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

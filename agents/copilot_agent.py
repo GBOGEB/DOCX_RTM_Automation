@@ -187,7 +187,7 @@ class CopilotAgent(BaseAgent):
                 f"Generating {language} code for: {requirement}"
             )
 
-        file_extension = {
+        {
             "python": "py",
             "javascript": "js",
             "typescript": "ts",

@@ -1,0 +1,21 @@
+# Development environment configuration overrides
+
+environment: dev
+
+settings:
+  verbose: true
+  debug: true
+  overwrite_existing: true
+
+processing:
+  max_threads: 2  # Use fewer threads in development
+
+visualization:
+  theme: dark  # Use dark theme in development
+  include_diagnostic_info: true
+
+# Enable additional debug options
+debug:
+  dump_intermediate_files: true
+  show_timing_info: true
+  log_level: DEBUG

@@ -3,6 +3,7 @@
 Use pandoc to convert DOCX to Markdown, then process the Markdown to extract requirements.
 This provides a more robust and standard-compliant Markdown conversion.
 """
+
 import os
 import sys
 import subprocess
@@ -17,7 +18,10 @@ def check_pandoc_installed():
     """Check if pandoc is installed."""
     try:
         subprocess.run(
-            ["pandoc", "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True
+            ["pandoc", "--version"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
         )
         return True
     except FileNotFoundError:
@@ -86,7 +90,9 @@ def convert_with_pandoc(input_file, output_file=None):
             "--markdown-extensions=+task_lists+definition_lists+footnotes+lists_without_preceding_blankline",
         ]
 
-        result = subprocess.run(cmd, capture_output=True, text=True, check=False)  # Keep check=False for initial attempt, will check returncode
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, check=False
+        )  # Keep check=False for initial attempt, will check returncode
 
         if result.returncode != 0:
             print(f"Error during conversion: {result.stderr}")
@@ -99,7 +105,9 @@ def convert_with_pandoc(input_file, output_file=None):
                 "--from=docx",
                 "--to=markdown",
             ]
-            result = subprocess.run(cmd, capture_output=True, text=True, check=False)  # Keep check=False, will check returncode
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, check=False
+            )  # Keep check=False, will check returncode
             if result.returncode != 0:
                 print(f"Simplified conversion also failed: {result.stderr}")
                 if os.path.exists(temp_path):

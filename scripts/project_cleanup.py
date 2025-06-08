@@ -133,7 +133,7 @@ class AsciiDiagramGenerator:
         """Process headers recursively to build diagram"""
         for header in headers:
             title = header.get("title", "Untitled")
-            level = header.get("level", 1)
+            header.get("level", 1)
 
             # Calculate indentation
             indent = self.indent_chars * depth

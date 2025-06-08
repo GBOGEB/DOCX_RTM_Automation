@@ -1,0 +1,43 @@
+# my_project_rtm.yaml
+# Configuration file for the RTM Automation project
+
+project:
+  name: "DOCX RTM Automation"
+  version: "1.0"
+  description: "Automation tool for generating RTM documents from DOCX files."
+
+ascii_diagram:
+  enabled: true
+  style: "detailed"  # Options: default, compact, detailed
+  max_width: 100     # Maximum width of the ASCII diagram
+  max_height: 50     # Maximum height of the ASCII diagram
+
+logging:
+  level: "INFO"     # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  file: "logs/automation.log"
+
+output:
+  directory: "output/"
+  format: "txt"     # Options: txt, md, html
+
+input:
+  directory: "input/"
+  file_types:
+    - "docx"
+    - "doc"
+
+validation:
+  enabled: true
+  rules:
+    - "check_missing_requirements"
+    - "check_duplicate_entries"
+
+dependencies:
+  - "python-docx"
+  - "pyyaml"
+  - "ascii-diagram-lib"
+
+# Add any additional custom configurations below
+custom_settings:
+  allow_overwrite: false
+  backup_original_files: true

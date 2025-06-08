@@ -8,6 +8,7 @@ import sys
 import ast
 from pathlib import Path
 
+
 def check_and_fix_syntax_errors():
     """Check and fix syntax errors in Python files."""
     print("🔧 Fixing Git Commit Syntax Errors")
@@ -19,7 +20,7 @@ def check_and_fix_syntax_errors():
         "agents/__init__.py",
         "Project Requirements.py",
         "enhance_document_parsing.py",
-        "digital_twin_parser.py"
+        "digital_twin_parser.py",
     ]
 
     fixed_files = []
@@ -32,35 +33,39 @@ def check_and_fix_syntax_errors():
         print(f"   🔍 Checking {file_path}...")
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             # Try to parse the file
             try:
                 ast.parse(content)
-                print(f"      ✅ Syntax OK")
+                print("      ✅ Syntax OK")
             except SyntaxError as e:
                 print(f"      ❌ Syntax error: {e}")
 
                 # Try to fix common issues - Fixed the incomplete line
                 if "class Agent" in content and "class Agent:" not in content:
-                    print(f"      🔧 Fixing missing colon after class definition")
+                    print("      🔧 Fixing missing colon after class definition")
                     content = content.replace("class Agent", "class Agent:")
 
                 # Fix missing colons in function definitions
                 lines = content.splitlines()
                 fixed_lines = []
                 for line in lines:
-                    if line.strip().startswith("def ") and not line.strip().endswith(":"):
+                    if line.strip().startswith("def ") and not line.strip().endswith(
+                        ":"
+                    ):
                         if "(" in line and ")" in line:
                             line = line.rstrip() + ":"
-                            print(f"      🔧 Fixed missing colon in function definition")
-                    elif line.strip().startswith("class ") and not line.strip().endswith(":"):
+                            print("      🔧 Fixed missing colon in function definition")
+                    elif line.strip().startswith(
+                        "class "
+                    ) and not line.strip().endswith(":"):
                         if "(" in line and ")" in line:
                             line = line.rstrip() + ":"
                         elif "(" not in line:
                             line = line.rstrip() + ":"
-                        print(f"      🔧 Fixed missing colon in class definition")
+                        print("      🔧 Fixed missing colon in class definition")
                     fixed_lines.append(line)
 
                 content = "\n".join(fixed_lines)
@@ -68,10 +73,10 @@ def check_and_fix_syntax_errors():
                 # Try parsing again
                 try:
                     ast.parse(content)
-                    print(f"      ✅ Syntax fixed!")
+                    print("      ✅ Syntax fixed!")
 
                     # Write the fixed content
-                    with open(file_path, 'w', encoding='utf-8') as f:
+                    with open(file_path, "w", encoding="utf-8") as f:
                         f.write(content)
 
                     fixed_files.append(file_path)
@@ -84,14 +89,17 @@ def check_and_fix_syntax_errors():
 
     return fixed_files
 
+
 def create_git_safe_commit():
     """Create a git commit that bypasses syntax checks if needed."""
-    print(f"\n🔧 Git Commit Strategy")
+    print("\n🔧 Git Commit Strategy")
     print("=" * 25)
 
     try:
         # Try normal commit first
-        result = os.system('git add . && git commit -m "Fix syntax errors and update RTM system"')
+        result = os.system(
+            'git add . && git commit -m "Fix syntax errors and update RTM system"'
+        )
         if result == 0:
             print("   ✅ Normal git commit successful")
             return True
@@ -100,7 +108,9 @@ def create_git_safe_commit():
 
     try:
         # Try commit with skip hooks
-        result = os.system('git add . && git commit --no-verify -m "Fix syntax errors and update RTM system"')
+        result = os.system(
+            'git add . && git commit --no-verify -m "Fix syntax errors and update RTM system"'
+        )
         if result == 0:
             print("   ✅ Git commit with --no-verify successful")
             return True
@@ -109,6 +119,7 @@ def create_git_safe_commit():
 
     print("   ℹ️ Manual git operations may be needed")
     return False
+
 
 def main():
     """Main function to fix git syntax errors."""
@@ -123,20 +134,21 @@ def main():
         for file_path in fixed_files:
             print(f"   📄 {file_path}")
     else:
-        print(f"\n✅ No syntax errors found or all files already correct")
+        print("\n✅ No syntax errors found or all files already correct")
 
     # Try to commit
-    print(f"\n🔄 Attempting git commit...")
+    print("\n🔄 Attempting git commit...")
     success = create_git_safe_commit()
 
     if success:
-        print(f"\n🎉 Git commit successful!")
-        print(f"   Your RTM system changes are now committed")
+        print("\n🎉 Git commit successful!")
+        print("   Your RTM system changes are now committed")
     else:
-        print(f"\n⚠️ Manual git commit may be needed")
-        print(f"   Try: git add . && git commit --no-verify -m 'RTM system update'")
+        print("\n⚠️ Manual git commit may be needed")
+        print("   Try: git add . && git commit --no-verify -m 'RTM system update'")
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

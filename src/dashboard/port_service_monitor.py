@@ -1,6 +1,7 @@
 import socket
 import time
 
+
 def check_port(host, port, timeout=5):
     """
     Check if a specific port on a host is open.
@@ -16,6 +17,7 @@ def check_port(host, port, timeout=5):
     except (socket.timeout, socket.error):
         return False
 
+
 def monitor_ports(host, ports, interval=10):
     """
     Monitor a list of ports on a host at regular intervals.
@@ -29,6 +31,7 @@ def monitor_ports(host, ports, interval=10):
             status = "open" if check_port(host, port) else "closed"
             print(f"Port {port} on {host} is {status}.")
         time.sleep(interval)
+
 
 if __name__ == "__main__":
     # Example usage

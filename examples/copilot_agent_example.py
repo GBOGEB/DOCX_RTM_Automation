@@ -183,7 +183,7 @@ def run_example():
     code_req += "The function should return a list of requirement objects."
 
     code_path_target = os.path.join(output_dir, "requirement_parser.py")
-    generated_code_details = copilot.generate_code("Python", code_req, code_path_target)
+    copilot.generate_code("Python", code_req, code_path_target)
     if os.path.exists(code_path_target):
         print(f"Python code generated and saved to {code_path_target}")
     else:
@@ -255,7 +255,7 @@ Some notes here.
     """
     parsed_data_path_target = os.path.join(output_dir, "parsed_markdown.json")
 
-    parse_message = AgentMessage(
+    AgentMessage(
         source="copilot_example_main",
         target=copilot.agent_id,
         message_type="parse_document_command",
@@ -273,7 +273,5 @@ Some notes here.
 
     # 9. Impact Assessment Example (Conceptual)
     print("\n9. Requesting Impact Assessment (Conceptual)...")
-    change_description = "Refactoring the authentication module to use OAuth2."
-    affected_files = ["auth.py", "user_session.py", "api_endpoints.py"]
 
     print("Conceptual impact assessment")

@@ -1,5 +1,5 @@
-import os
 import subprocess
+
 
 def run_jenkins_job(job_name, jenkins_url, username, api_token):
     """
@@ -16,16 +16,12 @@ def run_jenkins_job(job_name, jenkins_url, username, api_token):
     """
     trigger_url = f"{jenkins_url}/job/{job_name}/build"
     response = subprocess.run(
-        [
-            "curl",
-            "-X", "POST",
-            trigger_url,
-            "--user", f"{username}:{api_token}"
-        ],
+        ["curl", "-X", "POST", trigger_url, "--user", f"{username}:{api_token}"],
         capture_output=True,
-        text=True
+        text=True,
     )
     return response.stdout
+
 
 def main():
     # Jenkins configuration
@@ -39,6 +35,7 @@ def main():
     response = run_jenkins_job(job_name, jenkins_url, username, api_token)
     print("Response from Jenkins:")
     print(response)
+
 
 if __name__ == "__main__":
     main()

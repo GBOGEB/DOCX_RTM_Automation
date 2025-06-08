@@ -35,7 +35,7 @@ def load_config(config_path=None):
             "corner_tr": "+",
             "corner_bl": "+",
             "corner_br": "+",
-        }
+        },
     }
 
     if not config_path or not Path(config_path).exists():
@@ -43,12 +43,16 @@ def load_config(config_path=None):
         return default_config
 
     try:
-        with open(config_path, 'r', encoding='utf-8') as f:
+        with open(config_path, "r", encoding="utf-8") as f:
             user_config = yaml.safe_load(f)
 
         # Merge configs, with user settings taking precedence
         for key, value in user_config.items():
-            if isinstance(value, dict) and key in default_config and isinstance(default_config[key], dict):
+            if (
+                isinstance(value, dict)
+                and key in default_config
+                and isinstance(default_config[key], dict)
+            ):
                 default_config[key].update(value)
             else:
                 default_config[key] = value
@@ -69,7 +73,7 @@ def parse_diagram_data(data_source):
     """Parse diagram data from JSON file or dictionary."""
     if isinstance(data_source, str):
         try:
-            with open(data_source, 'r', encoding='utf-8') as f:
+            with open(data_source, "r", encoding="utf-8") as f:
                 data = json.load(f)
             logger.info("Loaded diagram data from %s", data_source)
             return data
@@ -95,21 +99,21 @@ def generate_diagram(data, config=None):
     if config is None:
         config = load_config()
 
-    width = config.get('width', 80)
-    height = config.get('height', 25)
+    width = config.get("width", 80)
+    height = config.get("height", 25)
 
-    canvas = [[' ' for _ in range(width)] for _ in range(height)]
+    canvas = [[" " for _ in range(width)] for _ in range(height)]
 
     try:
-        for node_id, node_data in data.get('nodes', {}).items():
-            x = node_data.get('x', 0)
-            y = node_data.get('y', 0)
-            label = node_data.get('label', node_id)
-            shape = node_data.get('shape', 'box')
+        for node_id, node_data in data.get("nodes", {}).items():
+            x = node_data.get("x", 0)
+            y = node_data.get("y", 0)
+            label = node_data.get("label", node_id)
+            shape = node_data.get("shape", "box")
 
-            if shape == 'box':
+            if shape == "box":
                 draw_box(canvas, x, y, label)
-            elif shape == 'circle':
+            elif shape == "circle":
                 draw_circle(canvas, x, y, label)
             else:
                 logger.warning("Unknown shape: %s", shape)
@@ -123,7 +127,7 @@ def generate_diagram(data, config=None):
 
 def draw_box(canvas, x, y, label, width=20, height=5):
     """Draw a box with a label."""
-    center_y = y + height // 2
+    y + height // 2
     # Draw label in the middle of the box
     # Existing code for drawing box
 
@@ -158,7 +162,7 @@ def create_diagram_legend():
         "◆ = Decision Point",
         "⭘ = Start/End",
         "📄 = Document",
-        "🔄 = Process"
+        "🔄 = Process",
     ]
     return "\n".join(legend)
 
@@ -170,7 +174,7 @@ def export_diagram(diagram_text, output_path, format_type="txt"):
         return False
 
     try:
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(diagram_text)
 
         logger.info("Diagram exported to %s", output_path)

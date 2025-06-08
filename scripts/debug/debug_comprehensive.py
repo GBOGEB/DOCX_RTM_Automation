@@ -82,7 +82,9 @@ class DebugTester:
         result = func(*args, **kwargs)
         duration = time.time() - start_time
 
-        logger.info("Operation '%s' completed in %.4f seconds", operation_name, duration)
+        logger.info(
+            "Operation '%s' completed in %.4f seconds", operation_name, duration
+        )
 
         # Check if performance meets the requirement (2 seconds)
         if duration <= 2.0:
@@ -116,7 +118,9 @@ class DebugTester:
         if matches:
             unique_reqs = set(matches)
             logger.info(
-                "Found references to %s requirements: %s", len(unique_reqs), ', '.join(unique_reqs)
+                "Found references to %s requirements: %s",
+                len(unique_reqs),
+                ", ".join(unique_reqs),
             )
             return True
         else:

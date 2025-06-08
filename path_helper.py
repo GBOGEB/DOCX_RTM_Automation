@@ -6,6 +6,7 @@ Path Helper - Add src directory to Python path for organized imports
 import sys
 from pathlib import Path
 
+
 def setup_paths():
     """Add src directory to Python path."""
     src_path = Path(__file__).parent / "src"
@@ -14,9 +15,11 @@ def setup_paths():
         return True
     return False
 
+
 # Auto-setup when imported
 if __name__ != "__main__":
     setup_paths()
+
 
 def main():
     """Manual path setup."""
@@ -26,6 +29,7 @@ def main():
         print(f"📁 Added: {Path(__file__).parent / 'src'}")
     else:
         print("❌ Could not configure Python path")
+
 
 if __name__ == "__main__":
     main()

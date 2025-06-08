@@ -1,11 +1,12 @@
 import os
+
 import yaml
 
 
 def load_config(config_file):
     """Load configuration from a yaml file"""
     if os.path.exists(config_file):
-        with open(config_file, "r") as f:
+        with open(config_file) as f:
             return yaml.safe_load(f)
     return None
 

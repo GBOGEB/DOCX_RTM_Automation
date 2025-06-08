@@ -270,7 +270,7 @@ class DocumentStructure:
         # Process each heading (skip the first, which is the title)
         for i, (level, number, title, lcp_phase) in enumerate(self.headings[1:], 1):
             # Calculate indentation
-            indent = "    " * (level - 1)
+            "    " * (level - 1)
 
             # Format the heading text
             if number:

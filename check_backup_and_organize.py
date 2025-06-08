@@ -3,11 +3,11 @@
 Check backup status and proceed with project organization
 """
 
-import os
 import subprocess
 import sys
 from pathlib import Path
 from datetime import datetime
+
 
 def check_backup_exists():
     """Check if backup was created successfully."""
@@ -21,7 +21,7 @@ def check_backup_exists():
     backup_patterns = [
         f"RTM_Backup_{today}",
         f"DOCX_RTM_Automation_v1.0_backup_{today}",
-        "RTM_Backup_*"
+        "RTM_Backup_*",
     ]
 
     backup_found = False
@@ -48,7 +48,7 @@ def check_backup_exists():
                 "main.py",
                 "config.json",
                 "json_file_analyzer_safe.py",
-                "rtm_excellence_final_certificate.json"
+                "rtm_excellence_final_certificate.json",
             ]
 
             for key_file in key_files:
@@ -69,7 +69,7 @@ def check_backup_exists():
         # Show what's in parent directory
         try:
             parent_contents = list(parent_dir.iterdir())
-            print(f"\n📁 Parent directory contents:")
+            print("\n📁 Parent directory contents:")
             for item in parent_contents[:10]:  # Show first 10
                 if item.is_dir():
                     print(f"   📂 {item.name}")
@@ -78,9 +78,10 @@ def check_backup_exists():
 
         return False, None
 
+
 def count_current_files():
     """Count files in current directory."""
-    print(f"\n📊 Current Directory Analysis:")
+    print("\n📊 Current Directory Analysis:")
     print("=" * 35)
 
     current_files = list(Path(".").glob("*"))
@@ -97,15 +98,16 @@ def count_current_files():
             ext = file_path.suffix.lower() or "no_extension"
             extensions[ext] = extensions.get(ext, 0) + 1
 
-    print(f"\n📋 File types:")
+    print("\n📋 File types:")
     for ext, count in sorted(extensions.items()):
         print(f"   {ext}: {count} files")
 
     return file_count, dir_count
 
+
 def run_organization_analysis():
     """Run the organization analysis."""
-    print(f"\n🏗️ Running Project Organization Analysis")
+    print("\n🏗️ Running Project Organization Analysis")
     print("=" * 45)
 
     organize_script = Path("organize_project_structure.py")
@@ -116,14 +118,16 @@ def run_organization_analysis():
             result = subprocess.run(
                 [sys.executable, "organize_project_structure.py"],
                 check=False,
-                capture_output=False
+                capture_output=False,
             )
 
             if result.returncode == 0:
-                print(f"\n✅ Organization analysis completed!")
+                print("\n✅ Organization analysis completed!")
                 return True
             else:
-                print(f"\n⚠️ Organization analysis had issues (exit code: {result.returncode})")
+                print(
+                    f"\n⚠️ Organization analysis had issues (exit code: {result.returncode})"
+                )
                 return False
 
         except Exception as e:
@@ -136,15 +140,17 @@ def run_organization_analysis():
         # Import and run the organization function directly
         try:
             from organize_project_structure import main as organize_main
+
             organize_main()
             return True
         except ImportError:
             print("❌ Could not import organization module")
             return False
 
+
 def show_organization_recommendations():
     """Show recommendations for organization."""
-    print(f"\n💡 ORGANIZATION RECOMMENDATIONS:")
+    print("\n💡 ORGANIZATION RECOMMENDATIONS:")
     print("=" * 40)
     print("Based on your 100+ files in root directory:")
     print()
@@ -165,6 +171,7 @@ def show_organization_recommendations():
     print("   • Dry run completed ✅")
     print("   • Ready for execution when you are!")
 
+
 def main():
     """Main function."""
     print("🔄 RTM System Backup Check & Organization Preparation")
@@ -180,14 +187,14 @@ def main():
     # Analyze if organization is needed
     organization_needed = file_count > 20  # If more than 20 files in root
 
-    print(f"\n🎯 ORGANIZATION ASSESSMENT:")
+    print("\n🎯 ORGANIZATION ASSESSMENT:")
     print("=" * 35)
     print(f"   Files in root: {file_count}")
     print(f"   Organization needed: {'YES' if organization_needed else 'NO'}")
     print(f"   Backup status: {'✅ SAFE' if backup_exists else '❌ MISSING'}")
 
     if backup_exists and organization_needed:
-        print(f"\n✅ READY FOR ORGANIZATION!")
+        print("\n✅ READY FOR ORGANIZATION!")
         print("Your backup is safe, proceeding with analysis...")
 
         # Run organization analysis
@@ -199,20 +206,21 @@ def main():
             print("⚠️ Organization analysis had issues")
 
     elif not backup_exists:
-        print(f"\n⚠️ BACKUP MISSING!")
+        print("\n⚠️ BACKUP MISSING!")
         print("Please create a backup before proceeding:")
         print("   cp -r . ../RTM_Backup_$(date +%Y%m%d)")
         return 1
 
     elif not organization_needed:
-        print(f"\n✅ PROJECT ALREADY WELL-ORGANIZED!")
+        print("\n✅ PROJECT ALREADY WELL-ORGANIZED!")
         print("Your root directory is clean enough.")
 
     else:
-        print(f"\n🤔 ASSESSMENT COMPLETE")
+        print("\n🤔 ASSESSMENT COMPLETE")
         print("Review the analysis above.")
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -181,7 +181,7 @@ def generate_mindmap_diagram(outline: Dict[str, Any], max_depth: int = 7) -> str
 
     # Track current section at each level
     sections_by_level = {}
-    current_branch = [0] * (max_depth + 1)
+    [0] * (max_depth + 1)
 
     # Group sections by level
     for section in outline["sections"]:

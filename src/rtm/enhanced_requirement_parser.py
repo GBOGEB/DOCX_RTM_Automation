@@ -3,9 +3,9 @@
 Enhanced requirement parser that can detect various requirement formats.
 This script improves requirement detection in markdown documents.
 """
+
 import re
 import json
-from pathlib import Path
 import os
 import sys
 
@@ -212,10 +212,10 @@ def main():
             1 for r in requirements_with_files.values() if r["status"] == "Implemented"
         )
 
-        f.write(f"## Summary\n\n")
+        f.write("## Summary\n\n")
         f.write(f"- **Total Requirements**: {total_requirements}\n")
         f.write(
-            f"- **Implemented Requirements**: {implemented_requirements} ({((implemented_requirements*100/(total_requirements if total_requirements > 0 else 1) if total_requirements > 0 else 0) if total_requirements > 0 else 0):.1f}%)\n"
+            f"- **Implemented Requirements**: {implemented_requirements} ({((implemented_requirements * 100 / (total_requirements if total_requirements > 0 else 1) if total_requirements > 0 else 0) if total_requirements > 0 else 0):.1f}%)\n"
         )
         f.write(
             f"- **Not Implemented Requirements**: {total_requirements - implemented_requirements}\n\n"
@@ -236,7 +236,7 @@ def main():
         f.write("|----------|-------|-------------|----------|\n")
         for category, counts in sorted(categories.items()):
             progress = (
-                f"{counts['implemented']*100/counts['total']:.1f}%"
+                f"{counts['implemented'] * 100 / counts['total']:.1f}%"
                 if counts["total"] > 0
                 else "N/A"
             )

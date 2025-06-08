@@ -6,7 +6,7 @@ import os
 def main():
     # Load configuration
     with open("config/paths.yaml") as file:
-        paths = yaml.safe_load(file)
+        yaml.safe_load(file)
 
     # Import modules (using a relative import strategy)
     sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))

@@ -2,8 +2,8 @@
 """
 Find and test Word to Markdown conversion functionality.
 """
+
 import os
-import re
 from pathlib import Path
 import subprocess
 import sys

@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 import json
 
+
 def process_all_documents():
     """Process all available documents and demonstrate RTM capabilities."""
     print("🚀 RTM Solution Building - Processing Your Documents")
@@ -31,35 +32,47 @@ def process_all_documents():
 
         try:
             # Process to JSON
-            result = subprocess.run([
-                sys.executable, "enhance_document_parsing.py",
-                str(docx_file), "-f", "json"
-            ], capture_output=True, text=True, timeout=60)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "enhance_document_parsing.py",
+                    str(docx_file),
+                    "-f",
+                    "json",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
 
             if result.returncode == 0:
-                print(f"   ✅ JSON conversion: SUCCESS")
-                processed_files.append({
-                    "file": docx_file.name,
-                    "format": "DOCX→JSON",
-                    "status": "success"
-                })
+                print("   ✅ JSON conversion: SUCCESS")
+                processed_files.append(
+                    {"file": docx_file.name, "format": "DOCX→JSON", "status": "success"}
+                )
 
                 # Also try YAML conversion
-                result_yaml = subprocess.run([
-                    sys.executable, "enhance_document_parsing.py",
-                    str(docx_file), "-f", "yaml"
-                ], capture_output=True, text=True, timeout=60)
+                result_yaml = subprocess.run(
+                    [
+                        sys.executable,
+                        "enhance_document_parsing.py",
+                        str(docx_file),
+                        "-f",
+                        "yaml",
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                )
 
                 if result_yaml.returncode == 0:
-                    print(f"   ✅ YAML conversion: SUCCESS")
+                    print("   ✅ YAML conversion: SUCCESS")
 
             else:
                 print(f"   ⚠️ Processing issues: {result.stderr[:100]}...")
-                processed_files.append({
-                    "file": docx_file.name,
-                    "format": "DOCX→JSON",
-                    "status": "partial"
-                })
+                processed_files.append(
+                    {"file": docx_file.name, "format": "DOCX→JSON", "status": "partial"}
+                )
 
         except Exception as e:
             print(f"   ❌ Error processing {docx_file.name}: {e}")
@@ -69,18 +82,28 @@ def process_all_documents():
         print(f"\n📝 Creating digital twin for {md_file.name}...")
 
         try:
-            result = subprocess.run([
-                sys.executable, "digital_twin_parser.py",
-                str(md_file), "-o", f"output/{md_file.stem}_twin"
-            ], capture_output=True, text=True, timeout=60)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "digital_twin_parser.py",
+                    str(md_file),
+                    "-o",
+                    f"output/{md_file.stem}_twin",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
 
             if result.returncode == 0:
-                print(f"   ✅ Digital twin: SUCCESS")
-                processed_files.append({
-                    "file": md_file.name,
-                    "format": "MD→Digital Twin",
-                    "status": "success"
-                })
+                print("   ✅ Digital twin: SUCCESS")
+                processed_files.append(
+                    {
+                        "file": md_file.name,
+                        "format": "MD→Digital Twin",
+                        "status": "success",
+                    }
+                )
             else:
                 print(f"   ⚠️ Digital twin issues: {result.stderr[:100]}...")
 
@@ -92,21 +115,28 @@ def process_all_documents():
         "timestamp": str(Path().resolve()),
         "total_files_found": len(docx_files) + len(md_files),
         "files_processed": len(processed_files),
-        "success_rate": len([f for f in processed_files if f["status"] == "success"]) / len(processed_files) * 100 if processed_files else 0,
-        "processed_files": processed_files
+        "success_rate": (
+            len([f for f in processed_files if f["status"] == "success"])
+            / len(processed_files)
+            * 100
+            if processed_files
+            else 0
+        ),
+        "processed_files": processed_files,
     }
 
     report_path = output_dir / "processing_report.json"
-    with open(report_path, 'w', encoding='utf-8') as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2)
 
-    print(f"\n📊 Processing Summary:")
+    print("\n📊 Processing Summary:")
     print(f"   Files found: {report['total_files_found']}")
     print(f"   Files processed: {report['files_processed']}")
     print(f"   Success rate: {report['success_rate']:.1f}%")
     print(f"   Report saved: {report_path}")
 
     return processed_files
+
 
 def demonstrate_rtm_capabilities():
     """Demonstrate key RTM capabilities with your documents."""
@@ -116,24 +146,41 @@ def demonstrate_rtm_capabilities():
     capabilities = [
         {
             "name": "Requirements Extraction",
-            "command": ["python", "enhance_document_parsing.py", "input/requirements.docx", "-f", "json"],
-            "description": "Extract and structure requirements from DOCX"
+            "command": [
+                "python",
+                "enhance_document_parsing.py",
+                "input/requirements.docx",
+                "-f",
+                "json",
+            ],
+            "description": "Extract and structure requirements from DOCX",
         },
         {
             "name": "Digital Twin Creation",
-            "command": ["python", "digital_twin_parser.py", "input/requirements.md", "-o", "output/demo_twin"],
-            "description": "Create digital twin representation"
+            "command": [
+                "python",
+                "digital_twin_parser.py",
+                "input/requirements.md",
+                "-o",
+                "output/demo_twin",
+            ],
+            "description": "Create digital twin representation",
         },
         {
             "name": "DOCX to Markdown Conversion",
-            "command": ["python", "pandoc_converter.py", "input/sample_requirements.docx", "--analyze"],
-            "description": "Convert DOCX to structured Markdown"
+            "command": [
+                "python",
+                "pandoc_converter.py",
+                "input/sample_requirements.docx",
+                "--analyze",
+            ],
+            "description": "Convert DOCX to structured Markdown",
         },
         {
             "name": "System Verification",
             "command": ["python", "verify_rtm_ready.py"],
-            "description": "Comprehensive system health check"
-        }
+            "description": "Comprehensive system health check",
+        },
     ]
 
     for capability in capabilities:
@@ -141,24 +188,24 @@ def demonstrate_rtm_capabilities():
         print(f"   {capability['description']}")
 
         # Check if required files exist
-        input_files = [arg for arg in capability['command'] if arg.startswith('input/')]
+        input_files = [arg for arg in capability["command"] if arg.startswith("input/")]
         if input_files and not all(Path(f).exists() for f in input_files):
-            print(f"   ⚠️ Input file not found - skipping demo")
+            print("   ⚠️ Input file not found - skipping demo")
             continue
 
         try:
             result = subprocess.run(
-                capability['command'],
-                capture_output=True, text=True, timeout=60
+                capability["command"], capture_output=True, text=True, timeout=60
             )
 
             if result.returncode == 0:
-                print(f"   ✅ Working perfectly")
+                print("   ✅ Working perfectly")
             else:
-                print(f"   ⚠️ Some issues - check configuration")
+                print("   ⚠️ Some issues - check configuration")
 
         except Exception as e:
             print(f"   ❌ Demo failed: {e}")
+
 
 def main():
     """Main function to start building RTM solutions."""
@@ -180,18 +227,19 @@ def main():
     print("✅ Digital twin creation: WORKING")
     print("✅ Multi-format output: WORKING")
 
-    print(f"\n📈 Enterprise RTM Capabilities Ready:")
+    print("\n📈 Enterprise RTM Capabilities Ready:")
     print(f"   📊 Processed {len(processed)} documents successfully")
-    print(f"   🔗 Digital twins created with relationship mapping")
-    print(f"   📋 Requirements traced and structured")
-    print(f"   🎯 83/100 system score (PRODUCTION READY)")
+    print("   🔗 Digital twins created with relationship mapping")
+    print("   📋 Requirements traced and structured")
+    print("   🎯 83/100 system score (PRODUCTION READY)")
 
-    print(f"\n🚀 Next Steps for RTM Automation:")
-    print(f"   1. Review output files in output/ directory")
-    print(f"   2. Integrate with your existing RTM workflows")
-    print(f"   3. Create requirement visualizations")
-    print(f"   4. Build traceability matrices")
-    print(f"   5. Automate requirement validation")
+    print("\n🚀 Next Steps for RTM Automation:")
+    print("   1. Review output files in output/ directory")
+    print("   2. Integrate with your existing RTM workflows")
+    print("   3. Create requirement visualizations")
+    print("   4. Build traceability matrices")
+    print("   5. Automate requirement validation")
+
 
 if __name__ == "__main__":
     main()

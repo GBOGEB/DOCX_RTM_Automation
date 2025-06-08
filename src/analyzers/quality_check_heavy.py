@@ -15,6 +15,7 @@ import logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
+
 class HeavyQualityChecker:
     """Comprehensive code quality checker."""
 
@@ -23,7 +24,7 @@ class HeavyQualityChecker:
             "flake8": {"files": 0, "issues": 0, "details": []},
             "structure": {"score": 0, "issues": []},
             "dependencies": {"available": 0, "missing": 0, "details": []},
-            "coverage": {"files_with_docstrings": 0, "total_files": 0}
+            "coverage": {"files_with_docstrings": 0, "total_files": 0},
         }
 
     def run_comprehensive_flake8(self):
@@ -36,14 +37,18 @@ class HeavyQualityChecker:
             "--extend-ignore=E203,W503",  # Only ignore Black conflicts
             "--statistics",
             "--count",
-            "--exclude=.git,__pycache__,.venv,venv,build,dist,.ariana"
+            "--exclude=.git,__pycache__,.venv,venv,build,dist,.ariana",
         ]
 
         # Find all Python files
         python_files = list(Path(".").glob("**/*.py"))
         python_files = [
-            f for f in python_files
-            if not any(exclude in str(f) for exclude in ['.venv', '__pycache__', '.git', '.ariana'])
+            f
+            for f in python_files
+            if not any(
+                exclude in str(f)
+                for exclude in [".venv", "__pycache__", ".git", ".ariana"]
+            )
         ]
 
         total_issues = 0
@@ -52,16 +57,20 @@ class HeavyQualityChecker:
             try:
                 result = subprocess.run(
                     ["flake8"] + heavy_config + [str(py_file)],
-                    capture_output=True, text=True, timeout=60
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
                 )
 
                 if result.stdout.strip():
-                    file_issues = result.stdout.strip().split('\n')
+                    file_issues = result.stdout.strip().split("\n")
                     total_issues += len(file_issues)
-                    self.results["flake8"]["details"].extend([
-                        {"file": str(py_file), "issue": issue}
-                        for issue in file_issues
-                    ])
+                    self.results["flake8"]["details"].extend(
+                        [
+                            {"file": str(py_file), "issue": issue}
+                            for issue in file_issues
+                        ]
+                    )
 
             except Exception as e:
                 logger.warning(f"Error checking {py_file}: {e}")
@@ -80,9 +89,9 @@ class HeavyQualityChecker:
             "core_files": [
                 "enhance_document_parsing.py",
                 "digital_twin_parser.py",
-                "verify_system_status.py"
+                "verify_system_status.py",
             ],
-            "config_files": ["requirements.txt", "README.md"]
+            "config_files": ["requirements.txt", "README.md"],
         }
 
         score = 0
@@ -127,13 +136,13 @@ class HeavyQualityChecker:
             "markdown": "Markdown processing",
             "yaml": "YAML file handling",
             "json": "JSON processing",
-            "pathlib": "Path operations"
+            "pathlib": "Path operations",
         }
 
         optional_deps = {
             "docx": "Word document processing",
             "matplotlib": "Visualization",
-            "numpy": "Numerical operations"
+            "numpy": "Numerical operations",
         }
 
         available = 0
@@ -145,18 +154,26 @@ class HeavyQualityChecker:
             try:
                 __import__(dep_name)
                 available += 1
-                details.append({"name": dep_name, "status": "available", "type": "required"})
+                details.append(
+                    {"name": dep_name, "status": "available", "type": "required"}
+                )
             except ImportError:
                 missing += 1
-                details.append({"name": dep_name, "status": "missing", "type": "required"})
+                details.append(
+                    {"name": dep_name, "status": "missing", "type": "required"}
+                )
 
         # Check optional dependencies
         for dep_name, description in optional_deps.items():
             try:
                 __import__(dep_name)
-                details.append({"name": dep_name, "status": "available", "type": "optional"})
+                details.append(
+                    {"name": dep_name, "status": "available", "type": "optional"}
+                )
             except ImportError:
-                details.append({"name": dep_name, "status": "missing", "type": "optional"})
+                details.append(
+                    {"name": dep_name, "status": "missing", "type": "optional"}
+                )
 
         self.results["dependencies"]["available"] = available
         self.results["dependencies"]["missing"] = missing
@@ -170,15 +187,19 @@ class HeavyQualityChecker:
 
         python_files = list(Path(".").glob("**/*.py"))
         python_files = [
-            f for f in python_files
-            if not any(exclude in str(f) for exclude in ['.venv', '__pycache__', '.git', '.ariana'])
+            f
+            for f in python_files
+            if not any(
+                exclude in str(f)
+                for exclude in [".venv", "__pycache__", ".git", ".ariana"]
+            )
         ]
 
         files_with_docstrings = 0
 
         for py_file in python_files:
             try:
-                with open(py_file, 'r', encoding='utf-8') as f:
+                with open(py_file, "r", encoding="utf-8") as f:
                     content = f.read()
 
                 # Simple check for module docstring
@@ -191,8 +212,14 @@ class HeavyQualityChecker:
         self.results["coverage"]["files_with_docstrings"] = files_with_docstrings
         self.results["coverage"]["total_files"] = len(python_files)
 
-        coverage_percent = int((files_with_docstrings / len(python_files)) * 100) if python_files else 0
-        print(f"   Documentation coverage: {coverage_percent}% ({files_with_docstrings}/{len(python_files)} files)")
+        coverage_percent = (
+            int((files_with_docstrings / len(python_files)) * 100)
+            if python_files
+            else 0
+        )
+        print(
+            f"   Documentation coverage: {coverage_percent}% ({files_with_docstrings}/{len(python_files)} files)"
+        )
 
     def generate_comprehensive_report(self):
         """Generate and save comprehensive report."""
@@ -201,15 +228,40 @@ class HeavyQualityChecker:
         # Calculate overall quality score
         flake8_score = max(0, 100 - self.results["flake8"]["issues"] * 2)
         structure_score = self.results["structure"]["score"]
-        deps_score = int((self.results["dependencies"]["available"] /
-                         (self.results["dependencies"]["available"] + self.results["dependencies"]["missing"])) * 100) \
-                         if (self.results["dependencies"]["available"] + self.results["dependencies"]["missing"]) > 0 else 100
+        deps_score = (
+            int(
+                (
+                    self.results["dependencies"]["available"]
+                    / (
+                        self.results["dependencies"]["available"]
+                        + self.results["dependencies"]["missing"]
+                    )
+                )
+                * 100
+            )
+            if (
+                self.results["dependencies"]["available"]
+                + self.results["dependencies"]["missing"]
+            )
+            > 0
+            else 100
+        )
 
-        doc_score = int((self.results["coverage"]["files_with_docstrings"] /
-                        self.results["coverage"]["total_files"]) * 100) \
-                        if self.results["coverage"]["total_files"] > 0 else 0
+        doc_score = (
+            int(
+                (
+                    self.results["coverage"]["files_with_docstrings"]
+                    / self.results["coverage"]["total_files"]
+                )
+                * 100
+            )
+            if self.results["coverage"]["total_files"] > 0
+            else 0
+        )
 
-        overall_score = int((flake8_score + structure_score + deps_score + doc_score) / 4)
+        overall_score = int(
+            (flake8_score + structure_score + deps_score + doc_score) / 4
+        )
 
         # Create comprehensive report
         report = {
@@ -220,10 +272,10 @@ class HeavyQualityChecker:
                 "code_quality": flake8_score,
                 "structure": structure_score,
                 "dependencies": deps_score,
-                "documentation": doc_score
+                "documentation": doc_score,
             },
             "detailed_results": self.results,
-            "recommendations": self._generate_recommendations()
+            "recommendations": self._generate_recommendations(),
         }
 
         # Save report
@@ -231,7 +283,7 @@ class HeavyQualityChecker:
         output_dir.mkdir(exist_ok=True)
 
         report_file = output_dir / "comprehensive_quality_report.json"
-        with open(report_file, 'w', encoding='utf-8') as f:
+        with open(report_file, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2)
 
         # Print summary
@@ -244,45 +296,53 @@ class HeavyQualityChecker:
         recommendations = []
 
         if self.results["flake8"]["issues"] > 50:
-            recommendations.append("Consider running 'black .' to auto-fix many formatting issues")
+            recommendations.append(
+                "Consider running 'black .' to auto-fix many formatting issues"
+            )
 
         if self.results["structure"]["score"] < 80:
-            recommendations.append("Improve project structure by adding missing directories/files")
+            recommendations.append(
+                "Improve project structure by adding missing directories/files"
+            )
 
         if self.results["dependencies"]["missing"] > 0:
             recommendations.append("Install missing required dependencies")
 
-        if self.results["coverage"]["files_with_docstrings"] < self.results["coverage"]["total_files"] * 0.5:
+        if (
+            self.results["coverage"]["files_with_docstrings"]
+            < self.results["coverage"]["total_files"] * 0.5
+        ):
             recommendations.append("Add docstrings to improve documentation coverage")
 
         return recommendations
 
     def _print_summary(self, report):
         """Print comprehensive summary."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("COMPREHENSIVE CODE QUALITY REPORT")
-        print("="*60)
+        print("=" * 60)
 
         print(f"Overall Quality Score: {report['overall_score']}/100")
         print(f"Timestamp: {report['timestamp']}")
 
-        print(f"\nComponent Scores:")
-        for component, score in report['component_scores'].items():
+        print("\nComponent Scores:")
+        for component, score in report["component_scores"].items():
             print(f"  {component.replace('_', ' ').title()}: {score}/100")
 
-        print(f"\nKey Metrics:")
+        print("\nKey Metrics:")
         print(f"  Files checked: {self.results['flake8']['files']}")
         print(f"  Issues found: {self.results['flake8']['issues']}")
         print(f"  Structure score: {self.results['structure']['score']}/100")
         print(f"  Dependencies available: {self.results['dependencies']['available']}")
 
-        if report['recommendations']:
-            print(f"\nRecommendations:")
-            for rec in report['recommendations']:
+        if report["recommendations"]:
+            print("\nRecommendations:")
+            for rec in report["recommendations"]:
                 print(f"  • {rec}")
 
-        print(f"\nDetailed report saved to: output/comprehensive_quality_report.json")
-        print("="*60)
+        print("\nDetailed report saved to: output/comprehensive_quality_report.json")
+        print("=" * 60)
+
 
 def main():
     """Run heavy quality check."""
@@ -307,7 +367,8 @@ def main():
     print(f"\n⏱️ Heavy check completed in {duration:.1f} seconds")
 
     # Return exit code based on overall score
-    return 0 if report['overall_score'] >= 70 else 1
+    return 0 if report["overall_score"] >= 70 else 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

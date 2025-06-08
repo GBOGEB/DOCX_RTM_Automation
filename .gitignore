@@ -1,105 +1,108 @@
-# DOCX RTM Automation - Git Ignore File
-.vs/
-
 # Python
 __pycache__/
 *.py[cod]
-*.pyc
-*.egg
-*.egg-info/
-dist/
-build/
+*$py.class
 *.so
 .Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
 
 # Virtual environments
-.env
-.venv
 env/
 venv/
 ENV/
-VENV/
-*/activate
-*/Activate.ps1
+env.bak/
+venv.bak/
 
-# IDE / Editor specific
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+# IDE
+.vscode/
 .idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sublime-workspace
-*.sublime-project
-
-# Operating System files
-.DS_Store
-Thumbs.db
-Desktop.ini
-
-# Log files
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
-
-# Configuration files with secrets
-config/apikeys.yaml
-# Consider ignoring paths.yaml.fixed if it resolves to sensitive absolute paths
-# or if it's generated and shouldn't be versioned.
-# config/paths.yaml.fixed
-
-# Output files
-output/
-*.out
-*.pdf
-*.docx
-*.md # If markdown files in output/ are generated
-*.yaml
-*.txt
-*.json
-
-# Backup files
-*.bak
-*.backup
-*~
 *.swp
+*.swo
+*~
 
-# Coverage reports
-.coverage
-coverage.xml
-htmlcov/
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints
-
-# MyPy cache
-.mypy_cache/
-
-# pytest cache
-.pytest_cache/
-
-# Build artifacts
-*.whl
-*.tar.gz
-*.zip
-
-# Temporary files
-temp/
-tmp/
+# Project specific
+output/
+*.log
 *.tmp
+temp/
+cache/
 
-# Documentation builds
-docs/_build/
-site/
-.vs/
+# Sensitive files
+config.ini
+secrets.json
+.env
+.env.local
+.env.production
+
+# Large files
+*.zip
+*.tar.gz
+*.rar
+
+# Ariana assistant files
 .ariana/
-.traces/
-.ariana_saved_traces/
-.vault_secret_key
+
+# Skip Ariana assistant files
+.ariana/
+.ariana/
+
+# Emergency additions to prevent staging issues
+.venv/
+.ariana/
+.vs/
+logs/
+temp_processing/
+*.backup
+*.json
+.vscode/
+__pycache__/
+*.pyc
+*.log
+*.tmp
+removed_files_backup/
+parsing_samples/
+DOCX_RTM_Automation/

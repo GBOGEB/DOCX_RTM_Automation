@@ -11,7 +11,6 @@ from pathlib import Path
 import yaml  # Moved yaml import after standard library
 
 import sys
-from pathlib import Path
 
 # Add project root to path
 _project_root = Path(__file__).resolve().parent.parent

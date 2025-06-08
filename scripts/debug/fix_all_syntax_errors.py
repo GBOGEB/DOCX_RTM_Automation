@@ -7,6 +7,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 def fix_check_git_status():
     """Fix the specific issues in check_git_status.py"""
     file_path = "check_git_status.py"
@@ -18,8 +19,8 @@ def fix_check_git_status():
     print(f"🔧 Fixing {file_path}...")
 
     # Read the current content
-    with open(file_path, 'r', encoding='utf-8') as f:
-        content = f.read()
+    with open(file_path, "r", encoding="utf-8") as f:
+        f.read()
 
     # Fix the issues
     fixed_content = '''#!/usr/bin/env python3
@@ -123,10 +124,11 @@ if __name__ == "__main__":
 '''
 
     # Write the fixed content
-    with open(file_path, 'w', encoding='utf-8') as f:
+    with open(file_path, "w", encoding="utf-8") as f:
         f.write(fixed_content)
 
     print(f"   ✅ Fixed {file_path}")
+
 
 def fix_ariana_file():
     """Fix the syntax error in .ariana/enhance_document_parsing.py"""
@@ -137,9 +139,10 @@ def fix_ariana_file():
         try:
             # Delete the problematic .ariana file - it's likely auto-generated
             ariana_file.unlink()
-            print(f"   ✅ Removed problematic .ariana file")
+            print("   ✅ Removed problematic .ariana file")
         except Exception as e:
             print(f"   ⚠️ Could not remove .ariana file: {e}")
+
 
 def run_black_formatting():
     """Run black formatting on all Python files to fix line length issues."""
@@ -152,17 +155,17 @@ def run_black_formatting():
         "fix_final_issues.py",
         "quality_check_light.py",
         "quality_check_heavy.py",
-        "quick_quality_check.py"
+        "quick_quality_check.py",
     ]
 
     for file_path in files_to_format:
         if Path(file_path).exists():
             try:
-                result = subprocess.run([
-                    sys.executable, "-m", "black",
-                    "--line-length=88",
-                    file_path
-                ], capture_output=True, text=True)
+                result = subprocess.run(
+                    [sys.executable, "-m", "black", "--line-length=88", file_path],
+                    capture_output=True,
+                    text=True,
+                )
 
                 if result.returncode == 0:
                     print(f"   ✅ Formatted {file_path}")
@@ -172,14 +175,18 @@ def run_black_formatting():
             except Exception as e:
                 print(f"   ❌ Error formatting {file_path}: {e}")
 
+
 def run_final_quality_check():
     """Run a final quality check to verify fixes."""
     print("\\n🔍 Running final quality check...")
 
     try:
-        result = subprocess.run([
-            sys.executable, "quality_check_light.py"
-        ], capture_output=True, text=True, timeout=30)
+        result = subprocess.run(
+            [sys.executable, "quality_check_light.py"],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
 
         if result.returncode == 0:
             print("   🎉 Light quality check passed!")
@@ -190,6 +197,7 @@ def run_final_quality_check():
 
     except Exception as e:
         print(f"   ⚠️ Could not run final check: {e}")
+
 
 def main():
     """Main function to fix all issues."""
@@ -203,9 +211,11 @@ def main():
     # Install black if needed
     print("\\n📦 Ensuring Black formatter is available...")
     try:
-        subprocess.run([
-            sys.executable, "-m", "pip", "install", "black"
-        ], capture_output=True, text=True)
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "black"],
+            capture_output=True,
+            text=True,
+        )
         print("   ✅ Black formatter ready")
     except Exception as e:
         print(f"   ⚠️ Could not install black: {e}")
@@ -223,6 +233,7 @@ def main():
     print("   4. ✅ Ran final quality check")
 
     print("\\n🚀 Your RTM Automation system should now be clean!")
+
 
 if __name__ == "__main__":
     main()

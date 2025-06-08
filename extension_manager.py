@@ -4,21 +4,18 @@ RTM Extension Management and Monitoring System
 Manages and monitors all active extensions, plugins, and integrations
 """
 
-import os
 import sys
 import json
 import time
 import logging
 import importlib
-import subprocess
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Any
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -50,11 +47,11 @@ class Extension:
             "config": self.config,
             "dependencies": self.dependencies,
             "description": self.description,
-            "version": self.version
+            "version": self.version,
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'Extension':
+    def from_dict(cls, data: Dict[str, Any]) -> "Extension":
         """Create extension from dictionary."""
         ext = cls(data["name"], data["path"], data.get("type", "unknown"))
         ext.status = data.get("status", "inactive")
@@ -81,7 +78,7 @@ class ExtensionManager:
         """Load extension configuration from file."""
         try:
             if Path(self.config_path).exists():
-                with open(self.config_path, 'r', encoding='utf-8') as f:
+                with open(self.config_path, "r", encoding="utf-8") as f:
                     config_data = json.load(f)
 
                 for ext_data in config_data.get("extensions", []):
@@ -99,10 +96,10 @@ class ExtensionManager:
         try:
             config_data = {
                 "last_updated": datetime.now().isoformat(),
-                "extensions": [ext.to_dict() for ext in self.extensions.values()]
+                "extensions": [ext.to_dict() for ext in self.extensions.values()],
             }
 
-            with open(self.config_path, 'w', encoding='utf-8') as f:
+            with open(self.config_path, "w", encoding="utf-8") as f:
                 json.dump(config_data, f, indent=2)
 
             logger.info(f"Saved configuration for {len(self.extensions)} extensions")
@@ -124,7 +121,7 @@ class ExtensionManager:
             "quality_tools": ["*quality*.py", "*check*.py", "*verify*.py"],
             "utilities": ["*util*.py", "*helper*.py", "*tool*.py"],
             "agents": ["agent*.py", "*agent*.py"],
-            "workflows": ["*pipeline*.py", "*workflow*.py", "*process*.py"]
+            "workflows": ["*pipeline*.py", "*workflow*.py", "*process*.py"],
         }
 
         discovered_count = 0
@@ -158,7 +155,9 @@ class ExtensionManager:
                 ext_name = f"ariana_{config_file.stem}"
                 if ext_name not in self.extensions:
                     extension = Extension(ext_name, str(config_file), "ai_config")
-                    extension.description = f"Ariana AI configuration: {config_file.stem}"
+                    extension.description = (
+                        f"Ariana AI configuration: {config_file.stem}"
+                    )
                     extension.status = "active"
                     self.extensions[ext_name] = extension
                     discovered_count += 1
@@ -170,7 +169,9 @@ class ExtensionManager:
             for workflow_file in github_dir.glob("*.yml"):
                 ext_name = f"workflow_{workflow_file.stem}"
                 if ext_name not in self.extensions:
-                    extension = Extension(ext_name, str(workflow_file), "github_workflow")
+                    extension = Extension(
+                        ext_name, str(workflow_file), "github_workflow"
+                    )
                     extension.description = f"GitHub workflow: {workflow_file.stem}"
                     self.extensions[ext_name] = extension
                     discovered_count += 1
@@ -184,15 +185,19 @@ class ExtensionManager:
     def _extract_description(self, file_path: Path) -> str:
         """Extract description from file docstring."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             # Look for module docstring
             import ast
+
             tree = ast.parse(content)
-            if (tree.body and isinstance(tree.body[0], ast.Expr)
-                and isinstance(tree.body[0].value, ast.Constant)):
-                return tree.body[0].value.value.split('\n')[0].strip()
+            if (
+                tree.body
+                and isinstance(tree.body[0], ast.Expr)
+                and isinstance(tree.body[0].value, ast.Constant)
+            ):
+                return tree.body[0].value.value.split("\n")[0].strip()
         except Exception:
             pass
 
@@ -201,15 +206,16 @@ class ExtensionManager:
     def _extract_version(self, file_path: Path) -> str:
         """Extract version information from file."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             # Look for version patterns
             import re
+
             version_patterns = [
                 r'__version__\s*=\s*["\']([^"\']+)["\']',
                 r'VERSION\s*=\s*["\']([^"\']+)["\']',
-                r'version\s*=\s*["\']([^"\']+)["\']'
+                r'version\s*=\s*["\']([^"\']+)["\']',
             ]
 
             for pattern in version_patterns:
@@ -225,24 +231,34 @@ class ExtensionManager:
         """Extract dependencies from import statements."""
         dependencies = []
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             import ast
+
             tree = ast.parse(content)
 
             for node in ast.walk(tree):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
-                        dependencies.append(alias.name.split('.')[0])
+                        dependencies.append(alias.name.split(".")[0])
                 elif isinstance(node, ast.ImportFrom):
                     if node.module:
-                        dependencies.append(node.module.split('.')[0])
+                        dependencies.append(node.module.split(".")[0])
         except Exception:
             pass
 
         # Filter common standard library modules
-        stdlib_modules = {'os', 'sys', 'json', 'time', 'datetime', 're', 'pathlib', 'logging'}
+        stdlib_modules = {
+            "os",
+            "sys",
+            "json",
+            "time",
+            "datetime",
+            "re",
+            "pathlib",
+            "logging",
+        }
         return [dep for dep in set(dependencies) if dep not in stdlib_modules]
 
     def get_extension_status(self, name: str) -> Dict[str, Any]:
@@ -255,10 +271,14 @@ class ExtensionManager:
 
         # Add runtime information
         status["file_exists"] = Path(ext.path).exists()
-        status["file_size"] = Path(ext.path).stat().st_size if Path(ext.path).exists() else 0
-        status["last_modified"] = datetime.fromtimestamp(
-            Path(ext.path).stat().st_mtime
-        ).isoformat() if Path(ext.path).exists() else None
+        status["file_size"] = (
+            Path(ext.path).stat().st_size if Path(ext.path).exists() else 0
+        )
+        status["last_modified"] = (
+            datetime.fromtimestamp(Path(ext.path).stat().st_mtime).isoformat()
+            if Path(ext.path).exists()
+            else None
+        )
 
         # Check if dependencies are available
         status["dependencies_available"] = self._check_dependencies(ext.dependencies)
@@ -289,7 +309,7 @@ class ExtensionManager:
 
             # For Python modules, try to import them
             if ext.extension_type in ["parsers", "generators", "analyzers"]:
-                if ext.path.endswith('.py'):
+                if ext.path.endswith(".py"):
                     spec = importlib.util.spec_from_file_location(name, ext.path)
                     if spec and spec.loader:
                         module = importlib.util.module_from_spec(spec)
@@ -326,7 +346,7 @@ class ExtensionManager:
             "by_status": {},
             "active_extensions": [],
             "error_extensions": [],
-            "recent_activity": []
+            "recent_activity": [],
         }
 
         for ext in self.extensions.values():
@@ -346,16 +366,17 @@ class ExtensionManager:
 
             # Track recent activity
             if ext.last_used:
-                summary["recent_activity"].append({
-                    "name": ext.name,
-                    "last_used": ext.last_used,
-                    "type": ext.extension_type
-                })
+                summary["recent_activity"].append(
+                    {
+                        "name": ext.name,
+                        "last_used": ext.last_used,
+                        "type": ext.extension_type,
+                    }
+                )
 
         # Sort recent activity
         summary["recent_activity"].sort(
-            key=lambda x: x["last_used"] or "1970-01-01",
-            reverse=True
+            key=lambda x: x["last_used"] or "1970-01-01", reverse=True
         )
         summary["recent_activity"] = summary["recent_activity"][:10]  # Top 10
 
@@ -371,7 +392,7 @@ class ExtensionManager:
             # Check for file changes
             for ext in self.extensions.values():
                 if Path(ext.path).exists():
-                    current_mtime = Path(ext.path).stat().st_mtime
+                    Path(ext.path).stat().st_mtime
                     # Implementation would track file modifications
 
             time.sleep(5)  # Check every 5 seconds
@@ -383,13 +404,13 @@ class ExtensionManager:
         report = {
             "timestamp": datetime.now().isoformat(),
             "summary": self.get_summary(),
-            "extensions": {}
+            "extensions": {},
         }
 
         for name, ext in self.extensions.items():
             report["extensions"][name] = self.get_extension_status(name)
 
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2)
 
         print(f"📊 Extension report saved to: {output_path}")
@@ -405,38 +426,38 @@ def main():
 
     # Show summary
     summary = manager.get_summary()
-    print(f"\n📊 Extension Summary:")
+    print("\n📊 Extension Summary:")
     print(f"   Total Extensions: {summary['total_extensions']}")
     print(f"   Active Extensions: {len(summary['active_extensions'])}")
     print(f"   Error Extensions: {len(summary['error_extensions'])}")
 
-    print(f"\n📈 Extensions by Type:")
-    for ext_type, count in summary['by_type'].items():
+    print("\n📈 Extensions by Type:")
+    for ext_type, count in summary["by_type"].items():
         print(f"   {ext_type}: {count}")
 
-    print(f"\n⚡ Extensions by Status:")
-    for status, count in summary['by_status'].items():
+    print("\n⚡ Extensions by Status:")
+    for status, count in summary["by_status"].items():
         print(f"   {status}: {count}")
 
-    if summary['active_extensions']:
-        print(f"\n✅ Active Extensions:")
-        for ext_name in summary['active_extensions'][:10]:
+    if summary["active_extensions"]:
+        print("\n✅ Active Extensions:")
+        for ext_name in summary["active_extensions"][:10]:
             print(f"   - {ext_name}")
 
-    if summary['error_extensions']:
-        print(f"\n❌ Extensions with Errors:")
-        for ext_name in summary['error_extensions']:
+    if summary["error_extensions"]:
+        print("\n❌ Extensions with Errors:")
+        for ext_name in summary["error_extensions"]:
             print(f"   - {ext_name}")
 
     # Generate report
-    report = manager.generate_report()
+    manager.generate_report()
 
-    print(f"\n🎯 Extension Management Commands:")
-    print(f"   python extension_manager.py --activate <name>")
-    print(f"   python extension_manager.py --deactivate <name>")
-    print(f"   python extension_manager.py --status <name>")
-    print(f"   python extension_manager.py --monitor <seconds>")
-    print(f"   python extension_manager.py --report")
+    print("\n🎯 Extension Management Commands:")
+    print("   python extension_manager.py --activate <name>")
+    print("   python extension_manager.py --deactivate <name>")
+    print("   python extension_manager.py --status <name>")
+    print("   python extension_manager.py --monitor <seconds>")
+    print("   python extension_manager.py --report")
 
     return 0
 
@@ -447,11 +468,19 @@ if __name__ == "__main__":
 
         if sys.argv[1] == "--activate" and len(sys.argv) > 2:
             result = manager.activate_extension(sys.argv[2])
-            print(f"✅ Activated: {sys.argv[2]}" if result else f"❌ Failed to activate: {sys.argv[2]}")
+            print(
+                f"✅ Activated: {sys.argv[2]}"
+                if result
+                else f"❌ Failed to activate: {sys.argv[2]}"
+            )
 
         elif sys.argv[1] == "--deactivate" and len(sys.argv) > 2:
             result = manager.deactivate_extension(sys.argv[2])
-            print(f"✅ Deactivated: {sys.argv[2]}" if result else f"❌ Failed to deactivate: {sys.argv[2]}")
+            print(
+                f"✅ Deactivated: {sys.argv[2]}"
+                if result
+                else f"❌ Failed to deactivate: {sys.argv[2]}"
+            )
 
         elif sys.argv[1] == "--status" and len(sys.argv) > 2:
             status = manager.get_extension_status(sys.argv[2])

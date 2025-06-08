@@ -20,21 +20,14 @@ def repair_yaml_syntax():
 
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            content = f.read()
+            f.read()
     except Exception as e:
         print(f"Error reading file {file_path}: {e}")
         return False
 
-    original_content = content
-
-    correct_path_value = "C:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GPT_Automation/openai_key.txt"
     # Ensure the corrected block ends with a newline to separate it from the next block
-    correct_secrets_block_text = (
-        f"secrets:\n  openai_key_path: '{correct_path_value}'\n"
-    )
 
     # Pattern for the specific broken structure
-    broken_pattern_specific = r"secrets:\s*\n\s*openai_key_path:\s*'C:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/'\s*\n\s*GPT_Automation/openai_key\.txt\s*\n\s*\n\s*''"
 
     # General pattern for any 'secrets:' block to replace.
     # This

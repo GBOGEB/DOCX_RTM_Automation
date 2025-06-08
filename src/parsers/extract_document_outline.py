@@ -2,6 +2,7 @@
 """
 Document outline extraction and processing utilities.
 """
+
 import os
 import sys
 import json

@@ -1,0 +1,206 @@
+Okay, that's a clear and ambitious goal! A systematic approach is definitely the way to go. Here's a plan to help you methodically work through your codebase, fix issues, and move towards your RTM and Word-Markdown roundtrip objectives:
+
+**Phase 1: Code Health and Stability**
+
+This phase focuses on getting your existing code into a more stable and maintainable state.
+
+1. **Static Analysis - Linting and Formatting:**
+    * **Purpose:** Automatically find potential errors, style inconsistencies, unused code, and formatting issues.
+    * **Tools:** You have `Ruff` and `Black` mentioned in your project.
+    * **Action:**
+        * Ensure your virtual environment is active: `source .venv/Scripts/activate`
+        * **Run Ruff (Linter & Formatter):** Ruff can often fix many issues automatically.
+
+            ```bash
+            # Check for issues across the entire project (src, agents, scripts, etc.)
+            ruff check .
+            # Attempt to automatically fix issues
+            ruff check . --fix
+            # Format the code (Ruff can also do this, or you can use Black)
+            ruff format .
+            ```
+
+        * **Run Black (Formatter - if Ruff's formatting isn't preferred or for a second pass):**
+
+            ```bash
+            black .
+            ```
+
+        * **Review Changes:** Carefully review the changes made by these tools. They are generally safe but it's good to understand what was modified. Commit these formatting/linting fixes.
+
+2. **Dependency Verification:**
+    * **Purpose:** Ensure all required Python packages are installed and consistent.
+    * **Action:**
+        * Run your
+
+debug_helpers.py
+
+ script again. Pay close attention to the "Checking dependencies" section.
+            ```bash
+            python debug_helpers.py
+            ```
+        *   Install any missing dependencies reported by
+
+debug_helpers.py
+
+ or that you know are required but not listed in your
+
+requirements.txt
+
+ (if you maintain one).
+            ```bash
+            pip install package_name1 package_name2
+            ```
+        *   Update
+
+requirements.txt
+
+ if you install new packages:
+            ```bash
+            pip freeze > requirements.txt
+            ```
+        *   Commit any changes to
+
+requirements.txt
+
+.
+
+3. **Address Critical Import Errors (from
+
+debug_helpers.py
+
+):**
+    ***Purpose:** Fix any `ModuleNotFoundError` or other import issues that prevent scripts from running.
+    *   **Focus:** The
+
+debug_helpers.py
+
+ output previously showed:
+        ```
+Checking imports:
+        ❌ agents.agent_common: No module named 'DOCX_RTM_Automation_v1_0'
+        ❌ agents.git_agent: No module named 'DOCX_RTM_Automation_v1_0'
+        ... (and others in agents)
+        ```
+    ***Action:**
+        *   This error `No module named 'DOCX_RTM_Automation_v1_0'` suggests that scripts within the
+
+agents
+
+ directory are trying to import the project root directory *as if it were a package one level up*. This is incorrect.
+        ***Investigate `agents/*.py` files:** Open these files. Look for import statements like `from DOCX_RTM_Automation_v1_0.some_module import ...` or `import DOCX_RTM_Automation_v1_0.another_module`.
+        *   **Fix Imports:**
+            *   If importing from your
+
+src
+
+ directory (e.g., `src/core/some_file.py`), the import from an
+
+agents
+
+ script should be relative or absolute from the project root, assuming your project root is implicitly on `sys.path` when you run scripts.
+                *   Example (absolute from project root, assuming
+
+src
+
+ is a package): `from src.core.some_file import MyClass`
+                *   Example (relative, if
+
+agents
+
+ and
+
+src
+
+ are sibling packages): `from ..src.core.some_file import MyClass` (This depends on how you run the scripts and if
+
+agents
+
+ and
+
+src
+
+ are part of a larger package structure).
+            ***VS Code `launch.json`:** Ensure your `launch.json` configurations set the `cwd` (current working directory) to `${workspaceFolder}` and potentially add `${workspaceFolder}` to `PYTHONPATH` in the `env` setting. This helps Python resolve imports relative to your project root.
+                ```json
+                // .vscode/launch.json
+                {
+                    "name": "Python: Current File with Project Root",
+                    "type": "python",
+                    "request": "launch",
+                    "program": "${file}",
+                    "console": "integratedTerminal",
+                    "cwd": "${workspaceFolder}",
+                    "env": { "PYTHONPATH": "${workspaceFolder}" }
+                }
+                ```
+        *   After making changes, re-run `python debug_helpers.py` to see if these import errors are resolved. Commit fixes.
+
+4. **Unit Tests (If Available):**
+    * **Purpose:** Verify that individual components of your code work as expected.
+    * **Action:**
+        * If you have tests in a
+
+tests
+
+ directory, run them using `pytest`:
+            ```bash
+            pytest
+            ```
+        *   Fix any failing tests. Failing tests often point to bugs or regressions.
+
+**Phase 2: Core Functionality - Word to Markdown**
+
+This phase focuses on the first critical step of your pipeline.
+
+5. **Isolate and Test Word-to-Markdown Conversion:**
+    * **Identify Script(s):** Determine which script(s) are responsible for taking a DOCX file as input and producing Markdown. This might be in `document_parser.py`,
+
+word_to_md.py
+
+, or similar. It likely uses a library like `docx2python` or `python-docx` and then custom logic or the `Markdown` library.
+    ***Prepare a Small Test DOCX:** Create a simple DOCX file with representative content: headers, paragraphs, lists (numbered and bulleted), bold/italic text, tables (if applicable).
+    *   **Run Individually:** Execute the Word-to-Markdown script directly with your test DOCX file.
+        ```bash
+        python path/to/your/word_to_md_script.py --input your_test_file.docx --output output.md
+        ```
+        (Adjust command based on your script's arguments).
+    ***Debug:**
+        *   If errors occur, use `print()` statements to trace variable values.
+        *Use the VS Code debugger (with your `launch.json` configured) to step through the script.
+    *   **Inspect Output Markdown:** Carefully review the generated `output.md`.
+        *Are headers correct?
+        *   Is list numbering preserved?
+        *Is formatting (bold, italic) translated appropriately?
+        *   Is the text verbatim where it needs to be?
+    *   **Iterate:** Modify the script to improve accuracy. This might involve adjusting how you use `docx2python` (e.g., its options for image handling, style mapping) or refining your custom Markdown generation logic. Commit changes frequently.
+
+**Phase 3: Building the RTM and Roundtrip**
+
+Once Word-to-Markdown is reliable, move to these.
+
+6. **Parse Markdown for Requirements:**
+    * Develop/refine the logic (e.g., in `Project Requirements.py`) to parse the generated Markdown, identify requirement statements (verbatim, numbered), and extract them along with their section context.
+    * Test this thoroughly.
+
+7. **Populate DataFrame:**
+    * Use the extracted requirements to build your Pandas DataFrame with the ~20 fields.
+
+8. **Markdown to Word (Roundtrip):**
+    * Investigate libraries like `pandoc` (which can be called from Python using `pypandoc`) or `python-docx` (for creating Word documents programmatically from your structured data/Markdown). This is often the most challenging part of a roundtrip.
+
+**General Tips for the Systematic Approach:**
+
+* **Version Control (Git):** Commit frequently with clear messages after each small, successful change. This allows you to revert if something breaks and helps track progress. Use branches for significant new features or refactoring.
+* **One Thing at a Time:** Focus on fixing one script or one part of the pipeline before moving to the next.
+* **Read Error Messages Carefully:** They often provide precise clues about the problem.
+* **Simplify:** If a script is too complex, try to break it down into smaller functions or modules.
+* **Documentation/Comments:** As you fix or understand code, add comments to explain complex parts or decisions.
+
+Start with Phase 1. Getting your code linted, formatted, dependencies sorted, and critical import errors fixed will provide a much more stable foundation for tackling the core logic. The
+
+agents
+
+ import errors are likely your next big hurdle after general linting.
+
+Similar code found with 1 license type

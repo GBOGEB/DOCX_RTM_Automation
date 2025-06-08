@@ -19,10 +19,10 @@ from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger("lua_bridge")
+
 
 def find_input_document(input_path):
     """
@@ -41,7 +41,7 @@ def find_input_document(input_path):
         return os.path.abspath(input_path)
 
     # Check for common path separator issues
-    normalized_path = input_path.replace('\\', '/')
+    normalized_path = input_path.replace("\\", "/")
     if os.path.exists(normalized_path):
         return os.path.abspath(normalized_path)
 
@@ -77,13 +77,16 @@ def find_input_document(input_path):
 
     for directory in search_dirs:
         if os.path.exists(directory):
-            docs = glob.glob(os.path.join(directory, "*.docx")) + glob.glob(os.path.join(directory, "*.md"))
+            docs = glob.glob(os.path.join(directory, "*.docx")) + glob.glob(
+                os.path.join(directory, "*.md")
+            )
             if docs:
                 logger.info(f"In {directory}/ directory:")
                 for doc in docs:
                     logger.info(f"  - {os.path.basename(doc)}")
 
     return None
+
 
 def ensure_lua_filters_exist():
     """
@@ -98,13 +101,14 @@ def ensure_lua_filters_exist():
     lua_filters = {
         "structure": config_dir / "structure_extraction.lua",
         "rtm": config_dir / "extract_rtm.lua",
-        "outline": config_dir / "extend_headings.lua"
+        "outline": config_dir / "extend_headings.lua",
     }
 
     # Create basic structure_extraction.lua if it doesn't exist
     if not lua_filters["structure"].exists():
         with open(lua_filters["structure"], "w", encoding="utf-8") as f:
-            f.write("""-- Document Structure Extraction Lua filter for Pandoc
+            f.write(
+                """-- Document Structure Extraction Lua filter for Pandoc
 -- This filter extracts the document structure during conversion
 
 -- Configuration
@@ -171,13 +175,17 @@ return {
     { Header = Header },
     { Pandoc = Pandoc }
 }
-""")
-        logger.info(f"Created basic structure_extraction.lua filter at {lua_filters['structure']}")
+"""
+            )
+        logger.info(
+            f"Created basic structure_extraction.lua filter at {lua_filters['structure']}"
+        )
 
     # Create basic extract_rtm.lua if it doesn't exist
     if not lua_filters["rtm"].exists():
         with open(lua_filters["rtm"], "w", encoding="utf-8") as f:
-            f.write("""-- RTM Extraction Lua filter for Pandoc
+            f.write(
+                """-- RTM Extraction Lua filter for Pandoc
 -- This filter extracts requirements and their relationships
 
 -- Configuration
@@ -245,13 +253,15 @@ return {
     { Para = Para },
     { Pandoc = Pandoc }
 }
-""")
+"""
+            )
         logger.info(f"Created basic extract_rtm.lua filter at {lua_filters['rtm']}")
 
     # Create basic outline extension filter
     if not lua_filters["outline"].exists():
         with open(lua_filters["outline"], "w", encoding="utf-8") as f:
-            f.write("""-- Heading Extension Lua filter for Pandoc
+            f.write(
+                """-- Heading Extension Lua filter for Pandoc
 -- This filter adds enhanced heading IDs and attributes
 
 function Header(el)
@@ -274,10 +284,14 @@ end
 return {
     { Header = Header }
 }
-""")
-        logger.info(f"Created basic extend_headings.lua filter at {lua_filters['outline']}")
+"""
+            )
+        logger.info(
+            f"Created basic extend_headings.lua filter at {lua_filters['outline']}"
+        )
 
     return lua_filters
+
 
 def run_pandoc_with_lua_filter(input_file, output_file, lua_filter):
     """
@@ -303,10 +317,10 @@ def run_pandoc_with_lua_filter(input_file, output_file, lua_filter):
     input_ext = Path(input_file).suffix.lower()
     output_ext = Path(output_file).suffix.lower()
 
-    if input_ext == '.docx' and output_ext == '.md':
+    if input_ext == ".docx" and output_ext == ".md":
         from_format = "docx"
         to_format = "markdown"
-    elif input_ext == '.md' and output_ext == '.docx':
+    elif input_ext == ".md" and output_ext == ".docx":
         from_format = "markdown"
         to_format = "docx"
     else:
@@ -317,10 +331,11 @@ def run_pandoc_with_lua_filter(input_file, output_file, lua_filter):
     cmd = [
         "pandoc",
         str(input_file),
-        "-o", str(output_file),
+        "-o",
+        str(output_file),
         "--lua-filter=" + str(lua_filter),
         "--wrap=none",
-        "--standalone"
+        "--standalone",
     ]
 
     # Add format specifications if determined
@@ -333,15 +348,18 @@ def run_pandoc_with_lua_filter(input_file, output_file, lua_filter):
     logger.debug(f"Command: {' '.join(cmd)}")
 
     try:
-        result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+        subprocess.run(cmd, check=True, capture_output=True, text=True)
         logger.info("Pandoc conversion successful")
         return True
     except subprocess.CalledProcessError as e:
         logger.error(f"Pandoc conversion failed: {e.stderr}")
         return False
     except FileNotFoundError:
-        logger.error("Pandoc not found. Please install pandoc: https://pandoc.org/installing.html")
+        logger.error(
+            "Pandoc not found. Please install pandoc: https://pandoc.org/installing.html"
+        )
         return False
+
 
 def import_structure_extraction_data(json_output_path):
     """
@@ -358,13 +376,16 @@ def import_structure_extraction_data(json_output_path):
         return None
 
     try:
-        with open(json_output_path, 'r', encoding='utf-8') as f:
+        with open(json_output_path, "r", encoding="utf-8") as f:
             data = json.load(f)
-            logger.info(f"Loaded structure data with {len(data.get('headings', []))} headings")
+            logger.info(
+                f"Loaded structure data with {len(data.get('headings', []))} headings"
+            )
             return data
     except Exception as e:
         logger.error(f"Error loading structure data: {e}")
         return None
+
 
 def integrate_with_rtm_pipeline(structure_data, markdown_file):
     """
@@ -395,7 +416,7 @@ def integrate_with_rtm_pipeline(structure_data, markdown_file):
             "metadata": {
                 "title": structure_data.get("title", base_name),
                 "total_headings": len(structure_data.get("headings", [])),
-            }
+            },
         }
 
         # Process headings into hierarchical sections
@@ -414,7 +435,7 @@ def integrate_with_rtm_pipeline(structure_data, markdown_file):
                 "level": level,
                 "number": section_number,
                 "content": [],
-                "subsections": []
+                "subsections": [],
             }
 
             # Handle hierarchy
@@ -436,12 +457,12 @@ def integrate_with_rtm_pipeline(structure_data, markdown_file):
         rtm_data["sections"] = sections
 
         # Save as JSON
-        with open(outline_json, 'w', encoding='utf-8') as f:
+        with open(outline_json, "w", encoding="utf-8") as f:
             json.dump(rtm_data, f, indent=2)
         logger.info(f"Saved outline JSON: {outline_json}")
 
         # Save as YAML
-        with open(outline_yaml, 'w', encoding='utf-8') as f:
+        with open(outline_yaml, "w", encoding="utf-8") as f:
             yaml.dump(rtm_data, f, default_flow_style=False, sort_keys=False)
         logger.info(f"Saved outline YAML: {outline_yaml}")
 
@@ -449,8 +470,10 @@ def integrate_with_rtm_pipeline(structure_data, markdown_file):
     except Exception as e:
         logger.error(f"Error integrating with RTM pipeline: {e}")
         import traceback
+
         traceback.print_exc()
         return False
+
 
 def detect_pandoc():
     """
@@ -461,10 +484,7 @@ def detect_pandoc():
     """
     try:
         result = subprocess.run(
-            ["pandoc", "--version"],
-            capture_output=True,
-            check=True,
-            text=True
+            ["pandoc", "--version"], capture_output=True, check=True, text=True
         )
         version_match = re.search(r"pandoc (\d+\.\d+(?:\.\d+)?)", result.stdout)
         if version_match:
@@ -473,32 +493,29 @@ def detect_pandoc():
     except (subprocess.SubprocessError, FileNotFoundError):
         return False, None
 
+
 def main():
     """Main entry point."""
-    parser = argparse.ArgumentParser(description="Run Pandoc with Lua filters for RTM automation")
-    parser.add_argument("input_file", nargs='?', help="Input document file (DOCX or MD)")
+    parser = argparse.ArgumentParser(
+        description="Run Pandoc with Lua filters for RTM automation"
+    )
+    parser.add_argument(
+        "input_file", nargs="?", help="Input document file (DOCX or MD)"
+    )
     parser.add_argument("-o", "--output", help="Output file (MD or DOCX)")
     parser.add_argument(
         "--filter",
         choices=["structure", "rtm", "outline", "all"],
         default="structure",
-        help="Lua filter to use"
+        help="Lua filter to use",
     )
     parser.add_argument(
         "--roundtrip",
         action="store_true",
-        help="Enable roundtrip conversion (DOCX → MD → DOCX)"
+        help="Enable roundtrip conversion (DOCX → MD → DOCX)",
     )
-    parser.add_argument(
-        "--debug",
-        action="store_true",
-        help="Enable debug logging"
-    )
-    parser.add_argument(
-        "--list",
-        action="store_true",
-        help="List available documents"
-    )
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+    parser.add_argument("--list", action="store_true", help="List available documents")
 
     args = parser.parse_args()
 
@@ -508,12 +525,13 @@ def main():
         logger.setLevel(logging.DEBUG)
 
     # Import regex for version detection
-    import re
 
     # Check if pandoc is installed
     pandoc_installed, pandoc_version = detect_pandoc()
     if not pandoc_installed:
-        logger.error("Pandoc is not installed. Please install it from https://pandoc.org/installing.html")
+        logger.error(
+            "Pandoc is not installed. Please install it from https://pandoc.org/installing.html"
+        )
         return 1
     else:
         logger.info(f"Using Pandoc {pandoc_version}")
@@ -573,14 +591,16 @@ def main():
         output_dir = Path("output")
         output_dir.mkdir(exist_ok=True)
 
-        if input_ext == '.docx':
+        if input_ext == ".docx":
             output_path = output_dir / Path(input_path).with_suffix(".md").name
         else:
             output_path = output_dir / Path(input_path).with_suffix(".docx").name
 
     # Check that input and output are different formats for normal operation
     if not args.roundtrip and input_ext == output_path.suffix.lower():
-        logger.warning(f"Input and output have same type ({input_ext}). Use --roundtrip for same-type conversion.")
+        logger.warning(
+            f"Input and output have same type ({input_ext}). Use --roundtrip for same-type conversion."
+        )
 
     # Ensure Lua filters exist, create if needed
     lua_filters = ensure_lua_filters_exist()
@@ -614,7 +634,9 @@ def main():
                 if structure_data:
                     logger.info("Structure data imported successfully")
                     # Integrate with RTM pipeline
-                    if output_path.suffix.lower() == ".md":  # Only when output is markdown
+                    if (
+                        output_path.suffix.lower() == ".md"
+                    ):  # Only when output is markdown
                         if integrate_with_rtm_pipeline(structure_data, output_path):
                             logger.info("Successfully integrated with RTM pipeline")
                         else:
@@ -625,24 +647,32 @@ def main():
             logger.info("Performing roundtrip conversion...")
 
             # Determine roundtrip output file
-            if input_ext == '.docx':
+            if input_ext == ".docx":
                 # DOCX → MD → DOCX
-                roundtrip_path = output_path.with_name(f"{output_path.stem}_roundtrip.docx")
+                roundtrip_path = output_path.with_name(
+                    f"{output_path.stem}_roundtrip.docx"
+                )
                 logger.info(f"Converting back to DOCX: {roundtrip_path}")
 
                 # Use outline filter for roundtrip to preserve structure
-                result = run_pandoc_with_lua_filter(output_path, roundtrip_path, lua_filters["outline"])
+                result = run_pandoc_with_lua_filter(
+                    output_path, roundtrip_path, lua_filters["outline"]
+                )
                 if result:
                     logger.info(f"Roundtrip conversion complete: {roundtrip_path}")
                 else:
                     logger.error("Roundtrip conversion failed")
             else:
                 # MD → DOCX → MD
-                roundtrip_path = output_path.with_name(f"{output_path.stem}_roundtrip.md")
+                roundtrip_path = output_path.with_name(
+                    f"{output_path.stem}_roundtrip.md"
+                )
                 logger.info(f"Converting back to Markdown: {roundtrip_path}")
 
                 # Use structure filter for roundtrip to extract structure again
-                result = run_pandoc_with_lua_filter(output_path, roundtrip_path, lua_filters["structure"])
+                result = run_pandoc_with_lua_filter(
+                    output_path, roundtrip_path, lua_filters["structure"]
+                )
                 if result:
                     logger.info(f"Roundtrip conversion complete: {roundtrip_path}")
                 else:

@@ -145,8 +145,6 @@ class DependencyManager:
 
         # Only check other dependencies if they're needed based on config
         pandoc_ok = True
-        lua_filters_ok = True
-        modules_ok = True
 
         # Check for optional Pandoc-related dependencies if relevant settings exist
         if any(
@@ -155,8 +153,8 @@ class DependencyManager:
         ):
             pandoc_ok = self.check_pandoc()
             if pandoc_ok:
-                lua_filters_ok = self.check_lua_filters()
-                modules_ok = self.check_pandoc_modules()
+                self.check_lua_filters()
+                self.check_pandoc_modules()
 
         # Overall status - packages must be available for the system to work
         all_ok = packages_ok

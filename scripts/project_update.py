@@ -848,7 +848,7 @@ def main():
         print("╚══════════════════════════════════════════════════════════╝")
         print(f"{Colors.ENDC}")
 
-        report = updater.run_full_update()
+        updater.run_full_update()
 
         print(
             f"\n{Colors.GREEN}{Colors.BOLD}🎉 PROJECT UPDATE COMPLETED SUCCESSFULLY! 🎉{Colors.ENDC}"

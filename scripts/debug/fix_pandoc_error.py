@@ -5,6 +5,7 @@ Fix the division by zero error in enhanced_requirement_parser.py
 
 from pathlib import Path
 
+
 def fix_division_by_zero():
     """Fix the division by zero error in enhanced_requirement_parser.py"""
     file_path = Path("enhanced_requirement_parser.py")
@@ -15,7 +16,7 @@ def fix_division_by_zero():
 
     print("🔧 Fixing division by zero error...")
 
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         content = f.read()
 
     # Fix the specific line causing the error
@@ -27,16 +28,16 @@ def fix_division_by_zero():
     # Also fix similar patterns
     content = content.replace(
         "total_requirements:.1f}% if total_requirements > 0",
-        "total_requirements if total_requirements > 0 else 0:.1f}%"
+        "total_requirements if total_requirements > 0 else 0:.1f}%",
     )
 
     # Fix any remaining division by zero issues
     content = content.replace(
         "/total_requirements:.1f",
-        "/total_requirements if total_requirements > 0 else 1:.1f"
+        "/total_requirements if total_requirements > 0 else 1:.1f",
     )
 
-    with open(file_path, 'w', encoding='utf-8') as f:
+    with open(file_path, "w", encoding="utf-8") as f:
         f.write(content)
 
     print("   ✅ Fixed division by zero error")
@@ -46,10 +47,17 @@ def fix_division_by_zero():
     try:
         import subprocess
         import sys
-        result = subprocess.run([
-            sys.executable, "-c",
-            "from src.rtm.enhanced_requirement_parser import main; print('Import test passed')"
-        ], capture_output=True, text=True, timeout=10)
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                "from src.rtm.enhanced_requirement_parser import main; print('Import test passed')",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
 
         if result.returncode == 0:
             print("   ✅ Fix verified - no more syntax errors")
@@ -57,6 +65,7 @@ def fix_division_by_zero():
             print(f"   ⚠️ Still some issues: {result.stderr[:100]}...")
     except Exception as e:
         print(f"   ⚠️ Could not test fix: {e}")
+
 
 if __name__ == "__main__":
     fix_division_by_zero()

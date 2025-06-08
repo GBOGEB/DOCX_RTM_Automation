@@ -3,10 +3,10 @@
 Verify Organization Success - Check the new organized structure
 """
 
-import os
 from pathlib import Path
 import json
 from datetime import datetime
+
 
 def verify_new_structure():
     """Verify the new organized project structure."""
@@ -28,7 +28,7 @@ def verify_new_structure():
         "config",
         "data/input",
         "data/output",
-        "docs"
+        "docs",
     ]
 
     structure_health = {}
@@ -44,7 +44,7 @@ def verify_new_structure():
             structure_health[dir_path] = {
                 "exists": True,
                 "file_count": file_count,
-                "status": "✅ ORGANIZED"
+                "status": "✅ ORGANIZED",
             }
             total_files += file_count
 
@@ -53,22 +53,28 @@ def verify_new_structure():
             structure_health[dir_path] = {
                 "exists": False,
                 "file_count": 0,
-                "status": "❌ MISSING"
+                "status": "❌ MISSING",
             }
             print(f"❌ {dir_path}: NOT FOUND")
 
     # Check root directory cleanliness
     root_files = list(Path(".").glob("*"))
-    root_file_count = len([f for f in root_files if f.is_file() and not f.name.startswith('.')])
+    root_file_count = len(
+        [f for f in root_files if f.is_file() and not f.name.startswith(".")]
+    )
 
-    print(f"\n📊 ORGANIZATION RESULTS:")
+    print("\n📊 ORGANIZATION RESULTS:")
     print("=" * 30)
-    print(f"   📁 Organized directories: {len([d for d in structure_health.values() if d['exists']])}/{len(expected_dirs)}")
+    print(
+        f"   📁 Organized directories: {len([d for d in structure_health.values() if d['exists']])}/{len(expected_dirs)}"
+    )
     print(f"   📄 Total organized files: {total_files}")
     print(f"   📄 Remaining in root: {root_file_count}")
 
     # Calculate success percentage
-    success_rate = (len([d for d in structure_health.values() if d['exists']]) / len(expected_dirs)) * 100
+    success_rate = (
+        len([d for d in structure_health.values() if d["exists"]]) / len(expected_dirs)
+    ) * 100
 
     if success_rate >= 90:
         print(f"🏆 ORGANIZATION SUCCESS: {success_rate:.1f}%!")
@@ -79,17 +85,21 @@ def verify_new_structure():
 
     return structure_health, total_files, root_file_count
 
+
 def check_key_files_accessibility():
     """Check that key RTM files are still accessible."""
-    print(f"\n🔑 Key File Accessibility Check:")
+    print("\n🔑 Key File Accessibility Check:")
     print("=" * 35)
 
     key_files = {
-        "JSON Analyzer": ["src/analyzers/json_file_analyzer_safe.py", "json_file_analyzer_safe.py"],
+        "JSON Analyzer": [
+            "src/analyzers/json_file_analyzer_safe.py",
+            "json_file_analyzer_safe.py",
+        ],
         "RTM Pipeline": ["src/rtm/rtm_pipeline.py", "rtm_pipeline.py"],
         "Web Dashboard": ["src/dashboard/rtm_web_dashboard.py", "rtm_web_dashboard.py"],
         "Config File": ["config/config.json", "config.json"],
-        "Main Entry": ["main.py"]
+        "Main Entry": ["main.py"],
     }
 
     accessible_count = 0
@@ -116,6 +126,7 @@ def check_key_files_accessibility():
 
     return accessibility_rate >= 80
 
+
 def create_organization_report():
     """Create a comprehensive organization report."""
 
@@ -138,7 +149,7 @@ def create_organization_report():
             "success_metrics": {
                 "organization_rate": f"{(len([d for d in structure_health.values() if d['exists']]) / len(structure_health)) * 100:.1f}%",
                 "file_reduction_in_root": f"{((100 - root_file_count) / 100) * 100:.1f}%",
-                "enterprise_readiness": "ACHIEVED"
+                "enterprise_readiness": "ACHIEVED",
             },
             "new_structure_benefits": [
                 "90% reduction in root directory clutter",
@@ -146,29 +157,30 @@ def create_organization_report():
                 "Enterprise-grade project layout",
                 "Easier navigation and maintenance",
                 "Better CI/CD integration support",
-                "Team-friendly development structure"
+                "Team-friendly development structure",
             ],
             "next_steps": [
                 "Update import statements if needed",
                 "Test functionality in new structure",
                 "Update CI/CD paths",
                 "Create package __init__.py files",
-                "Update documentation references"
-            ]
+                "Update documentation references",
+            ],
         }
     }
 
     # Save report
     report_path = Path("organization_completion_report.json")
-    with open(report_path, 'w', encoding='utf-8') as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2)
 
     print(f"\n📋 Organization report saved: {report_path}")
     return report
 
+
 def show_new_commands():
     """Show commands for the new organized structure."""
-    print(f"\n🚀 NEW ORGANIZED COMMANDS:")
+    print("\n🚀 NEW ORGANIZED COMMANDS:")
     print("=" * 35)
     print("Use these paths in your new organized structure:")
     print()
@@ -190,6 +202,7 @@ def show_new_commands():
     print("💡 TIP: Consider creating a new main.py that imports")
     print("   from the organized structure for easy access!")
 
+
 def main():
     """Main verification function."""
     print("🔍 RTM Organization Success Verification")
@@ -203,7 +216,7 @@ def main():
     show_new_commands()
 
     # Final celebration
-    print(f"\n🎊 ORGANIZATION VERIFICATION COMPLETE!")
+    print("\n🎊 ORGANIZATION VERIFICATION COMPLETE!")
     print("=" * 45)
 
     success_metrics = report["organization_completion"]["success_metrics"]
@@ -225,6 +238,7 @@ def main():
     print("   transformed from chaotic to enterprise excellence!")
 
     return 0
+
 
 if __name__ == "__main__":
     main()

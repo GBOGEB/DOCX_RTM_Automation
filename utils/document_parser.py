@@ -213,14 +213,12 @@ class DocumentParser:
 
         # Extract sections
         sections = re.findall(r"^(#{2,6})\s+(.+)$", markdown_content, re.MULTILINE)
-        current_section = None
 
         for level, heading in sections:
             level = len(level)  # Number of # characters
             section = {"level": level, "title": heading.strip(), "content": ""}
 
             structure["sections"].append(section)
-            current_section = section
 
         return structure
 
@@ -365,7 +363,10 @@ def extract_requirements(markdown_file, outline_json=None):
     try:
         # Import from local module
         sys.path.append(str(Path(__file__).resolve().parent.parent))
-        from src.rtm.enhanced_requirement_parser import extract_requirements_from_markdown, find_requirements_in_code
+        from src.rtm.enhanced_requirement_parser import (
+            extract_requirements_from_markdown,
+            find_requirements_in_code,
+        )
 
         # Extract requirements from markdown
         requirements = extract_requirements_from_markdown(markdown_file)
@@ -373,7 +374,7 @@ def extract_requirements(markdown_file, outline_json=None):
         # Add outline information if available
         if outline_json and os.path.exists(outline_json):
             try:
-                with open(outline_json, 'r', encoding='utf-8') as f:
+                with open(outline_json, "r", encoding="utf-8") as f:
                     outline_data = json.load(f)
 
                 # Enhance requirements with section information from outline
@@ -385,12 +386,12 @@ def extract_requirements(markdown_file, outline_json=None):
         project_root = Path(__file__).resolve().parent.parent
 
         code_files = []
-        excluded_dirs = ['.git', '.venv', '__pycache__', 'node_modules', 'output']
+        excluded_dirs = [".git", ".venv", "__pycache__", "node_modules", "output"]
 
         for root, dirs, files in os.walk(project_root):
             dirs[:] = [d for d in dirs if d not in excluded_dirs]
             for file in files:
-                if file.endswith('.py'):
+                if file.endswith(".py"):
                     file_path = os.path.join(root, file)
                     code_files.append(file_path)
 
@@ -404,7 +405,7 @@ def extract_requirements(markdown_file, outline_json=None):
         output_dir.mkdir(exist_ok=True)
         output_file = output_dir / "enhanced_requirements_analysis.json"
 
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             json.dump(requirements_with_numbering, f, indent=2)
 
         logger.info(f"Requirements extracted and saved to {output_file}")
@@ -414,6 +415,7 @@ def extract_requirements(markdown_file, outline_json=None):
         logger.error(f"Requirements extraction failed: {e}")
         raise
 
+
 def enhance_with_outline(requirements, outline_data):
     """Add section information to requirements from outline data."""
     # Build a mapping of section titles to their position in the document
@@ -421,38 +423,42 @@ def enhance_with_outline(requirements, outline_data):
 
     def process_sections(sections, path=""):
         for section in sections:
-            title = section.get('title', '')
+            title = section.get("title", "")
             current_path = f"{path}/{title}" if path else title
             section_map[current_path] = section
 
-            if 'subsections' in section:
-                process_sections(section['subsections'], current_path)
+            if "subsections" in section:
+                process_sections(section["subsections"], current_path)
 
     # Process all sections in the outline
-    process_sections(outline_data.get('sections', []))
+    process_sections(outline_data.get("sections", []))
 
     # Add section context to requirements
     for req_id, req_info in requirements.items():
         # Try to determine the containing section based on line number
-        line_num = req_info.get('line', 0)
+        line_num = req_info.get("line", 0)
         closest_section = None
-        closest_distance = float('inf')
+        closest_distance = float("inf")
 
         for section_path, section in section_map.items():
-            section_line = section.get('paragraph_index', 0)
-            if section_line <= line_num and (line_num - section_line) < closest_distance:
+            section_line = section.get("paragraph_index", 0)
+            if (
+                section_line <= line_num
+                and (line_num - section_line) < closest_distance
+            ):
                 closest_distance = line_num - section_line
                 closest_section = section_path
 
         if closest_section:
-            req_info['section_path'] = closest_section
+            req_info["section_path"] = closest_section
+
 
 def add_requirement_numbering(requirements):
     """Add sequential numbers to requirements based on category."""
     # Group requirements by category
     categories = {}
     for req_id, req_info in requirements.items():
-        category = req_info.get('category', 'UNKNOWN')
+        category = req_info.get("category", "UNKNOWN")
         if category not in categories:
             categories[category] = []
         categories[category].append(req_id)
@@ -460,8 +466,8 @@ def add_requirement_numbering(requirements):
     # Add numbering to each requirement
     for category, req_ids in categories.items():
         for i, req_id in enumerate(sorted(req_ids), 1):
-            requirements[req_id]['sequence_number'] = i
-            requirements[req_id]['full_id'] = f"{category}-{i:03d}"
+            requirements[req_id]["sequence_number"] = i
+            requirements[req_id]["full_id"] = f"{category}-{i:03d}"
 
     return requirements
 
@@ -471,19 +477,22 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Extract requirements from documents")
-    parser.add_argument("input", nargs='?', help="Input markdown file")
-    parser.add_argument("-o", "--output-dir", help="Output directory for requirements data")
+    parser.add_argument("input", nargs="?", help="Input markdown file")
+    parser.add_argument(
+        "-o", "--output-dir", help="Output directory for requirements data"
+    )
     parser.add_argument("--outline", help="Path to outline JSON file")
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
 
     # Only parse args when run directly
     if __name__ == "__main__":
-        args = parser.parse_args()
+        parser.parse_args()
     else:
         return 0  # Return early when imported
 
     # Run extraction only when executed directly
     # ...existing code...
+
 
 if __name__ == "__main__":
     sys.exit(main())

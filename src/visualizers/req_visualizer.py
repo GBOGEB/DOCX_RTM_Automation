@@ -6,7 +6,6 @@ This script creates visual representations of requirements relationships
 from RTM data to help with analysis and reporting.
 """
 
-import os
 import sys
 import json
 import argparse
@@ -24,21 +23,20 @@ try:
 except ImportError:
     print("Required visualization libraries not found. Installing...")
     import subprocess
+
     subprocess.run(
         ["pip", "install", "matplotlib", "networkx"],
         check=True,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
     )
     import matplotlib.pyplot as plt
     import networkx as nx
-    from matplotlib.colors import CSS4_COLORS
 
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -70,11 +68,12 @@ class RequirementsVisualizer:
 
         try:
             if file_path.suffix.lower() == ".json":
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, "r", encoding="utf-8") as f:
                     self.rtm_data = json.load(f)
             elif file_path.suffix.lower() in [".yaml", ".yml"]:
                 import yaml
-                with open(file_path, 'r', encoding='utf-8') as f:
+
+                with open(file_path, "r", encoding="utf-8") as f:
                     self.rtm_data = yaml.safe_load(f)
             else:
                 logger.error("Unsupported file format: %s", file_path.suffix)
@@ -111,7 +110,7 @@ class RequirementsVisualizer:
                         req_id,
                         description=details.get("description", ""),
                         status=details.get("status", "Unknown"),
-                        category=category
+                        category=category,
                     )
 
                     # Add edges for related requirements
@@ -130,16 +129,18 @@ class RequirementsVisualizer:
                             req_id,
                             description=details.get("text", ""),
                             status=details.get("status", "Unknown"),
-                            category=category
+                            category=category,
                         )
 
                         # Add edges for related requirements
                         for related_req in details.get("references", []):
                             self.graph.add_edge(req_id, related_req)
 
-            logger.info("Built graph with %d nodes and %d edges",
-                       self.graph.number_of_nodes(),
-                       self.graph.number_of_edges())
+            logger.info(
+                "Built graph with %d nodes and %d edges",
+                self.graph.number_of_nodes(),
+                self.graph.number_of_edges(),
+            )
             return True
         except Exception as e:
             logger.error("Error building graph: %s", e)
@@ -162,43 +163,35 @@ class RequirementsVisualizer:
                 node_colors.append(color)
 
             # Create layout
-            pos = nx.spring_layout(self.graph, seed=42)  # Fixed seed for reproducibility
+            pos = nx.spring_layout(
+                self.graph, seed=42
+            )  # Fixed seed for reproducibility
 
             # Draw nodes
             nx.draw_networkx_nodes(
-                self.graph,
-                pos,
-                node_color=node_colors,
-                node_size=500,
-                alpha=0.8
+                self.graph, pos, node_color=node_colors, node_size=500, alpha=0.8
             )
 
             # Draw edges
             nx.draw_networkx_edges(
-                self.graph,
-                pos,
-                arrowstyle="->",
-                arrowsize=15,
-                width=1.5,
-                alpha=0.7
+                self.graph, pos, arrowstyle="->", arrowsize=15, width=1.5, alpha=0.7
             )
 
             # Draw labels
             nx.draw_networkx_labels(
-                self.graph,
-                pos,
-                font_size=10,
-                font_family="sans-serif"
+                self.graph, pos, font_size=10, font_family="sans-serif"
             )
 
             # Add legend for categories
             legend_patches = []
             from matplotlib.patches import Patch
+
             for category, color in self.category_colors.items():
-                if any(self.req_categories.get(node) == category for node in self.graph.nodes()):
-                    legend_patches.append(
-                        Patch(color=color, label=f"{category}")
-                    )
+                if any(
+                    self.req_categories.get(node) == category
+                    for node in self.graph.nodes()
+                ):
+                    legend_patches.append(Patch(color=color, label=f"{category}"))
 
             plt.legend(handles=legend_patches, loc="upper right")
             plt.title("Requirements Relationships Visualization")
@@ -221,6 +214,7 @@ class RequirementsVisualizer:
         except Exception as e:
             logger.error("Error visualizing requirements: %s", e)
             import traceback
+
             traceback.print_exc()
             return False
 
@@ -237,7 +231,7 @@ class RequirementsVisualizer:
             "orphaned_requirements": [],
             "most_connected": None,
             "max_connections": 0,
-            "average_connections": 0
+            "average_connections": 0,
         }
 
         # Count requirements by category
@@ -263,7 +257,9 @@ class RequirementsVisualizer:
         # Calculate average connections
         if self.graph.number_of_nodes() > 0:
             total_connections = sum(d for _, d in self.graph.degree())
-            metrics["average_connections"] = total_connections / self.graph.number_of_nodes()
+            metrics["average_connections"] = (
+                total_connections / self.graph.number_of_nodes()
+            )
 
         return metrics
 
@@ -278,11 +274,12 @@ class RequirementsVisualizer:
 
         try:
             if output_path.suffix.lower() == ".json":
-                with open(output_path, 'w', encoding='utf-8') as f:
+                with open(output_path, "w", encoding="utf-8") as f:
                     json.dump(metrics, f, indent=2)
             elif output_path.suffix.lower() in [".yaml", ".yml"]:
                 import yaml
-                with open(output_path, 'w', encoding='utf-8') as f:
+
+                with open(output_path, "w", encoding="utf-8") as f:
                     yaml.dump(metrics, f, default_flow_style=False)
             else:
                 logger.error("Unsupported output format: %s", output_path.suffix)
@@ -310,13 +307,15 @@ class RequirementsVisualizer:
             print(f"  {category}: {count}")
 
         print(f"\nOrphaned Requirements: {len(metrics['orphaned_requirements'])}")
-        if metrics['orphaned_requirements']:
-            print("  " + ", ".join(metrics['orphaned_requirements'][:5]))
-            if len(metrics['orphaned_requirements']) > 5:
+        if metrics["orphaned_requirements"]:
+            print("  " + ", ".join(metrics["orphaned_requirements"][:5]))
+            if len(metrics["orphaned_requirements"]) > 5:
                 print(f"  ...and {len(metrics['orphaned_requirements']) - 5} more")
 
-        print(f"\nMost Connected: {metrics['most_connected']} "
-              f"({metrics['max_connections']} connections)")
+        print(
+            f"\nMost Connected: {metrics['most_connected']} "
+            f"({metrics['max_connections']} connections)"
+        )
         print(f"Average Connections: {metrics['average_connections']:.2f}")
 
 
@@ -325,22 +324,15 @@ def main():
     parser = argparse.ArgumentParser(
         description="Visualize requirements relationships from RTM data"
     )
+    parser.add_argument("input_file", help="Input RTM data file (JSON or YAML)")
+    parser.add_argument("-o", "--output", help="Path to save the visualization image")
     parser.add_argument(
-        "input_file",
-        help="Input RTM data file (JSON or YAML)"
-    )
-    parser.add_argument(
-        "-o", "--output",
-        help="Path to save the visualization image"
-    )
-    parser.add_argument(
-        "-m", "--metrics",
-        help="Path to save metrics data (JSON or YAML)"
+        "-m", "--metrics", help="Path to save metrics data (JSON or YAML)"
     )
     parser.add_argument(
         "--no-show",
         action="store_true",
-        help="Don't display the visualization (just save if --output is provided)"
+        help="Don't display the visualization (just save if --output is provided)",
     )
 
     args = parser.parse_args()
@@ -352,8 +344,7 @@ def main():
 
     # Generate and show/save visualization
     visualizer.visualize_requirements(
-        output_file=args.output,
-        show_plot=not args.no_show
+        output_file=args.output, show_plot=not args.no_show
     )
 
     # Print metrics to console

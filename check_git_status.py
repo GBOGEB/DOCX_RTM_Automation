@@ -19,7 +19,7 @@ def check_git_status():
         "quick_quality_check.py",
         "run_code_quality_checks.py",
         "QUALITY_CHECKS.md",
-        "fix_final_issues.py"
+        "fix_final_issues.py",
     ]
 
     print("\n📁 Checking quality check files...")
@@ -33,9 +33,11 @@ def check_git_status():
         if path.exists():
             # Check if file is tracked in git
             try:
-                result = subprocess.run([
-                    "git", "ls-files", "--error-unmatch", file_path
-                ], capture_output=True, text=True)
+                result = subprocess.run(
+                    ["git", "ls-files", "--error-unmatch", file_path],
+                    capture_output=True,
+                    text=True,
+                )
 
                 if result.returncode == 0:
                     tracked_files.append(file_path)
@@ -72,18 +74,25 @@ def check_git_status():
     # Check overall git status
     print("\n📋 Overall Git Status:")
     try:
-        result = subprocess.run(["git", "status", "--porcelain"],
-                              capture_output=True, text=True)
+        result = subprocess.run(
+            ["git", "status", "--porcelain"], capture_output=True, text=True
+        )
 
         if result.stdout.strip():
-            modified_count = len([
-                line for line in result.stdout.strip().split('\n')
-                if line.strip().startswith('M')
-            ])
-            untracked_count = len([
-                line for line in result.stdout.strip().split('\n')
-                if line.strip().startswith('??')
-            ])
+            modified_count = len(
+                [
+                    line
+                    for line in result.stdout.strip().split("\n")
+                    if line.strip().startswith("M")
+                ]
+            )
+            untracked_count = len(
+                [
+                    line
+                    for line in result.stdout.strip().split("\n")
+                    if line.strip().startswith("??")
+                ]
+            )
 
             print(f"   Modified files: {modified_count}")
             print(f"   Untracked files: {untracked_count}")

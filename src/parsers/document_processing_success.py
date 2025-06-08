@@ -4,11 +4,12 @@ Document Processing Success Summary - Celebrate your RTM achievements!
 """
 
 from pathlib import Path
-import json
+
 
 def analyze_processing_results():
     """Analyze the successful document processing results."""
-    print("""
+    print(
+        """
 🎉 RTM DOCUMENT PROCESSING SUCCESS CELEBRATION! 🎉
 ═══════════════════════════════════════════════════════════════════
 
@@ -43,16 +44,18 @@ def analyze_processing_results():
 📈 Output Generation: EXCELLENT (66+ files created)
 🤖 AI Integration: ACTIVE (170 Ariana files + 6 configs)
 🏆 Overall Score: 85-90/100 (ENTERPRISE READY)
-""")
+"""
+    )
+
 
 def show_available_files():
     """Show all available files for processing."""
-    print(f"\n📁 COMPLETE FILE INVENTORY:")
+    print("\n📁 COMPLETE FILE INVENTORY:")
     print("=" * 45)
 
     input_dir = Path("input")
     if input_dir.exists():
-        print(f"📂 Input Directory Files:")
+        print("📂 Input Directory Files:")
 
         # Categorize files
         docx_files = []
@@ -63,15 +66,18 @@ def show_available_files():
 
         for file_path in input_dir.rglob("*"):
             if file_path.is_file():
-                if file_path.suffix.lower() == '.docx' and not file_path.name.startswith('~$'):
+                if (
+                    file_path.suffix.lower() == ".docx"
+                    and not file_path.name.startswith("~$")
+                ):
                     docx_files.append(file_path)
-                elif file_path.suffix.lower() in ['.md', '.markdown']:
+                elif file_path.suffix.lower() in [".md", ".markdown"]:
                     md_files.append(file_path)
-                elif file_path.suffix.lower() == '.json':
+                elif file_path.suffix.lower() == ".json":
                     json_files.append(file_path)
-                elif file_path.suffix.lower() in ['.yml', '.yaml']:
+                elif file_path.suffix.lower() in [".yml", ".yaml"]:
                     yaml_files.append(file_path)
-                elif not file_path.name.startswith('~$'):
+                elif not file_path.name.startswith("~$"):
                     other_files.append(file_path)
 
         print(f"\n   📄 DOCX Files ({len(docx_files)}):")
@@ -100,9 +106,10 @@ def show_available_files():
                 rel_path = file_path.relative_to(input_dir.parent)
                 print(f"      📁 {rel_path}")
 
+
 def show_output_analysis():
     """Analyze and show output directory contents."""
-    print(f"\n📊 OUTPUT ANALYSIS:")
+    print("\n📊 OUTPUT ANALYSIS:")
     print("=" * 30)
 
     output_dir = Path("output")
@@ -126,10 +133,10 @@ def show_output_analysis():
             "MASTER_1805_1144.json",
             "requirements.json",
             "digital_twin.json",
-            "enhanced_requirements_analysis.json"
+            "enhanced_requirements_analysis.json",
         ]
 
-        print(f"\n   🎯 Key Output Files:")
+        print("\n   🎯 Key Output Files:")
         for key_file in key_files:
             file_path = output_dir / key_file
             if file_path.exists():
@@ -140,14 +147,15 @@ def show_output_analysis():
 
         # Show digital twin directories
         if directories:
-            print(f"\n   🔗 Digital Twin Directories:")
+            print("\n   🔗 Digital Twin Directories:")
             for dir_path in directories:
                 files_in_dir = list(dir_path.glob("*"))
                 print(f"      📂 {dir_path.name} ({len(files_in_dir)} files)")
 
+
 def show_next_processing_options():
     """Show next processing options for the user."""
-    print(f"\n🚀 NEXT PROCESSING OPTIONS:")
+    print("\n🚀 NEXT PROCESSING OPTIONS:")
     print("=" * 40)
 
     options = [
@@ -156,39 +164,40 @@ def show_next_processing_options():
             "commands": [
                 "python enhance_document_parsing.py input/MASTER_1805_1144.docx -f yaml",
                 "python enhance_document_parsing.py input/test_cases.docx -f json --detailed",
-                "python process_real_documents.py  # Process all files again"
-            ]
+                "python process_real_documents.py  # Process all files again",
+            ],
         },
         {
             "category": "Digital Twin Expansion",
             "commands": [
                 "python digital_twin_parser.py input/MASTER_1805_1144.docx -o output/master_twin",
                 "python digital_twin_parser.py input/test_cases.docx -o output/testcases_twin",
-                "python digital_twin_parser.py output/requirements.md -o output/enhanced_twin"
-            ]
+                "python digital_twin_parser.py output/requirements.md -o output/enhanced_twin",
+            ],
         },
         {
             "category": "Analysis and Reporting",
             "commands": [
                 "python Project\\ Requirements.py  # Run full requirements analysis",
                 "python verify_rtm_ready.py  # System health check",
-                "python extension_control.py report  # Extension management report"
-            ]
+                "python extension_control.py report  # Extension management report",
+            ],
         },
         {
             "category": "AI-Enhanced Processing",
             "commands": [
                 "python test_ariana_integration.py  # AI integration test",
                 "python enhance_document_parsing.py input/MASTER_1805_1144.docx -f json --ai-enhanced",
-                "python ariana_success_summary.py  # AI capabilities summary"
-            ]
-        }
+                "python ariana_success_summary.py  # AI capabilities summary",
+            ],
+        },
     ]
 
     for i, option in enumerate(options, 1):
         print(f"\n{i}️⃣ {option['category']}:")
-        for cmd in option['commands']:
+        for cmd in option["commands"]:
             print(f"   {cmd}")
+
 
 def main():
     """Main success celebration function."""
@@ -197,13 +206,14 @@ def main():
     show_output_analysis()
     show_next_processing_options()
 
-    print(f"\n🎉 CONGRATULATIONS!")
-    print(f"Your RTM system has successfully processed real enterprise documents!")
-    print(f"📊 66 output files generated from 6 different document types")
-    print(f"🚀 85.7% success rate with production-ready performance!")
-    print(f"🎯 Your RTM automation is ENTERPRISE-READY!")
+    print("\n🎉 CONGRATULATIONS!")
+    print("Your RTM system has successfully processed real enterprise documents!")
+    print("📊 66 output files generated from 6 different document types")
+    print("🚀 85.7% success rate with production-ready performance!")
+    print("🎯 Your RTM automation is ENTERPRISE-READY!")
 
     return 0
+
 
 if __name__ == "__main__":
     main()

@@ -388,7 +388,7 @@ def main():
 
         config = {"input_files": args.input if args.input else []}
 
-        result = workflow.run_workflow(config)
+        workflow.run_workflow(config)
         print(f"Workflow completed. Output directory: {workflow.output_dir}")
 
         if args.validate:

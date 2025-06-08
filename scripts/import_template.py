@@ -194,10 +194,10 @@ def main():
     subparsers = parser.add_subparsers(dest="command", help="Command to execute")
 
     # Create command
-    create_parser = subparsers.add_parser("create", help="Create a default template")
+    subparsers.add_parser("create", help="Create a default template")
 
     # List command
-    list_parser = subparsers.add_parser("list", help="List available templates")
+    subparsers.add_parser("list", help="List available templates")
 
     # Import command
     import_parser = subparsers.add_parser(

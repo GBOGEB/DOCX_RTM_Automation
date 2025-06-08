@@ -4,15 +4,15 @@ RTM JSON File Analyzer (Safe Version) - With robust error handling for malformed
 """
 
 import json
-import os
 from pathlib import Path
 from datetime import datetime
 from collections import defaultdict
 
+
 def safe_json_load(file_path):
     """Safely load JSON with error handling."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             return json.load(f), None
     except json.JSONDecodeError as e:
         return None, f"JSON Error: {e}"
@@ -20,6 +20,7 @@ def safe_json_load(file_path):
         return None, f"Encoding Error: {e}"
     except Exception as e:
         return None, f"File Error: {e}"
+
 
 def analyze_json_ecosystem():
     """Analyze the entire JSON ecosystem in RTM system."""
@@ -36,7 +37,7 @@ def analyze_json_ecosystem():
         "documentation": ["docs/", "function_reference"],
         "test_data": ["test_", "sample_", "demo_"],
         "jenkins": ["jenkins", ".jenkinsrc"],
-        "metadata": ["metadata.json", "status.json", "report.json"]
+        "metadata": ["metadata.json", "status.json", "report.json"],
     }
 
     json_files = []
@@ -71,7 +72,7 @@ def analyze_json_ecosystem():
     print(f"⚠️ Malformed JSON Files: {len(malformed_files)}")
 
     if malformed_files:
-        print(f"\n❌ Files with JSON errors:")
+        print("\n❌ Files with JSON errors:")
         for file_path, error in malformed_files[:5]:  # Show first 5
             print(f"   📄 {file_path}: {error}")
         if len(malformed_files) > 5:
@@ -79,9 +80,10 @@ def analyze_json_ecosystem():
 
     return json_files, categorized_files, malformed_files
 
+
 def analyze_by_category(categorized_files):
     """Analyze JSON files by category."""
-    print(f"\n📈 JSON Files by Category:")
+    print("\n📈 JSON Files by Category:")
     print("=" * 35)
 
     for category, files in sorted(categorized_files.items()):
@@ -102,7 +104,11 @@ def analyze_by_category(categorized_files):
                     valid_files += 1
 
                 # Show relative path
-                rel_path = str(file_path)[:50] + "..." if len(str(file_path)) > 50 else str(file_path)
+                rel_path = (
+                    str(file_path)[:50] + "..."
+                    if len(str(file_path)) > 50
+                    else str(file_path)
+                )
                 print(f"   📄 {status} {rel_path} ({size:,} bytes)")
 
             except Exception:
@@ -125,9 +131,10 @@ def analyze_by_category(categorized_files):
         print(f"   📊 Category Total: {total_size:,} bytes")
         print(f"   ✅ Valid JSON files: {valid_files}/{len(files)}")
 
+
 def analyze_key_json_files_safe():
     """Analyze key JSON files with safe error handling."""
-    print(f"\n🔍 Key JSON File Analysis (Safe):")
+    print("\n🔍 Key JSON File Analysis (Safe):")
     print("=" * 40)
 
     key_files = [
@@ -137,7 +144,7 @@ def analyze_key_json_files_safe():
         ".ariana/config.json",
         "output/MASTER_1805_1144.json",
         "output/workflow_summary.json",
-        ".vscode/settings.json"
+        ".vscode/settings.json",
     ]
 
     for file_path in key_files:
@@ -151,45 +158,54 @@ def analyze_key_json_files_safe():
                 print(f"   Size: {size:,} bytes")
 
                 if error:
-                    print(f"   ❌ Status: MALFORMED JSON")
+                    print("   ❌ Status: MALFORMED JSON")
                     print(f"   🔧 Error: {error}")
-                    print(f"   💡 Run json_file_fixer.py to fix this file")
+                    print("   💡 Run json_file_fixer.py to fix this file")
                 else:
-                    print(f"   ✅ Status: VALID JSON")
-                    print(f"   🔑 Keys: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}")
+                    print("   ✅ Status: VALID JSON")
+                    print(
+                        f"   🔑 Keys: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}"
+                    )
 
                     # Show specific insights for valid files
                     if "jenkins" in file_path.lower():
-                        print(f"   🔧 Jenkins Configuration")
+                        print("   🔧 Jenkins Configuration")
                         if isinstance(data, dict) and "Local" in data:
                             local_config = data["Local"]
-                            print(f"      Applications: {local_config.get('applications', [])}")
-                            print(f"      Description: {local_config.get('description', 'N/A')}")
+                            print(
+                                f"      Applications: {local_config.get('applications', [])}"
+                            )
+                            print(
+                                f"      Description: {local_config.get('description', 'N/A')}"
+                            )
 
                     elif "extension" in file_path.lower():
-                        print(f"   📦 Extension Management")
+                        print("   📦 Extension Management")
                         if isinstance(data, dict):
                             if "extensions" in data:
                                 ext_count = len(data["extensions"])
                                 print(f"      Extensions: {ext_count}")
                             if "summary" in data:
                                 summary = data["summary"]
-                                print(f"      Total Extensions: {summary.get('total_extensions', 0)}")
+                                print(
+                                    f"      Total Extensions: {summary.get('total_extensions', 0)}"
+                                )
 
                     elif "ariana" in file_path.lower():
-                        print(f"   🤖 Ariana AI Configuration")
+                        print("   🤖 Ariana AI Configuration")
 
                     elif "MASTER" in file_path:
-                        print(f"   📊 Master Document Processing Result")
+                        print("   📊 Master Document Processing Result")
 
             except Exception as e:
                 print(f"\n📄 {file_path}: ❌ Error accessing file ({e})")
         else:
             print(f"\n📄 {file_path}: ❌ Not found")
 
+
 def show_health_recommendations(malformed_files):
     """Show recommendations for maintaining JSON health."""
-    print(f"\n💊 JSON Health Recommendations:")
+    print("\n💊 JSON Health Recommendations:")
     print("=" * 40)
 
     if not malformed_files:
@@ -198,20 +214,21 @@ def show_health_recommendations(malformed_files):
         print("   No action needed")
     else:
         print(f"⚠️ Found {len(malformed_files)} problematic JSON files")
-        print(f"\n🔧 Recommended Actions:")
-        print(f"   1. Run: python json_file_fixer.py")
-        print(f"   2. Review VS Code settings.json for comments/trailing commas")
-        print(f"   3. Validate JSON before committing changes")
-        print(f"   4. Use proper JSON formatting tools")
+        print("\n🔧 Recommended Actions:")
+        print("   1. Run: python json_file_fixer.py")
+        print("   2. Review VS Code settings.json for comments/trailing commas")
+        print("   3. Validate JSON before committing changes")
+        print("   4. Use proper JSON formatting tools")
 
-        print(f"\n📋 Files needing attention:")
+        print("\n📋 Files needing attention:")
         for file_path, error in malformed_files[:3]:
             print(f"   📄 {file_path}")
             print(f"      Error: {error}")
 
+
 def generate_json_health_report():
     """Generate comprehensive JSON health report."""
-    print(f"\n📋 Generating JSON Health Report...")
+    print("\n📋 Generating JSON Health Report...")
 
     json_files, categorized_files, malformed_files = analyze_json_ecosystem()
 
@@ -230,21 +247,31 @@ def generate_json_health_report():
             "malformed_files": len(malformed_files),
             "health_percentage": round(health_percentage, 1),
             "categories": {cat: len(files) for cat, files in categorized_files.items()},
-            "total_size_bytes": sum(f.stat().st_size for f in json_files if f.exists())
+            "total_size_bytes": sum(f.stat().st_size for f in json_files if f.exists()),
         },
-        "health_status": "EXCELLENT" if health_percentage >= 95 else "GOOD" if health_percentage >= 80 else "NEEDS_ATTENTION",
+        "health_status": (
+            "EXCELLENT"
+            if health_percentage >= 95
+            else "GOOD"
+            if health_percentage >= 80
+            else "NEEDS_ATTENTION"
+        ),
         "malformed_file_list": [str(f[0]) for f in malformed_files],
         "recommendations": [
-            "Run json_file_fixer.py to fix malformed files" if malformed_files else "Maintain current JSON standards",
+            (
+                "Run json_file_fixer.py to fix malformed files"
+                if malformed_files
+                else "Maintain current JSON standards"
+            ),
             "Validate JSON before commits",
-            "Use JSON formatting tools in IDE"
-        ]
+            "Use JSON formatting tools in IDE",
+        ],
     }
 
     # Save report
     try:
         report_path = Path("json_health_report.json")
-        with open(report_path, 'w', encoding='utf-8') as f:
+        with open(report_path, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2)
 
         print(f"✅ JSON health report saved to: {report_path}")
@@ -253,6 +280,7 @@ def generate_json_health_report():
     except Exception as e:
         print(f"⚠️ Could not save health report: {e}")
         return report
+
 
 def main():
     """Main analysis function with safe JSON handling."""
@@ -278,22 +306,23 @@ def main():
     # Final summary
     health_percentage = report["json_health_summary"]["health_percentage"]
 
-    print(f"\n🎉 ANALYSIS COMPLETE!")
-    print(f"=" * 30)
-    print(f"📊 Your RTM JSON ecosystem:")
+    print("\n🎉 ANALYSIS COMPLETE!")
+    print("=" * 30)
+    print("📊 Your RTM JSON ecosystem:")
     print(f"   • {len(json_files)} total JSON files")
     print(f"   • {len(json_files) - len(malformed_files)} valid files")
     print(f"   • {len(malformed_files)} files need fixing")
     print(f"   • {health_percentage}% health score")
 
     if health_percentage >= 95:
-        print(f"\n🏆 EXCELLENT! Your JSON ecosystem is in top condition!")
+        print("\n🏆 EXCELLENT! Your JSON ecosystem is in top condition!")
     elif health_percentage >= 80:
-        print(f"\n✅ GOOD! Minor issues to address for perfect health!")
+        print("\n✅ GOOD! Minor issues to address for perfect health!")
     else:
-        print(f"\n⚠️ Run json_file_fixer.py to improve JSON ecosystem health!")
+        print("\n⚠️ Run json_file_fixer.py to improve JSON ecosystem health!")
 
     return 0
+
 
 if __name__ == "__main__":
     main()

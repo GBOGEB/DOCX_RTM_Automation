@@ -4,10 +4,10 @@ RTM JSON File Analyzer - Comprehensive analysis of all JSON files in the system
 """
 
 import json
-import os
 from pathlib import Path
 from datetime import datetime
 from collections import defaultdict
+
 
 def analyze_json_ecosystem():
     """Analyze the entire JSON ecosystem in RTM system."""
@@ -24,7 +24,7 @@ def analyze_json_ecosystem():
         "documentation": ["docs/", "function_reference"],
         "test_data": ["test_", "sample_", "demo_"],
         "jenkins": ["jenkins", ".jenkinsrc"],
-        "metadata": ["metadata.json", "status.json", "report.json"]
+        "metadata": ["metadata.json", "status.json", "report.json"],
     }
 
     json_files = []
@@ -53,9 +53,10 @@ def analyze_json_ecosystem():
 
     return json_files, categorized_files
 
+
 def analyze_by_category(categorized_files):
     """Analyze JSON files by category."""
-    print(f"\n📈 JSON Files by Category:")
+    print("\n📈 JSON Files by Category:")
     print("=" * 35)
 
     for category, files in sorted(categorized_files.items()):
@@ -68,7 +69,11 @@ def analyze_by_category(categorized_files):
                 total_size += size
 
                 # Show relative path
-                rel_path = str(file_path)[:60] + "..." if len(str(file_path)) > 60 else str(file_path)
+                rel_path = (
+                    str(file_path)[:60] + "..."
+                    if len(str(file_path)) > 60
+                    else str(file_path)
+                )
                 print(f"   📄 {rel_path} ({size:,} bytes)")
 
             except Exception:
@@ -81,9 +86,10 @@ def analyze_by_category(categorized_files):
 
         print(f"   📊 Category Total: {total_size:,} bytes")
 
+
 def analyze_key_json_files():
     """Analyze key JSON files in detail."""
-    print(f"\n🔍 Key JSON File Analysis:")
+    print("\n🔍 Key JSON File Analysis:")
     print("=" * 35)
 
     key_files = [
@@ -93,60 +99,69 @@ def analyze_key_json_files():
         ".ariana/config.json",
         "output/MASTER_1805_1144.json",
         "output/workflow_summary.json",
-        ".vscode/settings.json"
+        ".vscode/settings.json",
     ]
 
     for file_path in key_files:
         path_obj = Path(file_path)
         if path_obj.exists():
             try:
-                with open(path_obj, 'r', encoding='utf-8') as f:
+                with open(path_obj, "r", encoding="utf-8") as f:
                     data = json.load(f)
 
                 size = path_obj.stat().st_size
 
                 print(f"\n📄 {file_path}:")
                 print(f"   Size: {size:,} bytes")
-                print(f"   Keys: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}")
+                print(
+                    f"   Keys: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}"
+                )
 
                 # Show specific insights
                 if "jenkins" in file_path.lower():
-                    print(f"   🔧 Jenkins Configuration")
+                    print("   🔧 Jenkins Configuration")
                     if isinstance(data, dict) and "Local" in data:
                         local_config = data["Local"]
-                        print(f"      Applications: {local_config.get('applications', [])}")
-                        print(f"      Description: {local_config.get('description', 'N/A')}")
+                        print(
+                            f"      Applications: {local_config.get('applications', [])}"
+                        )
+                        print(
+                            f"      Description: {local_config.get('description', 'N/A')}"
+                        )
 
                 elif "extension" in file_path.lower():
-                    print(f"   📦 Extension Management")
+                    print("   📦 Extension Management")
                     if isinstance(data, dict):
                         if "extensions" in data:
                             ext_count = len(data["extensions"])
                             print(f"      Extensions: {ext_count}")
                         if "summary" in data:
                             summary = data["summary"]
-                            print(f"      Total Extensions: {summary.get('total_extensions', 0)}")
+                            print(
+                                f"      Total Extensions: {summary.get('total_extensions', 0)}"
+                            )
 
                 elif "ariana" in file_path.lower():
-                    print(f"   🤖 Ariana AI Configuration")
+                    print("   🤖 Ariana AI Configuration")
 
                 elif "MASTER" in file_path:
-                    print(f"   📊 Master Document Processing Result")
+                    print("   📊 Master Document Processing Result")
 
             except Exception as e:
                 print(f"\n📄 {file_path}: ❌ Error reading ({e})")
         else:
             print(f"\n📄 {file_path}: ❌ Not found")
 
+
 def show_jenkins_integration():
     """Show Jenkins integration details."""
-    print(f"\n🔧 Jenkins Integration Analysis:")
+    print("\n🔧 Jenkins Integration Analysis:")
     print("=" * 40)
 
     jenkins_file = Path(".jenkinsrc.json")
     if jenkins_file.exists():
         try:
-            with open(jenkins_file, 'r') as f:
+            with open(jenkins_file, "r") as f:
                 jenkins_config = json.load(f)
 
             print("✅ Jenkins Configuration Found:")
@@ -155,27 +170,30 @@ def show_jenkins_integration():
             # Analyze the configuration
             if "Local" in jenkins_config:
                 local_config = jenkins_config["Local"]
-                print(f"\n🎯 Jenkins Analysis:")
-                print(f"   Environment: Local")
+                print("\n🎯 Jenkins Analysis:")
+                print("   Environment: Local")
                 print(f"   Applications: {local_config.get('applications', [])}")
-                print(f"   Build Projects: {local_config.get('buildProject', [])} ({'Empty' if not local_config.get('buildProject') else 'Configured'})")
+                print(
+                    f"   Build Projects: {local_config.get('buildProject', [])} ({'Empty' if not local_config.get('buildProject') else 'Configured'})"
+                )
                 print(f"   Description: {local_config.get('description', 'N/A')}")
 
                 # Suggest RTM integration
-                print(f"\n💡 RTM + Jenkins Integration Opportunities:")
-                print(f"   • Automate document processing pipeline")
-                print(f"   • Schedule quality verification runs")
-                print(f"   • Generate automated RTM reports")
-                print(f"   • Integrate with your 100+ JSON output files")
+                print("\n💡 RTM + Jenkins Integration Opportunities:")
+                print("   • Automate document processing pipeline")
+                print("   • Schedule quality verification runs")
+                print("   • Generate automated RTM reports")
+                print("   • Integrate with your 100+ JSON output files")
 
         except Exception as e:
             print(f"❌ Error reading Jenkins config: {e}")
     else:
         print("ℹ️ No Jenkins configuration found")
 
+
 def generate_json_summary_report():
     """Generate comprehensive JSON summary report."""
-    print(f"\n📋 Generating JSON Summary Report...")
+    print("\n📋 Generating JSON Summary Report...")
 
     json_files, categorized_files = analyze_json_ecosystem()
 
@@ -186,21 +204,21 @@ def generate_json_summary_report():
         "json_ecosystem_summary": {
             "total_json_files": len(json_files),
             "categories": {cat: len(files) for cat, files in categorized_files.items()},
-            "total_size_bytes": sum(f.stat().st_size for f in json_files if f.exists())
+            "total_size_bytes": sum(f.stat().st_size for f in json_files if f.exists()),
         },
         "key_insights": [
             f"🤖 Ariana AI Integration: {len(categorized_files.get('ariana_ai', []))} AI-related JSON files",
             f"📊 Output Data: {len(categorized_files.get('output_data', []))} processed document outputs",
             f"⚙️ Configuration: {len(categorized_files.get('configurations', []))} system config files",
-            f"🔧 Jenkins Ready: {'Jenkins config found' if Path('.jenkinsrc.json').exists() else 'No Jenkins config'}"
+            f"🔧 Jenkins Ready: {'Jenkins config found' if Path('.jenkinsrc.json').exists() else 'No Jenkins config'}",
         ],
-        "rtm_status": "PRODUCTION READY with extensive JSON ecosystem"
+        "rtm_status": "PRODUCTION READY with extensive JSON ecosystem",
     }
 
     # Save report
     try:
         report_path = Path("json_ecosystem_report.json")
-        with open(report_path, 'w', encoding='utf-8') as f:
+        with open(report_path, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2)
 
         print(f"✅ JSON ecosystem report saved to: {report_path}")
@@ -209,6 +227,7 @@ def generate_json_summary_report():
     except Exception as e:
         print(f"⚠️ Could not save report: {e}")
         return report
+
 
 def main():
     """Main analysis function."""
@@ -229,20 +248,21 @@ def main():
     show_jenkins_integration()
 
     # Generate summary report
-    report = generate_json_summary_report()
+    generate_json_summary_report()
 
-    print(f"\n🎉 ANALYSIS COMPLETE!")
-    print(f"=" * 30)
-    print(f"📊 Your RTM system has an INCREDIBLE JSON ecosystem:")
+    print("\n🎉 ANALYSIS COMPLETE!")
+    print("=" * 30)
+    print("📊 Your RTM system has an INCREDIBLE JSON ecosystem:")
     print(f"   • {len(json_files)} total JSON files")
     print(f"   • {len(categorized_files)} different categories")
     print(f"   • {len(categorized_files.get('ariana_ai', []))} AI-enhanced files")
     print(f"   • {len(categorized_files.get('output_data', []))} processed outputs")
-    print(f"   • Production-ready configuration and workflows")
+    print("   • Production-ready configuration and workflows")
 
-    print(f"\n🚀 Your RTM system is JSON-POWERED and ENTERPRISE-READY!")
+    print("\n🚀 Your RTM system is JSON-POWERED and ENTERPRISE-READY!")
 
     return 0
+
 
 if __name__ == "__main__":
     main()

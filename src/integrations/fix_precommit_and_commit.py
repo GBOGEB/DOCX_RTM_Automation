@@ -1,5 +1,5 @@
-import os
 import subprocess
+
 
 def run_precommit_hooks():
     """Run pre-commit hooks."""
@@ -10,6 +10,7 @@ def run_precommit_hooks():
     except subprocess.CalledProcessError as e:
         print(f"Error while running pre-commit hooks: {e}")
         exit(1)
+
 
 def commit_changes(commit_message):
     """Commit changes to the repository."""
@@ -22,6 +23,7 @@ def commit_changes(commit_message):
     except subprocess.CalledProcessError as e:
         print(f"Error while committing changes: {e}")
         exit(1)
+
 
 if __name__ == "__main__":
     commit_message = input("Enter commit message: ").strip()

@@ -28,7 +28,6 @@ def create_test_document(output_path=None):
 
         subprocess.run([sys.executable, "-m", "pip", "install", "python-docx"])
         from docx import Document
-        from docx.shared import Pt
         from docx.enum.text import WD_ALIGN_PARAGRAPH
 
     # Create output directory if needed

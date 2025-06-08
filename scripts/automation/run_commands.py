@@ -1,5 +1,6 @@
 import subprocess
 
+
 def run_command(command):
     """
     Run a shell command and return the output, error, and exit code.
@@ -15,6 +16,7 @@ def run_command(command):
         return result.stdout, result.stderr, result.returncode
     except Exception as e:
         return "", str(e), -1
+
 
 if __name__ == "__main__":
     # Example usage

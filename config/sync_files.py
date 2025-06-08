@@ -1,4 +1,5 @@
 import os
+
 import yaml
 
 
@@ -22,6 +23,6 @@ def sync_outline_files():
             return
 
     with open(paths_config_file) as file:
-        paths = yaml.safe_load(file)
+        yaml.safe_load(file)
 
     # Define file mappings (external → local)

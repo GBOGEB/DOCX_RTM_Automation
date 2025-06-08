@@ -11,16 +11,17 @@ from pathlib import Path
 from datetime import datetime
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
+
 class RTMDashboardHandler(BaseHTTPRequestHandler):
     """HTTP handler for RTM dashboard."""
 
     def do_GET(self):
         """Handle GET requests."""
-        if self.path == '/':
+        if self.path == "/":
             self.serve_dashboard()
-        elif self.path == '/api/status':
+        elif self.path == "/api/status":
             self.serve_status_api()
-        elif self.path == '/api/files':
+        elif self.path == "/api/files":
             self.serve_files_api()
         else:
             self.send_error(404)
@@ -30,7 +31,7 @@ class RTMDashboardHandler(BaseHTTPRequestHandler):
         html_content = self.get_dashboard_html()
 
         self.send_response(200)
-        self.send_header('Content-type', 'text/html')
+        self.send_header("Content-type", "text/html")
         self.end_headers()
         self.wfile.write(html_content.encode())
 
@@ -39,8 +40,8 @@ class RTMDashboardHandler(BaseHTTPRequestHandler):
         status = self.get_rtm_status()
 
         self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header("Content-type", "application/json")
+        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
         self.wfile.write(json.dumps(status).encode())
 
@@ -49,8 +50,8 @@ class RTMDashboardHandler(BaseHTTPRequestHandler):
         files_info = self.get_files_info()
 
         self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header("Content-type", "application/json")
+        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
         self.wfile.write(json.dumps(files_info).encode())
 
@@ -63,9 +64,13 @@ class RTMDashboardHandler(BaseHTTPRequestHandler):
         return {
             "timestamp": datetime.now().isoformat(),
             "input_files": len(list(input_dir.glob("*"))) if input_dir.exists() else 0,
-            "output_files": len(list(output_dir.glob("*"))) if output_dir.exists() else 0,
-            "ariana_files": len(list(ariana_dir.glob("*"))) if ariana_dir.exists() else 0,
-            "status": "operational"
+            "output_files": (
+                len(list(output_dir.glob("*"))) if output_dir.exists() else 0
+            ),
+            "ariana_files": (
+                len(list(ariana_dir.glob("*"))) if ariana_dir.exists() else 0
+            ),
+            "status": "operational",
         }
 
     def get_files_info(self):
@@ -75,7 +80,7 @@ class RTMDashboardHandler(BaseHTTPRequestHandler):
 
         files_info = {
             "input": {"docx": 0, "md": 0, "json": 0, "yaml": 0},
-            "output": {"docx": 0, "md": 0, "json": 0, "yaml": 0, "total": 0}
+            "output": {"docx": 0, "md": 0, "json": 0, "yaml": 0, "total": 0},
         }
 
         if input_dir.exists():
@@ -255,43 +260,47 @@ class RTMDashboardHandler(BaseHTTPRequestHandler):
         """Override to reduce log spam."""
         return
 
+
 def start_dashboard_server(port=8000, auto_open=True):
     """Start the RTM dashboard server."""
     try:
-        server = HTTPServer(('localhost', port), RTMDashboardHandler)
+        server = HTTPServer(("localhost", port), RTMDashboardHandler)
 
-        print(f"🌐 RTM Web Dashboard starting...")
+        print("🌐 RTM Web Dashboard starting...")
         print(f"📡 Server running on: http://localhost:{port}")
-        print(f"🔧 Press Ctrl+C to stop")
+        print("🔧 Press Ctrl+C to stop")
 
         if auto_open:
             # Open browser after a short delay
             def open_browser():
                 time.sleep(1)
-                webbrowser.open(f'http://localhost:{port}')
+                webbrowser.open(f"http://localhost:{port}")
 
             threading.Thread(target=open_browser, daemon=True).start()
 
         server.serve_forever()
 
     except KeyboardInterrupt:
-        print(f"\n👋 RTM Dashboard stopped")
+        print("\n👋 RTM Dashboard stopped")
     except OSError as e:
         if "Address already in use" in str(e):
             print(f"❌ Port {port} is already in use")
-            print(f"   Try a different port: python rtm_web_dashboard.py --port 8001")
+            print("   Try a different port: python rtm_web_dashboard.py --port 8001")
         else:
             print(f"❌ Server error: {e}")
     except Exception as e:
         print(f"❌ Unexpected error: {e}")
 
+
 def main():
     """Main function to start dashboard."""
     import argparse
 
-    parser = argparse.ArgumentParser(description='RTM Web Dashboard')
-    parser.add_argument('--port', type=int, default=8000, help='Port to run on')
-    parser.add_argument('--no-browser', action='store_true', help='Don\'t auto-open browser')
+    parser = argparse.ArgumentParser(description="RTM Web Dashboard")
+    parser.add_argument("--port", type=int, default=8000, help="Port to run on")
+    parser.add_argument(
+        "--no-browser", action="store_true", help="Don't auto-open browser"
+    )
 
     args = parser.parse_args()
 
@@ -299,6 +308,7 @@ def main():
     print("=" * 30)
 
     start_dashboard_server(args.port, not args.no_browser)
+
 
 if __name__ == "__main__":
     main()

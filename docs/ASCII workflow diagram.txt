@@ -1,0 +1,33 @@
+ASCII workflow diagram
+
+                   +-------------------+
+                   |  DOCX Document    |
+                   +--------+----------+
+                            |
+                            v
+ +----------+      +--------+----------+
+ |          |      | Word-to-Markdown  |
+ | Linting  +<---->+ Conversion        |
+ | Phase    |      |                   |
+ +----+-----+      +--------+----------+
+      ^                     |
+      |                     v
++-----+------+     +--------+----------+
+|            |     | Requirements      |
+| Dependency |     | Extraction        |
+| Fixing     |     |                   |
++-----+------+     +--------+----------+
+      ^                     |
+      |                     v
++-----+------+     +--------+----------+      +--------------+
+|            |     | RTM Generation    +----->+ Traceability |
+| Import     |     | & DataFrame       |      | Matrix       |
+| Fixing     |     |                   |      +--------------+
++-----+------+     +--------+----------+
+      ^                     |
+      |                     v
++-----+------+     +--------+----------+
+|            |     | Markdown-to-Word  |
+| Unit       |     | Conversion        |
+| Testing    |     | (Roundtrip)       |
++------------+     +-------------------+

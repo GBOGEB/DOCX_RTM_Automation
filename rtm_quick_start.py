@@ -7,6 +7,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 def rtm_quick_start():
     """Quick start guide for RTM automation."""
     print("🚀 RTM Automation Quick Start")
@@ -43,9 +44,12 @@ def rtm_quick_start():
     print("\n🧪 Quick RTM Test:")
     try:
         # Test sample document processing
-        result = subprocess.run([
-            sys.executable, "enhance_document_parsing.py", "--sample", "-f", "json"
-        ], capture_output=True, text=True, timeout=30)
+        result = subprocess.run(
+            [sys.executable, "enhance_document_parsing.py", "--sample", "-f", "json"],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
 
         if result.returncode == 0:
             print("   ✅ RTM processing: WORKING")
@@ -67,6 +71,7 @@ def rtm_quick_start():
     print("    Core Quality: 100% (0 critical issues)")
     print("    Functionality: 100% (all components working)")
     print("    Structure: 100% (complete project layout)")
+
 
 if __name__ == "__main__":
     rtm_quick_start()

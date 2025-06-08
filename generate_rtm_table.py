@@ -4,6 +4,7 @@ Requirements Traceability Matrix (RTM) generator.
 Creates comprehensive traceability matrices from parsed document data.
 Supports large tables with up to 700 rows and 20 columns.
 """
+
 import os
 import sys
 import json
@@ -11,15 +12,14 @@ import csv
 import argparse
 import logging
 from pathlib import Path
-from collections import defaultdict
 import pandas as pd
 
 # Setup logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
-logger = logging.getLogger('rtm_generator')
+logger = logging.getLogger("rtm_generator")
+
 
 def load_rtm_data(rtm_file):
     """
@@ -36,9 +36,11 @@ def load_rtm_data(rtm_file):
         return None
 
     try:
-        with open(rtm_file, 'r', encoding='utf-8') as f:
+        with open(rtm_file, "r", encoding="utf-8") as f:
             rtm_data = json.load(f)
-        logger.info(f"Loaded RTM data with {rtm_data.get('requirement_count', 0)} requirements")
+        logger.info(
+            f"Loaded RTM data with {rtm_data.get('requirement_count', 0)} requirements"
+        )
         return rtm_data
     except Exception as e:
         logger.error(f"Error loading RTM data: {e}")
@@ -58,37 +60,39 @@ def generate_requirement_list(rtm_data, output_file):
     """
     try:
         # Extract requirements
-        requirements = rtm_data.get('requirements', {})
+        requirements = rtm_data.get("requirements", {})
 
         # Prepare data for CSV
         rows = []
-        headers = ['ID', 'Type', 'Section', 'References', 'Content']
+        headers = ["ID", "Type", "Section", "References", "Content"]
 
         for req_id, req_info in sorted(requirements.items()):
             # Format section path
             section_path = []
-            for num, title in req_info.get('sections', []):
+            for num, title in req_info.get("sections", []):
                 section_path.append(f"{num} {title}")
             section_str = " > ".join(section_path) if section_path else ""
 
             # Format references
-            references = ", ".join(req_info.get('references', []))
+            references = ", ".join(req_info.get("references", []))
 
             # Format content (truncate if too long)
-            content = req_info.get('content', '')
+            content = req_info.get("content", "")
             if len(content) > 200:
                 content = content[:197] + "..."
 
-            rows.append([
-                req_id,
-                req_info.get('type', 'Unknown'),
-                section_str,
-                references,
-                content
-            ])
+            rows.append(
+                [
+                    req_id,
+                    req_info.get("type", "Unknown"),
+                    section_str,
+                    references,
+                    content,
+                ]
+            )
 
         # Save as CSV
-        with open(output_file, 'w', encoding='utf-8', newline='') as f:
+        with open(output_file, "w", encoding="utf-8", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(headers)
             writer.writerows(rows)
@@ -98,6 +102,7 @@ def generate_requirement_list(rtm_data, output_file):
     except Exception as e:
         logger.error(f"Error generating requirements list: {e}")
         import traceback
+
         traceback.print_exc()
         return None
 
@@ -116,53 +121,55 @@ def generate_traceability_matrix(rtm_data, output_file, matrix_type="forward"):
     """
     try:
         # Extract requirements
-        requirements = rtm_data.get('requirements', {})
+        requirements = rtm_data.get("requirements", {})
 
         # Prepare data for matrix
         if matrix_type == "forward":
             # "From" requirements on rows, "To" requirements on columns
-            title = "Forward Traceability Matrix"
             column_prefix = "To: "
         elif matrix_type == "backward":
             # "To" requirements on rows, "From" requirements on columns
-            title = "Backward Traceability Matrix"
             column_prefix = "From: "
         else:  # bidirectional
-            title = "Bidirectional Traceability Matrix"
             column_prefix = ""
 
         # Create a DataFrame for the matrix
         req_ids = sorted(requirements.keys())
-        df = pd.DataFrame(index=req_ids, columns=[f"{column_prefix}{r}" for r in req_ids])
+        df = pd.DataFrame(
+            index=req_ids, columns=[f"{column_prefix}{r}" for r in req_ids]
+        )
 
         # Fill the matrix
         for from_req in req_ids:
             for to_req in req_ids:
                 if matrix_type == "forward":
                     # Check if to_req is referenced by from_req
-                    if to_req in requirements[from_req].get('references', []):
+                    if to_req in requirements[from_req].get("references", []):
                         df.loc[from_req, f"{column_prefix}{to_req}"] = "X"
                 elif matrix_type == "backward":
                     # Check if from_req is referenced by to_req
-                    if from_req in requirements[to_req].get('references', []):
+                    if from_req in requirements[to_req].get("references", []):
                         df.loc[from_req, f"{column_prefix}{to_req}"] = "X"
                 else:  # bidirectional
                     # Check both directions
-                    if to_req in requirements[from_req].get('references', []):
+                    if to_req in requirements[from_req].get("references", []):
                         df.loc[from_req, f"{column_prefix}{to_req}"] = "↓"  # Forward
-                    elif from_req in requirements[to_req].get('references', []):
+                    elif from_req in requirements[to_req].get("references", []):
                         df.loc[from_req, f"{column_prefix}{to_req}"] = "↑"  # Backward
 
                     # Check both directions (bidirectional trace)
-                    if (to_req in requirements[from_req].get('references', []) and
-                        from_req in requirements[to_req].get('references', [])):
-                        df.loc[from_req, f"{column_prefix}{to_req}"] = "↕"  # Both directions
+                    if to_req in requirements[from_req].get(
+                        "references", []
+                    ) and from_req in requirements[to_req].get("references", []):
+                        df.loc[from_req, f"{column_prefix}{to_req}"] = (
+                            "↕"  # Both directions
+                        )
 
         # Replace NaN with empty string
-        df = df.fillna('')
+        df = df.fillna("")
 
         # Save as Excel with formatting
-        with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
+        with pd.ExcelWriter(output_file, engine="xlsxwriter") as writer:
             df.to_excel(writer, sheet_name=matrix_type.capitalize())
 
             # Get the xlsxwriter workbook and worksheet objects
@@ -170,25 +177,24 @@ def generate_traceability_matrix(rtm_data, output_file, matrix_type="forward"):
             worksheet = writer.sheets[matrix_type.capitalize()]
 
             # Add a header format
-            header_format = workbook.add_format({
-                'bold': True,
-                'text_wrap': True,
-                'valign': 'top',
-                'fg_color': '#D7E4BC',
-                'border': 1
-            })
+            header_format = workbook.add_format(
+                {
+                    "bold": True,
+                    "text_wrap": True,
+                    "valign": "top",
+                    "fg_color": "#D7E4BC",
+                    "border": 1,
+                }
+            )
 
             # Apply header format to column headers
             for col_num, value in enumerate(df.columns.values):
                 worksheet.write(0, col_num + 1, value, header_format)
 
             # Set the first column format
-            first_col_format = workbook.add_format({
-                'bold': True,
-                'text_wrap': True,
-                'valign': 'top',
-                'border': 1
-            })
+            first_col_format = workbook.add_format(
+                {"bold": True, "text_wrap": True, "valign": "top", "border": 1}
+            )
 
             # Apply first column format
             for row_num, value in enumerate(df.index.values):
@@ -197,11 +203,14 @@ def generate_traceability_matrix(rtm_data, output_file, matrix_type="forward"):
             # Auto-fit columns
             worksheet.autofit()
 
-        logger.info(f"Generated {matrix_type} traceability matrix saved to {output_file}")
+        logger.info(
+            f"Generated {matrix_type} traceability matrix saved to {output_file}"
+        )
         return output_file
     except Exception as e:
         logger.error(f"Error generating traceability matrix: {e}")
         import traceback
+
         traceback.print_exc()
         return None
 
@@ -219,9 +228,9 @@ def generate_rtm_report(rtm_data, output_file):
     """
     try:
         # Extract requirements
-        requirements = rtm_data.get('requirements', {})
+        requirements = rtm_data.get("requirements", {})
 
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             # Write title and summary
             f.write("# Requirements Traceability Matrix Report\n\n")
 
@@ -231,12 +240,12 @@ def generate_rtm_report(rtm_data, output_file):
 
             # Requirements by type
             f.write("- Requirements by Type:\n")
-            for req_type, count in rtm_data.get('type_counts', {}).items():
+            for req_type, count in rtm_data.get("type_counts", {}).items():
                 f.write(f"  - {req_type}: {count}\n")
             f.write("\n")
 
             # Source file
-            source_file = rtm_data.get('source_file', '')
+            source_file = rtm_data.get("source_file", "")
             if source_file:
                 f.write(f"Source: {source_file}\n\n")
 
@@ -248,14 +257,16 @@ def generate_rtm_report(rtm_data, output_file):
             for req_id, req_info in sorted(requirements.items()):
                 # Format section path
                 section_path = []
-                for num, title in req_info.get('sections', []):
+                for num, title in req_info.get("sections", []):
                     section_path.append(f"{num} {title}")
                 section_str = " > ".join(section_path) if section_path else ""
 
                 # Format references
-                references = ", ".join(req_info.get('references', []))
+                references = ", ".join(req_info.get("references", []))
 
-                f.write(f"| {req_id} | {req_info.get('type', 'Unknown')} | {section_str} | {references} |\n")
+                f.write(
+                    f"| {req_id} | {req_info.get('type', 'Unknown')} | {section_str} | {references} |\n"
+                )
 
             # Detailed Requirements
             f.write("\n## Detailed Requirements\n\n")
@@ -268,17 +279,17 @@ def generate_rtm_report(rtm_data, output_file):
 
                 # Section
                 section_path = []
-                for num, title in req_info.get('sections', []):
+                for num, title in req_info.get("sections", []):
                     section_path.append(f"{num} {title}")
                 section_str = " > ".join(section_path) if section_path else ""
                 f.write(f"- **Section**: {section_str}\n")
 
                 # Content
-                content = req_info.get('content', '')
+                content = req_info.get("content", "")
                 f.write(f"- **Content**: {content}\n")
 
                 # References
-                references = req_info.get('references', [])
+                references = req_info.get("references", [])
                 if references:
                     f.write("- **References**:\n")
                     for ref in references:
@@ -293,6 +304,7 @@ def generate_rtm_report(rtm_data, output_file):
     except Exception as e:
         logger.error(f"Error generating RTM report: {e}")
         import traceback
+
         traceback.print_exc()
         return None
 
@@ -320,36 +332,38 @@ def generate_all_rtm_files(rtm_data_file, output_dir=None):
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
 
-    base_name = Path(rtm_data_file).stem.replace('_rtm_data', '')
+    base_name = Path(rtm_data_file).stem.replace("_rtm_data", "")
 
     # Generate files
     output_files = {}
 
     # Requirements list
     req_list_file = output_dir / f"{base_name}_requirements_list.csv"
-    output_files['requirements_list'] = generate_requirement_list(rtm_data, req_list_file)
+    output_files["requirements_list"] = generate_requirement_list(
+        rtm_data, req_list_file
+    )
 
     # Forward traceability matrix
     forward_matrix_file = output_dir / f"{base_name}_forward_matrix.xlsx"
-    output_files['forward_matrix'] = generate_traceability_matrix(
+    output_files["forward_matrix"] = generate_traceability_matrix(
         rtm_data, forward_matrix_file, "forward"
     )
 
     # Backward traceability matrix
     backward_matrix_file = output_dir / f"{base_name}_backward_matrix.xlsx"
-    output_files['backward_matrix'] = generate_traceability_matrix(
+    output_files["backward_matrix"] = generate_traceability_matrix(
         rtm_data, backward_matrix_file, "backward"
     )
 
     # Bidirectional traceability matrix
     bidir_matrix_file = output_dir / f"{base_name}_bidirectional_matrix.xlsx"
-    output_files['bidirectional_matrix'] = generate_traceability_matrix(
+    output_files["bidirectional_matrix"] = generate_traceability_matrix(
         rtm_data, bidir_matrix_file, "bidirectional"
     )
 
     # RTM report
     report_file = output_dir / f"{base_name}_rtm_report.md"
-    output_files['rtm_report'] = generate_rtm_report(rtm_data, report_file)
+    output_files["rtm_report"] = generate_rtm_report(rtm_data, report_file)
 
     return output_files
 
@@ -359,19 +373,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="Generate Requirements Traceability Matrix (RTM) files"
     )
-    parser.add_argument(
-        "rtm_data_file",
-        help="Path to RTM data JSON file"
-    )
-    parser.add_argument(
-        "-o", "--output-dir",
-        help="Directory to save output files"
-    )
-    parser.add_argument(
-        "--debug",
-        action="store_true",
-        help="Enable debug logging"
-    )
+    parser.add_argument("rtm_data_file", help="Path to RTM data JSON file")
+    parser.add_argument("-o", "--output-dir", help="Directory to save output files")
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
 
     args = parser.parse_args()
 
@@ -386,6 +390,7 @@ def main():
     else:
         logger.error("RTM generation failed")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -28,7 +28,7 @@ def run_command(command, description, logger):
     """Run a command and log the output."""
     logger.info(f"Running {description}...")
     try:
-        result = subprocess.run(
+        subprocess.run(
             command,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,

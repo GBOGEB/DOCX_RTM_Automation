@@ -19,7 +19,6 @@ def pre_fix_secrets_block(file_content):
 
     # Normalize line endings for consistent processing
     content_normalized = file_content.replace("\r\n", "\n")
-    original_normalized_content = content_normalized  # For comparison
 
     # Regex to find the 'secrets:' block from its start to the start of the next top-level key or EOF
     # A top-level key starts at the beginning of a line (no indentation) and is followed by a colon.
@@ -211,12 +210,10 @@ def resolve_paths(yaml_file, base_dir):
     )
     updated_data = recursive_fix_paths(data, base_dir)
 
-    updated_yaml_string = yaml.safe_dump(
-        updated_data, default_flow_style=False, sort_keys=False
-    )
+    yaml.safe_dump(updated_data, default_flow_style=False, sort_keys=False)
 
-    original_content_normalized = original_content.replace("\r\n", "\n")
-    content_to_parse_normalized = content_to_parse.replace("\r\n", "\n")
+    original_content.replace("\r\n", "\n")
+    content_to_parse.replace("\r\n", "\n")
 
     path_resolution_made_change = False
     if data is not None:

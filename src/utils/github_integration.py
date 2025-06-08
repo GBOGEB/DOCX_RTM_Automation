@@ -221,7 +221,7 @@ class GitHubIntegration:
                 self.warnings.append(f"Git commit warning: {commit_result.stderr}")
 
             # Push changes
-            push_result = subprocess.run(
+            subprocess.run(
                 ["git", "push", "origin", self.branch],
                 check=True,
                 stdout=subprocess.PIPE,

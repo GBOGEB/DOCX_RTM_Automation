@@ -19,7 +19,7 @@ try:
     HAS_RICH = True
 except ImportError:
     HAS_RICH = False
-    
+
     print("Rich library not found. Install for better UI: pip install rich")
 
 

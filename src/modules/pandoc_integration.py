@@ -167,7 +167,7 @@ class PandocConverter:
 
         # Run the conversion
         try:
-            result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+            subprocess.run(cmd, check=True, capture_output=True, text=True)
             logger.info(f"Conversion successful: {output_file}")
             return True
         except subprocess.CalledProcessError as e:

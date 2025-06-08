@@ -51,7 +51,7 @@ def run_command(cmd, description):
 
     try:
         start_time = time.time()
-        result = subprocess.run(
+        subprocess.run(
             cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
         )
         duration = time.time() - start_time

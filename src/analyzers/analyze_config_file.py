@@ -1,5 +1,6 @@
 import json
 
+
 def load_config(file_path):
     """
     Load configuration from a JSON file.
@@ -8,7 +9,7 @@ def load_config(file_path):
     :return: Parsed configuration as a dictionary.
     """
     try:
-        with open(file_path, 'r') as file:
+        with open(file_path, "r") as file:
             config = json.load(file)
         return config
     except FileNotFoundError:
@@ -16,6 +17,7 @@ def load_config(file_path):
     except json.JSONDecodeError:
         print(f"Error: Failed to decode JSON from {file_path}")
     return None
+
 
 def analyze_config(config):
     """
@@ -32,6 +34,7 @@ def analyze_config(config):
     key_count = len(config)
     print(f"Configuration contains {key_count} keys.")
     return key_count
+
 
 if __name__ == "__main__":
     config_file_path = "config.json"  # Replace with your actual config file path

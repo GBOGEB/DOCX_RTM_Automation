@@ -8,9 +8,9 @@ It helps detect common issues like missing files and incorrect paths.
 
 import os
 import sys
-import glob
 import argparse
 from pathlib import Path
+
 
 def find_document(document_path):
     """Find the document, handling common issues like typos in extension."""
@@ -19,7 +19,7 @@ def find_document(document_path):
 
     # Check if it's an extension issue
     base_path = os.path.splitext(document_path)[0]
-    for ext in ['.docx', '.doc', '.rtf', '.odt']:
+    for ext in [".docx", ".doc", ".rtf", ".odt"]:
         test_path = f"{base_path}{ext}"
         if os.path.exists(test_path):
             print(f"Found document with corrected extension: {test_path}")
@@ -32,7 +32,7 @@ def find_document(document_path):
     # Look in input directory
     input_dir = Path("input")
     if input_dir.exists():
-        for ext in ['.docx', '.doc', '.rtf', '.odt']:
+        for ext in [".docx", ".doc", ".rtf", ".odt"]:
             matches = list(input_dir.glob(f"{base_filename}{ext}"))
             if matches:
                 print(f"Found document in input directory: {matches[0]}")
@@ -59,10 +59,11 @@ def find_document(document_path):
 
     return None
 
+
 def fix_output_path(output_path):
     """Fix output path with incorrect separators."""
     # Replace backslashes with forward slashes for consistency
-    fixed_path = output_path.replace('\\', '/')
+    fixed_path = output_path.replace("\\", "/")
 
     # Check if the directory exists, create if needed
     output_dir = os.path.dirname(fixed_path)
@@ -70,13 +71,25 @@ def fix_output_path(output_path):
 
     return fixed_path
 
+
 def main():
-    parser = argparse.ArgumentParser(description="Run document conversion with improved error handling")
+    parser = argparse.ArgumentParser(
+        description="Run document conversion with improved error handling"
+    )
     parser.add_argument("input_file", nargs="?", help="Input document file")
     parser.add_argument("output_file", nargs="?", help="Output markdown file")
     parser.add_argument("--list", action="store_true", help="List available documents")
-    parser.add_argument("--converter", choices=["try_word_to_md", "pandoc_converter", "enhanced_word_to_md", "exact_docx_to_md"],
-                        default="try_word_to_md", help="Converter to use")
+    parser.add_argument(
+        "--converter",
+        choices=[
+            "try_word_to_md",
+            "pandoc_converter",
+            "enhanced_word_to_md",
+            "exact_docx_to_md",
+        ],
+        default="try_word_to_md",
+        help="Converter to use",
+    )
 
     args = parser.parse_args()
 
@@ -131,6 +144,7 @@ def main():
             cmd.append(output_file)
 
         import subprocess
+
         result = subprocess.run(cmd)
 
         if result.returncode != 0:
@@ -159,7 +173,9 @@ def main():
                         print(f"Using generated markdown file: {output_file}")
 
             if output_file:
-                subprocess.run([sys.executable, "enhance_document_parsing.py", output_file])
+                subprocess.run(
+                    [sys.executable, "enhance_document_parsing.py", output_file]
+                )
             else:
                 print("No markdown file found to enhance.")
 
@@ -174,7 +190,9 @@ def main():
                         md_file = str(md_files[0])
 
             if md_file:
-                subprocess.run([sys.executable, "enhanced_requirement_parser.py", md_file])
+                subprocess.run(
+                    [sys.executable, "enhanced_requirement_parser.py", md_file]
+                )
             else:
                 print("No markdown file found to extract requirements from.")
 
@@ -197,8 +215,10 @@ def main():
     except Exception as e:
         print(f"Error during conversion: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

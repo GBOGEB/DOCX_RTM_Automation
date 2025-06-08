@@ -1,0 +1,61 @@
+# error_reference.yaml
+
+instructions_for_use:
+  functional_markdown: |
+    # Instructions for Use
+    ## Keyboard Shortcuts:
+    - **Ctrl+Shift+M**: Open Problems view
+    - **Shift+Insert**: Insert clipboard content with `#` prefix (bash style)
+    - **Ctrl+Shift+I**: Insert `# Problems: ` followed by clipboard content
+
+    ## Helper Scripts:
+    - **In PowerShell**:
+      ```powershell
+      .\problem_helpers.ps1
+      Invoke-CommandWithErrorCapture "python scripts/SRC_Master.py pipeline"
+      ```
+    - **In Bash**:
+      ```bash
+      source ./problem_helpers.sh
+      run_and_capture python scripts/SRC_Master.py pipeline
+      ```
+
+    ## Tasks (Run with `Ctrl+Shift+P` → "Tasks: Run Task"):
+    - **Run Pipeline with Problem Capture**: Runs the pipeline and saves problems to a log file
+    - **Capture Last Error to Clipboard**: Copies the last error with formatting
+    - **Format Problems for Prompt**: Formats pipeline problems for insertion into a prompt
+
+    ## Log Files:
+    - Problems will be stored in `logs/pipeline_problems.log`
+    - Quickly access them via the "Format Problems for Prompt" task
+
+    These configurations allow you to quickly capture, format, and insert problems into your prompts using keyboard shortcuts or tasks.
+
+short_execution:
+  bash_files: |
+    # To execute `.sh` files in bash:
+    chmod +x <file>.sh
+    ./<file>.sh
+
+  python_files: |
+    # To execute Python files in a virtual environment:
+    source venv/bin/activate
+    python <file>.py
+
+venv_cheat_sheet:
+  activate: |
+    # Activate virtual environment:
+    # For Unix-like systems (Linux/macOS):
+    source venv/bin/activate
+    # For Windows (Command Prompt/PowerShell):
+    # venv\Scripts\activate.bat  (Command Prompt)
+    # venv\Scripts\Activate.ps1 (PowerShell - execution policy might need adjustment)
+  deactivate: |
+    # Deactivate virtual environment:
+    deactivate
+  install_dependencies: |
+    # Install dependencies:
+    pip install -r requirements.txt
+  navigate_to_root: |
+    # Navigate to project root:
+    cd /path/to/project/root

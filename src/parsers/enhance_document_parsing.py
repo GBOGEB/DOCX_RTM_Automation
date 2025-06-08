@@ -21,18 +21,18 @@ if str(project_root) not in sys.path:
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 # Check for markdown library (now that it's working)
 try:
     import markdown
+
     MARKDOWN_AVAILABLE = True
     logger.info(
         "Markdown library available (version %s)",
-        getattr(markdown, '__version__', 'unknown')
+        getattr(markdown, "__version__", "unknown"),
     )
 except ImportError:
     MARKDOWN_AVAILABLE = False
@@ -41,6 +41,7 @@ except ImportError:
 # Check for python-docx
 try:
     from docx import Document
+
     DOCX_AVAILABLE = True
 except ImportError:
     DOCX_AVAILABLE = False
@@ -130,10 +131,7 @@ def parse_word_document(input_path, output_file=None, format_type="markdown"):
             )
 
         # Process paragraphs
-        current_section = {
-            "heading": document_data["metadata"]["title"],
-            "content": []
-        }
+        current_section = {"heading": document_data["metadata"]["title"], "content": []}
 
         for para in doc.paragraphs:
             if not para.text.strip():
@@ -146,22 +144,18 @@ def parse_word_document(input_path, output_file=None, format_type="markdown"):
                     document_data["content"].append(current_section)
                 # Start a new section
                 heading_level = (
-                    int(para.style.name[-1])
-                    if para.style.name[-1].isdigit()
-                    else 1
+                    int(para.style.name[-1]) if para.style.name[-1].isdigit() else 1
                 )
                 current_section = {
                     "heading": para.text,
                     "level": heading_level,
-                    "content": []
+                    "content": [],
                 }
             else:
                 # Add paragraph to current section
-                current_section["content"].append({
-                    "type": "paragraph",
-                    "text": para.text,
-                    "style": para.style.name
-                })
+                current_section["content"].append(
+                    {"type": "paragraph", "text": para.text, "style": para.style.name}
+                )
 
         # Add the last section if it has content
         if current_section["content"]:
@@ -175,6 +169,7 @@ def parse_word_document(input_path, output_file=None, format_type="markdown"):
     except Exception as e:
         logger.error(f"Error parsing Word document: {e}")
         import traceback
+
         traceback.print_exc()
         return None
 
@@ -185,7 +180,7 @@ def enhance_markdown_document(input_path, output_file=None, format_type="markdow
 
     try:
         # Read the markdown content
-        with open(input_path, 'r', encoding='utf-8') as f:
+        with open(input_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Determine output path if not specified
@@ -201,11 +196,11 @@ def enhance_markdown_document(input_path, output_file=None, format_type="markdow
         import re
 
         # Extract headings
-        heading_pattern = re.compile(r'^(#+)\s+(.*?)$', re.MULTILINE)
+        heading_pattern = re.compile(r"^(#+)\s+(.*?)$", re.MULTILINE)
         headings = [(len(h[0]), h[1]) for h in heading_pattern.findall(content)]
 
         # Extract potential requirement IDs
-        req_pattern = re.compile(r'([A-Z]+-\d+(?:\.\d+)*)')
+        req_pattern = re.compile(r"([A-Z]+-\d+(?:\.\d+)*)")
         requirements = req_pattern.findall(content)
 
         # If markdown library is available, also parse with it for validation
@@ -226,11 +221,9 @@ def enhance_markdown_document(input_path, output_file=None, format_type="markdow
                 "headings_count": len(headings),
                 "content_length": len(content),
                 "lines_count": len(content.splitlines()),
-                "markdown_processed": (
-                    MARKDOWN_AVAILABLE and html_content is not None
-                )
+                "markdown_processed": (MARKDOWN_AVAILABLE and html_content is not None),
             },
-            "content": content
+            "content": content,
         }
 
         # Add HTML content if available
@@ -245,6 +238,7 @@ def enhance_markdown_document(input_path, output_file=None, format_type="markdow
     except Exception as e:
         logger.error("Error enhancing Markdown document: %s", e)
         import traceback
+
         traceback.print_exc()
         return None
 
@@ -255,7 +249,7 @@ def enhance_json_document(input_path, output_file=None, format_type="json"):
 
     try:
         # Read the JSON content
-        with open(input_path, 'r', encoding='utf-8') as f:
+        with open(input_path, "r", encoding="utf-8") as f:
             data = json.load(f)
 
         # Determine output path if not specified
@@ -274,9 +268,9 @@ def enhance_json_document(input_path, output_file=None, format_type="json"):
             "metadata": {
                 "title": data.get("title", input_path.stem),
                 "original_file": str(input_path),
-                "processed_date": str(datetime.datetime.now())
+                "processed_date": str(datetime.datetime.now()),
             },
-            "content": data
+            "content": data,
         }
 
         # Save in appropriate format
@@ -287,6 +281,7 @@ def enhance_json_document(input_path, output_file=None, format_type="json"):
     except Exception as e:
         logger.error(f"Error enhancing JSON document: {e}")
         import traceback
+
         traceback.print_exc()
         return None
 
@@ -297,7 +292,7 @@ def enhance_yaml_document(input_path, output_file=None, format_type="yaml"):
 
     try:
         # Read the YAML content
-        with open(input_path, 'r', encoding='utf-8') as f:
+        with open(input_path, "r", encoding="utf-8") as f:
             data = yaml.safe_load(f)
 
         # Determine output path if not specified
@@ -316,9 +311,9 @@ def enhance_yaml_document(input_path, output_file=None, format_type="yaml"):
             "metadata": {
                 "title": data.get("title", input_path.stem),
                 "original_file": str(input_path),
-                "processed_date": str(datetime.datetime.now())
+                "processed_date": str(datetime.datetime.now()),
             },
-            "content": data
+            "content": data,
         }
 
         # Save in appropriate format
@@ -329,6 +324,7 @@ def enhance_yaml_document(input_path, output_file=None, format_type="yaml"):
     except Exception as e:
         logger.error(f"Error enhancing YAML document: {e}")
         import traceback
+
         traceback.print_exc()
         return None
 
@@ -341,6 +337,7 @@ def integrate_with_project_requirements():
         if project_req_path.exists():
             # Import dynamically to avoid issues
             import importlib.util
+
             spec = importlib.util.spec_from_file_location(
                 "project_requirements", project_req_path
             )
@@ -349,7 +346,7 @@ def integrate_with_project_requirements():
                 spec.loader.exec_module(project_req_module)
 
                 # Check if the module has expected functions
-                if hasattr(project_req_module, 'analyze_requirements'):
+                if hasattr(project_req_module, "analyze_requirements"):
                     logger.info("Successfully integrated with Project Requirements.py")
                     return project_req_module
                 else:
@@ -375,7 +372,7 @@ def check_integration_dependencies():
         "markdown": MARKDOWN_AVAILABLE,
         "python-docx": DOCX_AVAILABLE,
         "yaml": True,  # yaml is part of standard library or should be installed
-        "json": True   # json is part of standard library
+        "json": True,  # json is part of standard library
     }
 
     missing_deps = [name for name, available in dependencies.items() if not available]
@@ -396,12 +393,7 @@ def check_integration_dependencies():
 
 def format_type_to_extension(format_type):
     """Convert format type to file extension."""
-    format_map = {
-        "markdown": "md",
-        "json": "json",
-        "yaml": "yaml",
-        "yml": "yml"
-    }
+    format_map = {"markdown": "md", "json": "json", "yaml": "yaml", "yml": "yml"}
     return format_map.get(format_type.lower(), "txt")
 
 
@@ -412,7 +404,7 @@ def save_document_data(data, output_file, format_type):
 
     if format_type.lower() == "markdown":
         # Create markdown content
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             # Write metadata as YAML front matter
             f.write("---\n")
             yaml.dump(data["metadata"], f, default_flow_style=False)
@@ -433,11 +425,11 @@ def save_document_data(data, output_file, format_type):
                             f.write(item.get("text", "") + "\n\n")
 
     elif format_type.lower() in ["json"]:
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
     elif format_type.lower() in ["yaml", "yml"]:
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             yaml.dump(data, f, default_flow_style=False)
 
     logger.info(f"Saved enhanced document to {output_file}")
@@ -452,13 +444,20 @@ def list_available_input_files():
         if dir_path.exists() and dir_path.is_dir():
             for file_path in dir_path.glob("*.*"):
                 if file_path.suffix.lower() in [
-                    '.docx', '.doc', '.md', '.markdown', '.json', '.yaml', '.yml'
+                    ".docx",
+                    ".doc",
+                    ".md",
+                    ".markdown",
+                    ".json",
+                    ".yaml",
+                    ".yml",
                 ]:
                     available_files.append(str(file_path))
     return available_files
 
 
 # ...existing code...
+
 
 def main():
     """Main function for the enhance_document_parsing script."""
@@ -470,42 +469,38 @@ def main():
         "input_file",
         nargs="?",
         default=None,
-        help="Path to input document file (DOCX, MD, JSON, or YAML)"
+        help="Path to input document file (DOCX, MD, JSON, or YAML)",
     )
+    parser.add_argument("-o", "--output", help="Path for the enhanced output file")
     parser.add_argument(
-        "-o", "--output",
-        help="Path for the enhanced output file"
-    )
-    parser.add_argument(
-        "-f", "--format",
+        "-f",
+        "--format",
         choices=["markdown", "json", "yaml"],
         default="markdown",
-        help="Output format (default: markdown)"
+        help="Output format (default: markdown)",
     )
     parser.add_argument(
-        "--list",
-        action="store_true",
-        help="List available input files and exit"
+        "--list", action="store_true", help="List available input files and exit"
     )
     parser.add_argument(
         "--sample",
         action="store_true",
-        help="Use sample document if no input file is specified"
+        help="Use sample document if no input file is specified",
     )
     parser.add_argument(
         "--interactive",
         action="store_true",
-        help="Run in interactive mode if no input file is specified"
+        help="Run in interactive mode if no input file is specified",
     )
     parser.add_argument(
         "--check-deps",
         action="store_true",
-        help="Check integration dependencies and exit"
+        help="Check integration dependencies and exit",
     )
     parser.add_argument(
         "--integrate",
         action="store_true",
-        help="Enable integration with Project Requirements.py"
+        help="Enable integration with Project Requirements.py",
     )
 
     # Parse arguments with better error handling
@@ -542,14 +537,10 @@ def main():
             print("\nAvailable input files:")
             for file_path in available_files:
                 print(f"  {file_path}")
-            print(
-                f"\nExample: python {Path(sys.argv[0]).name} {available_files[0]}"
-            )
+            print(f"\nExample: python {Path(sys.argv[0]).name} {available_files[0]}")
         else:
             print("\nNo input files found in standard directories.")
-            print(
-                "Place files in input/, input/docx/, or input/markdown/ directories."
-            )
+            print("Place files in input/, input/docx/, or input/markdown/ directories.")
         return 0
 
     # Check dependencies before processing
@@ -572,11 +563,9 @@ def main():
             if not sample_path.exists():
                 # Create a sample document
                 sample_path.parent.mkdir(exist_ok=True, parents=True)
-                with open(sample_path, 'w', encoding='utf-8') as f:
+                with open(sample_path, "w", encoding="utf-8") as f:
                     f.write("# Sample Document\n\n")
-                    f.write(
-                        "This is a sample document for demonstration purposes.\n\n"
-                    )
+                    f.write("This is a sample document for demonstration purposes.\n\n")
                     f.write("## Requirements\n\n")
                     f.write("The following requirements are included:\n\n")
                     f.write("* REQ-001: First example requirement\n")
@@ -608,7 +597,7 @@ def main():
                     print("Exiting.")
                     return 0
                 if 1 <= choice <= len(available_files):
-                    input_file = available_files[choice-1]
+                    input_file = available_files[choice - 1]
                     print(f"Selected: {input_file}")
                 else:
                     print("Invalid selection. Exiting.")
@@ -623,16 +612,13 @@ def main():
                 "  1. Specify an input file: "
                 "python enhance_document_parsing.py input/myfile.docx"
             )
-            print(
-                "  2. Use --sample flag: python enhance_document_parsing.py --sample"
-            )
+            print("  2. Use --sample flag: python enhance_document_parsing.py --sample")
             print(
                 "  3. Use --interactive mode: "
                 "python enhance_document_parsing.py --interactive"
             )
             print(
-                "  4. List available files: "
-                "python enhance_document_parsing.py --list"
+                "  4. List available files: python enhance_document_parsing.py --list"
             )
             print(
                 "  5. Check dependencies: "
@@ -648,11 +634,7 @@ def main():
 
     # Process the document
     try:
-        result = enhance_document_parsing(
-            input_file,
-            args.output,
-            args.format
-        )
+        result = enhance_document_parsing(input_file, args.output, args.format)
 
         if result:
             print(f"\nSuccess! Enhanced document saved to: {result}")
@@ -661,7 +643,7 @@ def main():
             if project_req_module and args.integrate:
                 try:
                     # Try to analyze the enhanced document
-                    if hasattr(project_req_module, 'analyze_requirements'):
+                    if hasattr(project_req_module, "analyze_requirements"):
                         print("Running integrated requirements analysis...")
                         analysis_result = project_req_module.analyze_requirements(
                             str(result)
@@ -671,9 +653,7 @@ def main():
                         else:
                             print("⚠️ Requirements analysis completed with warnings")
                 except Exception as e:
-                    logger.warning(
-                        "Error in integrated requirements analysis: %s", e
-                    )
+                    logger.warning("Error in integrated requirements analysis: %s", e)
 
             return 0
         else:
@@ -683,6 +663,7 @@ def main():
     except Exception as e:
         logger.error("Unexpected error during processing: %s", e)
         import traceback
+
         traceback.print_exc()
         return 1
 

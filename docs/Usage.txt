@@ -1,0 +1,33 @@
+
+DOCX_RTM_Automation/
+├── src/                   # Source code
+│   ├── core/              # Core functionality
+│   │   ├── word_to_md.py  # DOCX to markdown conversion
+│   │   └── rtm_generator.py  # RTM generation logic
+│   └── modules/           # Support modules
+│       └── ascii_diagram.py  # Generate ASCII diagrams
+├── config/                # Configuration files
+│   └── paths.yaml         # Main configuration
+├── scripts/               # Helper scripts
+│   ├── compare_formats.py # Compare JSON/YAML outputs
+│   └── github_operations.py  # GitHub integration
+├── input/                 # Place input DOCX files here
+├── output/                # Generated outputs
+├── docs/                  # Documentation
+└── tests/                 # Test files
+
+
+Usage
+Converting Word to Markdown
+Cleaning Document Outline
+Generating ASCII Diagram
+Extracting Requirements and Generating RTM
+Running the Complete Pipeline
+Configuration
+The main configuration file is config/paths.yaml. It defines:
+
+File paths for input and output
+Pipeline steps to execute
+Pandoc options
+GitHub integration settings
+Example configuration:

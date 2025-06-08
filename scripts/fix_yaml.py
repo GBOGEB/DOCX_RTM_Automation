@@ -46,7 +46,7 @@ def fix_yaml_file(file_path):
 
         # New: Check for key without colon (likely key missing colon)
         stripped = line.strip()
-        indentation = len(line) - len(line.lstrip())
+        len(line) - len(line.lstrip())
 
         # If line has content, isn't a comment, isn't a list item, doesn't have a colon
         # and doesn't appear to be a continuation of a multi-line value:

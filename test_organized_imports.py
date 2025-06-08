@@ -10,6 +10,7 @@ from pathlib import Path
 src_path = Path(__file__).parent / "src"
 sys.path.insert(0, str(src_path))
 
+
 def test_imports():
     """Test importing from the organized structure."""
     print("🧪 Testing Organized Import Structure")
@@ -22,7 +23,7 @@ def test_imports():
         ("Word to MD", "parsers.try_word_to_md"),
         ("Enhanced Parser", "parsers.enhanced_word_to_md"),
         ("Port Manager", "utils.port_manager"),
-        ("Jenkins Integration", "integrations.jenkins_rtm_integration")
+        ("Jenkins Integration", "integrations.jenkins_rtm_integration"),
     ]
 
     successful_imports = 0
@@ -39,7 +40,7 @@ def test_imports():
 
     success_rate = (successful_imports / len(test_modules)) * 100
 
-    print(f"\n📊 IMPORT TEST RESULTS:")
+    print("\n📊 IMPORT TEST RESULTS:")
     print("=" * 30)
     print(f"   ✅ Successful imports: {successful_imports}/{len(test_modules)}")
     print(f"   📈 Success rate: {success_rate:.1f}%")
@@ -53,14 +54,16 @@ def test_imports():
 
     return success_rate >= 80
 
+
 def test_functionality():
     """Test basic functionality of key modules."""
-    print(f"\n🔧 Testing Basic Functionality:")
+    print("\n🔧 Testing Basic Functionality:")
     print("=" * 35)
 
     # Test JSON analyzer
     try:
         from analyzers.json_file_analyzer_safe import quick_json_health_check
+
         print("   ✅ JSON analyzer function accessible")
     except ImportError:
         print("   ❌ JSON analyzer function not accessible")
@@ -68,6 +71,7 @@ def test_functionality():
     # Test path helper
     try:
         import path_helper
+
         print("   ✅ Path helper accessible")
     except ImportError:
         print("   ❌ Path helper not accessible")
@@ -79,23 +83,31 @@ def test_functionality():
     else:
         print(f"   ❌ Config file missing: {config_path}")
 
+
 def show_usage_examples():
     """Show examples of using the organized structure."""
-    print(f"\n💡 USAGE EXAMPLES:")
+    print("\n💡 USAGE EXAMPLES:")
     print("=" * 25)
     print("Now you can use your organized RTM system like this:")
     print()
     print("🔍 Run JSON Analysis:")
-    print("   python -c \"import path_helper; from analyzers.json_file_analyzer_safe import main; main()\"")
+    print(
+        '   python -c "import path_helper; from analyzers.json_file_analyzer_safe import main; main()"'
+    )
     print()
     print("🚀 Run RTM Pipeline:")
-    print("   python -c \"import path_helper; from rtm.rtm_pipeline import main; main()\"")
+    print(
+        '   python -c "import path_helper; from rtm.rtm_pipeline import main; main()"'
+    )
     print()
     print("🌐 Start Web Dashboard:")
-    print("   python -c \"import path_helper; from dashboard.rtm_web_dashboard import main; main()\"")
+    print(
+        '   python -c "import path_helper; from dashboard.rtm_web_dashboard import main; main()"'
+    )
     print()
     print("📊 Or use the organized main file:")
     print("   python main_organized.py")
+
 
 def main():
     """Main test function."""
@@ -113,7 +125,7 @@ def main():
     show_usage_examples()
 
     # Final summary
-    print(f"\n🎊 TEST COMPLETE!")
+    print("\n🎊 TEST COMPLETE!")
     print("=" * 20)
 
     if imports_ok:
@@ -126,6 +138,7 @@ def main():
         print("🔧 Then test again with this script")
 
     return 0
+
 
 if __name__ == "__main__":
     main()

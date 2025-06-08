@@ -6,7 +6,6 @@ This script runs various code quality checks including flake8, and provides
 a comprehensive report on code quality issues and suggestions for fixes.
 """
 
-import os
 import sys
 import subprocess
 import json
@@ -15,8 +14,7 @@ import logging
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -26,7 +24,9 @@ class CodeQualityChecker:
 
     def __init__(self, project_root=None):
         """Initialize the code quality checker."""
-        self.project_root = Path(project_root) if project_root else Path(__file__).parent
+        self.project_root = (
+            Path(project_root) if project_root else Path(__file__).parent
+        )
         self.results = {}
 
     def run_flake8_check(self, target_files=None):
@@ -39,15 +39,19 @@ class CodeQualityChecker:
             "--extend-ignore=E203,W503,E501",
             "--exclude=.git,__pycache__,.venv,venv,build,dist,.ariana",
             "--statistics",
-            "--count"
+            "--count",
         ]
 
         # Determine files to check
         if target_files is None:
             python_files = list(self.project_root.glob("**/*.py"))
             python_files = [
-                f for f in python_files
-                if not any(exclude in str(f) for exclude in ['.venv', '__pycache__', '.git', '.ariana'])
+                f
+                for f in python_files
+                if not any(
+                    exclude in str(f)
+                    for exclude in [".venv", "__pycache__", ".git", ".ariana"]
+                )
             ]
         else:
             python_files = [Path(f) for f in target_files]
@@ -61,19 +65,25 @@ class CodeQualityChecker:
         for py_file in python_files:
             try:
                 cmd = ["flake8"] + flake8_config + [str(py_file)]
-                result = subprocess.run(cmd, capture_output=True, text=True, cwd=self.project_root)
+                result = subprocess.run(
+                    cmd, capture_output=True, text=True, cwd=self.project_root
+                )
 
                 if result.stdout.strip():
-                    for line in result.stdout.strip().split('\n'):
-                        if line.strip() and not line.startswith('Total'):
-                            all_issues.append({
-                                "file": str(py_file),
-                                "issue": line.strip(),
-                                "severity": self._classify_flake8_issue(line)
-                            })
+                    for line in result.stdout.strip().split("\n"):
+                        if line.strip() and not line.startswith("Total"):
+                            all_issues.append(
+                                {
+                                    "file": str(py_file),
+                                    "issue": line.strip(),
+                                    "severity": self._classify_flake8_issue(line),
+                                }
+                            )
 
             except FileNotFoundError:
-                logger.error("flake8 not found. Make sure it's installed: pip install flake8")
+                logger.error(
+                    "flake8 not found. Make sure it's installed: pip install flake8"
+                )
                 return {"status": "error", "message": "flake8 not installed"}
             except Exception as e:
                 logger.error("Error running flake8 on %s: %s", py_file, e)
@@ -88,22 +98,27 @@ class CodeQualityChecker:
             "total_issues": len(all_issues),
             "errors": error_count,
             "warnings": warning_count,
-            "issues": all_issues
+            "issues": all_issues,
         }
 
-        logger.info("Flake8 check completed: %d files, %d issues (%d errors, %d warnings)",
-                   len(python_files), len(all_issues), error_count, warning_count)
+        logger.info(
+            "Flake8 check completed: %d files, %d issues (%d errors, %d warnings)",
+            len(python_files),
+            len(all_issues),
+            error_count,
+            warning_count,
+        )
 
         return self.results["flake8"]
 
     def _classify_flake8_issue(self, issue_line):
         """Classify flake8 issue as error or warning."""
-        parts = issue_line.split(':')
+        parts = issue_line.split(":")
         if len(parts) >= 4:
             error_code = parts[3].strip().split()[0]
-            if error_code.startswith(('E', 'F')):
+            if error_code.startswith(("E", "F")):
                 return "error"
-            elif error_code.startswith('W'):
+            elif error_code.startswith("W"):
                 return "warning"
         return "warning"
 
@@ -116,7 +131,7 @@ class CodeQualityChecker:
         report = {
             "project": "DOCX RTM Automation v1.0",
             "summary": {},
-            "detailed_results": self.results
+            "detailed_results": self.results,
         }
 
         # Calculate summary statistics
@@ -140,7 +155,7 @@ class CodeQualityChecker:
             "total_issues": total_issues,
             "total_errors": total_errors,
             "total_warnings": total_warnings,
-            "quality_score": max(0, 100 - (total_errors * 5) - (total_warnings * 2))
+            "quality_score": max(0, 100 - (total_errors * 5) - (total_warnings * 2)),
         }
 
         # Save report
@@ -148,7 +163,7 @@ class CodeQualityChecker:
             output_path = Path(output_file)
             output_path.parent.mkdir(parents=True, exist_ok=True)
 
-            with open(output_path, 'w', encoding='utf-8') as f:
+            with open(output_path, "w", encoding="utf-8") as f:
                 json.dump(report, f, indent=2)
 
             logger.info("Code quality report saved to: %s", output_path)
@@ -159,9 +174,9 @@ class CodeQualityChecker:
 
     def _print_summary(self, report):
         """Print a summary of the code quality results."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("CODE QUALITY REPORT")
-        print("="*60)
+        print("=" * 60)
 
         summary = report["summary"]
         print(f"Project: {report['project']}")
@@ -188,20 +203,33 @@ class CodeQualityChecker:
                     if len(results["issues"]) > 3:
                         print(f"    ... and {len(results['issues']) - 3} more")
 
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
 
 
 def main():
     """Main function to run code quality checks."""
     import argparse
 
-    parser = argparse.ArgumentParser(description="Run code quality checks on the RTM Automation project")
-    parser.add_argument("--output", "-o", help="Output file for the report (JSON format)")
-    parser.add_argument("--files", "-f", nargs="+", help="Specific files to check (default: all Python files)")
-    parser.add_argument("--checks", "-c", nargs="+",
-                       choices=["flake8", "all"],
-                       default=["all"],
-                       help="Which checks to run")
+    parser = argparse.ArgumentParser(
+        description="Run code quality checks on the RTM Automation project"
+    )
+    parser.add_argument(
+        "--output", "-o", help="Output file for the report (JSON format)"
+    )
+    parser.add_argument(
+        "--files",
+        "-f",
+        nargs="+",
+        help="Specific files to check (default: all Python files)",
+    )
+    parser.add_argument(
+        "--checks",
+        "-c",
+        nargs="+",
+        choices=["flake8", "all"],
+        default=["all"],
+        help="Which checks to run",
+    )
 
     args = parser.parse_args()
 
@@ -228,7 +256,13 @@ def main():
     # Return appropriate exit code
     if checker.results:
         total_errors = sum(
-            len([issue for issue in results.get("issues", []) if issue.get("severity") == "error"])
+            len(
+                [
+                    issue
+                    for issue in results.get("issues", [])
+                    if issue.get("severity") == "error"
+                ]
+            )
             for results in checker.results.values()
             if isinstance(results, dict)
         )

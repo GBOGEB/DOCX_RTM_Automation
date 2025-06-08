@@ -5,6 +5,7 @@ Check what files are actually available for processing
 
 from pathlib import Path
 
+
 def main():
     """Check available files and show correct commands."""
     print("🔍 RTM File Availability Check")
@@ -25,22 +26,24 @@ def main():
     print(f"📊 Found {len(docx_files)} DOCX files and {len(md_files)} Markdown files")
 
     if docx_files:
-        print(f"\n📄 Available DOCX Files:")
+        print("\n📄 Available DOCX Files:")
         for i, file in enumerate(docx_files, 1):
             print(f"   {i}. {file.name}")
 
-        print(f"\n✅ Correct commands for your DOCX files:")
+        print("\n✅ Correct commands for your DOCX files:")
         for file in docx_files[:3]:  # Show first 3
             print(f"   python enhance_document_parsing.py input/{file.name} -f json")
 
     if md_files:
-        print(f"\n📝 Available Markdown Files:")
+        print("\n📝 Available Markdown Files:")
         for i, file in enumerate(md_files, 1):
             print(f"   {i}. {file.name}")
 
-        print(f"\n✅ Correct commands for your Markdown files:")
+        print("\n✅ Correct commands for your Markdown files:")
         for file in md_files[:3]:  # Show first 3
-            print(f"   python digital_twin_parser.py input/{file.name} -o output/{file.stem}_twin")
+            print(
+                f"   python digital_twin_parser.py input/{file.name} -o output/{file.stem}_twin"
+            )
 
     if not docx_files and not md_files:
         print("\n❌ No documents found in input/ directory")
@@ -52,8 +55,9 @@ def main():
         print("\n🔧 Try running:")
         print("   python enhance_document_parsing.py --list")
     else:
-        print(f"\n🚀 Process all available documents with:")
-        print(f"   python process_real_documents.py")
+        print("\n🚀 Process all available documents with:")
+        print("   python process_real_documents.py")
+
 
 if __name__ == "__main__":
     main()

@@ -3,7 +3,6 @@
 Fix import errors in the agents directory by correcting import paths.
 """
 
-import os
 import re
 from pathlib import Path
 

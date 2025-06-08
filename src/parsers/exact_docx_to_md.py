@@ -3,11 +3,11 @@
 Exact DOCX to Markdown converter that preserves all formatting details.
 Creates an identical markdown representation of the Word document.
 """
+
 import os
 import sys
 import re
 from pathlib import Path
-from collections import defaultdict
 
 
 def convert_docx_to_markdown_exact(docx_file, output_file=None):
@@ -31,7 +31,6 @@ def convert_docx_to_markdown_exact(docx_file, output_file=None):
 
         subprocess.run([sys.executable, "-m", "pip", "install", "python-docx"])
         from docx import Document
-        from docx.shared import Pt, RGBColor
         from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
     print(f"Converting {docx_file} to exact Markdown representation...")
@@ -57,7 +56,6 @@ def convert_docx_to_markdown_exact(docx_file, output_file=None):
 
     # Track section hierarchy
     section_info = {}
-    current_section = None
     outline_levels = [0] * 10  # To track the outline numbers at different levels
 
     with open(output_file, "w", encoding="utf-8") as out_file:
@@ -117,7 +115,6 @@ def convert_docx_to_markdown_exact(docx_file, output_file=None):
                         "full_title": text,
                         "index": para_idx,
                     }
-                    current_section = section_id
 
                     # Write heading with original text and an HTML comment for metadata
                     out_file.write(f"{'#' * level} {text}\n")
@@ -189,7 +186,6 @@ def convert_docx_to_markdown_exact(docx_file, output_file=None):
             else:
                 # Process runs to extract exact formatting
                 formatted_parts = []
-                contains_formatting = False
 
                 for run in para.runs:
                     text = run.text
@@ -203,20 +199,16 @@ def convert_docx_to_markdown_exact(docx_file, output_file=None):
                     if run.bold and run.italic:
                         format_start += "***"
                         format_end = "***" + format_end
-                        contains_formatting = True
                     elif run.bold:
                         format_start += "**"
                         format_end = "**" + format_end
-                        contains_formatting = True
                     elif run.italic:
                         format_start += "*"
                         format_end = "*" + format_end
-                        contains_formatting = True
 
                     if run.underline:
                         format_start += "__"
                         format_end = "__" + format_end
-                        contains_formatting = True
 
                     # Additional formatting as HTML comment if needed (color, size, etc.)
                     extra_format = []
@@ -276,7 +268,7 @@ def convert_docx_to_markdown_exact(docx_file, output_file=None):
             # Table metadata as HTML comment
             rows = len(table.rows)
             cols = len(table.rows[0].cells) if rows > 0 else 0
-            out_file.write(f"<!-- Table {table_idx+1}: {rows}x{cols} -->\n")
+            out_file.write(f"<!-- Table {table_idx + 1}: {rows}x{cols} -->\n")
 
             # Process all table rows
             for row_idx, row in enumerate(table.rows):
@@ -329,7 +321,7 @@ def main():
         return 1
 
     try:
-        result = convert_docx_to_markdown_exact(docx_file, output_file)
+        convert_docx_to_markdown_exact(docx_file, output_file)
         return 0
     except Exception as e:
         print(f"Error during conversion: {e}")

@@ -1,148 +1,243 @@
-#!/usr/bin/env python3
 """
-Common agent functionality for RTM automation system
+Common components for the agent system.
+
+This module contains shared definitions, enums, and base classes used by all agents.
 """
 
-import sys
+import enum
+import time
+import uuid
+import queue
 import logging
-from pathlib import Path
-from abc import ABC, abstractmethod
+from typing import Dict, Any, List, Optional, Union, Callable, TypeVar
+from dataclasses import dataclass, field, asdict
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
+# Common message types
+PING_REQUEST = "ping"
+PING_RESPONSE = "pong"
+ERROR_RESPONSE = "error"
+INFO_MESSAGE = "info"
 
-
-class Agent(ABC):
-    """Base class for RTM automation agents."""
-
-    def __init__(self, name=None):
-        """Initialize the agent with a name."""
-        self.name = name or self.__class__.__name__
-        self.logger = logging.getLogger(f"agent.{self.name}")
-
-    @abstractmethod
-    def execute(self, *args, **kwargs):
-        """Execute the agent's main functionality."""
-        pass
-
-    def validate_inputs(self, inputs):
-        """Validate agent inputs."""
-        if not inputs:
-            raise ValueError("No inputs provided")
-        return True
-
-    def log_status(self, message, level="info"):
-        """Log status message."""
-        getattr(self.logger, level)(message)
+class AgentRole(enum.Enum):
+    """Roles that agents can fulfill in the system."""
+    ORCHESTRATOR = "orchestrator"  # Coordinates other agents
+    ANALYSER = "analyzer"  # Analyzes content
+    ANALYST = "analyst"    # Alternative spelling for analyzer
+    GENERATOR = "generator"  # Generates content
+    TOOL = "tool"  # Provides specific functionality
+    ASSISTANT = "assistant"  # Provides assistance to users
+    WORKER = "worker"  # Performs tasks
 
 
-class DocumentAgent(Agent):
-    """Agent for document processing tasks."""
-
-    def execute(self, document_path, output_format="json"):
-        """Execute document processing."""
-        self.log_status(f"Processing document: {document_path}")
-
-        # Validate document exists
-        if not Path(document_path).exists():
-            raise FileNotFoundError(f"Document not found: {document_path}")
-
-        self.log_status(f"Document processing completed for {document_path}")
-        return {"status": "success", "format": output_format}
-
-
-class RequirementAgent(Agent):
-    """Agent for requirement extraction and analysis."""
-
-    def execute(self, source_data, extraction_patterns=None):
-        """Execute requirement extraction."""
-        self.log_status("Starting requirement extraction")
-
-        if extraction_patterns is None:
-            extraction_patterns = [
-                r"(?i)(?:REQ|FR|NFR)-\d+(?:\.\d+)*",
-                r"(?i)requirement:?\s*(.+)",
-            ]
-
-        # Simulate requirement extraction
-        requirements = []
-        for pattern in extraction_patterns:
-            # In real implementation, would use regex matching
-            requirements.append(f"Found pattern: {pattern}")
-
-        self.log_status(f"Extracted {len(requirements)} requirements")
-        return {"requirements": requirements, "count": len(requirements)}
+class AgentCapability(enum.Enum):
+    """Capabilities that agents can have."""
+    DOCUMENT_PARSING = "document_parsing"
+    DOCUMENT_GENERATION = "document_generation"
+    CODE_GENERATION = "code_generation"
+    CODE_ANALYSIS = "code_analysis"
+    IMPACT_ANALYSIS = "impact_analysis"
+    GIT_OPERATIONS = "git_operations"
+    VERSION_CONTROL = "version_control"
+    REQUIREMENT_ANALYSIS = "requirement_analysis"
+    TEST_PLAN_GENERATION = "test_plan_generation"
+    TRACEABILITY_ANALYSIS = "traceability_analysis"
+    CICD_PIPELINE_ANALYSIS = "cicd_pipeline_analysis"
+    CICD_METRICS_COLLECTION = "cicd_metrics_collection"
+    CICD_IMPROVEMENT_PLANNING = "cicd_improvement_planning"
+    CICD_BUILD_FAILURE_ANALYSIS = "cicd_build_failure_analysis"
 
 
-class QualityAgent(Agent):
-    """Agent for quality assurance and verification."""
-
-    def execute(self, target_files=None, scan_level="light"):
-        """Execute quality checks."""
-        self.log_status(f"Running {scan_level} quality scan")
-
-        if target_files is None:
-            target_files = [
-                "enhance_document_parsing.py",
-                "digital_twin_parser.py"
-            ]
-
-        # Simulate quality checks
-        results = {}
-        for file_path in target_files:
-            if Path(file_path).exists():
-                results[file_path] = "PASS"
-                self.log_status(f"Quality check passed: {file_path}")
-            else:
-                results[file_path] = "NOT_FOUND"
-                self.log_status(f"File not found: {file_path}", "warning")
-
-        return {"scan_level": scan_level, "results": results}
+class AgentPriority(enum.Enum):
+    """Priority levels for agent tasks and messages."""
+    LOW = 0
+    MEDIUM = 1
+    HIGH = 2
+    CRITICAL = 3
 
 
-def create_agent(agent_type, **kwargs):
-    """Factory function to create agents."""
-    agents = {
-        "document": DocumentAgent,
-        "requirement": RequirementAgent,
-        "quality": QualityAgent,
-    }
+# Define type variables for generic validation
+T = TypeVar('T')
 
-    if agent_type not in agents:
-        raise ValueError(f"Unknown agent type: {agent_type}")
+def validate_input(value: Any, expected_type: Union[type, List[type]],
+                  field_name: str, allow_none: bool = False,
+                  custom_validator: Optional[Callable[[Any], bool]] = None,
+                  error_message: Optional[str] = None) -> T:
+    """
+    Validate that an input value meets expected criteria.
 
-    return agents[agent_type](**kwargs)
+    Args:
+        value: The value to validate
+        expected_type: Type or list of types the value should be
+        field_name: Name of the field (for error messages)
+        allow_none: Whether None is an acceptable value
+        custom_validator: Optional function for additional validation
+        error_message: Optional custom error message
+
+    Returns:
+        The validated value (potentially transformed)
+
+    Raises:
+        ValueError: If validation fails
+        TypeError: If type check fails
+    """
+    # Handle None values
+    if value is None:
+        if allow_none:
+            return None
+        raise ValueError(f"{field_name} cannot be None")
+
+    # Type checking
+    expected_types = expected_type if isinstance(expected_type, list) else [expected_type]
+    if not any(isinstance(value, t) for t in expected_types):
+        type_names = " or ".join(t.__name__ for t in expected_types)
+        raise TypeError(
+            error_message or f"{field_name} must be of type {type_names}, got {type(value).__name__}"
+        )
+
+    # Custom validation
+    if custom_validator and not custom_validator(value):
+        raise ValueError(
+            error_message or f"{field_name} failed custom validation"
+        )
+
+    return value
 
 
-def main():
-    """Test agent functionality."""
-    print("🤖 RTM Agent System Test")
-    print("=" * 30)
+@dataclass
+class AgentMessage:
+    """Message passed between agents."""
+    sender_id: str
+    recipient_id: str
+    message_type: str
+    content: Dict[str, Any]
+    timestamp: float = field(default_factory=time.time)
+    message_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    priority: AgentPriority = AgentPriority.MEDIUM
 
-    # Test document agent
-    doc_agent = create_agent("document", name="DocProcessor")
-    try:
-        result = doc_agent.execute("test_document.txt", "json")
-        print(f"Document agent test: {result}")
-    except Exception as e:
-        print(f"Document agent error: {e}")
-
-    # Test requirement agent
-    req_agent = create_agent("requirement", name="ReqExtractor")
-    result = req_agent.execute("sample data")
-    print(f"Requirement agent test: {result}")
-
-    # Test quality agent
-    quality_agent = create_agent("quality", name="QualityChecker")
-    result = quality_agent.execute(scan_level="light")
-    print(f"Quality agent test: {result}")
-
-    print("\n✅ Agent system tests completed")
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert message to dictionary."""
+        return asdict(self)
 
 
-if __name__ == "__main__":
-    main()
+@dataclass
+class AgentConfig:
+    """Configuration for an agent."""
+    agent_id: str
+    name: str
+    role: AgentRole
+    capabilities: List[AgentCapability]
+    max_tasks: int = 10
+    timeout: float = 30.0
+    retry_count: int = 3
+    debug_mode: bool = False
+
+    def __post_init__(self):
+        """Validate configuration after initialization."""
+        validate_input(self.agent_id, str, "agent_id")
+        validate_input(self.name, str, "name")
+        validate_input(self.role, AgentRole, "role")
+        validate_input(self.capabilities, list, "capabilities")
+        validate_input(self.max_tasks, int, "max_tasks",
+                      custom_validator=lambda x: x > 0)
+        validate_input(self.timeout, [int, float], "timeout",
+                      custom_validator=lambda x: x > 0)
+
+
+@dataclass
+class AgentStatus:
+    """Status information for an agent."""
+    agent_id: str
+    is_active: bool = True
+    current_tasks: int = 0
+    completed_tasks: int = 0
+    failed_tasks: int = 0
+    last_heartbeat: float = field(default_factory=time.time)
+    status_message: str = "Ready"
+
+    def update_heartbeat(self):
+        """Update the last heartbeat timestamp."""
+        self.last_heartbeat = time.time()
+
+
+class BaseAgent:
+    """Base class for all agents in the system."""
+
+    def __init__(self, config: AgentConfig):
+        """Initialize the agent with configuration."""
+        self.config = config
+        self.status = AgentStatus(agent_id=config.agent_id)
+        self.task_queue = queue.Queue(maxsize=config.max_tasks)
+        self.logger = logging.getLogger(f"Agent.{config.name}")
+        self._running = False
+
+    def start(self) -> bool:
+        """Start the agent."""
+        try:
+            self._running = True
+            self.status.is_active = True
+            self.status.status_message = "Running"
+            self.logger.info(f"Agent {self.config.name} started")
+            return True
+        except Exception as e:
+            self.logger.error(f"Failed to start agent: {e}")
+            return False
+
+    def stop(self) -> bool:
+        """Stop the agent."""
+        try:
+            self._running = False
+            self.status.is_active = False
+            self.status.status_message = "Stopped"
+            self.logger.info(f"Agent {self.config.name} stopped")
+            return True
+        except Exception as e:
+            self.logger.error(f"Failed to stop agent: {e}")
+            return False
+
+    def is_running(self) -> bool:
+        """Check if the agent is running."""
+        return self._running and self.status.is_active
+
+    def get_status(self) -> AgentStatus:
+        """Get current agent status."""
+        self.status.update_heartbeat()
+        return self.status
+
+    def can_handle_capability(self, capability: AgentCapability) -> bool:
+        """Check if agent can handle a specific capability."""
+        return capability in self.config.capabilities
+
+    def add_task(self, task: Dict[str, Any]) -> bool:
+        """Add a task to the agent's queue."""
+        try:
+            if self.task_queue.full():
+                self.logger.warning("Task queue is full, cannot add new task")
+                return False
+
+            self.task_queue.put(task, block=False)
+            self.status.current_tasks = self.task_queue.qsize()
+            return True
+        except Exception as e:
+            self.logger.error(f"Failed to add task: {e}")
+            return False
+
+    def process_message(self, message: AgentMessage) -> Optional[AgentMessage]:
+        """Process an incoming message."""
+        self.logger.debug(f"Processing message: {message.message_type}")
+
+        # Handle common message types
+        if message.message_type == PING_REQUEST:
+            return AgentMessage(
+                sender_id=self.config.agent_id,
+                recipient_id=message.sender_id,
+                message_type=PING_RESPONSE,
+                content={"status": "ok", "timestamp": time.time()}
+            )
+
+        # Override in subclasses for specific message handling
+        return self._handle_custom_message(message)
+
+    def _handle_custom_message(self, message: AgentMessage) -> Optional[AgentMessage]:
+        """Handle custom message types. Override in subclasses."""
+        self.logger.warning(f"Unhandled message type: {message.message_type}")
+        return None

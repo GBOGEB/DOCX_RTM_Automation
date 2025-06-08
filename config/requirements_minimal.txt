@@ -1,0 +1,13 @@
+# Minimal requirements for the project
+
+# Core dependencies
+docx==0.2.4  # Library for working with .docx files
+openpyxl==3.1.2  # Library for working with Excel files
+
+# Automation and utilities
+python-docx==0.8.11  # Advanced .docx manipulation
+pandas==2.0.3  # Data analysis and manipulation
+xlrd==2.0.1  # Reading data from Excel files
+
+# Optional dependencies for testing
+pytest==7.4.0  # Testing framework

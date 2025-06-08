@@ -61,7 +61,6 @@ def extract_requirements_from_markdown_table(document_path):
         print("Warning: '## Requirements' section or table not found.")
         return []
 
-    header_row_content = []
     data_rows_content = []
     current_row_cells = []
     current_cell_texts = []
@@ -89,7 +88,7 @@ def extract_requirements_from_markdown_table(document_path):
                 current_cell_texts = []
         elif token.type == "tr_close":
             if is_processing_header:
-                header_row_content = list(current_row_cells)  # Capture header
+                list(current_row_cells)  # Capture header
                 is_processing_header = False
             elif current_row_cells:  # Avoid adding empty rows if any
                 data_rows_content.append(list(current_row_cells))  # Capture data row

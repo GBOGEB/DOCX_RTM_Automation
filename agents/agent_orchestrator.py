@@ -96,9 +96,7 @@ class AgentOrchestrator:
         self.orchestrator_agent.agent_id = "orchestrator"
         self.orchestrator_agent.role = AgentRole.ORCHESTRATOR
         self.orchestrator_agent.output_handler = self.output_handler
-        self.orchestrator_agent.capabilities = (
-            []
-        )  # Orchestrator might not have specific capabilities
+        self.orchestrator_agent.capabilities = []  # Orchestrator might not have specific capabilities
 
         self.register_agent(self.orchestrator_agent)
 
@@ -411,9 +409,9 @@ class AgentOrchestrator:
 
                 if not repo_path_result or not os.path.isdir(repo_path_result):
                     workflow_status["steps"][-1]["status"] = "failed"
-                    workflow_status["steps"][-1][
-                        "error"
-                    ] = f"Failed to clone/pull repository. Path: {repo_path_result}"
+                    workflow_status["steps"][-1]["error"] = (
+                        f"Failed to clone/pull repository. Path: {repo_path_result}"
+                    )
                     raise ValueError(
                         f"Failed to clone/pull repository. Path: {repo_path_result}"
                     )
@@ -541,9 +539,9 @@ class AgentOrchestrator:
                     generated_code_path
                 ):
                     workflow_status["steps"][-1]["status"] = "failed"
-                    workflow_status["steps"][-1][
-                        "error"
-                    ] = "Code generation failed or file not saved."
+                    workflow_status["steps"][-1]["error"] = (
+                        "Code generation failed or file not saved."
+                    )
                     raise ValueError("Code generation failed.")
 
                 workflow_status["steps"][-1]["status"] = "completed"

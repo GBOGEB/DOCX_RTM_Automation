@@ -6,7 +6,7 @@ Process Your Actual RTM Documents - Use your real documents for RTM automation
 import subprocess
 import sys
 from pathlib import Path
-import json
+
 
 def main():
     """Process your actual available documents."""
@@ -17,10 +17,10 @@ def main():
     input_dir = Path("input")
     available_docs = {
         "docx": list(input_dir.glob("*.docx")),
-        "md": list(input_dir.glob("*.md"))
+        "md": list(input_dir.glob("*.md")),
     }
 
-    print(f"📊 Found documents:")
+    print("📊 Found documents:")
     for ext, files in available_docs.items():
         print(f"   {ext.upper()}: {len(files)} files")
         for f in files:
@@ -40,21 +40,37 @@ def main():
 
         try:
             # Process to JSON
-            result = subprocess.run([
-                sys.executable, "enhance_document_parsing.py",
-                str(docx_file), "-f", "json"
-            ], capture_output=True, text=True, timeout=120)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "enhance_document_parsing.py",
+                    str(docx_file),
+                    "-f",
+                    "json",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
 
             if result.returncode == 0:
-                print(f"   ✅ JSON conversion: SUCCESS")
+                print("   ✅ JSON conversion: SUCCESS")
                 success_count += 1
 
                 # Also try YAML
-                subprocess.run([
-                    sys.executable, "enhance_document_parsing.py",
-                    str(docx_file), "-f", "yaml"
-                ], capture_output=True, text=True, timeout=120)
-                print(f"   ✅ YAML conversion: SUCCESS")
+                subprocess.run(
+                    [
+                        sys.executable,
+                        "enhance_document_parsing.py",
+                        str(docx_file),
+                        "-f",
+                        "yaml",
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=120,
+                )
+                print("   ✅ YAML conversion: SUCCESS")
 
             else:
                 print(f"   ⚠️ Issues: {result.stderr[:200]}...")
@@ -68,13 +84,21 @@ def main():
         print(f"\n📝 Creating digital twin for {md_file.name}...")
 
         try:
-            result = subprocess.run([
-                sys.executable, "digital_twin_parser.py",
-                str(md_file), "-o", f"output/{md_file.stem}_digital_twin"
-            ], capture_output=True, text=True, timeout=120)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "digital_twin_parser.py",
+                    str(md_file),
+                    "-o",
+                    f"output/{md_file.stem}_digital_twin",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
 
             if result.returncode == 0:
-                print(f"   ✅ Digital twin: SUCCESS")
+                print("   ✅ Digital twin: SUCCESS")
                 success_count += 1
             else:
                 print(f"   ⚠️ Issues: {result.stderr[:200]}...")
@@ -84,16 +108,16 @@ def main():
 
     # Summary
     success_rate = (success_count / total_count * 100) if total_count > 0 else 0
-    print(f"\n🎯 Processing Summary:")
+    print("\n🎯 Processing Summary:")
     print(f"   Documents processed: {success_count}/{total_count}")
     print(f"   Success rate: {success_rate:.1f}%")
 
     if success_rate >= 75:
-        print(f"   🎉 EXCELLENT! Your RTM system is processing real documents!")
+        print("   🎉 EXCELLENT! Your RTM system is processing real documents!")
     elif success_rate >= 50:
-        print(f"   ✅ GOOD! Most documents processed successfully")
+        print("   ✅ GOOD! Most documents processed successfully")
     else:
-        print(f"   ⚠️ Some issues - check individual results above")
+        print("   ⚠️ Some issues - check individual results above")
 
     # Show output files
     output_dir = Path("output")
@@ -106,10 +130,11 @@ def main():
         if len(output_files) > 10:
             print(f"   ... and {len(output_files) - 10} more files")
 
-    print(f"\n🚀 Your RTM automation is processing real enterprise documents!")
-    print(f"   Check the output/ directory for JSON, YAML, and digital twin files")
+    print("\n🚀 Your RTM automation is processing real enterprise documents!")
+    print("   Check the output/ directory for JSON, YAML, and digital twin files")
 
     return 0 if success_rate >= 50 else 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

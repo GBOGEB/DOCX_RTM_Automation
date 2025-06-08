@@ -7,6 +7,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 def run_command(command_name):
     """Run a specific RTM command."""
     commands = {
@@ -25,12 +26,12 @@ def run_command(command_name):
         "terminal_analyzer": "terminal_json_analyzer.py",
         "quick_health": "quick_health_check.py",
         "organize": "organize_project_structure.py",
-        "check_backup": "check_backup_and_organize.py"
+        "check_backup": "check_backup_and_organize.py",
     }
 
     if command_name not in commands:
         print(f"❌ Unknown command: {command_name}")
-        print(f"📋 Available commands:")
+        print("📋 Available commands:")
         for cmd, script in commands.items():
             exists = "✅" if Path(script).exists() else "❌"
             print(f"   {exists} {cmd:20} -> {script}")
@@ -40,7 +41,7 @@ def run_command(command_name):
 
     if not Path(script_path).exists():
         print(f"❌ Script not found: {script_path}")
-        print(f"💡 Available scripts in directory:")
+        print("💡 Available scripts in directory:")
 
         # Show what Python files are actually available
         py_files = list(Path(".").glob("*.py"))
@@ -60,6 +61,7 @@ def run_command(command_name):
         print(f"❌ Error running command: {e}")
         return 1
 
+
 def main():
     """Main command runner."""
     if len(sys.argv) != 2:
@@ -77,7 +79,7 @@ def main():
         print("   python run_commands.py check_backup")
 
         # Show available scripts
-        print(f"\n📁 Available Python files:")
+        print("\n📁 Available Python files:")
         py_files = list(Path(".").glob("*.py"))
         for py_file in sorted(py_files):
             print(f"   📄 {py_file}")
@@ -86,6 +88,7 @@ def main():
 
     command_name = sys.argv[1]
     return run_command(command_name)
+
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -147,7 +147,6 @@ def generate_structure_txt(structure_data, output_file: Path):
         headings = structure_data.get("headings", [])
 
         # Build a tree structure for hierarchical display
-        heading_tree = {}
         level_stack = [0] * 10  # Track current position at each level
 
         for i, heading in enumerate(headings):

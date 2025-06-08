@@ -127,7 +127,7 @@ def check_system_dependencies():
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
-                timeout=2  # Add timeout to prevent hanging
+                timeout=2,  # Add timeout to prevent hanging
             )
             if result.returncode == 0:
                 print(f"{dep:10} - Installed ({description})")

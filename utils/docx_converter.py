@@ -116,7 +116,7 @@ class DocxConverter:
                         output_file,
                     ]
 
-                    result = subprocess.run(
+                    subprocess.run(
                         extract_cmd, check=True, capture_output=True, text=True
                     )
                     self.output_handler.log_info(
@@ -135,7 +135,7 @@ class DocxConverter:
                         output_file,
                     ]
 
-                    result = subprocess.run(
+                    subprocess.run(
                         convert_cmd, check=True, capture_output=True, text=True
                     )
                     self.output_handler.log_info(
@@ -269,6 +269,7 @@ def convert_basic(docx_file, output_file=None):
         logging.error(f"Basic conversion failed: {e}")
         raise
 
+
 def convert_with_pandoc(docx_file, output_file=None):
     """Convert using pandoc for better formatting."""
     try:
@@ -283,19 +284,25 @@ def convert_with_pandoc(docx_file, output_file=None):
         logging.error(f"Pandoc conversion failed: {e}")
         raise
 
+
 def convert_with_metadata(docx_file, output_file=None, extract_outline=True):
     """Convert with metadata extraction."""
     try:
         # Import from local module
         sys.path.append(str(Path(__file__).resolve().parent.parent))
-        from src.parsers.enhanced_word_to_md import convert_docx_to_markdown_with_metadata
+        from src.parsers.enhanced_word_to_md import (
+            convert_docx_to_markdown_with_metadata,
+        )
 
-        result = convert_docx_to_markdown_with_metadata(docx_file, output_file, extract_outline)
+        result = convert_docx_to_markdown_with_metadata(
+            docx_file, output_file, extract_outline
+        )
         logging.info(f"Enhanced conversion completed: {result[0]}")
         return result
     except Exception as e:
         logging.error(f"Enhanced conversion failed: {e}")
         raise
+
 
 def convert_exact(docx_file, output_file=None):
     """Convert with exact detail preservation."""
@@ -311,16 +318,17 @@ def convert_exact(docx_file, output_file=None):
         logging.error(f"Exact conversion failed: {e}")
         raise
 
+
 def main():
     """Command-line interface for the converter."""
     parser = argparse.ArgumentParser(description="Convert DOCX to Markdown")
-    parser.add_argument("input", nargs='?', help="Input DOCX file")
+    parser.add_argument("input", nargs="?", help="Input DOCX file")
     parser.add_argument("-o", "--output", help="Output markdown file")
     parser.add_argument(
         "--method",
         choices=["basic", "pandoc", "enhanced", "exact"],
         default="enhanced",
-        help="Conversion method to use"
+        help="Conversion method to use",
     )
     parser.add_argument("--list", action="store_true", help="List available documents")
 
@@ -362,8 +370,10 @@ def main():
     except Exception as e:
         print(f"Conversion failed: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

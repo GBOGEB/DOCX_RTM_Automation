@@ -1,0 +1,42 @@
+# Base configuration for DOCX RTM Automation
+
+paths:
+  input_dir: input
+  output_dir: output
+  temp_dir: temp
+  rtm_output_dir: output/rtm
+  visualization_dir: output/rtm_viz
+
+settings:
+  verbose: false
+  debug: false
+  overwrite_existing: false
+  auto_create_dirs: true
+  timestamp_output: true
+
+processing:
+  max_threads: 4
+  chunk_size: 1000
+  file_extensions:
+    - .docx
+    - .doc
+    - .md
+    - .txt
+
+visualization:
+  theme: light
+  directed_graph: true
+  include_orphans: true
+  group_by: type
+  label_size: medium
+  arrow_style: solid
+
+extract:
+  requirement_patterns:
+    - REQ-\d+(?:-\d+)*
+    - FR-\d+
+    - NFR-\d+
+  test_case_patterns:
+    - TC-\d+(?:-\d+)*
+    - TEST-\d+
+  link_extract_method: regex

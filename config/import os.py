@@ -11,7 +11,7 @@ def load_github_api_key():
 
 def main():
     try:
-        key = load_github_api_key()
+        load_github_api_key()
         # Use the API key for your GitHub interactions
         print("GitHub API key loaded successfully.")
         # TODO: Add code here to call GitHub APIs

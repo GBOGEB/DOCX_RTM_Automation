@@ -566,9 +566,7 @@ def main():
                 logger.info(f"Created default test file: {test_md_path}")
             except IOError as e:
                 logger.error(f"Failed to create test file {test_md_path}: {e}")
-                args.input = (
-                    []
-                )  # Ensure args.input is an empty list if file creation fails
+                args.input = []  # Ensure args.input is an empty list if file creation fails
 
     if (
         not args.input

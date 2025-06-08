@@ -11,60 +11,71 @@ src_path = Path(__file__).parent / "src"
 if src_path.exists():
     sys.path.insert(0, str(src_path))
 
+
 def run_json_analyzer():
     """Run JSON analysis."""
     try:
         from analyzers.json_file_analyzer_safe import main
-        print("🔍 Running JSON Analyzer...")
+
+        print("[SEARCH] Running JSON Analyzer...")
         return main()
     except ImportError as e:
-        print(f"❌ Could not import JSON analyzer: {e}")
+        print(f"[ERROR] Could not import JSON analyzer: {e}")
         # Fallback to direct execution
         import subprocess
+
         analyzer_path = src_path / "analyzers" / "json_file_analyzer_safe.py"
         if analyzer_path.exists():
             return subprocess.run([sys.executable, str(analyzer_path)]).returncode
         return 1
 
+
 def run_rtm_pipeline():
     """Run RTM processing pipeline."""
     try:
         from rtm.rtm_pipeline import main
-        print("🚀 Running RTM Pipeline...")
+
+        print("[LAUNCH] Running RTM Pipeline...")
         return main()
     except ImportError as e:
-        print(f"❌ Could not import RTM pipeline: {e}")
-        print("💡 Import paths may need fixing.")
+        print(f"[ERROR] Could not import RTM pipeline: {e}")
+        print("[TIP] Import paths may need fixing.")
         return 1
+
 
 def run_web_dashboard():
     """Run web dashboard."""
     try:
         from dashboard.rtm_web_dashboard import main
+
         print("🌐 Starting Web Dashboard...")
         return main()
     except ImportError as e:
-        print(f"❌ Could not import web dashboard: {e}")
+        print(f"[ERROR] Could not import web dashboard: {e}")
         # Fallback to direct execution
         import subprocess
+
         dashboard_path = src_path / "dashboard" / "rtm_web_dashboard.py"
         if dashboard_path.exists():
             return subprocess.run([sys.executable, str(dashboard_path)]).returncode
         return 1
 
+
 def run_quality_check():
     """Run quality checks."""
     try:
         from analyzers.simple_quality_check import main
-        print("🔍 Running Quality Check...")
+
+        print("[SEARCH] Running Quality Check...")
         return main()
     except ImportError as e:
-        print(f"❌ Could not import quality check: {e}")
+        print(f"[ERROR] Could not import quality check: {e}")
         return 1
+
 
 def show_status():
     """Show system status."""
-    print("📊 RTM System Status")
+    print("[REPORT] RTM System Status")
     print("=" * 25)
 
     # Check key components
@@ -72,44 +83,58 @@ def show_status():
         "JSON Analyzer": src_path / "analyzers" / "json_file_analyzer_safe.py",
         "RTM Pipeline": src_path / "rtm" / "rtm_pipeline.py",
         "Web Dashboard": src_path / "dashboard" / "rtm_web_dashboard.py",
-        "Config File": Path("config") / "config.json"
+        "Config File": Path("config") / "config.json",
     }
 
     for name, path in components.items():
-        status = "✅" if path.exists() else "❌"
+        status = "[OK]" if path.exists() else "[ERROR]"
         print(f"   {status} {name}: {path}")
 
     # Check organization
-    organized_dirs = ["src/rtm", "src/parsers", "src/analyzers", "src/dashboard", "config", "docs"]
+    organized_dirs = [
+        "src/rtm",
+        "src/parsers",
+        "src/analyzers",
+        "src/dashboard",
+        "config",
+        "docs",
+    ]
     organized_count = sum(1 for d in organized_dirs if Path(d).exists())
 
-    print(f"\n📁 Project Organization: {organized_count}/{len(organized_dirs)} directories")
-    print(f"🎯 Organization Status: {'✅ ORGANIZED' if organized_count >= 4 else '⚠️ PARTIAL'}")
+    print(
+        f"\n[DIR] Project Organization: {organized_count}/{len(organized_dirs)} directories"
+    )
+    print(
+        f"[TARGET] Organization Status: {'[OK] ORGANIZED' if organized_count >= 4 else '[WARNING] PARTIAL'}"
+    )
+
 
 def main():
     """Main entry point."""
-    print("🚀 RTM Automation System (Organized)")
+    print("[LAUNCH] RTM Automation System (Organized)")
     print("=" * 40)
 
+    # Check for command line arguments
     if len(sys.argv) > 1:
-        command = sys.argv[1]
+        command = sys.argv[1].lower()
 
-        if command == "analyze":
+        if command in ["analyze", "json", "analyzer"]:
             return run_json_analyzer()
-        elif command == "pipeline":
+        elif command in ["pipeline", "rtm", "process"]:
             return run_rtm_pipeline()
-        elif command == "dashboard":
+        elif command in ["dashboard", "web", "ui"]:
             return run_web_dashboard()
-        elif command == "quality":
+        elif command in ["quality", "check", "test"]:
             return run_quality_check()
-        elif command == "status":
+        elif command in ["status", "info", "health"]:
             show_status()
             return 0
         else:
-            print(f"❌ Unknown command: {command}")
+            print(f"[ERROR] Unknown command: {command}")
+            print("[TIP] Valid commands: analyze, pipeline, dashboard, quality, status")
             return 1
 
-    # Interactive menu
+    # Interactive menu if no arguments
     print("Choose an option:")
     print("1. Run JSON Analysis")
     print("2. Run RTM Pipeline")
@@ -119,7 +144,7 @@ def main():
     print("6. Exit")
 
     try:
-        choice = input("Enter choice (1-6): ").strip()
+        choice = input("\nEnter choice (1-6): ").strip()
 
         if choice == "1":
             return run_json_analyzer()
@@ -136,12 +161,16 @@ def main():
             print("👋 Goodbye!")
             return 0
         else:
-            print("❌ Invalid choice")
+            print("[ERROR] Invalid choice")
             return 1
 
     except KeyboardInterrupt:
         print("\n👋 Goodbye!")
         return 0
+    except EOFError:
+        print("\n👋 Goodbye!")
+        return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

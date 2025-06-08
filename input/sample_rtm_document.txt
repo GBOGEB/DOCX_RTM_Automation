@@ -1,0 +1,31 @@
+Sample RTM Document (Text Format)
+=====================================
+
+1. INTRODUCTION
+This is a sample text document for testing the RTM pipeline.
+
+2. REQUIREMENTS
+REQ-TXT-001: The system shall process text documents efficiently.
+REQ-TXT-002: The system shall extract requirements from text format.
+REQ-TXT-003: The system shall generate RTM reports from text input.
+
+3. TEST CASES
+TC-TXT-001: Verify text document processing
+- Load text document
+- Process through RTM pipeline
+- Verify output generation
+
+TC-TXT-002: Verify requirement extraction
+- Parse text content
+- Identify requirement patterns
+- Extract requirement metadata
+
+4. TRACEABILITY
+REQ-TXT-001 is verified by TC-TXT-001
+REQ-TXT-002 is verified by TC-TXT-002
+REQ-TXT-003 is verified by TC-TXT-001 and TC-TXT-002
+
+5. METADATA
+Document: Sample RTM Text Document
+Created: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+Purpose: RTM Pipeline Testing

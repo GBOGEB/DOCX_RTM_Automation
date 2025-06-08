@@ -68,9 +68,7 @@ def main():
     print("\nInitializing DMAIC Handler and Output Handler for Orchestrator...")
     # Initialize necessary components for the orchestrator
     dmaic_handler = DMAICHandler("GitHubIntegrationExampleProject")
-    if (
-        not dmaic_handler
-    ):  # Basic check, DMAICHandler constructor doesn't typically fail unless major issues
+    if not dmaic_handler:  # Basic check, DMAICHandler constructor doesn't typically fail unless major issues
         print("Error: Failed to initialize DMAICHandler.")
         return
     print("DMAIC Handler: Initialized.")
@@ -171,7 +169,7 @@ def main():
         with open(example_file_path, "r", encoding="utf-8") as f:
             code_content = f.read()
 
-        review_request_msg = AgentMessage(
+        AgentMessage(
             source="github_example_main",
             target=copilot_agent_id,
             message_type="code_analysis_request",  # Assuming CopilotAgent handles this
@@ -218,7 +216,7 @@ Beperk je antwoord tot relevante technische feedback.""",
     print("\nSimuleren van Pull Request Analyse Workflow via Orchestrator...")
     if REPO_URL:
         pr_number_example = 1  # Example PR number
-        workflow_config = {
+        {
             "repository_url": REPO_URL,
             "pr_number": pr_number_example,
             "branch": github_config.get("branch", "main"),  # Or specific PR branch

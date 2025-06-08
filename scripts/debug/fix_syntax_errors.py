@@ -9,8 +9,7 @@ import logging
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -101,7 +100,9 @@ def fix_docx_rtm_automation():
             diff = opening_count - closing_count
             if diff > 0:
                 fixed_lines.append(")" * diff + "\n")
-                logger.info("Added %d missing closing parentheses/brackets/braces", diff)
+                logger.info(
+                    "Added %d missing closing parentheses/brackets/braces", diff
+                )
 
             with open(path, "w", encoding="utf-8") as f:
                 f.writelines(fixed_lines)
@@ -194,8 +195,10 @@ def fix_extract_rtm():
                 content = f.read()
 
             # Fix incomplete sys.path.append statement
-            if "sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))" in content and not content.rstrip().endswith(
-                ")"
+            if (
+                "sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))"
+                in content
+                and not content.rstrip().endswith(")")
             ):
                 # Fix missing parenthesis
                 fixed_content = content.rstrip() + ")"

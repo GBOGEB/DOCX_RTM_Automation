@@ -159,9 +159,9 @@ Ensure long-term sustainability of the implemented solutions.""",
             return "No active phase to complete."
 
         self.project_data["phases"][current_phase]["completed"] = True
-        self.project_data["phases"][current_phase][
-            "completed_at"
-        ] = datetime.now().isoformat()
+        self.project_data["phases"][current_phase]["completed_at"] = (
+            datetime.now().isoformat()
+        )
 
         if outputs:
             self.project_data["phases"][current_phase]["outputs"] = outputs

@@ -1,151 +1,148 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[tool.ruff]
-# Exclude commonly ignored directories
-exclude = [
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".git-rewrite",
-    ".hg",
-    ".ipynb_checkpoints",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".pyenv",
-    ".pytest_cache",
-    ".pytype",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    ".vscode",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "site-packages",
-    "venv",
+[project]
+name = "rtm-automation"
+version = "1.0.0"
+description = "RTM (Requirements Traceability Matrix) Automation System"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Documentation",
+    "Topic :: Software Development :: Quality Assurance",
+]
+dependencies = [
+    "python-docx>=0.8.11",
+    "openpyxl>=3.0.10",
+    "pandas>=1.5.0",
+    "jinja2>=3.1.0",
+    "pyyaml>=6.0",
+    "flask>=2.3.0",
+    "requests>=2.28.0",
+    "pathlib2>=2.3.0",
+    "click>=8.1.0",
 ]
 
-# Line length and indentation settings (same as Black)
-line-length = 88
-indent-width = 4
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=22.0.0",
+    "flake8>=5.0.0",
+    "mypy>=1.0.0",
+    "ruff>=0.1.0",
+]
+web = [
+    "flask-cors>=4.0.0",
+    "gunicorn>=20.1.0",
+]
+parsing = [
+    "lxml>=4.9.0",
+    "beautifulsoup4>=4.11.0",
+    "markdown>=3.4.0",
+]
 
-# Target Python version
-target-version = "py39"
+[project.urls]
+"Homepage" = "https://github.com/rtm-automation/rtm-system"
+"Bug Tracker" = "https://github.com/rtm-automation/rtm-system/issues"
+"Documentation" = "https://rtm-automation.readthedocs.io/"
+
+[project.scripts]
+rtm-analyze = "src.analyzers.json_file_analyzer_safe:main"
+rtm-status = "main_organized:main"
+rtm-dashboard = "launch_dashboard:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["rtm*", "analyzers*", "dashboard*", "parsers*", "utils*", "integrations*"]
+
+[tool.ruff]
+target-version = "py38"
+line-length = 88
 
 [tool.ruff.lint]
-# Enable Pyflakes, pycodestyle errors, and flake8-bugbear rules
-select = ["E4", "E7", "E9", "F", "B"]
+select = [
+    "E",
+    "W",
+    "F",
+    "I",
+    "B",
+    "C4",
+    "UP",
+]
+ignore = [
+    "E501",
+    "B008",
+    "C901",
+]
 
-# Ignore line length violations
-ignore = ["E501"]
-
-# Allow fixing for all enabled rules except bugbear
-fixable = ["ALL"]
-unfixable = ["B"]
-
-# Allow unused variables when underscore-prefixed
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
-# Per-file ignore configurations
 [tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["E402"]  # Allow imports not at top of file in __init__.py
-"**/tests/**" = ["E402"]  # Allow imports not at top of file in tests
-"**/docs/**" = ["E402"]   # Allow imports not at top of file in docs
-"**/tools/**" = ["E402"]  # Allow imports not at top of file in tools
-
-[tool.ruff.format]
-# Formatting settings
-quote-style = "double"
-indent-style = "space"
-skip-magic-trailing-comma = false
-line-ending = "auto"
-docstring-code-format = false
-docstring-code-line-length = "dynamic"
+"__init__.py" = ["F401"]
+"test_*.py" = ["S101"]
 
 [tool.black]
+target-version = ["py38"]
 line-length = 88
-target-version = ["py39"]
-include = '\.pyi?$'
+skip-string-normalization = true
 
-[tool.isort]
-profile = "black"
-line_length = 88
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --strict-config"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "setup.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+]
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.8"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = false
 disallow_incomplete_defs = false
+check_untyped_defs = true
+disallow_untyped_decorators = false
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = "test_*.py"
-
-@echo off
-rem filepath: C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\fix_debugger.bat
-
-echo Running debugger fix script for Windows...
-
-echo.
-echo 1. Checking for running Python processes...
-tasklist /FI "IMAGENAME eq python.exe" /FO TABLE
-tasklist /FI "IMAGENAME eq pythonw.exe" /FO TABLE
-
-echo.
-echo 2. Killing any running Python debug sessions...
-taskkill /F /IM python.exe /T 2>NUL
-taskkill /F /IM pythonw.exe /T 2>NUL
-echo Done.
-
-echo.
-echo 3. Checking if debugpy is installed in the virtual environment...
-if exist .venv\Scripts\python.exe (
-    echo Using project virtual environment...
-    .venv\Scripts\python.exe -c "import debugpy; print('debugpy version:', debugpy.__version__)" 2>NUL
-    if ERRORLEVEL 1 (
-        echo Installing debugpy...
-        .venv\Scripts\pip.exe install debugpy
-    )
-) else (
-    echo Project virtual environment not found at .venv
-    echo Creating virtual environment...
-    python -m venv .venv
-    .venv\Scripts\pip.exe install debugpy
-)
-
-echo.
-echo 4. Testing port availability...
-echo Checking port 5678 (default debug port)...
-netstat -an | find "5678"
-if ERRORLEVEL 1 (
-    echo Port 5678 appears to be available
-) else (
-    echo Port 5678 is already in use
-    echo Try using a different port for debugging
-)
-
-echo.
-echo 5. Running diagnostics...
-if exist debug_helpers.py (
-    if exist .venv\Scripts\python.exe (
-        .venv\Scripts\python.exe debug_helpers.py
-    ) else (
-        python debug_helpers.py
-    )
-) else (
-    echo debug_helpers.py not found - skipping diagnostics
-)
-
-echo.
-echo Fix completed. Try debugging again.
-echo If you still encounter issues, try restarting VS Code.
-pause
+[[tool.mypy.overrides]]
+module = [
+    "docx.*",
+    "openpyxl.*",
+    "pandas.*",
+    "flask.*",
+]
+ignore_missing_imports = true

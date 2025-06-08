@@ -7,6 +7,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 def run_json_analyzer_safe():
     """Run the JSON analyzer safely."""
     script_path = "json_file_analyzer_safe.py"
@@ -24,6 +25,7 @@ def run_json_analyzer_safe():
     except Exception as e:
         print(f"❌ Error: {e}")
         return 1
+
 
 def run_check_backup():
     """Run backup check and organization."""
@@ -43,6 +45,7 @@ def run_check_backup():
         print(f"❌ Error: {e}")
         return 1
 
+
 def run_organize_project():
     """Run project organization."""
     script_path = "organize_project_structure.py"
@@ -60,6 +63,7 @@ def run_organize_project():
     except Exception as e:
         print(f"❌ Error: {e}")
         return 1
+
 
 def main():
     """Main direct runner."""
@@ -83,6 +87,7 @@ def main():
     else:
         print(f"❌ Unknown command: {command}")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

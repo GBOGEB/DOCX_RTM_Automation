@@ -81,12 +81,10 @@ def move_files():
             if dest_dir:
                 os.makedirs(dest_dir, exist_ok=True)
 
-            moved_successfully = False
             for attempt in range(4):  # Retry up to 4 times
                 try:
                     shutil.copy2(src, dest)
                     print(f"  Moved: {src} -> {dest}")
-                    moved_successfully = True
                     success_count += 1
                     break  # Success, exit retry loop
                 except PermissionError as e:
@@ -205,34 +203,34 @@ def update_paths_config():
                 if "script" in step:
                     script_name = os.path.basename(step["script"])
                     if script_name == "word_to_md.py":
-                        updated_config["pipeline"]["steps"][i][
-                            "script"
-                        ] = "src/core/word_to_md.py"
+                        updated_config["pipeline"]["steps"][i]["script"] = (
+                            "src/core/word_to_md.py"
+                        )
                     elif script_name == "extract_outline.py":
-                        updated_config["pipeline"]["steps"][i][
-                            "script"
-                        ] = "src/extractors/extract_outline.py"
+                        updated_config["pipeline"]["steps"][i]["script"] = (
+                            "src/extractors/extract_outline.py"
+                        )
                     elif script_name == "extract_rtm.py":
-                        updated_config["pipeline"]["steps"][i][
-                            "script"
-                        ] = "src/extractors/extract_rtm.py"
+                        updated_config["pipeline"]["steps"][i]["script"] = (
+                            "src/extractors/extract_rtm.py"
+                        )
                     elif script_name == "md_to_json_yaml.py":
-                        updated_config["pipeline"]["steps"][i][
-                            "script"
-                        ] = "src/core/md_to_json_yaml.py"
+                        updated_config["pipeline"]["steps"][i]["script"] = (
+                            "src/core/md_to_json_yaml.py"
+                        )
                     elif script_name == "sync_outline_files.py":
-                        updated_config["pipeline"]["steps"][i][
-                            "script"
-                        ] = "src/utils/sync_outline_files.py"
+                        updated_config["pipeline"]["steps"][i]["script"] = (
+                            "src/utils/sync_outline_files.py"
+                        )
 
         # Update pandoc options
         if (
             "pandoc_options" in updated_config
             and "lua_filter" in updated_config["pandoc_options"]
         ):
-            updated_config["pandoc_options"][
-                "lua_filter"
-            ] = "config/filters/extend_headings.lua"
+            updated_config["pandoc_options"]["lua_filter"] = (
+                "config/filters/extend_headings.lua"
+            )
 
         # Save updated config
         with open(new_config_path, "w") as file:

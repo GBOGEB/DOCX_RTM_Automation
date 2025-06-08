@@ -7,7 +7,7 @@ import subprocess
 import sys
 import json
 from pathlib import Path
-import time
+
 
 def test_ariana_ai_integration():
     """Test integration with Ariana AI assistant."""
@@ -29,20 +29,21 @@ def test_ariana_ai_integration():
         ariana_dir.mkdir(exist_ok=True)
 
     # Test 1: AI-Enhanced Document Analysis
-    print(f"\n🧠 Test 1: AI-Enhanced Document Analysis")
+    print("\n🧠 Test 1: AI-Enhanced Document Analysis")
     test_ai_document_analysis()
 
     # Test 2: Smart Requirements Extraction
-    print(f"\n🔍 Test 2: Smart Requirements Extraction")
+    print("\n🔍 Test 2: Smart Requirements Extraction")
     test_smart_requirements_extraction()
 
     # Test 3: AI-Powered Digital Twin Enhancement
-    print(f"\n🔗 Test 3: AI-Powered Digital Twin Enhancement")
+    print("\n🔗 Test 3: AI-Powered Digital Twin Enhancement")
     test_ai_digital_twin_enhancement()
 
     # Test 4: Intelligent Error Detection
-    print(f"\n🛡️ Test 4: Intelligent Error Detection")
+    print("\n🛡️ Test 4: Intelligent Error Detection")
     test_intelligent_error_detection()
+
 
 def test_ai_document_analysis():
     """Test AI-enhanced document analysis."""
@@ -53,19 +54,36 @@ def test_ai_document_analysis():
             print("   📊 Analyzing MASTER document with AI...")
 
             # Run enhanced parsing with AI mode
-            result = subprocess.run([
-                sys.executable, "enhance_document_parsing.py",
-                str(master_file), "-f", "json", "--ai-enhanced"
-            ], capture_output=True, text=True, timeout=60)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "enhance_document_parsing.py",
+                    str(master_file),
+                    "-f",
+                    "json",
+                    "--ai-enhanced",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
 
             if result.returncode == 0:
                 print("   ✅ AI-enhanced analysis: SUCCESS")
             else:
                 # Fallback to regular processing
-                result = subprocess.run([
-                    sys.executable, "enhance_document_parsing.py",
-                    str(master_file), "-f", "json"
-                ], capture_output=True, text=True, timeout=60)
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        "enhance_document_parsing.py",
+                        str(master_file),
+                        "-f",
+                        "json",
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                )
 
                 if result.returncode == 0:
                     print("   ✅ Standard analysis: SUCCESS (AI fallback)")
@@ -76,6 +94,7 @@ def test_ai_document_analysis():
 
     except Exception as e:
         print(f"   ❌ AI analysis error: {e}")
+
 
 def test_smart_requirements_extraction():
     """Test smart requirements extraction with AI patterns."""
@@ -88,16 +107,16 @@ def test_smart_requirements_extraction():
                 r"(?i)the system (?:shall|must|should) (.+)",
                 r"(?i)requirement:?\s*(.+)",
                 r"(?i)user story:?\s*(.+)",
-                r"(?i)acceptance criteria:?\s*(.+)"
+                r"(?i)acceptance criteria:?\s*(.+)",
             ],
             "context_aware": True,
-            "confidence_scoring": True
+            "confidence_scoring": True,
         }
 
         # Save AI patterns
         ai_config_path = Path(".ariana/ai_requirements_config.json")
         ai_config_path.parent.mkdir(exist_ok=True)
-        with open(ai_config_path, 'w', encoding='utf-8') as f:
+        with open(ai_config_path, "w", encoding="utf-8") as f:
             json.dump(ai_patterns, f, indent=2)
 
         print("   ✅ AI requirement patterns configured")
@@ -108,11 +127,12 @@ def test_smart_requirements_extraction():
             # Simulate AI-powered extraction
             print("   🤖 Applying AI patterns to requirements.md...")
 
-            with open(req_file, 'r', encoding='utf-8') as f:
+            with open(req_file, "r", encoding="utf-8") as f:
                 content = f.read()
 
             # Count potential requirements with AI patterns
             import re
+
             total_matches = 0
             for pattern in ai_patterns["ml_patterns"]:
                 matches = re.findall(pattern, content)
@@ -126,6 +146,7 @@ def test_smart_requirements_extraction():
     except Exception as e:
         print(f"   ❌ Smart extraction error: {e}")
 
+
 def test_ai_digital_twin_enhancement():
     """Test AI-powered digital twin enhancement."""
     try:
@@ -136,20 +157,28 @@ def test_ai_digital_twin_enhancement():
             "relationship_inference": True,
             "semantic_clustering": True,
             "dependency_prediction": True,
-            "quality_scoring": True
+            "quality_scoring": True,
         }
 
         ai_twin_path = Path(".ariana/ai_twin_config.json")
-        with open(ai_twin_path, 'w', encoding='utf-8') as f:
+        with open(ai_twin_path, "w", encoding="utf-8") as f:
             json.dump(ai_twin_config, f, indent=2)
 
         # Test digital twin creation with AI
         req_file = Path("input/requirements.md")
         if req_file.exists():
-            result = subprocess.run([
-                sys.executable, "digital_twin_parser.py",
-                str(req_file), "-o", "output/ai_enhanced_twin"
-            ], capture_output=True, text=True, timeout=60)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "digital_twin_parser.py",
+                    str(req_file),
+                    "-o",
+                    "output/ai_enhanced_twin",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
 
             if result.returncode == 0:
                 print("   ✅ AI-enhanced digital twin: SUCCESS")
@@ -165,16 +194,25 @@ def test_ai_digital_twin_enhancement():
             print("   ℹ️ Using converted requirements.md")
             req_file = Path("output/requirements.md")
             if req_file.exists():
-                result = subprocess.run([
-                    sys.executable, "digital_twin_parser.py",
-                    str(req_file), "-o", "output/ai_enhanced_twin"
-                ], capture_output=True, text=True, timeout=60)
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        "digital_twin_parser.py",
+                        str(req_file),
+                        "-o",
+                        "output/ai_enhanced_twin",
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                )
 
                 if result.returncode == 0:
                     print("   ✅ AI-enhanced twin (converted): SUCCESS")
 
     except Exception as e:
         print(f"   ❌ AI twin enhancement error: {e}")
+
 
 def test_intelligent_error_detection():
     """Test intelligent error detection and correction."""
@@ -186,17 +224,20 @@ def test_intelligent_error_detection():
             "auto_fix": True,
             "confidence_threshold": 0.8,
             "learning_enabled": True,
-            "pattern_recognition": True
+            "pattern_recognition": True,
         }
 
         ai_error_path = Path(".ariana/ai_error_config.json")
-        with open(ai_error_path, 'w', encoding='utf-8') as f:
+        with open(ai_error_path, "w", encoding="utf-8") as f:
             json.dump(ai_error_config, f, indent=2)
 
         # Run system with AI error detection
-        result = subprocess.run([
-            sys.executable, "verify_rtm_ready.py"
-        ], capture_output=True, text=True, timeout=60)
+        result = subprocess.run(
+            [sys.executable, "verify_rtm_ready.py"],
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
 
         if "READY FOR USE" in result.stdout:
             print("   ✅ AI error detection: PASSED")
@@ -207,9 +248,10 @@ def test_intelligent_error_detection():
     except Exception as e:
         print(f"   ❌ AI error detection error: {e}")
 
+
 def create_ariana_integration_report():
     """Create comprehensive Ariana integration report."""
-    print(f"\n📊 ARIANA INTEGRATION REPORT")
+    print("\n📊 ARIANA INTEGRATION REPORT")
     print("=" * 40)
 
     ariana_features = {
@@ -218,7 +260,7 @@ def create_ariana_integration_report():
         "Digital Twin AI": "✅ Relationship inference enabled",
         "Error Detection": "✅ Intelligent monitoring active",
         "Quality Scoring": "✅ AI confidence metrics available",
-        "Learning System": "✅ Pattern adaptation enabled"
+        "Learning System": "✅ Pattern adaptation enabled",
     }
 
     for feature, status in ariana_features.items():
@@ -228,17 +270,18 @@ def create_ariana_integration_report():
     ariana_dir = Path(".ariana")
     if ariana_dir.exists():
         config_files = list(ariana_dir.glob("*.json"))
-        print(f"\n🤖 Ariana Configuration:")
+        print("\n🤖 Ariana Configuration:")
         print(f"   Config files: {len(config_files)}")
         for f in config_files:
             print(f"      - {f.name}")
 
-    print(f"\n🎯 ARIANA INTEGRATION STATUS:")
-    print(f"   🤖 AI Assistant: INTEGRATED")
-    print(f"   📊 Smart Analysis: ACTIVE")
-    print(f"   🔍 Pattern Recognition: ENABLED")
-    print(f"   🛡️ Error Detection: INTELLIGENT")
-    print(f"   🚀 RTM + AI: PRODUCTION READY")
+    print("\n🎯 ARIANA INTEGRATION STATUS:")
+    print("   🤖 AI Assistant: INTEGRATED")
+    print("   📊 Smart Analysis: ACTIVE")
+    print("   🔍 Pattern Recognition: ENABLED")
+    print("   🛡️ Error Detection: INTELLIGENT")
+    print("   🚀 RTM + AI: PRODUCTION READY")
+
 
 def main():
     """Main Ariana integration test function."""
@@ -252,10 +295,11 @@ def main():
     # Generate report
     create_ariana_integration_report()
 
-    print(f"\n🎉 ARIANA INTEGRATION COMPLETE!")
-    print(f"Your RTM system now has AI-enhanced capabilities! 🚀")
+    print("\n🎉 ARIANA INTEGRATION COMPLETE!")
+    print("Your RTM system now has AI-enhanced capabilities! 🚀")
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

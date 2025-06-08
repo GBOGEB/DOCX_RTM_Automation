@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import time
 
+
 def verify_rtm_system():
     """Verify RTM system is ready for production use."""
     print("🎯 RTM Automation System - Production Readiness Check")
@@ -22,7 +23,7 @@ def verify_rtm_system():
         "document_processing": {"passed": False, "formats": []},
         "digital_twin": {"passed": False, "capabilities": []},
         "requirements_tracing": {"passed": False, "features": []},
-        "integration": {"passed": False, "components": []}
+        "integration": {"passed": False, "components": []},
     }
 
     # 1. Quality Checks
@@ -31,9 +32,12 @@ def verify_rtm_system():
 
     try:
         # Run light quality check
-        result = subprocess.run([
-            sys.executable, "quality_check_light.py"
-        ], capture_output=True, text=True, timeout=30)
+        result = subprocess.run(
+            [sys.executable, "quality_check_light.py"],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
 
         if result.returncode == 0 and "🎉" in result.stdout:
             verification_results["quality_checks"]["passed"] = True
@@ -54,7 +58,7 @@ def verify_rtm_system():
         ("enhance_document_parsing.py", "Document parsing engine"),
         ("digital_twin_parser.py", "Digital twin generation"),
         ("verify_system_status.py", "System status monitoring"),
-        ("test_integration.py", "Integration testing")
+        ("test_integration.py", "Integration testing"),
     ]
 
     passed_tests = 0
@@ -62,13 +66,17 @@ def verify_rtm_system():
         if Path(file_path).exists():
             try:
                 # Quick syntax check
-                result = subprocess.run([
-                    sys.executable, "-m", "py_compile", file_path
-                ], capture_output=True, text=True)
+                result = subprocess.run(
+                    [sys.executable, "-m", "py_compile", file_path],
+                    capture_output=True,
+                    text=True,
+                )
 
                 if result.returncode == 0:
                     print(f"   ✅ {description}")
-                    verification_results["core_functionality"]["tests"].append(description)
+                    verification_results["core_functionality"]["tests"].append(
+                        description
+                    )
                     passed_tests += 1
                 else:
                     print(f"   ❌ {description}: Syntax error")
@@ -87,18 +95,24 @@ def verify_rtm_system():
     processing_formats = []
     try:
         # Test Markdown processing
-        result = subprocess.run([
-            sys.executable, "enhance_document_parsing.py", "--sample", "-f", "json"
-        ], capture_output=True, text=True, timeout=30)
+        result = subprocess.run(
+            [sys.executable, "enhance_document_parsing.py", "--sample", "-f", "json"],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
 
         if result.returncode == 0:
             print("   ✅ Markdown → JSON conversion")
             processing_formats.append("Markdown→JSON")
 
         # Test YAML output
-        result = subprocess.run([
-            sys.executable, "enhance_document_parsing.py", "--sample", "-f", "yaml"
-        ], capture_output=True, text=True, timeout=30)
+        result = subprocess.run(
+            [sys.executable, "enhance_document_parsing.py", "--sample", "-f", "yaml"],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
 
         if result.returncode == 0:
             print("   ✅ Markdown → YAML conversion")
@@ -122,10 +136,18 @@ def verify_rtm_system():
     digital_twin_features = []
     try:
         # Test digital twin creation
-        result = subprocess.run([
-            sys.executable, "digital_twin_parser.py",
-            "input/sample/sample_document.md", "-o", "output/verification_twin"
-        ], capture_output=True, text=True, timeout=30)
+        result = subprocess.run(
+            [
+                sys.executable,
+                "digital_twin_parser.py",
+                "input/sample/sample_document.md",
+                "-o",
+                "output/verification_twin",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
 
         if result.returncode == 0:
             print("   ✅ Digital twin generation")
@@ -156,21 +178,23 @@ def verify_rtm_system():
     output_files = list(Path("output").glob("*.json"))
     for output_file in output_files:
         try:
-            with open(output_file, 'r', encoding='utf-8') as f:
+            with open(output_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
-            metadata = data.get('metadata', {})
-            if 'requirements_found' in metadata and metadata['requirements_found']:
-                print(f"   ✅ Requirements extraction: {len(metadata['requirements_found'])} found")
+            metadata = data.get("metadata", {})
+            if "requirements_found" in metadata and metadata["requirements_found"]:
+                print(
+                    f"   ✅ Requirements extraction: {len(metadata['requirements_found'])} found"
+                )
                 requirements_features.append("Extraction")
 
                 # Check requirement patterns
-                reqs = metadata['requirements_found']
-                if any(req.startswith('REQ-') for req in reqs):
+                reqs = metadata["requirements_found"]
+                if any(req.startswith("REQ-") for req in reqs):
                     requirements_features.append("REQ pattern")
-                if any(req.startswith('FR-') for req in reqs):
+                if any(req.startswith("FR-") for req in reqs):
                     requirements_features.append("FR pattern")
-                if any(req.startswith('NFR-') for req in reqs):
+                if any(req.startswith("NFR-") for req in reqs):
                     requirements_features.append("NFR pattern")
                 break
         except Exception:
@@ -181,7 +205,9 @@ def verify_rtm_system():
         print("   ✅ Project Requirements integration")
         requirements_features.append("Integration")
 
-    verification_results["requirements_tracing"]["passed"] = len(requirements_features) >= 2
+    verification_results["requirements_tracing"]["passed"] = (
+        len(requirements_features) >= 2
+    )
     verification_results["requirements_tracing"]["features"] = requirements_features
 
     # 6. Integration Status
@@ -193,6 +219,7 @@ def verify_rtm_system():
     # Check dependencies
     try:
         import markdown
+
         print("   ✅ Markdown library integrated")
         integration_components.append("Markdown")
     except ImportError:
@@ -200,6 +227,7 @@ def verify_rtm_system():
 
     try:
         from docx import Document
+
         print("   ✅ python-docx integrated")
         integration_components.append("python-docx")
     except ImportError:
@@ -207,6 +235,7 @@ def verify_rtm_system():
 
     try:
         import yaml
+
         print("   ✅ PyYAML integrated")
         integration_components.append("PyYAML")
     except ImportError:
@@ -226,7 +255,9 @@ def verify_rtm_system():
     print("=" * 60)
 
     total_categories = len(verification_results)
-    passed_categories = sum(1 for result in verification_results.values() if result["passed"])
+    passed_categories = sum(
+        1 for result in verification_results.values() if result["passed"]
+    )
 
     overall_score = int((passed_categories / total_categories) * 100)
 
@@ -251,11 +282,11 @@ def verify_rtm_system():
         "overall_score": overall_score,
         "status": status,
         "categories_passed": f"{passed_categories}/{total_categories}",
-        "detailed_results": verification_results
+        "detailed_results": verification_results,
     }
 
     report_path = Path("output") / "rtm_verification_report.json"
-    with open(report_path, 'w', encoding='utf-8') as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         json.dump(verification_report, f, indent=2)
 
     print(f"\nDetailed report saved to: {report_path}")
@@ -275,6 +306,7 @@ def verify_rtm_system():
         print("   python test_integration.py")
 
     return overall_score
+
 
 if __name__ == "__main__":
     score = verify_rtm_system()

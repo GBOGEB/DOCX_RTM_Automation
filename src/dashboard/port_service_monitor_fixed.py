@@ -10,7 +10,8 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-def check_port_status(port, host='localhost'):
+
+def check_port_status(port, host="localhost"):
     """Check if a port is open/listening."""
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -20,6 +21,7 @@ def check_port_status(port, host='localhost'):
         return result == 0
     except Exception:
         return False
+
 
 def find_rtm_services():
     """Find RTM-related services and processes."""
@@ -36,7 +38,7 @@ def find_rtm_services():
         9000: "Various Development Servers",
         4000: "Jekyll/Static Site Server",
         5173: "Vite Development Server",
-        3001: "Alternative React Server"
+        3001: "Alternative React Server",
     }
 
     print("📊 Checking Common Development Ports:")
@@ -52,27 +54,31 @@ def find_rtm_services():
 
     return active_ports
 
+
 def check_python_processes():
     """Check for running Python processes related to RTM."""
-    print(f"\n🐍 Python Processes Check:")
+    print("\n🐍 Python Processes Check:")
     print("-" * 30)
 
     try:
         # Try to find Python processes
         if sys.platform == "win32":
             result = subprocess.run(
-                ['tasklist', '/FI', 'IMAGENAME eq python.exe'],
-                capture_output=True, text=True, timeout=10
+                ["tasklist", "/FI", "IMAGENAME eq python.exe"],
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
         else:
             result = subprocess.run(
-                ['ps', 'aux'],
-                capture_output=True, text=True, timeout=10
+                ["ps", "aux"], capture_output=True, text=True, timeout=10
             )
 
         if result.returncode == 0:
-            output_lines = result.stdout.split('\n')
-            python_processes = [line for line in output_lines if 'python' in line.lower()]
+            output_lines = result.stdout.split("\n")
+            python_processes = [
+                line for line in output_lines if "python" in line.lower()
+            ]
 
             if python_processes:
                 print(f"   Found {len(python_processes)} Python process(es):")
@@ -89,9 +95,10 @@ def check_python_processes():
     except Exception as e:
         print(f"   Error checking processes: {e}")
 
+
 def check_rtm_files_running():
     """Check if any RTM files might be running as services."""
-    print(f"\n📁 RTM File Service Check:")
+    print("\n📁 RTM File Service Check:")
     print("-" * 32)
 
     # Check for common RTM service files
@@ -100,7 +107,7 @@ def check_rtm_files_running():
         "rtm_workflow_manager.py",
         "extension_manager.py",
         "simple_quality_check.py",
-        "rtm_web_dashboard.py"
+        "rtm_web_dashboard.py",
     ]
 
     running_services = []
@@ -113,31 +120,41 @@ def check_rtm_files_running():
 
             # Check if it might be designed to run as a service
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, "r", encoding="utf-8") as f:
                     content = f.read()
 
                 service_indicators = [
-                    'dashboard', 'monitor', 'server', 'listen',
-                    'host=', 'port=', 'app.run', 'serve', 'flask'
+                    "dashboard",
+                    "monitor",
+                    "server",
+                    "listen",
+                    "host=",
+                    "port=",
+                    "app.run",
+                    "serve",
+                    "flask",
                 ]
 
-                has_service_code = any(indicator in content.lower() for indicator in service_indicators)
+                has_service_code = any(
+                    indicator in content.lower() for indicator in service_indicators
+                )
 
                 if has_service_code:
-                    print(f"      🔧 May support service mode")
+                    print("      🔧 May support service mode")
                     running_services.append(service_file)
                 else:
-                    print(f"      📋 Script/utility file")
+                    print("      📋 Script/utility file")
             except Exception:
-                print(f"      ❓ Could not analyze file")
+                print("      ❓ Could not analyze file")
         else:
             print(f"   📄 {service_file}: ❌ Not found")
 
     return running_services
 
+
 def check_vscode_extensions():
     """Check VS Code extension status (if applicable)."""
-    print(f"\n🔧 VS Code Extension Check:")
+    print("\n🔧 VS Code Extension Check:")
     print("-" * 32)
 
     # Check for VS Code workspace/settings
@@ -148,16 +165,16 @@ def check_vscode_extensions():
         settings_file = vscode_dir / "settings.json"
         if settings_file.exists():
             try:
-                with open(settings_file, 'r', encoding='utf-8') as f:
+                with open(settings_file, "r", encoding="utf-8") as f:
                     settings = json.load(f)
 
-                print(f"   ⚙️ VS Code settings configured")
+                print("   ⚙️ VS Code settings configured")
 
                 # Check for relevant settings
                 relevant_keys = [
-                    'python.defaultInterpreterPath',
-                    'python.terminal.activateEnvironment',
-                    'files.associations'
+                    "python.defaultInterpreterPath",
+                    "python.terminal.activateEnvironment",
+                    "files.associations",
                 ]
 
                 for key in relevant_keys:
@@ -173,9 +190,10 @@ def check_vscode_extensions():
     else:
         print("   ℹ️ No VS Code configuration found")
 
+
 def generate_service_report():
     """Generate a comprehensive service report."""
-    print(f"\n📊 RTM SERVICE REPORT")
+    print("\n📊 RTM SERVICE REPORT")
     print("=" * 30)
 
     report = {
@@ -183,13 +201,13 @@ def generate_service_report():
         "active_ports": find_rtm_services(),
         "rtm_directory": str(Path.cwd()),
         "python_executable": sys.executable,
-        "platform": sys.platform
+        "platform": sys.platform,
     }
 
     # Save report
     report_path = Path("rtm_service_report.json")
     try:
-        with open(report_path, 'w', encoding='utf-8') as f:
+        with open(report_path, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2)
         print(f"\n📋 Service report saved to: {report_path}")
     except Exception as e:
@@ -197,11 +215,13 @@ def generate_service_report():
 
     return report
 
+
 def explain_port_tabs():
     """Explain what PORT tabs typically show."""
-    print(f"\n❓ ABOUT PORT TABS:")
+    print("\n❓ ABOUT PORT TABS:")
     print("=" * 25)
-    print("""
+    print(
+        """
 PORT tabs typically show:
 
 🌐 WEB SERVERS:
@@ -230,7 +250,9 @@ PORT tabs typically show:
    • Run: python rtm_web_dashboard.py
    • Or create a Flask/FastAPI wrapper
    • Monitor real-time processing
-""")
+"""
+    )
+
 
 def main():
     """Main monitoring function."""
@@ -251,27 +273,28 @@ def main():
     check_vscode_extensions()
 
     # Generate report
-    report = generate_service_report()
+    generate_service_report()
 
     # Explain PORT tabs
     explain_port_tabs()
 
     # Summary
-    print(f"\n🎯 SUMMARY:")
+    print("\n🎯 SUMMARY:")
     print(f"   Active Ports: {len(active_ports)}")
     print(f"   Service-capable RTM Files: {len(service_files)}")
-    print(f"   RTM System Status: File-based processing (no persistent services)")
+    print("   RTM System Status: File-based processing (no persistent services)")
 
     if not active_ports:
-        print(f"\n✅ NORMAL: No active ports detected")
-        print(f"   This is expected for your RTM system")
-        print(f"   RTM processes files and exits cleanly")
+        print("\n✅ NORMAL: No active ports detected")
+        print("   This is expected for your RTM system")
+        print("   RTM processes files and exits cleanly")
     else:
-        print(f"\n🔍 ACTIVE SERVICES DETECTED:")
+        print("\n🔍 ACTIVE SERVICES DETECTED:")
         for port_info in active_ports:
             print(f"   Port {port_info['port']}: {port_info['description']}")
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

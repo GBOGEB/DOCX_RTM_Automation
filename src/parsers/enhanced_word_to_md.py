@@ -3,6 +3,7 @@
 Enhanced Word to Markdown converter with metadata preservation.
 Extracts and preserves document structure, formatting, and generates outline files.
 """
+
 import os
 import sys
 import yaml
@@ -13,13 +14,15 @@ def check_docx_module():
     """Check if python-docx is installed."""
     try:
         from docx import Document
+
         return True
     except ImportError:
         print("python-docx module not found. Install it with: pip install python-docx")
         try:
             import subprocess
+
             subprocess.run(["pip", "install", "python-docx"], check=True)
-            from docx import Document
+
             print("Successfully installed python-docx.")
             return True
         except Exception as e:

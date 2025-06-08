@@ -9,12 +9,14 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 def load_json(file_path):
     """Load JSON data from a file."""
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"File not found: {file_path}")
-    with open(file_path, 'r') as file:
+    with open(file_path, "r") as file:
         return json.load(file)
+
 
 def run_json_analysis():
     """Run JSON analysis in terminal mode."""
@@ -25,7 +27,7 @@ def run_json_analysis():
     analyzers = [
         "json_file_analyzer_safe.py",
         "json_file_analyzer.py",
-        "verify_json_health.py"
+        "verify_json_health.py",
     ]
 
     available_analyzers = []
@@ -37,12 +39,12 @@ def run_json_analysis():
             print(f"   ❌ Missing: {analyzer}")
 
     if not available_analyzers:
-        print(f"\n❌ No JSON analyzer scripts found!")
+        print("\n❌ No JSON analyzer scripts found!")
         return 1
 
     # Run the safe analyzer first (best choice)
     if "json_file_analyzer_safe.py" in available_analyzers:
-        print(f"\n🚀 Running safe JSON analyzer...")
+        print("\n🚀 Running safe JSON analyzer...")
         print("=" * 45)
 
         try:
@@ -52,13 +54,15 @@ def run_json_analysis():
                 cwd=Path.cwd(),
                 check=False,
                 capture_output=False,  # Let output go directly to terminal
-                text=True
+                text=True,
             )
 
             if result.returncode == 0:
-                print(f"\n✅ JSON analysis completed successfully!")
+                print("\n✅ JSON analysis completed successfully!")
             else:
-                print(f"\n⚠️ Analysis completed with warnings (exit code: {result.returncode})")
+                print(
+                    f"\n⚠️ Analysis completed with warnings (exit code: {result.returncode})"
+                )
 
             return result.returncode
 
@@ -67,7 +71,7 @@ def run_json_analysis():
             return 1
 
     else:
-        print(f"\n⚠️ Safe analyzer not available, trying alternatives...")
+        print("\n⚠️ Safe analyzer not available, trying alternatives...")
 
         for analyzer in available_analyzers:
             try:
@@ -77,7 +81,7 @@ def run_json_analysis():
                     cwd=Path.cwd(),
                     check=False,
                     capture_output=False,
-                    text=True
+                    text=True,
                 )
 
                 if result.returncode == 0:
@@ -91,9 +95,10 @@ def run_json_analysis():
 
         return 1
 
+
 def quick_json_health_check():
     """Quick JSON health check without full analysis."""
-    print(f"\n🏥 Quick JSON Health Check:")
+    print("\n🏥 Quick JSON Health Check:")
     print("=" * 35)
 
     json_files = list(Path(".").rglob("*.json"))
@@ -105,7 +110,7 @@ def quick_json_health_check():
 
     for json_file in json_files[:20]:  # Check first 20 for speed
         try:
-            with open(json_file, 'r', encoding='utf-8') as f:
+            with open(json_file, "r", encoding="utf-8") as f:
                 json.load(f)
             valid_count += 1
         except json.JSONDecodeError:
@@ -119,14 +124,19 @@ def quick_json_health_check():
     print(f"❌ Invalid files (sample): {invalid_count}")
 
     if invalid_files:
-        print(f"\n⚠️ Files needing attention:")
+        print("\n⚠️ Files needing attention:")
         for file_path in invalid_files[:5]:
             print(f"   📄 {file_path}")
 
-    health_percentage = (valid_count / (valid_count + invalid_count) * 100) if (valid_count + invalid_count) > 0 else 100
+    health_percentage = (
+        (valid_count / (valid_count + invalid_count) * 100)
+        if (valid_count + invalid_count) > 0
+        else 100
+    )
     print(f"\n📈 Sample Health Score: {health_percentage:.1f}%")
 
     return health_percentage >= 90
+
 
 def main():
     """Main terminal analysis function."""
@@ -138,14 +148,14 @@ def main():
     health_ok = quick_json_health_check()
 
     if health_ok:
-        print(f"\n✅ Quick health check passed!")
+        print("\n✅ Quick health check passed!")
     else:
-        print(f"\n⚠️ Issues detected in quick health check")
+        print("\n⚠️ Issues detected in quick health check")
 
     # Run full analysis
     result = run_json_analysis()
 
-    print(f"\n🎯 TERMINAL ANALYSIS COMPLETE")
+    print("\n🎯 TERMINAL ANALYSIS COMPLETE")
     print("=" * 40)
 
     if result == 0:
@@ -157,7 +167,8 @@ def main():
 
     return result
 
+
 if __name__ == "__main__":
     # Disable VS Code debugger attachment
-    os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
+    os.environ["PYTHONDONTWRITEBYTECODE"] = "1"
     sys.exit(main())

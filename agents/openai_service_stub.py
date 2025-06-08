@@ -127,9 +127,7 @@ class OpenAIService:
         # For the stub implementation, return a fixed vector
         return [0.1] * 1536  # 1536 is typical embedding dimension for OpenAI models
 
-    def analyze_sentiment(
-        self, text: str, model: str = None
-    ) -> Dict[str, Any]:  # pylint: disable=unused-argument
+    def analyze_sentiment(self, text: str, model: str = None) -> Dict[str, Any]:  # pylint: disable=unused-argument
         """
         Analyze sentiment of a text. (Stub implementation)
 

@@ -3,8 +3,8 @@
 Systematic approach to fix and implement the RTM Automation workflow.
 This script guides you through the step-by-step process defined in our plan.
 """
+
 import os
-import sys
 import subprocess
 from pathlib import Path
 

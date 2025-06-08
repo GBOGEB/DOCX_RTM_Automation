@@ -3,6 +3,7 @@
 Improved Word to Markdown converter.
 Handles headers, formatting, lists, and tables.
 """
+
 import os
 import sys
 import re

@@ -12,6 +12,7 @@ import yaml
 import os
 import subprocess
 import sys
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -300,7 +301,7 @@ def run_pipeline():
             cmd = [python_path, script_path] + expanded_args
 
             try:
-                process = subprocess.run(cmd, check=True)
+                subprocess.run(cmd, check=True)
                 step_duration = time.time() - step_start_time
                 logger.info(
                     f"Step '{name}' completed successfully in {step_duration:.2f} seconds."

@@ -3,11 +3,11 @@
 Project Structure Organizer - Refactor RTM system into proper directory structure
 """
 
-import os
 import shutil
 from pathlib import Path
 import json
 from datetime import datetime
+
 
 def create_organized_structure():
     """Create the organized directory structure."""
@@ -20,27 +20,24 @@ def create_organized_structure():
             "analyzers/": ["JSON and quality analysis"],
             "dashboard/": ["Web dashboard and UI"],
             "integrations/": ["Jenkins, Git, external systems"],
-            "utils/": ["Utility functions and helpers"]
+            "utils/": ["Utility functions and helpers"],
         },
         "scripts/": {
             "setup/": ["Installation and setup scripts"],
             "debug/": ["Debugging and testing scripts"],
             "quality/": ["Quality checks and linting"],
-            "automation/": ["Batch files and automation"]
+            "automation/": ["Batch files and automation"],
         },
         "config/": ["Configuration files"],
         "data/": {
             "input/": ["Input documents"],
             "output/": ["Generated outputs"],
             "templates/": ["Document templates"],
-            "samples/": ["Sample files"]
+            "samples/": ["Sample files"],
         },
         "docs/": ["Documentation and guides"],
         "tests/": ["Test files and test data"],
-        ".github/": {
-            "workflows/": ["GitHub Actions"],
-            "hooks/": ["Git hooks"]
-        }
+        ".github/": {"workflows/": ["GitHub Actions"], "hooks/": ["Git hooks"]},
     }
 
     print("🏗️ Creating Organized Project Structure")
@@ -56,11 +53,14 @@ def create_organized_structure():
             for subdir, description in subdirs.items():
                 sub_path = main_path / subdir
                 sub_path.mkdir(exist_ok=True)
-                print(f"   📂 {subdir} - {description[0] if description else 'Subdirectory'}")
+                print(
+                    f"   📂 {subdir} - {description[0] if description else 'Subdirectory'}"
+                )
         elif isinstance(subdirs, list):
             print(f"   📝 {subdirs[0]}")
 
     return structure
+
 
 def categorize_files():
     """Categorize existing files for organization."""
@@ -68,96 +68,119 @@ def categorize_files():
     file_categories = {
         # Core RTM modules
         "src/rtm/": [
-            "generate_rtm.py*", "rtm_pipeline.py", "rtm_workflow_manager*.py",
-            "rtm_document_processor.py", "enhanced_requirement_parser.py",
-            "Project Requirements.py", "start_building_rtm.py"
+            "generate_rtm.py*",
+            "rtm_pipeline.py",
+            "rtm_workflow_manager*.py",
+            "rtm_document_processor.py",
+            "enhanced_requirement_parser.py",
+            "Project Requirements.py",
+            "start_building_rtm.py",
         ],
-
         # Document parsers
         "src/parsers/": [
-            "*word_to_md*.py", "pandoc_converter.py", "exact_docx_to_md.py",
-            "enhance_document_parsing.py", "document_processing_success.py",
-            "extract_document_outline.py", "digital_twin_parser.py"
+            "*word_to_md*.py",
+            "pandoc_converter.py",
+            "exact_docx_to_md.py",
+            "enhance_document_parsing.py",
+            "document_processing_success.py",
+            "extract_document_outline.py",
+            "digital_twin_parser.py",
         ],
-
         # Analyzers
         "src/analyzers/": [
-            "json_file_analyzer*.py", "*quality_check*.py", "analyze_config_file.py",
-            "verify_*system*.py", "comprehensive_rtm_analyzer.py"
+            "json_file_analyzer*.py",
+            "*quality_check*.py",
+            "analyze_config_file.py",
+            "verify_*system*.py",
+            "comprehensive_rtm_analyzer.py",
         ],
-
         # Dashboard and UI
         "src/dashboard/": [
-            "rtm_web_dashboard.py", "rtm_dashboard.py", "extension_dashboard.py",
-            "port_service_monitor*.py"
+            "rtm_web_dashboard.py",
+            "rtm_dashboard.py",
+            "extension_dashboard.py",
+            "port_service_monitor*.py",
         ],
-
         # Integrations
         "src/integrations/": [
-            "jenkins_rtm_integration.py", "git_*", "*precommit*",
-            "lua_bridge.py", "create_example_requests.py"
+            "jenkins_rtm_integration.py",
+            "git_*",
+            "*precommit*",
+            "lua_bridge.py",
+            "create_example_requests.py",
         ],
-
         # Utilities
         "src/utils/": [
-            "file_helpers*", "port_manager.py", "simple_git_commit.py",
-            "install_*.py", "setup_*.py", "systematic_approach.py"
+            "file_helpers*",
+            "port_manager.py",
+            "simple_git_commit.py",
+            "install_*.py",
+            "setup_*.py",
+            "systematic_approach.py",
         ],
-
         # Setup scripts
         "scripts/setup/": [
-            "install_*.sh", "install_*.bat", "setup_*.sh", "setup_*.bat",
-            "get_started.py", "*dependencies*"
+            "install_*.sh",
+            "install_*.bat",
+            "setup_*.sh",
+            "setup_*.bat",
+            "get_started.py",
+            "*dependencies*",
         ],
-
         # Debug scripts
         "scripts/debug/": [
-            "debug_*.py", "test_*.py", "verify_*.py", "run_diagnostic*.py",
-            "fix_*.py", "release_port.py"
+            "debug_*.py",
+            "test_*.py",
+            "verify_*.py",
+            "run_diagnostic*.py",
+            "fix_*.py",
+            "release_port.py",
         ],
-
         # Quality scripts
         "scripts/quality/": [
-            "run_*quality*.py", "lint.sh", "fix_style*.bat",
-            "run_code_quality_checks.py"
+            "run_*quality*.py",
+            "lint.sh",
+            "fix_style*.bat",
+            "run_code_quality_checks.py",
         ],
-
         # Automation scripts
         "scripts/automation/": [
-            "*.bat", "*.sh", "run_*.py", "process_*.py",
-            "start_*.bat", "tools_menu.bat"
+            "*.bat",
+            "*.sh",
+            "run_*.py",
+            "process_*.py",
+            "start_*.bat",
+            "tools_menu.bat",
         ],
-
         # Configuration
         "config/": [
-            "config.json", "extension_config.json", ".env",
-            "keybindings.json", "pyproject.toml", "requirements*.txt",
-            ".yamllint", ".pre-commit-config.yaml"
+            "config.json",
+            "extension_config.json",
+            ".env",
+            "keybindings.json",
+            "pyproject.toml",
+            "requirements*.txt",
+            ".yamllint",
+            ".pre-commit-config.yaml",
         ],
-
         # Input data
-        "data/input/": [
-            "sample_document.docx", "*.docx"
-        ],
-
+        "data/input/": ["sample_document.docx", "*.docx"],
         # Output data
-        "data/output/": [
-            "outline.json", "*_report.json", "*_success*.json"
-        ],
-
+        "data/output/": ["outline.json", "*_report.json", "*_success*.json"],
         # Documentation
         "docs/": [
-            "*.md", "*.txt", "QUALITY_CHECKS.md", "Usage.txt",
-            "requirements_implementation_map.md"
+            "*.md",
+            "*.txt",
+            "QUALITY_CHECKS.md",
+            "Usage.txt",
+            "requirements_implementation_map.md",
         ],
-
         # Tests
-        "tests/": [
-            "test_*.py", "*test*.json", "test_report.md"
-        ]
+        "tests/": ["test_*.py", "*test*.json", "test_report.md"],
     }
 
     return file_categories
+
 
 def move_files_to_structure(file_categories, dry_run=True):
     """Move files according to the categorization."""
@@ -199,8 +222,11 @@ def move_files_to_structure(file_categories, dry_run=True):
                     except Exception as e:
                         print(f"      ❌ Error moving {file_path}: {e}")
 
-    print(f"\n📊 Summary: {moved_count} files {'would be moved' if dry_run else 'moved'}")
+    print(
+        f"\n📊 Summary: {moved_count} files {'would be moved' if dry_run else 'moved'}"
+    )
     return moved_count
+
 
 def create_new_main_files():
     """Create new organized main files."""
@@ -255,7 +281,7 @@ if __name__ == "__main__":
         f.write(main_content)
 
     # Create README for new structure
-    readme_content = '''# RTM Automation System v2.0 - Organized Structure
+    readme_content = """# RTM Automation System v2.0 - Organized Structure
 
 ## 🏗️ Project Structure
 
@@ -300,10 +326,11 @@ python src/dashboard/rtm_web_dashboard.py
 - 🧪 **Testable**: Separated concerns
 - 📦 **Maintainable**: Modular architecture
 - 🚀 **Scalable**: Enterprise-ready structure
-'''
+"""
 
     with open("README_ORGANIZED.md", "w", encoding="utf-8") as f:
         f.write(readme_content)
+
 
 def generate_organization_report():
     """Generate a report of the organization process."""
@@ -319,7 +346,7 @@ def generate_organization_report():
                 "Better discoverability of components",
                 "Enterprise-ready project structure",
                 "Easier onboarding for new developers",
-                "Simplified CI/CD integration"
+                "Simplified CI/CD integration",
             ],
             "structure_created": {
                 "src/": "Core source code modules",
@@ -328,15 +355,15 @@ def generate_organization_report():
                 "data/": "Input/output data",
                 "docs/": "Documentation",
                 "tests/": "Test files",
-                ".github/": "GitHub workflows and hooks"
+                ".github/": "GitHub workflows and hooks",
             },
             "recommendations": [
                 "Run with dry_run=False to execute the organization",
                 "Update import statements in affected files",
                 "Update CI/CD paths to match new structure",
                 "Consider creating package __init__.py files",
-                "Update documentation references"
-            ]
+                "Update documentation references",
+            ],
         }
     }
 
@@ -344,6 +371,7 @@ def generate_organization_report():
         json.dump(report, f, indent=2)
 
     return report
+
 
 def main():
     """Main organization function."""
@@ -355,7 +383,7 @@ def main():
     print()
 
     # Create structure
-    structure = create_organized_structure()
+    create_organized_structure()
 
     # Categorize files
     file_categories = categorize_files()
@@ -368,9 +396,9 @@ def main():
     create_new_main_files()
 
     # Generate report
-    report = generate_organization_report()
+    generate_organization_report()
 
-    print(f"\n🎯 ORGANIZATION PLAN READY!")
+    print("\n🎯 ORGANIZATION PLAN READY!")
     print("=" * 35)
     print("✅ Directory structure created")
     print("✅ File categorization analyzed")
@@ -387,8 +415,10 @@ def main():
 
     return 0
 
+
 if __name__ == "__main__":
     import sys
+
     if "--execute" in sys.argv:
         # Execute the actual move
         file_categories = categorize_files()

@@ -275,7 +275,7 @@ This document contains:
                     f"--reference-doc={reference_doc}",
                 ]
 
-            result = subprocess.run(
+            subprocess.run(
                 cmd,
                 check=True,
                 stdout=subprocess.PIPE,

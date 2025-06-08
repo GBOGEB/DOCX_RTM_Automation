@@ -1,0 +1,2 @@
+# paths.yaml
+openai_api_key_path: "C:/Users/gbonthuy/Downloads/DOCX_RTM_Automation_v1.0/config/openai_api_key.txt"

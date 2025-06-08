@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 import time
 
+
 def quick_flake8_check():
     """Run a quick flake8 check with progress feedback."""
     print("🔍 Quick Code Quality Check")
@@ -29,7 +30,7 @@ def quick_flake8_check():
         "enhance_document_parsing.py",
         "digital_twin_parser.py",
         "verify_system_status.py",
-        "test_integration.py"
+        "test_integration.py",
     ]
 
     total_issues = 0
@@ -39,15 +40,20 @@ def quick_flake8_check():
             print(f"   Checking {file_path}...", end=" ")
 
             try:
-                result = subprocess.run([
-                    "flake8",
-                    "--max-line-length=88",
-                    "--extend-ignore=E203,W503,E501",
-                    file_path
-                ], capture_output=True, text=True, timeout=30)
+                result = subprocess.run(
+                    [
+                        "flake8",
+                        "--max-line-length=88",
+                        "--extend-ignore=E203,W503,E501",
+                        file_path,
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=30,
+                )
 
                 if result.stdout.strip():
-                    issues = len(result.stdout.strip().split('\n'))
+                    issues = len(result.stdout.strip().split("\n"))
                     total_issues += issues
                     print(f"⚠️ {issues} issues")
                 else:
@@ -60,7 +66,7 @@ def quick_flake8_check():
         else:
             print(f"   {file_path} not found")
 
-    print(f"\n📊 Summary:")
+    print("\n📊 Summary:")
     print(f"   Total issues found: {total_issues}")
 
     if total_issues == 0:
@@ -72,6 +78,7 @@ def quick_flake8_check():
 
     return total_issues
 
+
 def check_project_structure():
     """Check if project has expected structure."""
     print("\n🏗️ Project Structure Check:")
@@ -80,7 +87,7 @@ def check_project_structure():
     expected_files = [
         "enhance_document_parsing.py",
         "digital_twin_parser.py",
-        "Project Requirements.py"
+        "Project Requirements.py",
     ]
 
     for directory in expected_dirs:
@@ -94,6 +101,7 @@ def check_project_structure():
             print(f"   ✅ {file_path}")
         else:
             print(f"   ❌ {file_path} missing")
+
 
 def main():
     """Main function for quick quality check."""
@@ -113,6 +121,7 @@ def main():
 
     # Return exit code based on issues found
     return 1 if total_issues > 20 else 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

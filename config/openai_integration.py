@@ -1,5 +1,6 @@
-import openai
 import os
+
+import openai
 
 # Change from absolute import to relative import
 from .config_loader import get_api_keys, get_project_paths
@@ -32,7 +33,7 @@ def initialize_openai():
                 openai_key_path_from_config
             ):
                 try:
-                    with open(openai_key_path_from_config, "r", encoding="utf-8") as f:
+                    with open(openai_key_path_from_config, encoding="utf-8") as f:
                         key_from_file = f.read().strip()
                     if key_from_file:
                         api_key_val = key_from_file

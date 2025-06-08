@@ -12,7 +12,9 @@ from pathlib import Path
 import logging
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -27,16 +29,16 @@ def fix_markdown_headers(file_path):
         True if file was modified, False otherwise
     """
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Find headers with incorrect spacing after hash marks
-        pattern = re.compile(r'^(#+)([^ \n])', re.MULTILINE)
-        fixed_content = pattern.sub(r'\1 \2', content)
+        pattern = re.compile(r"^(#+)([^ \n])", re.MULTILINE)
+        fixed_content = pattern.sub(r"\1 \2", content)
 
         # Check if changes were made
         if fixed_content != content:
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 f.write(fixed_content)
             logger.info(f"Fixed header spacing in {file_path}")
             return True
@@ -69,17 +71,21 @@ def enhance_markdown_file(markdown_file, output_file=None):
 
     try:
         from enhance_document_parsing import post_process_markdown
+
         enhanced_file = post_process_markdown(markdown_file, output_file)
         logger.info(f"Enhanced markdown file: {enhanced_file}")
         return enhanced_file
     except ImportError:
-        logger.warning("Could not import enhance_document_parsing module. Using basic enhancements only.")
+        logger.warning(
+            "Could not import enhance_document_parsing module. Using basic enhancements only."
+        )
         # Perform basic fixes
         fix_markdown_headers(markdown_file)
 
         # If output file is different from input, make a copy
         if output_file != markdown_file:
             import shutil
+
             shutil.copy2(markdown_file, output_file)
 
         return output_file
@@ -102,7 +108,7 @@ def process_all_markdown_files(directory, recursive=True):
         return 0
 
     processed = 0
-    pattern = '**/*.md' if recursive else '*.md'
+    pattern = "**/*.md" if recursive else "*.md"
 
     for md_file in directory.glob(pattern):
         if fix_markdown_headers(md_file):
@@ -143,7 +149,7 @@ def run_test():
     if fixed_content == expected:
         print(f"✓ Test passed: Markdown headers in '{test_file}' fixed correctly.")
     else:
-        print(f"✗ Test failed: Headers not fixed correctly.")
+        print("✗ Test failed: Headers not fixed correctly.")
         print("Expected:")
         print(expected)
         print("Got:")
@@ -157,9 +163,15 @@ def run_test():
 def main():
     """Main entry point for command line usage."""
     parser = argparse.ArgumentParser(description="Fix and enhance markdown files")
-    parser.add_argument("input", nargs='?', help="Markdown file or directory to process")
-    parser.add_argument("-o", "--output", help="Output file (for single file processing)")
-    parser.add_argument("-r", "--recursive", action="store_true", help="Process directories recursively")
+    parser.add_argument(
+        "input", nargs="?", help="Markdown file or directory to process"
+    )
+    parser.add_argument(
+        "-o", "--output", help="Output file (for single file processing)"
+    )
+    parser.add_argument(
+        "-r", "--recursive", action="store_true", help="Process directories recursively"
+    )
     parser.add_argument("--test", action="store_true", help="Run a test")
 
     # Only parse args when run directly
@@ -195,4 +207,3 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-

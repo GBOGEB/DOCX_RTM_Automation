@@ -16,17 +16,20 @@ sys.path.insert(0, str(project_root))
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
+
 def test_markdown_integration():
     """Test markdown library integration."""
     try:
         import markdown
+
         test_md = "# Test Heading\n\nThis is a **test** paragraph."
-        html_output = markdown.markdown(test_md)
+        markdown.markdown(test_md)
         logger.info("✅ Markdown library working correctly")
         return True
     except Exception as e:
         logger.error("❌ Markdown library test failed: %s", e)
         return False
+
 
 def test_enhance_document_parsing():
     """Test the enhance_document_parsing script."""
@@ -53,6 +56,7 @@ def test_enhance_document_parsing():
         logger.error("❌ Enhancement script test failed: %s", e)
         return False
 
+
 def test_sample_file_creation():
     """Test creating and processing a sample file."""
     try:
@@ -60,8 +64,9 @@ def test_sample_file_creation():
         test_file = Path("input/test/integration_test.md")
         test_file.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(test_file, 'w', encoding='utf-8') as f:
-            f.write("""# Integration Test Document
+        with open(test_file, "w", encoding="utf-8") as f:
+            f.write(
+                """# Integration Test Document
 
 ## FR-1: Functional Requirement
 This is a test functional requirement.
@@ -79,16 +84,16 @@ This is a test non-functional requirement.
 |-------------|--------|----------|
 | FR-1        | Active | High     |
 | NFR-1       | Active | Medium   |
-""")
+"""
+            )
 
         logger.info("✅ Created test markdown file: %s", test_file)
 
         # Test processing it
         import enhance_document_parsing
+
         result = enhance_document_parsing.enhance_document_parsing(
-            str(test_file),
-            None,
-            "json"
+            str(test_file), None, "json"
         )
 
         if result and os.path.exists(result):
@@ -101,6 +106,7 @@ This is a test non-functional requirement.
     except Exception as e:
         logger.error("❌ Sample file test failed: %s", e)
         return False
+
 
 def main():
     """Run integration tests."""
@@ -142,6 +148,7 @@ def main():
     else:
         print("⚠️ Some tests failed. Check the output above for details.")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())
