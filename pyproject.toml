@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rtm-automation"
-version = "1.0.3"
+version = "1.0.4"
 description = "Automated RTM (Requirements Traceability Matrix) processing for DOCX files"
 readme = "README.md"
 license = {file = "LICENSE"}
