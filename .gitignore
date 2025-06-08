@@ -106,3 +106,33 @@ __pycache__/
 removed_files_backup/
 parsing_samples/
 DOCX_RTM_Automation/
+
+# Build and distribution
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Documentation
+docs/_build/
+site/
+
+# Backup files created during refactoring
+*.backup_*
+*.old
+
+# Temporary refactoring files
+temp_*

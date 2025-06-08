@@ -1,97 +1,73 @@
 [build-system]
-requires = ["setuptools>=45", "wheel"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "docx-rtm-automation"
+name = "rtm-automation"
 version = "1.0.0"
-description = "Document Requirements Traceability Matrix (RTM) Automation System"
-authors = [
-    {name = "RTM Automation System", email = "rtm@example.com"}
-]
-license = {text = "MIT"}
+description = "Automated RTM (Requirements Traceability Matrix) processing for DOCX files"
 readme = "README.md"
-requires-python = ">=3.8"
+license = {file = "LICENSE"}
+authors = [
+    {name = "RTM Automation Team"},
+]
+keywords = ["rtm", "automation", "docx", "document-processing", "requirements"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
+    "Topic :: Software Development :: Documentation",
+    "Topic :: Text Processing :: Markup",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Topic :: Office/Business :: Office Suites",
-    "Topic :: Text Processing :: Markup",
 ]
-keywords = ["rtm", "requirements", "traceability", "docx", "automation"]
-
+requires-python = ">=3.8"
 dependencies = [
     "python-docx>=0.8.11",
-    "markdown>=3.4.0",
-    "beautifulsoup4>=4.11.0",
-    "lxml>=4.9.0",
-    "pathlib2>=2.3.0; python_version<'3.4'",
-    "typing-extensions>=4.0.0; python_version<'3.8'",
+    "pathlib",
+    "datetime",
+    "json",
+    "logging",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
-    "black>=22.0.0",
-    "flake8>=5.0.0",
-    "mypy>=1.0.0",
+    "pytest>=7.0",
+    "black>=22.0",
+    "ruff>=0.1.0",
+    "pre-commit>=2.20.0",
+]
+docs = [
+    "sphinx>=5.0",
+    "sphinx-rtd-theme>=1.0",
 ]
 
 [project.urls]
-Homepage = "https://github.com/rtm-automation/docx-rtm-automation"
-Documentation = "https://github.com/rtm-automation/docx-rtm-automation/wiki"
-Repository = "https://github.com/rtm-automation/docx-rtm-automation"
-"Bug Tracker" = "https://github.com/rtm-automation/docx-rtm-automation/issues"
+Homepage = "https://github.com/GBOGEB/DOCX_RTM_Automation"
+Documentation = "https://github.com/GBOGEB/DOCX_RTM_Automation/docs"
+Repository = "https://github.com/GBOGEB/DOCX_RTM_Automation.git"
+Issues = "https://github.com/GBOGEB/DOCX_RTM_Automation/issues"
 
 [project.scripts]
-rtm-pipeline = "main_organized:main"
-rtm-status = "find_output_files:main"
+rtm-process = "main:main"
 
-[tool.setuptools]
-packages = ["rtm_automation"]
-package-dir = {"" = "src"}
-
-[tool.setuptools.package-data]
-rtm_automation = ["templates/*.html", "templates/*.md", "config/*.json"]
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.black]
 line-length = 88
 target-version = ['py38']
-include = '\.pyi?$'
-extend-exclude = '''
-/(
-  # directories
-  \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | build
-  | dist
-  | temp_processing
-  | output
-)/
-'''
 
-[tool.mypy]
-python_version = "3.8"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
+[tool.ruff]
+line-length = 88
+target-version = "py38"
+select = ["E", "F", "W", "C90", "I", "N", "UP", "YTT", "S", "BLE", "FBT", "B", "A", "COM", "C4", "DTZ", "T10", "EM", "EXE", "ISC", "ICN", "G", "INP", "PIE", "T20", "PYI", "PT", "Q", "RSE", "RET", "SLF", "SIM", "TID", "TCH", "ARG", "PTH", "ERA", "PD", "PGH", "PL", "TRY", "NPY", "RUF"]
+ignore = ["E501", "S101", "PLR0913"]
 
 [tool.pytest.ini_options]
-minversion = "6.0"
+minversion = "7.0"
 addopts = "-ra -q"
-testpaths = [
-    "tests",
-    "integration",
-]
+testpaths = ["tests"]

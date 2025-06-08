@@ -9,7 +9,7 @@ from datetime import datetime
 import sys
 
 # Import the document conversion function
-from document_converter import run_document_conversion
+from src.rtm.document_converter import run_document_conversion
 
 # Set up logging
 logging.basicConfig(
