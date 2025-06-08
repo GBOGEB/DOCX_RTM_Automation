@@ -260,7 +260,7 @@ def convert_basic(docx_file, output_file=None):
     try:
         # Import from local module
         sys.path.append(str(Path(__file__).resolve().parent.parent))
-        from src.parsers.try_word_to_md import convert_docx_to_markdown
+        from try_word_to_md import convert_docx_to_markdown
 
         result = convert_docx_to_markdown(docx_file, output_file)
         logging.info(f"Basic conversion completed: {result}")
@@ -274,7 +274,7 @@ def convert_with_pandoc(docx_file, output_file=None):
     try:
         # Import from local module
         sys.path.append(str(Path(__file__).resolve().parent.parent))
-        from src.parsers.pandoc_converter import convert_with_pandoc
+        from pandoc_converter import convert_with_pandoc
 
         result = convert_with_pandoc(docx_file, output_file)
         logging.info(f"Pandoc conversion completed: {result}")
@@ -288,7 +288,7 @@ def convert_with_metadata(docx_file, output_file=None, extract_outline=True):
     try:
         # Import from local module
         sys.path.append(str(Path(__file__).resolve().parent.parent))
-        from src.parsers.enhanced_word_to_md import convert_docx_to_markdown_with_metadata
+        from enhanced_word_to_md import convert_docx_to_markdown_with_metadata
 
         result = convert_docx_to_markdown_with_metadata(docx_file, output_file, extract_outline)
         logging.info(f"Enhanced conversion completed: {result[0]}")
@@ -302,7 +302,7 @@ def convert_exact(docx_file, output_file=None):
     try:
         # Import from local module
         sys.path.append(str(Path(__file__).resolve().parent.parent))
-        from src.parsers.exact_docx_to_md import convert_docx_to_markdown_exact
+        from exact_docx_to_md import convert_docx_to_markdown_exact
 
         result = convert_docx_to_markdown_exact(docx_file, output_file)
         logging.info(f"Exact conversion completed: {result}")

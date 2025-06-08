@@ -64,7 +64,7 @@ if not docx_converter:
         import rtm_pipeline
         import src.parsers.enhanced_word_to_md
         import src.parsers.pandoc_converter
-        import src.parsers.try_word_to_md
+        import try_word_to_md
         import src.parsers.exact_docx_to_md
     except ImportError:
         logger.warning("Some local modules could not be imported")

@@ -85,7 +85,7 @@ Examples:
             print(f"❌ Failed to deactivate extension: {name}")
 
     elif command == "dashboard":
-        from src.dashboard.extension_dashboard import main as dashboard_main
+        from extension_dashboard import main as dashboard_main
         dashboard_main()
 
     elif command == "report":
@@ -96,7 +96,7 @@ Examples:
 
     elif command == "health":
         summary = manager.get_summary()
-        from src.dashboard.extension_dashboard import calculate_health_score
+        from extension_dashboard import calculate_health_score
         health = calculate_health_score(summary)
 
         print(f"🎯 RTM System Health: {health}/100")

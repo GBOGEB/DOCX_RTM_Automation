@@ -365,7 +365,7 @@ def extract_requirements(markdown_file, outline_json=None):
     try:
         # Import from local module
         sys.path.append(str(Path(__file__).resolve().parent.parent))
-        from src.rtm.enhanced_requirement_parser import extract_requirements_from_markdown, find_requirements_in_code
+        from enhanced_requirement_parser import extract_requirements_from_markdown, find_requirements_in_code
 
         # Extract requirements from markdown
         requirements = extract_requirements_from_markdown(markdown_file)

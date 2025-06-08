@@ -1,114 +1,65 @@
 # DOCX RTM Automation
 
-A comprehensive automation pipeline for converting DOCX documents to Requirements Traceability Matrix (RTM) format.
+A tool for extracting Requirements Traceability Matrix (RTM) from DOCX documents and converting them to various formats.
 
-## 🚀 Features
-
-- **DOCX to Markdown Conversion**: Uses Pandoc with custom Lua filters
-- **Requirements Extraction**: Automatically identifies and extracts requirements
-- **Document Structure Analysis**: Generates hierarchical document outlines
-- **ASCII Diagrams**: Creates text-based structure visualizations
-- **Quality Assurance**: Built-in validation and error checking
-
-## 📁 Project Structure
+## Repository Structure
 
 ```
-DOCX_RTM_Automation_v1.0/
-├── code/                   # Main application code
-├── src/                   # Source modules
-│   ├── core/             # Core functionality
-│   ├── modules/          # Feature modules
-│   └── extractors/       # Data extraction utilities
-├── config/               # Configuration files
-├── input/                # Input DOCX files
-├── output/               # Generated outputs
-├── logs/                 # Application logs
-├── scripts/              # Utility scripts
-├── docs/                 # Documentation
-└── tests/                # Test files
+/DOCX_RTM_Automation
++-- config/                # All configuration files
+|   +-- paths.yaml         # Main configuration 
+|   +-- filters/           # Pandoc Lua filters
+|   +-- secrets/           # For API keys (gitignored)
++-- src/                   # All source code
+|   +-- core/              # Core processing modules
+|   +-- extractors/        # Document extraction modules
+|   +-- utils/             # Utility functions
+|   +-- modules/           # Additional modules
++-- scripts/               # Runner scripts
+|   +-- run_pipeline.py    # Main pipeline runner
+|   +-- commands.sh        # Shell commands
++-- input/                 # Input documents
+|   +-- docx/              # Original Word documents
+|   +-- external/          # External input files
++-- output/                # Generated outputs
+|   +-- markdown/          # Markdown outputs
+|   +-- json/              # JSON outputs
+|   +-- yaml/              # YAML outputs
+|   +-- rtm/               # RTM specific outputs
++-- docs/                  # Documentation
+|   +-- guides/            # User guides
+|   +-- setup/             # Setup instructions
++-- tests/                 # Unit tests
++-- tools/                 # Additional tools
 ```
 
-## 🛠️ Installation
+## Quick Start
 
-1. **Prerequisites**:
-   ```bash
-   # Install Pandoc
-   # Windows: Download from https://pandoc.org/installing.html
-   # macOS: brew install pandoc
-   # Linux: sudo apt-get install pandoc
+1. Place your input DOCX files in the `input/docx/` directory
+2. Update the paths in `config/paths.yaml` if needed
+3. Run the pipeline:
 
-   # Install Python dependencies
-   pip install -r requirements.txt
-   ```
-
-2. **Setup**:
-   ```bash
-   # Clone the repository
-   git clone <repository-url>
-   cd DOCX_RTM_Automation_v1.0
-
-   # Run the setup script
-   python project_update.py
-   ```
-
-## 🏃‍♂️ Quick Start
-
-1. **Place your DOCX file** in the `input/` directory
-2. **Run the main pipeline**:
-   ```bash
-   python code/main.py
-   ```
-3. **Check results** in the `output/` directory
-
-## 📊 Output Files
-
-- `*.md` - Converted Markdown with TOC and section numbering
-- `*_outline.yaml` - Document structure hierarchy
-- `*_requirements.yaml` - Extracted requirements
-- `*_structure.txt` - ASCII structure diagram
-
-## 🔧 Configuration
-
-Edit `config/paths.yaml` to customize:
-- Input/output directories
-- Pandoc conversion options
-- Requirements extraction patterns
-- Output formats
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **Pandoc not found**: Ensure Pandoc is installed and in PATH
-2. **TOC depth errors**: TOC depth is automatically limited to 6 (Pandoc maximum)
-3. **Lua filter errors**: Check if Lua filters exist in `config/` directory
-
-### Debug Mode
-
-Enable debug logging by setting the log level in your script:
-```python
-logging.basicConfig(level=logging.DEBUG)
+```bash
+python scripts/run_pipeline.py
 ```
 
-## 🤝 Contributing
+## GitHub Integration
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+The pipeline supports automatic GitHub integration for CI/CD workflows. See `docs/setup/git_setup.md` for details.
 
-## 📝 License
+## Testing
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+Run the automated tests to verify functionality:
 
-## 📞 Support
+```bash
+# Run all tests
+python run_tests.py
 
-For issues and questions:
-- Create an issue on GitHub
-- Check the documentation in `docs/`
-- Review the logs in `logs/` for error details
+# Run a specific test file
+python -m unittest tests/test_pipeline.py
+```
 
----
-
-*Last updated: 2025-05-23*
+Tests cover:
+- Pipeline integration
+- Module functionality
+- Data extraction and conversion

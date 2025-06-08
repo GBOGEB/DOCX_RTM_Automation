@@ -260,7 +260,7 @@ def convert_basic(docx_file, output_file=None):
     try:
         # Import from local module
         sys.path.append(str(Path(__file__).resolve().parent.parent))
-        from src.parsers.try_word_to_md import convert_docx_to_markdown
+        from try_word_to_md import convert_docx_to_markdown
 
         result = convert_docx_to_markdown(docx_file, output_file)
         logging.info(f"Basic conversion completed: {result}")
