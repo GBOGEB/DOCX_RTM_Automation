@@ -1,30 +1,45 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Python: Current File with Project Root",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            }
-        },
-        {
-            "name": "Python: Debug RTM Pipeline",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/scripts/full_integration.py",
-            "args": [
-                "--pipeline"
-            ],
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            }
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "RTM System - Main Organized",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/main_organized.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "args": []
+    },
+    {
+      "name": "RTM System - JSON Analyzer",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/main_organized.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "args": [
+        "analyze"
+      ]
+    },
+    {
+      "name": "RTM System - Dashboard",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/launch_dashboard.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "args": []
+    },
+    {
+      "name": "RTM System - Status Check",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/main_organized.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "args": [
+        "status"
+      ]
+    }
+  ]
 }
