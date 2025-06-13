@@ -13,230 +13,148 @@ from datetime import datetime
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def run_document_conversion(document_path: str, output_dir: str = "output") -> Dict[str, Any]:
+def run_document_conversion(document_path=None):
     """
-    Convert DOCX document for RTM processing
+    Main function to run document conversion
 
     Args:
-        document_path: Path to the input DOCX file
-        output_dir: Directory to save conversion results
+        document_path (str, optional): Path to specific DOCX file to process
+                                     If None, will search for files in input directory
 
     Returns:
-        Dictionary with conversion results and metadata
+        bool: True if successful, False otherwise
     """
-    logger.info(f"Starting document conversion for: {document_path}")
-
     try:
-        # Ensure paths are Path objects
-        doc_path = Path(document_path)
-        output_path = Path(output_dir)
+        print(f"🔄 RTM Document Conversion Starting...")
 
-        # Validate input file
-        if not doc_path.exists():
-            raise FileNotFoundError(f"Document not found: {document_path}")
+        if document_path:
+            # Process specific file
+            input_file = Path(document_path)
+            if not input_file.exists():
+                print(f"❌ File not found: {document_path}")
+                return False
 
-        if not doc_path.suffix.lower() == '.docx':
-            raise ValueError(f"Expected DOCX file, got: {doc_path.suffix}")
+            if not input_file.suffix.lower() == '.docx':
+                print(f"❌ Not a DOCX file: {document_path}")
+                return False
 
-        # Create output directory
-        output_path.mkdir(parents=True, exist_ok=True)
+            print(f"📄 Processing: {input_file.name}")
 
-        # Prepare conversion results
-        conversion_result = {
-            "status": "success",
-            "input_file": str(doc_path),
-            "output_directory": str(output_path),
-            "conversion_time": datetime.now().isoformat(),
-            "file_size": doc_path.stat().st_size,
-            "converted_files": [],
-            "metadata": {}
+            # Create output directory
+            output_dir = Path("output")
+            output_dir.mkdir(exist_ok=True)
+
+            # Process the document
+            result = process_docx_file(input_file, output_dir)
+
+            if result:
+                print(f"✅ Successfully processed: {input_file.name}")
+                return True
+            else:
+                print(f"⚠️  Processing completed with issues: {input_file.name}")
+                return False
+        else:
+            # Process all files in input directory
+            input_dir = Path("input")
+            if not input_dir.exists():
+                print(f"⚠️  Input directory 'input/' not found")
+                print(f"   Creating input directory...")
+                input_dir.mkdir(exist_ok=True)
+                print(f"   Please place DOCX files in the 'input/' directory")
+                return False
+
+            docx_files = list(input_dir.glob("*.docx"))
+            if not docx_files:
+                print(f"⚠️  No DOCX files found in input directory")
+                return False
+
+            print(f"📄 Found {len(docx_files)} DOCX files to process")
+
+            # Create output directory
+            output_dir = Path("output")
+            output_dir.mkdir(exist_ok=True)
+
+            # Process each file
+            processed_count = 0
+            for docx_file in docx_files:
+                print(f"🔄 Processing: {docx_file.name}")
+                if process_docx_file(docx_file, output_dir):
+                    processed_count += 1
+
+            print(f"✅ Processed {processed_count}/{len(docx_files)} files successfully")
+            return processed_count > 0
+
+    except Exception as e:
+        print(f"❌ Error in document conversion: {e}")
+        return False
+
+def process_docx_file(docx_path, output_dir):
+    """
+    Process a single DOCX file
+
+    Args:
+        docx_path (Path): Path to DOCX file
+        output_dir (Path): Output directory
+
+    Returns:
+        bool: True if successful
+    """
+    try:
+        from docx import Document
+
+        # Load the document
+        doc = Document(docx_path)
+
+        # Extract content
+        paragraphs = []
+        tables = []
+
+        for paragraph in doc.paragraphs:
+            if paragraph.text.strip():
+                paragraphs.append({
+                    'text': paragraph.text.strip(),
+                    'style': paragraph.style.name if paragraph.style else 'Normal'
+                })
+
+        for table in doc.tables:
+            table_data = []
+            for row in table.rows:
+                row_data = []
+                for cell in row.cells:
+                    row_data.append(cell.text.strip())
+                table_data.append(row_data)
+            tables.append(table_data)
+
+        # Create output filename
+        output_filename = output_dir / f"{docx_path.stem}_processed.json"
+
+        # Save results
+        import json
+        result_data = {
+            'source_file': str(docx_path),
+            'processed_at': datetime.now().isoformat(),
+            'paragraphs': paragraphs,
+            'tables': tables,
+            'stats': {
+                'paragraph_count': len(paragraphs),
+                'table_count': len(tables)
+            }
         }
 
-        # Basic document analysis
-        logger.info("Analyzing document structure...")
-        doc_metadata = analyze_document_structure(doc_path)
-        conversion_result["metadata"] = doc_metadata
+        with open(output_filename, 'w', encoding='utf-8') as f:
+            json.dump(result_data, f, indent=2, ensure_ascii=False)
 
-        # Convert document content
-        logger.info("Converting document content...")
-        converted_content = convert_document_content(doc_path, output_path)
-        conversion_result["converted_files"].extend(converted_content)
+        print(f"   📊 Extracted {len(paragraphs)} paragraphs and {len(tables)} tables")
+        print(f"   💾 Saved to: {output_filename}")
 
-        # Save conversion summary
-        summary_file = output_path / f"{doc_path.stem}_conversion_summary.json"
-        with open(summary_file, 'w', encoding='utf-8') as f:
-            json.dump(conversion_result, f, indent=2, default=str)
-
-        conversion_result["converted_files"].append(str(summary_file))
-
-        logger.info(f"Document conversion completed successfully")
-        logger.info(f"Generated {len(conversion_result['converted_files'])} output files")
-
-        return conversion_result
-
-    except Exception as e:
-        error_result = {
-            "status": "error",
-            "input_file": document_path,
-            "error": str(e),
-            "conversion_time": datetime.now().isoformat()
-        }
-
-        logger.error(f"Document conversion failed: {e}")
-        return error_result
-
-def analyze_document_structure(doc_path: Path) -> Dict[str, Any]:
-    """Analyze the structure of a DOCX document"""
-    try:
-        # Try to import python-docx for proper DOCX handling
-        try:
-            from docx import Document
-
-            doc = Document(doc_path)
-
-            metadata = {
-                "paragraphs_count": len(doc.paragraphs),
-                "tables_count": len(doc.tables),
-                "has_tables": len(doc.tables) > 0,
-                "sections_count": len(doc.sections),
-                "analysis_method": "python-docx"
-            }
-
-            # Count non-empty paragraphs
-            non_empty_paragraphs = sum(1 for p in doc.paragraphs if p.text.strip())
-            metadata["non_empty_paragraphs"] = non_empty_paragraphs
-
-            # Analyze tables if present
-            if doc.tables:
-                table_info = []
-                for i, table in enumerate(doc.tables):
-                    table_data = {
-                        "table_index": i,
-                        "rows": len(table.rows),
-                        "columns": len(table.columns) if table.rows else 0
-                    }
-                    table_info.append(table_data)
-                metadata["table_details"] = table_info
-
-            logger.info(f"Document analysis: {metadata['paragraphs_count']} paragraphs, {metadata['tables_count']} tables")
-
-        except ImportError:
-            # Fallback to basic file analysis
-            logger.warning("python-docx not available, using basic analysis")
-            metadata = {
-                "file_size": doc_path.stat().st_size,
-                "file_modified": datetime.fromtimestamp(doc_path.stat().st_mtime).isoformat(),
-                "analysis_method": "basic_file_info"
-            }
-
-        return metadata
-
-    except Exception as e:
-        logger.error(f"Error analyzing document structure: {e}")
-        return {
-            "error": str(e),
-            "analysis_method": "failed"
-        }
-
-def convert_document_content(doc_path: Path, output_path: Path) -> list:
-    """Convert document content to various formats"""
-    converted_files = []
-
-    try:
-        # Try to extract content using python-docx
-        try:
-            from docx import Document
-
-            doc = Document(doc_path)
-
-            # Extract text content
-            text_content = []
-            for paragraph in doc.paragraphs:
-                if paragraph.text.strip():
-                    text_content.append(paragraph.text)
-
-            # Save extracted text
-            if text_content:
-                text_file = output_path / f"{doc_path.stem}_extracted_text.txt"
-                with open(text_file, 'w', encoding='utf-8') as f:
-                    f.write('\n'.join(text_content))
-                converted_files.append(str(text_file))
-                logger.info(f"Extracted text saved to: {text_file}")
-
-            # Extract table data if present
-            if doc.tables:
-                tables_data = extract_tables_data(doc.tables)
-                if tables_data:
-                    tables_file = output_path / f"{doc_path.stem}_tables_data.json"
-                    with open(tables_file, 'w', encoding='utf-8') as f:
-                        json.dump(tables_data, f, indent=2)
-                    converted_files.append(str(tables_file))
-                    logger.info(f"Table data saved to: {tables_file}")
-
-        except ImportError:
-            # Create a placeholder conversion
-            logger.warning("python-docx not available, creating placeholder conversion")
-            placeholder_file = output_path / f"{doc_path.stem}_conversion_placeholder.txt"
-            with open(placeholder_file, 'w', encoding='utf-8') as f:
-                f.write(f"Document conversion placeholder for: {doc_path.name}\n")
-                f.write(f"Original file size: {doc_path.stat().st_size} bytes\n")
-                f.write(f"Conversion time: {datetime.now().isoformat()}\n")
-                f.write("\nNote: Install python-docx for full document processing\n")
-                f.write("pip install python-docx\n")
-            converted_files.append(str(placeholder_file))
-
-        return converted_files
-
-    except Exception as e:
-        logger.error(f"Error converting document content: {e}")
-        return []
-
-def extract_tables_data(tables) -> list:
-    """Extract data from document tables"""
-    tables_data = []
-
-    try:
-        for table_idx, table in enumerate(tables):
-            table_data = {
-                "table_index": table_idx,
-                "rows": [],
-                "row_count": len(table.rows),
-                "column_count": len(table.columns) if table.rows else 0
-            }
-
-            for row_idx, row in enumerate(table.rows):
-                row_data = {
-                    "row_index": row_idx,
-                    "cells": []
-                }
-
-                for cell_idx, cell in enumerate(row.cells):
-                    cell_data = {
-                        "cell_index": cell_idx,
-                        "text": cell.text.strip()
-                    }
-                    row_data["cells"].append(cell_data)
-
-                table_data["rows"].append(row_data)
-
-            tables_data.append(table_data)
-
-        logger.info(f"Extracted data from {len(tables_data)} tables")
-        return tables_data
-
-    except Exception as e:
-        logger.error(f"Error extracting table data: {e}")
-        return []
-
-def install_dependencies():
-    """Check and suggest installation of required dependencies"""
-    try:
-        import docx
-        logger.info("✅ python-docx is available")
         return True
+
     except ImportError:
-        logger.warning("⚠️  python-docx not installed")
-        logger.info("For full functionality, install with: pip install python-docx")
+        print(f"   ❌ python-docx library not found")
+        print(f"   Install with: pip install python-docx")
+        return False
+    except Exception as e:
+        print(f"   ❌ Error processing {docx_path}: {e}")
         return False
 
 if __name__ == "__main__":
@@ -245,18 +163,19 @@ if __name__ == "__main__":
     print("=" * 40)
 
     # Check dependencies
-    install_dependencies()
+    try:
+        import docx
+        print("✅ python-docx is available")
+    except ImportError:
+        print("⚠️  python-docx not installed")
+        print("For full functionality, install with: pip install python-docx")
 
     # Test with a sample file if available
     test_file = Path("input/MASTER_1805_1144.docx")
     if test_file.exists():
         print(f"\nTesting with: {test_file}")
         result = run_document_conversion(str(test_file))
-        print(f"Conversion result: {result['status']}")
-        if result['status'] == 'success':
-            print(f"Output files: {len(result['converted_files'])}")
-        else:
-            print(f"Error: {result.get('error', 'Unknown')}")
+        print(f"Conversion result: {'Success' if result else 'Failed'}")
     else:
         print(f"\nTest file not found: {test_file}")
         print("Place a DOCX file in the input/ directory to test")

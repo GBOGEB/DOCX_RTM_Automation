@@ -3,8 +3,6 @@
 ASCII Art - Professional workflow diagrams and visual elements
 """
 
-from datetime import datetime
-from pathlib import Path
 
 def rtm_pipeline_diagram():
     """ASCII diagram of RTM pipeline workflow"""
@@ -28,6 +26,7 @@ def rtm_pipeline_diagram():
 Status: ✅ Processing 1,868 paragraphs and 28 tables successfully
 """
 
+
 def github_workflow_diagram():
     """ASCII diagram of GitHub workflow"""
     return """
@@ -37,6 +36,9 @@ def github_workflow_diagram():
 
 ┌──────────┐    ┌─────────────┐    ┌──────────────┐    ┌──────────┐
 │  Local   │───▶│   Staging   │───▶│   Commit     │───▶│  GitHub  │
+│  Changes │    │   Files     │    │   Version    │    │  Remote  │
+└──────────┘    └─────────────┘    └──────────────┘    └──────────┘
+      │               │                    │                  │
       ▼               ▼                    ▼                  ▼
 ┌──────────┐    ┌─────────────┐    ┌──────────────┐    ┌──────────┐
 │   git    │    │    git      │    │   version    │    │   git    │
@@ -45,6 +47,7 @@ def github_workflow_diagram():
 
 Automatic: Version increment → Changelog update → GitHub roundtrip
 """
+
 
 def version_management_flow():
     """ASCII flow for version management"""
@@ -81,6 +84,7 @@ def version_management_flow():
 
 Result: v1.0.X with complete change tracking
 """
+
 
 def project_structure_tree():
     """ASCII tree of project structure"""
@@ -120,6 +124,7 @@ DOCX_RTM_Automation_v1.0/
 Professional structure with organized modules and comprehensive logging
 """
 
+
 def workflow_status_banner(step_name, status):
     """Create status banner for workflow steps"""
     status_symbol = "✅" if status == "SUCCESS" else "❌" if status == "FAILED" else "⚠️"
@@ -129,6 +134,7 @@ def workflow_status_banner(step_name, status):
 ║  {status_symbol} {step_name:<55} {status_symbol}  ║
 ╚════════════════════════════════════════════════════════════════╝
 """
+
 
 def progress_bar(current, total, operation):
     """ASCII progress bar"""
@@ -140,6 +146,7 @@ def progress_bar(current, total, operation):
 {operation}
 [{bar}] {percentage}% ({current}/{total})
 """
+
 
 def final_success_banner():
     """Success banner for completed operations"""
@@ -159,17 +166,63 @@ def final_success_banner():
 ╚══════════════════════════════════════════════════════════════════╝
 """
 
-def print_ascii(ascii_content, log_to_file=True):
-    """Print ASCII art and optionally log to file"""
-    from logging_system import rtm_logger
 
-    # Always show on console
-    print(ascii_content)
+def main_project_pipeline():
+    """Complete ASCII diagram of main project pipeline with key files"""
+    return """
+╔══════════════════════════════════════════════════════════════════╗
+║                    RTM AUTOMATION - MAIN PIPELINE               ║
+╚══════════════════════════════════════════════════════════════════╝
 
-    # Also log to file if requested
-    if log_to_file:
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        ascii_log = rtm_logger.log_dir / f"ascii_output_{timestamp}.txt"
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│    START    │  │   SETUP     │  │  PROCESS    │  │   DEPLOY    │
+│    HERE     │  │   & TEST    │  │   DOCX      │  │  & COMMIT   │
+└─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘
+      │                │                │                │
+      ▼                ▼                ▼                ▼
 
-        with open(ascii_log, 'w', encoding='utf-8') as f:
-            f.write(ascii_content)
+📄 main.py ────────▶ 📄 comprehensive_test.py ──▶ 🔄 RTM Engine ──▶ 📦 Version Manager
+   ├─ Entry Point      ├─ System Health           ├─ DOCX Parser    ├─ Auto Increment
+   ├─ File Discovery   ├─ Dependencies            ├─ Content Extract ├─ Changelog Gen
+   └─ Orchestration    └─ Structure Check         └─ Output Generate └─ GitHub Push
+
+      │                       │                        │                │
+      ▼                       ▼                        ▼                ▼
+┌─────────────┐         ┌─────────────┐         ┌─────────────┐  ┌─────────────┐
+│   HELPERS   │         │ DIAGNOSTICS │         │ CORE ENGINE │  │  AUTOMATION │
+└─────────────┘         └─────────────┘         └─────────────┘  └─────────────┘
+
+📄 nav_menu.py          📄 fix_environment.py    📁 src/rtm/       📁 scripts/automation/
+   Interactive Menu        Environment Fix         Core Modules      Version Control
+
+📄 find_output_files.py 📄 test_python_docx.py   📄 document_      📄 version_manager.py
+   Result Analysis         Library Test           converter.py       Auto Versioning
+
+📄 project_scanner.py   📄 reset_environment.py  📄 logging_       📄 smart_cleanup_
+   Structure Analysis      Clean Reset           system.py          commit.py
+
+📄 create_test_         📁 scripts/quality/      📄 ascii_art.py   📁 scripts/debug/
+   document.py             Testing Tools          Visual Diagrams     Debug Utilities
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           FUNCTIONAL BLOCKS                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ 🎯 MAIN FUNCTIONS:                                                          │
+│    • main.py → find_input_documents() → process_documents()                │
+│    • document_converter.py → run_document_conversion() → extract_content() │
+│    • version_manager.py → increment_version() → update_changelog()         │
+│                                                                             │
+│ 🔧 HELPER FUNCTIONS:                                                        │
+│    • find_output_files.py → categorize_files() → display_results()         │
+│    • fix_environment.py → check_dependencies() → install_packages()        │
+│    • project_scanner.py → scan_structure() → analyze_python_files()        │
+│                                                                             │
+│ 🧪 TEST FUNCTIONS:                                                          │
+│    • comprehensive_test.py → test_all_components() → generate_report()     │
+│    • test_python_docx.py → validate_imports() → create_test_docs()         │
+│                                                                             │
+│ 🌐 INTEGRATION FUNCTIONS:                                                   │
+│    • GitHub workflow → commit → push → version tracking                    │
+│    • Logging system → file logging → progress tracking                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+"""

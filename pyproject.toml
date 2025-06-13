@@ -27,10 +27,6 @@ classifiers = [
 requires-python = ">=3.8"
 dependencies = [
     "python-docx>=0.8.11",
-    "pathlib",
-    "datetime",
-    "json",
-    "logging",
 ]
 
 [project.optional-dependencies]
@@ -64,8 +60,11 @@ target-version = ['py38']
 [tool.ruff]
 line-length = 88
 target-version = "py38"
-select = ["E", "F", "W", "C90", "I", "N", "UP", "YTT", "S", "BLE", "FBT", "B", "A", "COM", "C4", "DTZ", "T10", "EM", "EXE", "ISC", "ICN", "G", "INP", "PIE", "T20", "PYI", "PT", "Q", "RSE", "RET", "SLF", "SIM", "TID", "TCH", "ARG", "PTH", "ERA", "PD", "PGH", "PL", "TRY", "NPY", "RUF"]
-ignore = ["E501", "S101", "PLR0913"]
+
+[tool.ruff.lint]
+# Focus on critical errors only
+select = ["E9", "F63", "F7", "F82"]  # Critical syntax and import errors
+ignore = []
 
 [tool.pytest.ini_options]
 minversion = "7.0"

@@ -32,6 +32,9 @@ class RTMLogger:
         self.workflow_logger = logging.getLogger(f"{self.name}.workflow")
         self.workflow_logger.setLevel(logging.INFO)
 
+        # Clear any existing handlers
+        self.workflow_logger.handlers.clear()
+
         workflow_handler = logging.FileHandler(self.workflow_log, encoding='utf-8')
         workflow_formatter = logging.Formatter(
             '%(asctime)s - %(levelname)s - %(message)s'
@@ -42,6 +45,7 @@ class RTMLogger:
         # Pipeline logger
         self.pipeline_logger = logging.getLogger(f"{self.name}.pipeline")
         self.pipeline_logger.setLevel(logging.INFO)
+        self.pipeline_logger.handlers.clear()
 
         pipeline_handler = logging.FileHandler(self.pipeline_log, encoding='utf-8')
         pipeline_handler.setFormatter(workflow_formatter)
@@ -50,6 +54,7 @@ class RTMLogger:
         # GitHub operations logger
         self.github_logger = logging.getLogger(f"{self.name}.github")
         self.github_logger.setLevel(logging.INFO)
+        self.github_logger.handlers.clear()
 
         github_handler = logging.FileHandler(self.github_log, encoding='utf-8')
         github_handler.setFormatter(workflow_formatter)
@@ -65,10 +70,14 @@ class RTMLogger:
             self.workflow_logger.info(f"DETAILS: {details}")
 
         # Also write to status file
-        with open(self.status_log, 'a', encoding='utf-8') as f:
-            f.write(f"[{timestamp}] {step_name}: {status}\n")
-            if details:
-                f.write(f"  Details: {details}\n")
+        try:
+            with open(self.status_log, 'a', encoding='utf-8') as f:
+                f.write(f"[{timestamp}] {step_name}: {status}\n")
+                if details:
+                    f.write(f"  Details: {details}\n")
+        except Exception as e:
+            # If file logging fails, continue
+            print(f"Warning: Could not write to status log: {e}")
 
     def log_pipeline_result(self, operation, result_data):
         """Log pipeline results to structured format"""
@@ -79,14 +88,17 @@ class RTMLogger:
         self.pipeline_logger.info(f"RESULT: {json.dumps(result_data, indent=2)}")
 
         # Write structured result to file
-        result_file = self.log_dir / f"pipeline_result_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        try:
+            result_file = self.log_dir / f"pipeline_result_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
 
-        with open(result_file, 'w', encoding='utf-8') as f:
-            json.dump({
-                'timestamp': timestamp,
-                'operation': operation,
-                'result': result_data
-            }, f, indent=2)
+            with open(result_file, 'w', encoding='utf-8') as f:
+                json.dump({
+                    'timestamp': timestamp,
+                    'operation': operation,
+                    'result': result_data
+                }, f, indent=2)
+        except Exception as e:
+            print(f"Warning: Could not write pipeline result: {e}")
 
     def log_github_operation(self, operation, status, details=None):
         """Log GitHub operations"""
@@ -99,42 +111,68 @@ class RTMLogger:
         timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         report_file = self.log_dir / f"status_report_{timestamp}.txt"
 
-        with open(report_file, 'w', encoding='utf-8') as f:
-            f.write("RTM AUTOMATION STATUS REPORT\n")
-            f.write("=" * 50 + "\n")
-            f.write(f"Generated: {datetime.now().isoformat()}\n\n")
+        try:
+            with open(report_file, 'w', encoding='utf-8') as f:
+                f.write("RTM AUTOMATION STATUS REPORT\n")
+                f.write("=" * 50 + "\n")
+                f.write(f"Generated: {datetime.now().isoformat()}\n\n")
 
-            for section, data in report_data.items():
-                f.write(f"{section.upper()}\n")
-                f.write("-" * len(section) + "\n")
+                for section, data in report_data.items():
+                    f.write(f"{section.upper()}\n")
+                    f.write("-" * len(section) + "\n")
 
-                if isinstance(data, dict):
-                    for key, value in data.items():
-                        f.write(f"{key}: {value}\n")
-                elif isinstance(data, list):
-                    for item in data:
-                        f.write(f"• {item}\n")
-                else:
-                    f.write(f"{data}\n")
-                f.write("\n")
+                    if isinstance(data, dict):
+                        for key, value in data.items():
+                            f.write(f"{key}: {value}\n")
+                    elif isinstance(data, list):
+                        for item in data:
+                            f.write(f"• {item}\n")
+                    else:
+                        f.write(f"{data}\n")
+                    f.write("\n")
 
-        return report_file
+            return report_file
+        except Exception as e:
+            print(f"Warning: Could not create status report: {e}")
+            return None
 
 # Global logger instance
 rtm_logger = RTMLogger()
 
 def log_step(step_name, status, details=None):
     """Convenience function to replace print statements"""
-    rtm_logger.log_workflow_step(step_name, status, details)
+    try:
+        rtm_logger.log_workflow_step(step_name, status, details)
+        # Also print to console for immediate feedback
+        print(f"📋 {step_name}: {status}")
+        if details:
+            print(f"   Details: {details}")
+    except Exception as e:
+        # Fallback to simple print if logging fails
+        print(f"📋 {step_name}: {status}")
+        if details:
+            print(f"   Details: {details}")
 
 def log_pipeline(operation, result_data):
     """Convenience function for pipeline logging"""
-    rtm_logger.log_pipeline_result(operation, result_data)
+    try:
+        rtm_logger.log_pipeline_result(operation, result_data)
+        print(f"🔧 Pipeline: {operation} completed")
+    except Exception as e:
+        print(f"🔧 Pipeline: {operation} completed (logging error: {e})")
 
 def log_github(operation, status, details=None):
     """Convenience function for GitHub operations"""
-    rtm_logger.log_github_operation(operation, status, details)
+    try:
+        rtm_logger.log_github_operation(operation, status, details)
+        print(f"🌐 GitHub: {operation} - {status}")
+    except Exception as e:
+        print(f"🌐 GitHub: {operation} - {status} (logging error: {e})")
 
 def create_report(report_data):
     """Convenience function to create status report"""
-    return rtm_logger.create_status_report(report_data)
+    try:
+        return rtm_logger.create_status_report(report_data)
+    except Exception as e:
+        print(f"Warning: Could not create report: {e}")
+        return None

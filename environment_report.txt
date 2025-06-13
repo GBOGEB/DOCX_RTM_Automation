@@ -1,0 +1,23 @@
+RTM AUTOMATION ENVIRONMENT REPORT
+=====================================
+Generated: 2025-06-08T22:36:45.020489
+
+PYTHON ENVIRONMENT:
+- Python executable: C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0\.venv\Scripts\python.exe
+- Python version: 3.12.7 (tags/v3.12.7:0b05ead, Oct  1 2024, 03:06:41) [MSC v.1941 64 bit (AMD64)]
+- Working directory: C:\Users\gbonthuy\Downloads\DOCX_RTM_Automation_v1.0
+- Virtual environment: True
+
+SYSTEM INFO:
+- Platform: win32
+- Path separator: \
+
+ENVIRONMENT VARIABLES:
+- PATH: c;C:\Users\gbonthuy\.vscodextensions\ms-python.python-2025.6.1-win32-x64\python_files\deactivateas...
+- PYTHONPATH: Not set
+- VIRTUAL_ENV: C:/Users/gbonthuy/Downloads/DOCX_RTM_Automation_v1.0/.venv
+
+RECOMMENDATIONS:
+- If in broken virtual environment, recreate it
+- Consider using system Python for simplicity
+- Ensure pip is properly installed

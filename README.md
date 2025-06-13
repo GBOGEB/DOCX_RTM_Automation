@@ -1,99 +1,3 @@
-# RTM Automation Project
-
-```
- ██████╗ ████████╗███╗   ███╗     █████╗ ██╗   ██╗████████╗ ██████╗ ███╗   ███╗ █████╗ ████████╗██╗ ██████╗ ███╗   ██╗
- ██╔══██╗╚══██╔══╝████╗ ████║    ██╔══██╗██║   ██║╚══██╔══╝██╔═══██╗████╗ ████║██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║
- ██████╔╝   ██║   ██╔████╔██║    ███████║██║   ██║   ██║   ██║   ██║██╔████╔██║███████║   ██║   ██║██║   ██║██╔██╗ ██║
- ██╔══██╗   ██║   ██║╚██╔╝██║    ██╔══██║██║   ██║   ██║   ██║   ██║██║╚██╔╝██║██╔══██║   ██║   ██║██║   ██║██║╚██╗██║
- ██║  ██║   ██║   ██║ ╚═╝ ██║    ██║  ██║╚██████╔╝   ██║   ╚██████╔╝██║ ╚═╝ ██║██║  ██║   ██║   ██║╚██████╔╝██║ ╚████║
- ╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝    ╚═╝  ╚═╝ ╚═════╝    ╚═╝    ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
-```
-
-Automated processing for RTM (Requirements Traceability Matrix) files.
-
-## 🚀 Quick Start Workflow
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│  1. Setup Git   │───▶│  2. Run Scanner │───▶│ 3. Run Pipeline │───▶│ 4. Check Output │
-│                 │    │                 │    │                 │    │                 │
-│ python          │    │ python          │    │ python main.py  │    │ python          │
-│ setup_project.py│    │ project_scanner │    │                 │    │ find_output_    │
-│                 │    │ .py             │    │                 │    │ files.py        │
-└─────────────────┘    └─────────────────┘    └─────────────────┘    └─────────────────┘
-```
-
-## 📁 Project Structure
-
-```
-DOCX_RTM_Automation_v1.0/
-├── 📄 main.py                    # Main pipeline execution
-├── 📄 document_converter.py      # DOCX processing engine
-├── 📄 find_output_files.py       # Output file analyzer
-├── 📄 project_scanner.py         # Project structure analyzer
-├── 📄 setup_project.py           # Git/GitHub setup script
-├── 📄 quick_setup.py             # Quick configuration helper
-├── 📄 fix_main_pipeline.py       # Pipeline troubleshooter
-├── 📄 git_workflow_guide.md      # Git workflow documentation
-├── 📄 README.md                  # This file
-├── 📄 .gitignore                 # Git ignore rules
-├── 📁 input/                     # Input DOCX files
-│   └── 📄 MASTER_1805_1144.docx  # Sample RTM document
-├── 📁 output/                    # Generated output files
-│   ├── 📄 *.txt                  # Extracted text content
-│   ├── 📄 *.json                 # Structured data
-│   └── 📄 *_summary.json         # Conversion summaries
-├── 📁 pipeline/                  # Processing pipeline modules
-├── 📁 utils/                     # Utility functions
-├── 📁 config/                    # Configuration files
-├── 📁 docs/                      # Documentation
-└── 📁 tests/                     # Test files
-```
-
-## 🔄 Processing Workflow
-
-```
-Input DOCX File
-       │
-       ▼
-┌─────────────────┐
-│  File Validation│
-│  • Check exists │
-│  • Verify .docx │
-│  • Size check   │
-└─────────────────┘
-       │
-       ▼
-┌─────────────────┐
-│ Document Analysis│
-│  • Count tables │
-│  • Count paras  │
-│  • Find sections│
-└─────────────────┘
-       │
-       ▼
-┌─────────────────┐
-│ Content Extract │
-│  • Text content │
-│  • Table data   │
-│  • Metadata     │
-└─────────────────┘
-       │
-       ▼
-┌─────────────────┐
-│  Save Results   │
-│  • JSON files   │
-│  • Text files   │
-│  • Summaries    │
-└─────────────────┘
-       │
-       ▼
-   Output Files
-```
-
-## 🛠️ Installation & Setup
-
-### Prerequisites
 ```bash
 # Python 3.7+
 python --version
@@ -103,6 +7,7 @@ git --version
 ```
 
 ### Quick Setup
+
 ```bash
 # 1. Navigate to project directory
 cd /c/Users/gbonthuy/Downloads/DOCX_RTM_Automation_v1.0
@@ -113,7 +18,6 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
 # 3. Install dependencies
 pip install python-docx
-
 # 4. Run project setup
 python setup_project.py
 
@@ -124,6 +28,7 @@ python project_scanner.py
 ## 🎯 Usage
 
 ### Basic Usage
+
 ```bash
 # Run the complete RTM pipeline
 python main.py
@@ -136,6 +41,7 @@ python project_scanner.py
 ```
 
 ### Advanced Usage
+
 ```bash
 # Fix pipeline issues
 python fix_main_pipeline.py
@@ -150,24 +56,28 @@ python document_converter.py
 ## 📊 Features
 
 ### ✅ Document Processing
+
 - **DOCX File Reading**: Extract content from Word documents
 - **Table Analysis**: Parse and structure table data
 - **Text Extraction**: Clean text content extraction
 - **Metadata Analysis**: Document structure information
 
 ### ✅ RTM Specific Features
+
 - **Requirements Parsing**: Identify requirement statements
 - **Traceability Matrix**: Build relationship mappings
 - **Data Validation**: Verify RTM completeness
 - **Report Generation**: Automated RTM reports
 
 ### ✅ Automation & Tools
+
 - **Pipeline Processing**: Automated workflow execution
 - **File Management**: Organized output structure
 - **Error Handling**: Robust error recovery
 - **Progress Tracking**: Detailed logging
 
 ### ✅ Development Tools
+
 - **Git Integration**: Version control setup
 - **Project Analysis**: Structure scanning
 - **Troubleshooting**: Automated problem detection
@@ -176,6 +86,7 @@ python document_converter.py
 ## 🔧 Configuration
 
 ### Input Configuration
+
 ```python
 # Place DOCX files in the input/ directory
 input/
@@ -185,6 +96,7 @@ input/
 ```
 
 ### Output Configuration
+
 ```python
 # Generated files appear in output/ directory
 output/
@@ -199,6 +111,7 @@ output/
 ### Common Issues
 
 #### 1. `run_document_conversion` not found
+
 ```bash
 # Fix: Run the pipeline fixer
 python fix_main_pipeline.py
@@ -208,6 +121,7 @@ from document_converter import run_document_conversion
 ```
 
 #### 2. No DOCX files found
+
 ```bash
 # Solution: Add DOCX files to input directory
 mkdir input
@@ -215,12 +129,14 @@ mkdir input
 ```
 
 #### 3. python-docx not installed
+
 ```bash
 # Install the required package
 pip install python-docx
 ```
 
 #### 4. Git configuration issues
+
 ```bash
 # Run quick setup
 python quick_setup.py
@@ -233,6 +149,7 @@ git config --global user.email "your.email@example.com"
 ## 🔄 Git Workflow
 
 ### Initial Setup
+
 ```bash
 # Initialize repository
 git init
@@ -249,6 +166,7 @@ git push -u origin main
 ```
 
 ### Daily Workflow
+
 ```bash
 # Check status
 git status

@@ -10,14 +10,52 @@ from pathlib import Path
 from datetime import datetime
 import re
 
-# Import our new logging system
-from logging_system import log_step, log_github, create_report
-from ascii_art import (
-    version_management_flow,
-    workflow_status_banner,
-    final_success_banner,
-    print_ascii
-)
+# Try to import our new logging system, fallback to print if not available
+try:
+    from logging_system import log_step, log_github, create_report
+    LOGGING_AVAILABLE = True
+except ImportError:
+    # Fallback functions if logging system not available
+    def log_step(step_name, status, details=None):
+        print(f"📋 {step_name}: {status}")
+        if details:
+            print(f"   Details: {details}")
+
+    def log_github(operation, status, details=None):
+        print(f"🌐 GitHub: {operation} - {status}")
+        if details:
+            print(f"   Details: {details}")
+
+    def create_report(report_data):
+        print("📊 Status report would be created here")
+        return "status_report.txt"
+
+    LOGGING_AVAILABLE = False
+
+# Try to import ASCII art, fallback to simple text if not available
+try:
+    from ascii_art import (
+        version_management_flow,
+        workflow_status_banner,
+        final_success_banner,
+        print_ascii
+    )
+    ASCII_AVAILABLE = True
+except ImportError:
+    # Fallback functions if ASCII art not available
+    def print_ascii(content):
+        print(content)
+
+    def version_management_flow():
+        return "VERSION MANAGEMENT FLOW\n======================\nAutomatic version management system active"
+
+    def workflow_status_banner(step_name, status):
+        return f">>> {step_name}: {status} <<<"
+
+    def final_success_banner():
+        return "🎉 SUCCESS! RTM Automation deployed successfully! 🎉"
+
+    ASCII_AVAILABLE = False
 
 # Version configuration
 VERSION_FILE = "VERSION.json"

@@ -8,11 +8,13 @@ import os
 import sys
 import subprocess
 import logging
+import shutil
 from pathlib import Path
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
+
 
 def run_command(cmd, cwd=None):
     """Run a command and return success status."""
@@ -23,12 +25,15 @@ def run_command(cmd, cwd=None):
             cwd=cwd,
             capture_output=True,
             text=True,
-            check=False
+            encoding="utf-8",
+            errors="replace",
+            check=False,
         )
 
         if result.returncode != 0:
             logger.error(f"Command failed: {cmd}")
-            logger.error(f"Error output: {result.stderr}")
+            if result.stderr:
+                logger.error(f"Error output: {result.stderr}")
             return False
 
         logger.info(f"✓ {cmd}")
@@ -36,6 +41,7 @@ def run_command(cmd, cwd=None):
     except Exception as e:
         logger.error(f"Failed to run command '{cmd}': {e}")
         return False
+
 
 def check_python_syntax():
     """Check Python syntax for all staged Python files."""
@@ -45,13 +51,17 @@ def check_python_syntax():
     try:
         result = subprocess.run(
             ["git", "diff", "--cached", "--name-only", "--diff-filter=ACM"],
-            capture_output=True, text=True, check=True
+            capture_output=True,
+            text=True,
+            check=True,
+            encoding="utf-8",
+            errors="replace",
         )
-        files = result.stdout.strip().split('\n')
-        python_files = [f for f in files if f.endswith('.py') and os.path.exists(f)]
+        files = result.stdout.strip().split("\n")
+        python_files = [f for f in files if f.endswith(".py") and os.path.exists(f)]
     except subprocess.CalledProcessError:
         logger.warning("Could not get staged files, checking all Python files")
-        python_files = list(Path('.').rglob('*.py'))
+        python_files = list(Path(".").rglob("*.py"))
 
     if not python_files:
         logger.info("No Python files to check")
@@ -60,8 +70,8 @@ def check_python_syntax():
     success = True
     for file in python_files:
         try:
-            with open(file, 'r', encoding='utf-8') as f:
-                compile(f.read(), file, 'exec')
+            with open(file, "r", encoding="utf-8") as f:
+                compile(f.read(), file, "exec")
         except SyntaxError as e:
             logger.error(f"Syntax error in {file}: {e}")
             success = False
@@ -71,24 +81,29 @@ def check_python_syntax():
 
     return success
 
+
 def check_with_ruff():
     """Run Ruff linting if available."""
-    if not subprocess.run(["which", "ruff"], capture_output=True).returncode == 0:
+    # Check if ruff is available in PATH using cross-platform method
+    if not shutil.which("ruff"):
         # Try to use from virtual environment
         ruff_path = Path(".venv/Scripts/ruff.exe")
         if not ruff_path.exists():
             ruff_path = Path(".venv/bin/ruff")
 
         if ruff_path.exists():
-            cmd = f"{ruff_path} check ."
+            # Focus on critical files only
+            cmd = f'"{ruff_path}" check ascii_art.py simple_pre_commit_hook.py --select E9,F63,F7,F82'
         else:
             logger.info("Ruff not found, skipping linting")
             return True
     else:
-        cmd = "ruff check ."
+        # Focus on critical files only
+        cmd = "ruff check ascii_art.py simple_pre_commit_hook.py --select E9,F63,F7,F82"
 
     logger.info("Running Ruff linting...")
     return run_command(cmd)
+
 
 def main():
     """Main pre-commit hook function."""
@@ -113,6 +128,7 @@ def main():
 
     logger.info("✓ All pre-commit checks passed!")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

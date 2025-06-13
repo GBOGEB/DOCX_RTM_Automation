@@ -1,113 +1,101 @@
 #!/usr/bin/env python3
 """
-RTM Pipeline - Main execution script (FIXED VERSION)
+Main RTM Automation Entry Point - Updated for new structure
 """
 
-import logging
-from pathlib import Path
-from datetime import datetime
 import sys
+from pathlib import Path
 
-# Import the document conversion function
-from src.rtm.document_converter import run_document_conversion
+# Add src to path for imports
+sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-# Set up logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(name)s - %(message)s'
-)
-logger = logging.getLogger('rtm_pipeline')
-
-def find_input_document(input_dir="input"):
-    """Find the first DOCX document in the input directory"""
-    input_path = Path(input_dir)
-
-    if not input_path.exists():
-        logger.error(f"Input directory not found: {input_dir}")
-        return None
-
-    # Look for DOCX files
-    docx_files = list(input_path.glob("*.docx"))
-
-    if not docx_files:
-        logger.error(f"No DOCX files found in {input_dir}")
-        return None
-
-    # Return the first DOCX file found
-    selected_doc = docx_files[0]
-    logger.info(f"Using found document: {selected_doc}")
-    return str(selected_doc)
-
-def run_rtm_pipeline():
-    """Run the complete RTM processing pipeline"""
-    logger.info("Starting RTM Pipeline")
-    logger.info("=" * 50)
-
+try:
+    from src.rtm.document_converter import run_document_conversion
+except ImportError:
+    # Fallback to old location if new structure not ready
     try:
-        # Step 1: Find input document
-        logger.info("Step 1: Finding input document...")
-        input_document = find_input_document()
+        from document_converter import run_document_conversion
+    except ImportError:
+        print("❌ Could not import document_converter module")
+        print("Please ensure the RTM automation modules are available")
+        sys.exit(1)
 
-        if not input_document:
-            logger.error("No input document found - pipeline cannot continue")
-            return False
+def find_input_documents():
+    """Find DOCX files to process"""
+    input_dirs = ["input", ".", "documents"]
+    docx_files = []
 
-        # Step 2: Run document conversion (FIXED - single parameter only)
-        logger.info("Step 2: Converting document...")
-        conversion_result = run_document_conversion(input_document)
+    for input_dir in input_dirs:
+        dir_path = Path(input_dir)
+        if dir_path.exists():
+            found_files = list(dir_path.glob("*.docx"))
+            docx_files.extend(found_files)
 
-        if conversion_result["status"] != "success":
-            logger.error(f"Document conversion failed: {conversion_result.get('error', 'Unknown error')}")
-            return False
-
-        logger.info(f"Document conversion successful!")
-        logger.info(f"Generated {len(conversion_result['converted_files'])} output files")
-
-        # Step 3: Additional processing could go here
-        logger.info("Step 3: Pipeline processing complete")
-
-        # Summary
-        logger.info("=" * 50)
-        logger.info("RTM Pipeline completed successfully!")
-        logger.info(f"Input: {input_document}")
-        logger.info(f"Output directory: {conversion_result['output_directory']}")
-        logger.info(f"Files generated: {len(conversion_result['converted_files'])}")
-
-        return True
-
-    except Exception as e:
-        logger.error(f"Pipeline error: {e}")
-        return False
+    return docx_files
 
 def main():
-    """Main function"""
-    print("🚀 RTM Automation Pipeline")
+    """Main function for RTM automation"""
+    print("🚀 RTM AUTOMATION SYSTEM")
     print("=" * 30)
-    print("Starting automated RTM processing...\n")
+    print("Starting document conversion process...\n")
 
-    # Initialize OpenAI integration if available
-    try:
-        print("Initializing OpenAI integration...")
-        # Add your OpenAI initialization here if needed
-        print("OpenAI integration ready")
-    except Exception as e:
-        print(f"OpenAI integration not available: {e}")
+    # Find input documents
+    docx_files = find_input_documents()
 
-    # Run the pipeline
-    success = run_rtm_pipeline()
+    if not docx_files:
+        print("⚠️  No DOCX files found for processing")
+        print("\nSuggestions:")
+        print("   • Place DOCX files in an 'input/' directory")
+        print("   • Or place them in the current directory")
+        print("   • Ensure files have .docx extension")
+        return 1
 
-    if success:
-        print("\n✅ Pipeline completed successfully!")
-        print("\nNext steps:")
-        print("1. Check the output directory for generated files")
-        print("2. Run: python find_output_files.py")
-        print("3. Review the conversion results")
+    print(f"📄 Found {len(docx_files)} DOCX file(s) to process:")
+    for docx_file in docx_files:
+        print(f"   • {docx_file}")
+
+    # Process each document
+    total_processed = 0
+    total_errors = 0
+
+    for docx_file in docx_files:
+        print(f"\n🔄 Processing: {docx_file.name}")
+        try:
+            # Call the document converter with the file path
+            result = run_document_conversion(str(docx_file))
+
+            if result:
+                print(f"   ✅ Successfully processed: {docx_file.name}")
+                total_processed += 1
+            else:
+                print(f"   ⚠️  Processing completed with warnings: {docx_file.name}")
+                total_processed += 1
+
+        except Exception as e:
+            print(f"   ❌ Error processing {docx_file.name}: {e}")
+            total_errors += 1
+
+    # Show final results
+    print(f"\n📊 PROCESSING SUMMARY")
+    print("=" * 25)
+    print(f"Files found: {len(docx_files)}")
+    print(f"Successfully processed: {total_processed}")
+    print(f"Errors: {total_errors}")
+
+    if total_processed > 0:
+        print(f"\n✅ RTM automation completed!")
+        print(f"📁 Check 'output/' directory for results")
+
+        # Show output directory info
+        output_dir = Path("output")
+        if output_dir.exists():
+            output_files = list(output_dir.glob("*"))
+            print(f"📊 Generated {len(output_files)} output files")
+
+        return 0
     else:
-        print("\n❌ Pipeline failed!")
-        print("\nTroubleshooting:")
-        print("1. Check that input DOCX files exist in the 'input' directory")
-        print("2. Ensure you have the required dependencies installed")
-        print("3. Check the error messages above")
+        print(f"\n❌ No files were successfully processed")
+        return 1
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
