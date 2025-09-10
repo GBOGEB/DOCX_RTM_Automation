@@ -1,0 +1,14 @@
+# Optional preferences to influence ranking and grouping.
+priority_projects:
+  - "orchestration-sandbox"
+  - "python-sdk"
+  - "document-organization-system"
+labels_in_progress: ["in-progress", "wip", "progress"]
+labels_todo: ["todo", "backlog", "triage"]
+labels_done: ["done", "completed", "closed"]
+integration_hints:
+  shared_labels: ["infra", "orchestration", "baseline", "agent"]
+  keywords_merge: ["integrate", "merge", "unify", "shared", "common"]
+  keywords_separate: ["decouple", "separate", "isolate", "independent"]
+scan_window_days: 7
+max_items_per_section: 12
