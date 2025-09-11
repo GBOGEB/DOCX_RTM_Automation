@@ -146,6 +146,26 @@ git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
 ```
 
+#### 5. VS Code Terminal (Git Bash) Exit Code 256
+
+If VS Code's integrated terminal fails to start Git Bash with exit code 256:
+
+```bash
+# Automatic fix (recommended):
+python scripts/fix_vscode_terminal.py
+
+# This configures proper Git Bash terminal profiles
+# and sets fallback options for different Git installations
+```
+
+**What it fixes:**
+- Configures multiple Git Bash terminal profiles
+- Sets proper paths for different Git installation locations
+- Creates fallback options for edge cases
+- Sets Git Bash as the default terminal on Windows
+
+See [VS Code Terminal Fix Documentation](docs/VSCODE_TERMINAL_FIX.md) for detailed troubleshooting.
+
 ## 🔄 Git Workflow
 
 ### Initial Setup
