@@ -223,6 +223,42 @@ python find_output_files.py
 python project_scanner.py
 ```
 
+## 📊 7-Day Metadata Scan
+
+Quick start with repository activity scanning:
+
+1. Copy files from patches into your repo.
+2. Run `bash scripts/bootstrap.sh` (or `.\scripts\bootstrap.ps1` on Windows).
+3. Run `make scaffold && make qa`.
+4. Use `python tools/pairwise_rank.py --example` to compare host/terminal options.
+5. Run `make scan-7d` to generate last-7-days report.
+6. Run `make package` to produce `dist/orchestration_bundle.zip`.
+
+### Keywords in this repo
+- BASELINE()
+- candidate_Baseline()
+
+### 7-day metadata scan
+- Configure repos: edit config/repositories.yaml (pre-seeded with your top repos).
+- Optional preferences: config/scan_prefs.yaml.
+- Auth: set `GITHUB_TOKEN` for better API limits.
+- Output: docs/SCAN_7D.md (human), docs/scan_7d.json (machine).
+- The scan also records a candidate_Baseline() note for traceability.
+
+### Sessions ledger
+- Maintain docs/SESSIONS.md with session titles and timestamps (e.g., "Deep agent orchestration").
+- Reports can reference the ledger for context.
+
+### Trusted ports/interfaces
+- Ports are not exposed publicly by default. See `.devcontainer/devcontainer.json`.
+
+### QA gates
+- Pre-commit runs ruff, black, isort, pylint, markdownlint-cli2, yamllint, eslint/prettier, shellcheck, hadolint.
+
+### Transfer to deep agent
+- See `docs/AGENT_README.md` and `agent/agent_manifest.yaml`.
+- Build the bundle with `make package`.
+
 ## 🤝 Contributing
 
 1. Fork the repository
