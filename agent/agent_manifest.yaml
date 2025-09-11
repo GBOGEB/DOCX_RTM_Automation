@@ -1,0 +1,25 @@
+name: "DOCX RTM Automation Agent"
+version: "1.0.0"
+description: "Agent manifest for RTM automation with 7-day scanning capabilities"
+
+capabilities:
+  - scan_repositories
+  - generate_reports
+  - track_sessions
+  - analyze_completion_scores
+
+inputs:
+  - config/repositories.yaml
+  - config/scan_prefs.yaml
+  - docs/SESSIONS.md
+
+outputs:
+  - docs/SCAN_7D.md
+  - docs/scan_7d.json
+  - dist/orchestration_bundle.zip
+
+commands:
+  init: "make init"
+  scan: "make scan-7d"
+  report: "make report-7d"
+  package: "make package"
