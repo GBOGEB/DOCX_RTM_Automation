@@ -1,0 +1,33 @@
+
+# Development and Testing Dependencies
+pytest>=7.3.1
+pytest-cov>=4.1.0
+pytest-benchmark>=4.0.0
+pytest-mock>=3.11.1
+pytest-xdist>=3.3.1
+coverage>=7.2.7
+black>=23.7.0
+ruff>=0.0.287
+pre-commit>=3.3.3
+mypy>=1.5.1
+bandit>=1.7.5
+safety>=2.3.4
+tox>=4.6.4
+
+# Document processing testing
+python-docx>=0.8.11
+openpyxl>=3.1.2
+python-pptx>=0.6.21
+PyPDF2>=3.0.1
+markdown>=3.4.4
+beautifulsoup4>=4.12.2
+lxml>=4.9.3
+
+# Performance and monitoring
+psutil>=5.9.5
+memory-profiler>=0.61.0
+
+# Mock data generation
+faker>=19.3.0
+factory-boy>=3.3.0
+reportlab>=4.0.0
