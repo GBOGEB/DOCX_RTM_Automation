@@ -1,13 +1,14 @@
 # Minimal requirements for the project
+# Updated: 2025-11-22 - Security vulnerability remediation
 
 # Core dependencies
 docx==0.2.4  # Library for working with .docx files
-openpyxl==3.1.2  # Library for working with Excel files
+openpyxl==3.1.5  # Library for working with Excel files
 
 # Automation and utilities
-python-docx==0.8.11  # Advanced .docx manipulation
-pandas==2.0.3  # Data analysis and manipulation
+python-docx==1.2.0  # Advanced .docx manipulation
+pandas==2.2.3  # Data analysis and manipulation
 xlrd==2.0.1  # Reading data from Excel files
 
 # Optional dependencies for testing
-pytest==7.4.0  # Testing framework
+pytest==9.0.1  # Testing framework

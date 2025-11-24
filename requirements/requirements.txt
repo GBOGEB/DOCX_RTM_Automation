@@ -1,8 +1,9 @@
 # Requirements for DOCX RTM Automation
-openai>=0.27.0
-pyyaml>=6.0
-python-docx>=0.8.11
-pytest>=7.3.1
+# Updated: 2025-11-22 - Security vulnerability remediation
+openai==2.8.1
+pyyaml==6.0.3
+python-docx==1.2.0
+pytest==9.0.1
 # pandoc>=2.3 # System dependency, not installed via pip. Ensure Pandoc is installed on your system.
-markdown>=3.4
-jsonschema>=4.0
+markdown==3.10
+jsonschema==4.25.1
