@@ -10,7 +10,11 @@ pip install pre-commit ruff black isort pylint pytest requests pyyaml
 
 echo "[bootstrap] Setting up Node dev deps..."
 if command -v node >/dev/null 2>&1; then
-  npm install
+  if [ -f package.json ]; then
+    npm install
+  else
+    echo "[bootstrap] package.json not found; skipping npm install."
+  fi
 else
   echo "[bootstrap] Node not found; skipping npm install."
 fi
@@ -21,6 +25,8 @@ if command -v go >/dev/null 2>&1; then
 fi
 
 echo "[bootstrap] Registering pre-commit hooks..."
-pre-commit install --install-hooks
+if ! pre-commit install --install-hooks; then
+  echo "[bootstrap] pre-commit hook install skipped; repository hooksPath is externally managed."
+fi
 
 echo "[bootstrap] Done. Activate venv with: source .venv/bin/activate"
