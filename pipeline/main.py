@@ -196,7 +196,7 @@ class DMAICPipelineController:
         """Initialize a new DMAIC cycle"""
         cycle_signature = canonical_hash(
             {"project_name": project_name, "objectives": objectives}
-        )[:20]
+        )[:32]
         iteration_id = f"DMAIC_{project_name}_{cycle_signature}"
 
         self.current_iteration = DMAICIteration(

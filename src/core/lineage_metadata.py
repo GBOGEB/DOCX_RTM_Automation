@@ -5,11 +5,10 @@ from __future__ import annotations
 
 import subprocess
 import logging
+import hashlib
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable
-
-from src.core.idempotency_contract import canonical_hash
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +57,11 @@ def build_lineage_snapshot(
                     else str(full_path)
                 ),
                 "exists": exists,
-                "sha256": canonical_hash(full_path.read_bytes()) if exists else None,
+                "sha256": (
+                    hashlib.sha256(full_path.read_bytes()).hexdigest()
+                    if exists
+                    else None
+                ),
                 "size_bytes": full_path.stat().st_size if exists else 0,
             }
         )

@@ -67,6 +67,10 @@ def main() -> int:
         print(f"Missing: {', '.join(result['missing'])}")
     if result["drifted"]:
         print(f"Drifted: {', '.join(result['drifted'])}")
+        for detail in result["drift_details"]:
+            print(
+                f"  - {detail['path']}: expected {detail['expected_sha256']} actual {detail['actual_sha256']}"
+            )
     if result["unexpected"]:
         print(f"Unexpected: {', '.join(result['unexpected'])}")
     return 1

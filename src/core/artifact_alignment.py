@@ -4,10 +4,9 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 from typing import Any, Dict, List
-
-from src.core.idempotency_contract import canonical_hash
 
 
 def _read_json(path: Path) -> Dict[str, Any]:
@@ -28,7 +27,11 @@ def build_index(repo_root: Path, manifest: Dict[str, Any]) -> Dict[str, Any]:
                 "path": rel_path,
                 "required": bool(item.get("required", True)),
                 "exists": exists,
-                "sha256": canonical_hash(full_path.read_bytes()) if exists else None,
+                "sha256": (
+                    hashlib.sha256(full_path.read_bytes()).hexdigest()
+                    if exists
+                    else None
+                ),
             }
         )
 
@@ -50,6 +53,7 @@ def verify_alignment(
     missing: List[str] = []
     drifted: List[str] = []
     unexpected: List[str] = []
+    drift_details: List[Dict[str, Any]] = []
 
     for entry in current.get("artifacts", []):
         path = entry["path"]
@@ -66,11 +70,19 @@ def verify_alignment(
 
         if entry["exists"] and expected_entry.get("sha256") != entry.get("sha256"):
             drifted.append(path)
+            drift_details.append(
+                {
+                    "path": path,
+                    "expected_sha256": expected_entry.get("sha256"),
+                    "actual_sha256": entry.get("sha256"),
+                }
+            )
 
     return {
         "ok": len(missing) == 0 and len(drifted) == 0 and len(unexpected) == 0,
         "missing": missing,
         "drifted": drifted,
         "unexpected": unexpected,
+        "drift_details": drift_details,
         "checked": len(current.get("artifacts", [])),
     }

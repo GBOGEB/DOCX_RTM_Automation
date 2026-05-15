@@ -4,43 +4,43 @@
       "exists": true,
       "path": "pipeline/main.py",
       "required": true,
-      "sha256": "d0e5b651aab84d069d24aff61019e4a29f949a396e941b0f1376d31e6ef02122"
+      "sha256": "a4f54fdc5251d37215d9fd4946645ae1099a1215d336cfbebe5ae67f75369eab"
     },
     {
       "exists": true,
       "path": "src/core/idempotency_contract.py",
       "required": true,
-      "sha256": "99c152b2daeea9ea18525bb67983e3e0025c9be45ca63a7344f3a6876cdc91d0"
+      "sha256": "d34209cf035f8d543b1c78fa39188a6665d7b3c39b11fda0b56bf5f6072f2c9e"
     },
     {
       "exists": true,
       "path": "src/core/lineage_metadata.py",
       "required": true,
-      "sha256": "db0f7ebde112b966c6075850dc5198ccdbbf59968c9a53145f0dcb7a7ab98b3e"
+      "sha256": "e3c4e538b1a538190ce2db898294c146451f4cffc477116b4248b1e6c26be9c5"
     },
     {
       "exists": true,
       "path": "src/core/artifact_alignment.py",
       "required": true,
-      "sha256": "7b76c57d6c9faee2fa8813362304dcc9022cd25654b43cfb19305b6a47fc3141"
+      "sha256": "16350ef75dff5ac7e85da8a6931949db78a41cc11bd1d5ce75537db2d17a5e7a"
     },
     {
       "exists": true,
       "path": "scripts/verify_recursive_alignment.py",
       "required": true,
-      "sha256": "6269c2b7aa6e939eb0999474c2630eb37f05565c6df49f98a64a62eb174bce5d"
+      "sha256": "633ff59708b77e203cfa5ca58e684fcdd81044ad676c181244a7fd83f2ca815c"
     },
     {
       "exists": true,
       "path": "docs/README.md",
       "required": true,
-      "sha256": "62da64c65dc2fa5fc9cc5e4da86a944c16dfc45c410f688bd760f467afb14feb"
+      "sha256": "e8bc696184b8c81cde7748f6c140c32e046a9e620811187689e639ea9bc094d8"
     },
     {
       "exists": true,
       "path": "server/templates/index.html",
       "required": true,
-      "sha256": "4a642f14ebf27d50e75ac1e7c59ea299b874a90ae2dad2c6c4c14b101e9a54e2"
+      "sha256": "86bce4dae29c49dcf7964a9a6c29d69a657e188405360c948ff23dcad79c853e"
     }
   ]
 }

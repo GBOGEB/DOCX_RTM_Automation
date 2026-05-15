@@ -16,6 +16,8 @@ def canonical_serialize(payload: Any) -> str:
 
 def canonical_hash(payload: Any) -> str:
     """Create canonical SHA256 hash for any payload."""
+    if isinstance(payload, bytes):
+        return hashlib.sha256(payload).hexdigest()
     return hashlib.sha256(canonical_serialize(payload).encode("utf-8")).hexdigest()
 
 
