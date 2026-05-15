@@ -2,6 +2,38 @@
 
 A tool for extracting Requirements Traceability Matrix (RTM) from DOCX documents and converting them to various formats.
 
+[![CI](https://github.com/GBOGEB/DOCX_RTM_Automation/actions/workflows/python-ci.yml/badge.svg)](https://github.com/GBOGEB/DOCX_RTM_Automation/actions/workflows/python-ci.yml)
+![Coverage Threshold](https://img.shields.io/badge/coverage-threshold%2070%25-brightgreen)
+![Lineage](https://img.shields.io/badge/lineage-commit--backed-blue)
+
+## Navigation Hub
+
+- **Primary UI entrypoint:** `server/templates/index.html`
+- **Pipeline controller:** `pipeline/main.py`
+- **Idempotency contract:** `src/core/idempotency_contract.py`
+- **Lineage metadata:** `src/core/lineage_metadata.py`
+- **Recursive alignment verifier:** `scripts/verify_recursive_alignment.py`
+- **Locked alignment manifest/index:**
+  - `config/recursive_alignment_manifest.json`
+  - `config/recursive_alignment_index.json`
+
+## Phase Map (DMAIC)
+
+The active phase execution map is implemented in `pipeline/main.py`:
+
+1. Define
+2. Measure
+3. Analyze
+4. Improve
+5. Control
+
+## Artifact Explorer Links
+
+- Generated dashboard JSON: `pipeline_output/dmaic_dashboard.json`
+- Generated lineage snapshot: `pipeline_output/lineage_snapshot.json`
+- Generated compliance CSV: `pipeline_output/compliance_metrics.csv`
+- Generated RTM processing outputs: `output/`
+
 ## Repository Structure
 
 ```
@@ -57,6 +89,9 @@ python run_tests.py
 
 # Run a specific test file
 python -m unittest tests/test_pipeline.py
+
+# Run lineage + idempotency + alignment focused tests with coverage
+python -m pytest tests/test_basic.py tests/test_all.py tests/core -v
 ```
 
 Tests cover:

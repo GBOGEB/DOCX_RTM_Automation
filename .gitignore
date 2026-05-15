@@ -112,6 +112,8 @@ logs/
 temp_processing/
 *.backup
 *.json
+!config/recursive_alignment_manifest.json
+!config/recursive_alignment_index.json
 .vscode/
 __pycache__/
 *.pyc

@@ -1,0 +1,35 @@
+{
+  "name": "recursive-alignment-manifest",
+  "version": 1,
+  "artifacts": [
+    {
+      "path": "pipeline/main.py",
+      "required": true
+    },
+    {
+      "path": "src/core/idempotency_contract.py",
+      "required": true
+    },
+    {
+      "path": "src/core/lineage_metadata.py",
+      "required": true
+    },
+    {
+      "path": "src/core/artifact_alignment.py",
+      "required": true
+    },
+    {
+      "path": "scripts/verify_recursive_alignment.py",
+      "required": true
+    },
+    {
+      "path": "docs/README.md",
+      "required": true
+    },
+    {
+      "path": "server/templates/index.html",
+      "required": true
+    }
+  ]
+}
+

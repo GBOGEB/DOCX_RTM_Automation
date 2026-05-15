@@ -35,6 +35,20 @@
             padding: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+        .nav-links ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .nav-links li {
+            margin: 6px 0;
+        }
+        .nav-links a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
         .upload-section {
             display: flex;
             flex-direction: column;
@@ -178,6 +192,15 @@
     </header>
 
     <div class="container">
+        <div class="card nav-links">
+            <h2>Repository Navigation</h2>
+            <ul>
+                <li><a href="/docs/README.md" target="_blank">Docs Landing Hub</a></li>
+                <li><a href="/docs/quick_start.md" target="_blank">Quick Start</a></li>
+                <li><a href="/status" target="_blank">Job Status (after upload)</a></li>
+            </ul>
+        </div>
+
         <div class="card">
             <h2>Upload Documents</h2>
             <div class="upload-section">
