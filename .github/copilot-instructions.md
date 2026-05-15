@@ -36,7 +36,7 @@ python find_output_files.py
 # Run comprehensive system test - takes 1.2 seconds, passes 5/6 tests
 python comprehensive_test.py
 
-# Check syntax of all Python files - takes ~0.05 seconds, validates 24 files
+# Check top-level Python files - takes ~0.05 seconds, validates 24 files
 python syntax_checker.py
 ```
 
@@ -87,7 +87,7 @@ python scripts/quality/verify_github_status.py
 - Generates JSON and extracted text artifacts under `output/`
 - Handles large documents: 1868 paragraphs, 28 tables successfully processed
 - System test shows "SYSTEM STATUS: EXCELLENT" with 83.3% pass rate (5/6 tests)
-- `python syntax_checker.py` validates 24 Python files in ~0.05 seconds
+- `python syntax_checker.py` validates the current 24 top-level Python files in ~0.05 seconds
 
 ## System Dependencies and Installation
 
@@ -112,13 +112,11 @@ python --version
 ruff check . --exit-zero                    # Fast lint check (~0.09s)
 black --check --diff . --exclude .venv      # Format validation (~25.5s timeout needed)
 
-# bootstrap.sh currently exits non-zero during npm setup because package.json is absent.
-# You can safely ignore that final npm failure for Python work after the venv/tooling setup completes.
+# bootstrap.sh now skips npm setup cleanly when package.json is absent.
 
-# Full pytest collection currently needs extra test-only deps that are not in requirements:
+# Full pytest collection is not reproducible from requirements.txt alone because tests import:
 # - python-pptx for tests/fixtures/mock_documents.py
 # - psutil for tests/performance/test_cricket_scoring.py
-# Install them manually if you need full pytest coverage; otherwise expect collection failures there.
 
 # Debug console requires psutil (not essential):
 # pip install psutil  # Optional for advanced debugging
@@ -153,7 +151,7 @@ DOCX_RTM_Automation/
 | `main.py` | Primary RTM processing | <1s for 8 files | Daily document processing |
 | `comprehensive_test.py` | Full system validation | 1.2s | After any changes |
 | `create_test_document.py` | Generate test data | 0.1s | Before testing changes |
-| `syntax_checker.py` | Code quality check | 0.05s for 24 files | Before commits |
+| `syntax_checker.py` | Code quality check | 0.05s for 24 top-level files | Before commits |
 
 ## Timeout Guidelines and Build Times
 
@@ -203,7 +201,7 @@ ruff check . --exit-zero
 black --check --diff . --exclude .venv
 
 # Individual file validation
-python syntax_checker.py  # Always passes - all 24 tracked Python files valid
+python syntax_checker.py  # Always passes - all 24 tracked top-level Python files are valid
 ```
 
 ## Development Workflow Patterns
@@ -275,7 +273,7 @@ Your system is working correctly when:
 | Environment setup | 30s | 60s+ |
 | Document processing (8 files) | 0.91s | 60s |
 | System validation | 1.16s | 30s |
-| Syntax checking (24 files) | 0.05s | 60s |
+| Syntax checking (24 top-level files) | 0.05s | 60s |
 | Black formatting check | 25.5s | 60s+ |
 | Test suite (5 tests) | 0.4s | 60s |
 | Make targets | <1s each | 30s |
@@ -329,9 +327,9 @@ python execute_git_setup.py
 
 ## Summary for Copilot Agent
 
-This is a **production-ready** DOCX processing system with:
+This repository currently provides:
 - **Fast processing**: ~0.91 seconds for multiple documents
-- **Robust testing**: `python comprehensive_test.py` currently reports 5/6 checks passing, and 24 tracked Python files are syntax-validated
+- **Robust testing**: `python comprehensive_test.py` currently reports 5/6 checks passing, and 24 tracked top-level Python files are syntax-validated
 - **Complete automation**: End-to-end document processing pipeline
 - **Quality tools**: Comprehensive linting, formatting, and validation
 - **Git integration**: Automated versioning and commit workflows
