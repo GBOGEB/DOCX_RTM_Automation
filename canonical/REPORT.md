@@ -1,6 +1,6 @@
 # Canonical Artefacts Report
 
-> Auto-generated at 2026-05-13 09:49 UTC by `scripts/render_canonical_report.py`.
+> Auto-generated at 2026-05-15 14:24 UTC by `scripts/render_canonical_report.py`.
 
 ## Overview
 

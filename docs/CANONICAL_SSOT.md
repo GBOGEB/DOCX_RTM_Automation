@@ -1,6 +1,6 @@
 # Canonical SSOT — Artefact Index
 
-> Auto-generated at 2026-05-13 09:49 UTC.
+> Auto-generated at 2026-05-15 14:24 UTC.
 > Source of truth for all structured requirements, RTM, and offer data.
 
 ## Latest Lock
