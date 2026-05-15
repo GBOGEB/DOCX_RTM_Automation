@@ -67,6 +67,8 @@ def main() -> int:
         print(f"Missing: {', '.join(result['missing'])}")
     if result["drifted"]:
         print(f"Drifted: {', '.join(result['drifted'])}")
+    if result["unexpected"]:
+        print(f"Unexpected: {', '.join(result['unexpected'])}")
     return 1
 
 

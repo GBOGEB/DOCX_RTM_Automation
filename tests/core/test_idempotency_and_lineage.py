@@ -33,8 +33,8 @@ def test_pipeline_phase_execution_replays_identically():
     assert first["compliance_score"] == second["compliance_score"]
 
 
-def test_lineage_snapshot_contains_commit_fields():
-    repo_root = Path(__file__).resolve().parents[2]
+def test_lineage_snapshot_contains_commit_fields(project_root_path: Path):
+    repo_root = project_root_path
     snapshot = build_lineage_snapshot(
         repo_root=repo_root,
         artifacts=[repo_root / "pipeline" / "main.py"],

@@ -4,11 +4,14 @@
 from __future__ import annotations
 
 import subprocess
+import logging
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable
 
 from src.core.idempotency_contract import canonical_hash
+
+logger = logging.getLogger(__name__)
 
 
 def _git(repo_root: Path, *args: str) -> str:
@@ -23,7 +26,8 @@ def _git(repo_root: Path, *args: str) -> str:
 def _safe_git(repo_root: Path, *args: str) -> str | None:
     try:
         return _git(repo_root, *args)
-    except Exception:
+    except (subprocess.CalledProcessError, FileNotFoundError, PermissionError) as exc:
+        logger.debug("Git metadata lookup failed for args %s: %s", args, exc)
         return None
 
 

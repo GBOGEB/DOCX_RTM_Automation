@@ -49,6 +49,7 @@ def verify_alignment(
 
     missing: List[str] = []
     drifted: List[str] = []
+    unexpected: List[str] = []
 
     for entry in current.get("artifacts", []):
         path = entry["path"]
@@ -60,15 +61,16 @@ def verify_alignment(
 
         expected_entry = expected_map.get(path)
         if not expected_entry:
-            drifted.append(path)
+            unexpected.append(path)
             continue
 
         if entry["exists"] and expected_entry.get("sha256") != entry.get("sha256"):
             drifted.append(path)
 
     return {
-        "ok": len(missing) == 0 and len(drifted) == 0,
+        "ok": len(missing) == 0 and len(drifted) == 0 and len(unexpected) == 0,
         "missing": missing,
         "drifted": drifted,
+        "unexpected": unexpected,
         "checked": len(current.get("artifacts", [])),
     }

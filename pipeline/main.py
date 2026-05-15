@@ -14,6 +14,7 @@ from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, asdict
 from enum import Enum
 import sys
+import csv
 
 try:
     import pandas as pd
@@ -195,7 +196,7 @@ class DMAICPipelineController:
         """Initialize a new DMAIC cycle"""
         cycle_signature = canonical_hash(
             {"project_name": project_name, "objectives": objectives}
-        )[:12]
+        )[:20]
         iteration_id = f"DMAIC_{project_name}_{cycle_signature}"
 
         self.current_iteration = DMAICIteration(
@@ -597,18 +598,27 @@ class DMAICPipelineController:
                 metrics_df.to_csv(output_dir / "compliance_metrics.csv", index=False)
             else:
                 with open(
-                    output_dir / "compliance_metrics.csv", "w", encoding="utf-8"
+                    output_dir / "compliance_metrics.csv",
+                    "w",
+                    encoding="utf-8",
+                    newline="",
                 ) as f:
-                    f.write(
-                        "metric_id,name,description,target_value,actual_value,unit,measurement_date,compliance_threshold,status,trend\n"
-                    )
+                    fieldnames = [
+                        "metric_id",
+                        "name",
+                        "description",
+                        "target_value",
+                        "actual_value",
+                        "unit",
+                        "measurement_date",
+                        "compliance_threshold",
+                        "status",
+                        "trend",
+                    ]
+                    writer = csv.DictWriter(f, fieldnames=fieldnames)
+                    writer.writeheader()
                     for row in metrics_rows:
-                        f.write(
-                            f"{row['metric_id']},{row['name']},{row['description']},"
-                            f"{row['target_value']},{row['actual_value']},{row['unit']},"
-                            f"{row['measurement_date']},{row['compliance_threshold']},"
-                            f"{row['status']},{row['trend']}\n"
-                        )
+                        writer.writerow(row)
 
         lineage_artifacts = [output_dir / "dmaic_dashboard.json"]
         metrics_file = output_dir / "compliance_metrics.csv"
