@@ -113,11 +113,12 @@ ruff check . --exit-zero                    # Fast lint check (~0.09s)
 black --check --diff . --exclude .venv      # Format validation (~25.5s timeout needed)
 
 # bootstrap.sh currently exits non-zero during npm setup because package.json is absent.
-# The Python venv/tooling setup still completes before that failure.
+# You can safely ignore that final npm failure for Python work after the venv/tooling setup completes.
 
-# Full pytest collection currently needs optional deps that are not in requirements:
+# Full pytest collection currently needs extra test-only deps that are not in requirements:
 # - python-pptx for tests/fixtures/mock_documents.py
 # - psutil for tests/performance/test_cricket_scoring.py
+# Install them manually if you need full pytest coverage; otherwise expect collection failures there.
 
 # Debug console requires psutil (not essential):
 # pip install psutil  # Optional for advanced debugging
@@ -330,7 +331,7 @@ python execute_git_setup.py
 
 This is a **production-ready** DOCX processing system with:
 - **Fast processing**: ~0.91 seconds for multiple documents
-- **Robust testing**: comprehensive_test passes at 5/6 and 24 tracked Python files are syntax-validated
+- **Robust testing**: `python comprehensive_test.py` currently reports 5/6 checks passing, and 24 tracked Python files are syntax-validated
 - **Complete automation**: End-to-end document processing pipeline
 - **Quality tools**: Comprehensive linting, formatting, and validation
 - **Git integration**: Automated versioning and commit workflows
