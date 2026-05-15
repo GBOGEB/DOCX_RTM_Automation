@@ -1,0 +1,46 @@
+{
+  "artifacts": [
+    {
+      "exists": true,
+      "path": "pipeline/main.py",
+      "required": true,
+      "sha256": "e076b149c3c2a0add3da52c70bdd1da973fbee1cb4b92301682938fc397070d0"
+    },
+    {
+      "exists": true,
+      "path": "src/core/idempotency_contract.py",
+      "required": true,
+      "sha256": "99c152b2daeea9ea18525bb67983e3e0025c9be45ca63a7344f3a6876cdc91d0"
+    },
+    {
+      "exists": true,
+      "path": "src/core/lineage_metadata.py",
+      "required": true,
+      "sha256": "13e127d4fc7cfefe0be21baa447af1905cd368491b21e55018f8d7d0bedb45d2"
+    },
+    {
+      "exists": true,
+      "path": "src/core/artifact_alignment.py",
+      "required": true,
+      "sha256": "749948d3b2469ee0ab16cb57ef034072bb106eeb0468a347e0acbd4cec5e7024"
+    },
+    {
+      "exists": true,
+      "path": "scripts/verify_recursive_alignment.py",
+      "required": true,
+      "sha256": "61c83d2ac1ef9f4852cf99340d751ed43091f8b094cd804e77b446ec18b2d8ed"
+    },
+    {
+      "exists": true,
+      "path": "docs/README.md",
+      "required": true,
+      "sha256": "62da64c65dc2fa5fc9cc5e4da86a944c16dfc45c410f688bd760f467afb14feb"
+    },
+    {
+      "exists": true,
+      "path": "server/templates/index.html",
+      "required": true,
+      "sha256": "4a642f14ebf27d50e75ac1e7c59ea299b874a90ae2dad2c6c4c14b101e9a54e2"
+    }
+  ]
+}

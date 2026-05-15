@@ -45,4 +45,3 @@ def test_lineage_snapshot_contains_commit_fields():
     assert "head_commit" in snapshot["git"]
     assert "branch" in snapshot["git"]
     assert snapshot["artifacts"][0]["path"] == "pipeline/main.py"
-

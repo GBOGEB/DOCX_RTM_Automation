@@ -72,4 +72,3 @@ def verify_alignment(
         "drifted": drifted,
         "checked": len(current.get("artifacts", [])),
     }
-

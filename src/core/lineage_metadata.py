@@ -42,11 +42,17 @@ def build_lineage_snapshot(
     artifact_entries = []
     for artifact in artifacts:
         artifact_path = Path(artifact)
-        full_path = artifact_path if artifact_path.is_absolute() else root / artifact_path
+        full_path = (
+            artifact_path if artifact_path.is_absolute() else root / artifact_path
+        )
         exists = full_path.exists()
         artifact_entries.append(
             {
-                "path": str(full_path.relative_to(root)) if full_path.is_relative_to(root) else str(full_path),
+                "path": (
+                    str(full_path.relative_to(root))
+                    if full_path.is_relative_to(root)
+                    else str(full_path)
+                ),
                 "exists": exists,
                 "sha256": canonical_hash(full_path.read_bytes()) if exists else None,
                 "size_bytes": full_path.stat().st_size if exists else 0,
@@ -64,4 +70,3 @@ def build_lineage_snapshot(
         },
         "artifacts": artifact_entries,
     }
-

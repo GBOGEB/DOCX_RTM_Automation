@@ -68,5 +68,5 @@ ignore = []
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-ra -q --cov=src/core --cov=pipeline --cov-report=term-missing --cov-fail-under=70"
+addopts = "-ra -q --cov=src.core.idempotency_contract --cov=src.core.lineage_metadata --cov=src.core.artifact_alignment --cov-report=term-missing --cov-fail-under=80"
 testpaths = ["tests"]

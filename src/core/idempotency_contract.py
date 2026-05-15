@@ -56,4 +56,3 @@ class IdempotencyStore:
             "response_payload": response_payload,
         }
         self._save()
-

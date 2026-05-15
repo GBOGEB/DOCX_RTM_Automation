@@ -16,7 +16,9 @@ from src.core.artifact_alignment import build_index, verify_alignment
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Recursive artifact alignment verifier")
+    parser = argparse.ArgumentParser(
+        description="Recursive artifact alignment verifier"
+    )
     parser.add_argument(
         "--manifest",
         default="config/recursive_alignment_manifest.json",
@@ -44,7 +46,9 @@ def main() -> int:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if args.refresh:
         index = build_index(PROJECT_ROOT, manifest)
-        index_path.write_text(json.dumps(index, indent=2, sort_keys=True), encoding="utf-8")
+        index_path.write_text(
+            json.dumps(index, indent=2, sort_keys=True), encoding="utf-8"
+        )
         print(f"✅ Refreshed recursive alignment index: {index_path}")
         return 0
 
@@ -68,4 +72,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

@@ -15,7 +15,9 @@ def test_alignment_passes_with_fresh_index(tmp_path: Path):
     manifest_path = repo_root / "manifest.json"
     index_path = repo_root / "index.json"
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
-    index_path.write_text(json.dumps(build_index(repo_root, manifest)), encoding="utf-8")
+    index_path.write_text(
+        json.dumps(build_index(repo_root, manifest)), encoding="utf-8"
+    )
 
     result = verify_alignment(repo_root, manifest_path, index_path)
     assert result["ok"] is True
@@ -32,10 +34,11 @@ def test_alignment_detects_drift(tmp_path: Path):
     manifest_path = repo_root / "manifest.json"
     index_path = repo_root / "index.json"
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
-    index_path.write_text(json.dumps(build_index(repo_root, manifest)), encoding="utf-8")
+    index_path.write_text(
+        json.dumps(build_index(repo_root, manifest)), encoding="utf-8"
+    )
 
     artifact.write_text("v2", encoding="utf-8")
     result = verify_alignment(repo_root, manifest_path, index_path)
     assert result["ok"] is False
     assert result["drifted"] == ["example.txt"]
-
