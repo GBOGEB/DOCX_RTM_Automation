@@ -83,6 +83,20 @@ secrets.json
 *.tar.gz
 *.rar
 
+# Large binary document/data files — NEVER commit; use canonical/inputs/ staging
+*.docx
+*.docm
+*.dotx
+*.xlsx
+*.xlsm
+*.xls
+*.xlsb
+*.pdf
+*.xls
+
+# Canonical input staging area (binaries dropped here for one-time extraction)
+canonical/inputs/
+
 # Ariana assistant files
 .ariana/
 
