@@ -1,0 +1,35 @@
+name: Python CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test-coverage-lineage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/requirements.txt
+
+      - name: Run focused tests with coverage threshold
+        run: |
+          python -m pytest tests/test_basic.py tests/test_all.py tests/core -v
+
+      - name: Verify recursive alignment lock
+        run: |
+          python scripts/verify_recursive_alignment.py
+

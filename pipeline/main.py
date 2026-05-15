@@ -15,6 +15,19 @@ from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, asdict
 import pandas as pd
 from enum import Enum
+import sys
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from src.core.idempotency_contract import (
+    IdempotencyStore,
+    canonical_hash,
+    canonical_run_key,
+)
+from src.core.lineage_metadata import build_lineage_snapshot
+from src.core.artifact_alignment import verify_alignment
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -74,6 +87,10 @@ class DMAICPipelineController:
         self.iterations_history = []
         self.compliance_metrics = []
         self.automation_state = {}
+        self.idempotency_store = IdempotencyStore(
+            PROJECT_ROOT / ".pipeline_state" / "idempotency_store.json"
+        )
+        self.last_lineage_snapshot: Optional[Dict[str, Any]] = None
         
     def _load_config(self, config_path: Optional[str]) -> Dict[str, Any]:
         """Load pipeline configuration"""
@@ -129,7 +146,10 @@ class DMAICPipelineController:
     
     def initialize_dmaic_cycle(self, project_name: str, objectives: List[str]) -> str:
         """Initialize a new DMAIC cycle"""
-        iteration_id = f"DMAIC_{project_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        cycle_signature = canonical_hash(
+            {"project_name": project_name, "objectives": objectives}
+        )[:12]
+        iteration_id = f"DMAIC_{project_name}_{cycle_signature}"
         
         self.current_iteration = DMAICIteration(
             iteration_id=iteration_id,
@@ -156,6 +176,20 @@ class DMAICPipelineController:
         
         if not self.current_iteration:
             raise ValueError("No active DMAIC iteration. Please initialize first.")
+
+        request_payload = {
+            "iteration_id": self.current_iteration.iteration_id,
+            "phase": phase.value,
+            "deliverables": sorted(deliverables),
+            "results": sorted(results),
+        }
+        run_key = canonical_run_key("dmaic_phase_execution", request_payload)
+        cached = self.idempotency_store.get(run_key)
+        if cached and cached.get("response_payload"):
+            replay_report = dict(cached["response_payload"])
+            replay_report["idempotent_replay"] = True
+            replay_report["run_key"] = run_key
+            return replay_report
         
         # Update current iteration
         self.current_iteration.phase = phase
@@ -176,6 +210,8 @@ class DMAICPipelineController:
         
         # Generate phase report
         phase_report = self._generate_phase_report(phase, compliance_score)
+        phase_report["idempotent_replay"] = False
+        phase_report["run_key"] = run_key
         
         # Check for automatic phase transition
         if (self.config["automation_settings"]["auto_phase_transition"] and 
@@ -184,7 +220,9 @@ class DMAICPipelineController:
             if next_phase:
                 logger.info(f"Auto-transitioning to next phase: {next_phase.value}")
                 phase_report["auto_transition"] = next_phase.value
-        
+
+        self.idempotency_store.put(run_key, request_payload, phase_report)
+         
         return phase_report
     
     def _calculate_phase_compliance(self, phase: DMAICPhase, deliverables: List[str], 
@@ -431,7 +469,24 @@ class DMAICPipelineController:
         if self.compliance_metrics:
             metrics_df = pd.DataFrame([asdict(metric) for metric in self.compliance_metrics])
             metrics_df.to_csv(output_dir / "compliance_metrics.csv", index=False)
-        
+
+        lineage_artifacts = [output_dir / "dmaic_dashboard.json"]
+        metrics_file = output_dir / "compliance_metrics.csv"
+        if metrics_file.exists():
+            lineage_artifacts.append(metrics_file)
+
+        self.last_lineage_snapshot = build_lineage_snapshot(
+            repo_root=PROJECT_ROOT,
+            artifacts=lineage_artifacts,
+            context={
+                "current_iteration": self.current_iteration.iteration_id
+                if self.current_iteration
+                else None
+            },
+        )
+        with open(output_dir / "lineage_snapshot.json", "w", encoding="utf-8") as f:
+            json.dump(self.last_lineage_snapshot, f, indent=2)
+         
         logger.info(f"Pipeline results exported to {output_path}")
 
 def main():
@@ -441,6 +496,11 @@ def main():
     parser.add_argument("--project", help="Project name")
     parser.add_argument("--phase", choices=["define", "measure", "analyze", "improve", "control"], help="DMAIC phase to execute")
     parser.add_argument("--output", default="pipeline_output", help="Output directory")
+    parser.add_argument(
+        "--verify-alignment",
+        action="store_true",
+        help="Fail if recursive manifest/index alignment drift is detected",
+    )
     
     args = parser.parse_args()
     
@@ -461,6 +521,18 @@ def main():
     # Export results
     controller.export_results(args.output)
     print(f"Results exported to {args.output}")
+
+    if args.verify_alignment:
+        alignment = verify_alignment(
+            repo_root=PROJECT_ROOT,
+            manifest_path=PROJECT_ROOT / "config" / "recursive_alignment_manifest.json",
+            index_path=PROJECT_ROOT / "config" / "recursive_alignment_index.json",
+        )
+        if not alignment["ok"]:
+            raise SystemExit(
+                f"Recursive alignment failed. Missing={alignment['missing']} Drifted={alignment['drifted']}"
+            )
+        print("Recursive artifact alignment verified.")
 
 if __name__ == "__main__":
     main()
