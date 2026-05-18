@@ -1,0 +1,11 @@
+Req_ID,Shall_Statement,Applicant_Offer
+138,The Contractor shall provide a baseline network architecture for the QPLANT Control System and a System Interlock Diagram.,Task
+145,The Contractor shall provide a baseline software architecture for the QPLANT Control System and update it to final status at Detailed Design.,Task
+188,The Contractor shall deliver a Network Ports and Protocols List.,Task
+190,The Contractor shall deliver Final IP Address Allocation Documentation.,Task
+191,The Contractor shall deliver Remote Upgrade Procedure Tools Documentation.,Task
+192,The Contractor shall deliver Backup and Restore Process Documentation.,Task
+201,The Contractor shall deliver a Device Identification and MAC Address List.,Task
+202,The Contractor shall deliver the DHCP Configuration Procedure Documentation.,Task
+206,The Contractor shall document the system's security features and demonstrate alignment with the Client's standards.,Task
+263,The Contractor shall deliver a Log Format Specification Documentation.,Task
