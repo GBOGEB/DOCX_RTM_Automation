@@ -8,20 +8,24 @@
 # supporting artifacts into a bundle directory and (optionally) zips it.
 #
 # Usage:
-#   scripts/package_patch.sh            # stage bundle under dist/handover_bundle/
-#   scripts/package_patch.sh --zip      # also produce dist/handover_bundle.zip
+#   scripts/package_patch.sh                 # stage bundle under dist/handover_bundle/
+#   scripts/package_patch.sh --zip           # also produce dist/handover_bundle.zip
+#   PATCH_FILE=path scripts/package_patch.sh  # override the canonical patch file
 #
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
-PATCH_FILE="patches/2026-06-01_federated-artifact-ownership_v0.1.patch.md"
+# Use an explicit PATCH_FILE if provided, otherwise pick the most recent
+# patch markdown file under patches/ (lexical sort works with the
+# YYYY-MM-DD_topic_vX.Y.patch.md naming convention).
+PATCH_FILE="${PATCH_FILE:-$(ls -1 patches/*.patch.md 2>/dev/null | sort | tail -n 1)}"
 BUNDLE_DIR="dist/handover_bundle"
 ZIP_PATH="dist/handover_bundle.zip"
 
-if [[ ! -f "$PATCH_FILE" ]]; then
-  echo "ERROR: canonical patch file not found: $PATCH_FILE" >&2
+if [[ -z "$PATCH_FILE" || ! -f "$PATCH_FILE" ]]; then
+  echo "ERROR: canonical patch file not found: ${PATCH_FILE:-<none>}" >&2
   exit 1
 fi
 

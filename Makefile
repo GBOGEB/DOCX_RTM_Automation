@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 .PHONY: help init qa scaffold package ci-local clean scan-7d report-7d patch-bundle handover-zip validate
 
-PATCH_FILE := patches/2026-06-01_federated-artifact-ownership_v0.1.patch.md
+PATCH_FILE := $(shell ls -1 patches/*.patch.md 2>/dev/null | sort | tail -n 1)
 
 help:
 	@echo "Targets:"
