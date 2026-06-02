@@ -1,0 +1,36 @@
+# Artifact topology / ownership map.
+#
+# Derived from the canonical source of truth:
+#   patches/2026-06-01_federated-artifact-ownership_v0.1.patch.md
+#
+# This file is regenerable from the embedded manifest in that patch and exists
+# only as a convenience for tooling that consumes a standalone topology map.
+version: 1
+repository: GBOGEB/anthropic
+repository_id: 1255640890
+source_of_truth: patches/2026-06-01_federated-artifact-ownership_v0.1.patch.md
+
+taxonomy:
+  - schema
+  - parser
+  - runtime
+  - policy
+  - taxonomy
+  - federation-contract
+  - governance
+
+ownership:
+  - path: governance/schema/artifact.schema.json
+    artifact_type: schema
+    owning_concern: artifact-governance
+  - path: governance/federation/federation.yaml
+    artifact_type: federation-contract
+    owning_concern: federation-custodian
+  - path: governance/taxonomy/artifact-types.yaml
+    artifact_type: taxonomy
+    owning_concern: artifact-governance
+
+frozen:
+  - README
+  - ADR
+  - CHANGELOG
