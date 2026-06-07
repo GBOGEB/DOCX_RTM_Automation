@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FederationManifest",
+  "type": "object",
+  "required": ["federation_id","role"],
+  "properties": {
+    "federation_id": {"type":"string"},
+    "role": {"type":"string"},
+    "ssot_repo": {"type":"string"}
+  }
+}
