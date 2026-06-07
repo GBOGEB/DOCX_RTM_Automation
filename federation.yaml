@@ -1,0 +1,14 @@
+federation_id: DOCX_RTM_AUTOMATION
+role: output
+mini_federation: RTM_Documents
+ssot_repo: GBOGEB/GEMINI
+orchestration:
+  enabled: true
+  runtime: orchestration_ts
+handover:
+  current: handover/CURRENT.json
+  archive: handover/archive/
+validation:
+  schemas:
+    - schemas/federation.schema.json
+    - schemas/handover.schema.json
