@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Handover",
+  "type": "object",
+  "required": ["status","wave"],
+  "properties": {
+    "status": {"type":"string"},
+    "wave": {"type":"string"},
+    "pr": {"type":"number"},
+    "branch": {"type":"string"}
+  }
+}

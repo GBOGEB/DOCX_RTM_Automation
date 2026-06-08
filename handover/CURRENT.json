@@ -1,0 +1,12 @@
+{
+  "status": "active",
+  "wave": "Wave-0",
+  "pr": 16,
+  "branch": "feat/orchestration-bootstrap-wave0-pr01",
+  "next_actions": [
+    "Create federation schemas",
+    "Add tests",
+    "Retry env template",
+    "Wire federation endpoints"
+  ]
+}
