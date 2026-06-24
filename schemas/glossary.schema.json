@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/GBOGEB/DOCX_RTM_Automation/schemas/glossary.schema.json",
+  "title": "QPS ADR OCD Glossary",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["metadata", "terms"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["glossary_id", "title", "version", "status", "owner", "scope", "usage_rule"],
+      "properties": {
+        "glossary_id": {"type": "string"},
+        "title": {"type": "string"},
+        "version": {"type": "string"},
+        "status": {"type": "string"},
+        "owner": {"type": "string"},
+        "scope": {"type": "array", "items": {"type": "string"}},
+        "usage_rule": {"type": "string"}
+      }
+    },
+    "terms": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/term"}
+    }
+  },
+  "$defs": {
+    "term": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["term_id", "standard_term", "aliases", "status", "outward_facing", "definition", "use_in"],
+      "properties": {
+        "term_id": {"type": "string"},
+        "standard_term": {"type": "string"},
+        "aliases": {"type": "array", "items": {"type": "string"}},
+        "status": {"type": "string"},
+        "outward_facing": {"type": "boolean"},
+        "definition": {"type": "string"},
+        "use_in": {"type": "array", "items": {"type": "string"}},
+        "avoid_when_outward_facing": {"type": "array", "items": {"type": "string"}},
+        "notes": {"type": "string"}
+      }
+    }
+  }
+}
