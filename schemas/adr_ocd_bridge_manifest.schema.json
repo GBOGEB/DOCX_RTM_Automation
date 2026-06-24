@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/GBOGEB/DOCX_RTM_Automation/schemas/adr_ocd_bridge_manifest.schema.json",
+  "title": "ADR OCD QPS Bridge Manifest",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "manifest_id",
+    "version",
+    "status",
+    "branch",
+    "base_repository",
+    "purpose",
+    "naming_policy",
+    "federated_documents",
+    "change_process",
+    "traceability_edges",
+    "quality_gates",
+    "pruning_policy"
+  ],
+  "properties": {
+    "manifest_id": {"type": "string"},
+    "version": {"type": "string"},
+    "status": {"type": "string"},
+    "branch": {"type": "string"},
+    "base_repository": {"type": "string"},
+    "purpose": {"type": "string"},
+    "naming_policy": {"type": "object"},
+    "federated_documents": {
+      "type": "object",
+      "required": ["qps_requirements", "adr", "ocd"],
+      "properties": {
+        "qps_requirements": {"$ref": "#/$defs/federated_document"},
+        "adr": {"$ref": "#/$defs/federated_document"},
+        "ocd": {"$ref": "#/$defs/federated_document"}
+      }
+    },
+    "change_process": {
+      "type": "object",
+      "required": ["stages", "rule"],
+      "properties": {
+        "stages": {"type": "array", "items": {"type": "string"}},
+        "rule": {"type": "string"}
+      }
+    },
+    "traceability_edges": {"type": "array", "items": {"$ref": "#/$defs/traceability_edge"}},
+    "quality_gates": {"type": "array", "items": {"$ref": "#/$defs/quality_gate"}},
+    "pruning_policy": {"type": "object"}
+  },
+  "$defs": {
+    "federated_document": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["canonical_name", "role", "outputs"],
+      "properties": {
+        "canonical_name": {"type": "string"},
+        "abbreviation": {"type": "string"},
+        "legacy_aliases": {"type": "array", "items": {"type": "string"}},
+        "role": {"type": "string"},
+        "primary_users": {"type": "array", "items": {"type": "string"}},
+        "parent_sources": {"type": "array", "items": {"type": "string"}},
+        "outputs": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "traceability_edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from", "to", "relation"],
+      "properties": {
+        "from": {"type": "string"},
+        "to": {"type": "string"},
+        "relation": {"type": "string"}
+      }
+    },
+    "quality_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "rule"],
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "rule": {"type": "string"}
+      }
+    }
+  }
+}
