@@ -1,0 +1,46 @@
+name: ADR_OCD Bridge Validation
+
+on:
+  pull_request:
+    paths:
+      - 'glossary/GLOSSARY.yaml'
+      - 'schemas/glossary.schema.json'
+      - 'schemas/adr_ocd_bridge_manifest.schema.json'
+      - 'federation/ADR_OCD/**'
+      - 'scripts/validate_adr_ocd_bridge.py'
+      - 'tests/test_adr_ocd_bridge_validation.py'
+      - '.github/workflows/adr_ocd_bridge_validation.yml'
+  push:
+    branches:
+      - feature/ADR_OCD-qps-procurement-bridge
+    paths:
+      - 'glossary/GLOSSARY.yaml'
+      - 'schemas/glossary.schema.json'
+      - 'schemas/adr_ocd_bridge_manifest.schema.json'
+      - 'federation/ADR_OCD/**'
+      - 'scripts/validate_adr_ocd_bridge.py'
+      - 'tests/test_adr_ocd_bridge_validation.py'
+      - '.github/workflows/adr_ocd_bridge_validation.yml'
+
+jobs:
+  validate-adr-ocd-bridge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install lightweight validation dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyyaml pytest
+
+      - name: Validate bridge artifacts
+        run: python scripts/validate_adr_ocd_bridge.py
+
+      - name: Run bridge tests
+        run: pytest tests/test_adr_ocd_bridge_validation.py
