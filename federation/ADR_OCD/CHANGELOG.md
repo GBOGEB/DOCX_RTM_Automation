@@ -1,5 +1,26 @@
 # ADR_OCD Bridge Changelog
 
+## 0.2.0 - 2026-06-24
+
+### Added
+
+- Added schemas/glossary.schema.json for the outward-facing QPS, ADR, and OCD glossary.
+- Added schemas/adr_ocd_bridge_manifest.schema.json for the federation bridge manifest.
+- Added scripts/validate_adr_ocd_bridge.py to validate glossary, bridge manifest, and taxonomy artifacts using PyYAML and the Python standard library.
+- Added tests/test_adr_ocd_bridge_validation.py for pytest coverage of the bridge artifacts.
+- Added federation/ADR_OCD/taxonomy.yaml as the first isolated parser taxonomy bridge for QPS, ADR, OCD, negotiation, and Corrigendum terms.
+
+### Changed
+
+- Updated PR_ACTIVE_MANIFEST.md to mark Wave 0 complete and Wave 1 implemented.
+- Updated DROP_IN_HANDOFF.md so the next engineering session starts from parser taxonomy wiring rather than schema bootstrap.
+
+### Status
+
+- Wave 0: implemented.
+- Wave 1: implemented.
+- Wave 2: started lightly through taxonomy.yaml; parser wiring remains open.
+
 ## 0.1.0 - 2026-06-24
 
 ### Added
