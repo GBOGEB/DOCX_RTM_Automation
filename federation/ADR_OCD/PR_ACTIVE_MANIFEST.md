@@ -24,10 +24,14 @@ Produced artifacts:
 - schemas/adr_ocd_bridge_manifest.schema.json: structural schema for bridge_manifest.yaml.
 - scripts/validate_adr_ocd_bridge.py: focused validation script using PyYAML and the Python standard library.
 - tests/test_adr_ocd_bridge_validation.py: pytest coverage for glossary, manifest, and taxonomy validation.
+- .github/workflows/adr_ocd_bridge_validation.yml: focused CI workflow for the bridge validation command and pytest target.
 
 Repository area created:
 
 DOCX_RTM_Automation/
+  .github/
+    workflows/
+      adr_ocd_bridge_validation.yml
   glossary/
     GLOSSARY.yaml
   schemas/
@@ -83,6 +87,7 @@ Completed:
 3. Added scripts/validate_adr_ocd_bridge.py.
 4. Added tests/test_adr_ocd_bridge_validation.py.
 5. Added federation/ADR_OCD/taxonomy.yaml as the first parser-taxonomy bridge.
+6. Added .github/workflows/adr_ocd_bridge_validation.yml.
 
 Validation command:
 python scripts/validate_adr_ocd_bridge.py
@@ -115,8 +120,8 @@ Wave 5 - Release and review automation:
 Status: planned
 Moves:
 1. Add release manifest for negotiation-stage and final-corrigendum baselines.
-2. Add CI checks for glossary and bridge manifest.
-3. Promote PR from draft when validation has been reviewed.
+2. Promote PR from draft when validation has been reviewed.
+3. Use the bridge validation workflow as the first CI quality gate.
 
 Wave 6 - Final contract-baseline packaging:
 Status: planned
@@ -136,4 +141,4 @@ Complete durable, low-risk bridge files first:
 7. DOCX rendering. Later wave.
 
 Immediate next step:
-Run or review the Wave 1 validation command and tests, then connect taxonomy.yaml to the existing parser configuration in a narrow Wave 2 PR section.
+Run or review the Wave 1 validation command, pytest target, and focused GitHub Actions workflow; then connect taxonomy.yaml to the existing parser configuration in a narrow Wave 2 PR section.
