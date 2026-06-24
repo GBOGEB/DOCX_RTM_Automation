@@ -1,0 +1,123 @@
+manifest_id: ADR_OCD_QPS_BRIDGE
+version: 0.1.0
+status: draft
+branch: feature/ADR_OCD-qps-procurement-bridge
+base_repository: GBOGEB/DOCX_RTM_Automation
+
+purpose: >
+  Federate QPS Requirements, Architecture Design Report, and Operational Concept
+  Document content inside DOCX_RTM_Automation without disrupting the existing parser,
+  RTM, DEL, OTC, DMAIC, visualization, or orchestration implementation.
+
+naming_policy:
+  internal_legacy_alias:
+    term: RFO
+    allowed: true
+    reason: Legacy shorthand and migration traceability.
+  outward_facing_primary:
+    term: QPS Requirements
+    required: true
+    reason: Main technical requirements content used by Applicants preparing Fixed Price Offers.
+  procurement_package_terms:
+    - Invitation to Tender
+    - Tender Specifications
+    - Fixed Price Offer
+    - Corrigendum
+    - Negotiation Stage
+
+federated_documents:
+  qps_requirements:
+    canonical_name: QPS Requirements
+    legacy_aliases:
+      - RFO
+      - Technical Addendum
+    role: procurement_facing_requirements_baseline
+    primary_users:
+      - Applicants
+      - evaluation_team
+      - contracting_authority
+    outputs:
+      - docx
+      - markdown
+      - json
+      - rtm
+
+  adr:
+    canonical_name: Architecture Design Report
+    abbreviation: ADR
+    role: design_rationale_and_architecture_bridge
+    parent_sources:
+      - qps_requirements
+    outputs:
+      - docx
+      - markdown
+      - json
+      - decision_register
+      - lineage
+
+  ocd:
+    canonical_name: Operational Concept Document
+    abbreviation: OCD
+    role: operational_scenarios_and_workflows_bridge
+    parent_sources:
+      - qps_requirements
+      - adr
+    outputs:
+      - docx
+      - markdown
+      - json
+      - operational_test_cases
+      - lineage
+
+change_process:
+  stages:
+    - publication_baseline
+    - negotiation_stage_1
+    - negotiation_stage_2
+    - final_corrigendum
+    - contract_baseline
+  rule: >
+    Any agreed change after publication shall be traceable from QPS source requirement
+    to ADR decision impact, OCD operational impact, RTM row, DTM row, and final Corrigendum entry.
+
+traceability_edges:
+  - from: QPS Requirement
+    to: ADR Design Decision
+    relation: justified_by
+  - from: QPS Requirement
+    to: OCD Operational Scenario
+    relation: operated_by
+  - from: ADR Design Decision
+    to: OCD Workflow
+    relation: constrains
+  - from: QPS Requirement
+    to: Corrigendum Entry
+    relation: amended_by
+  - from: Corrigendum Entry
+    to: Contract Baseline
+    relation: incorporated_into
+
+quality_gates:
+  - id: QG-ADR-OCD-001
+    name: glossary_reuse
+    rule: All outward-facing terms should resolve to glossary/GLOSSARY.yaml.
+  - id: QG-ADR-OCD-002
+    name: qps_to_adr_traceability
+    rule: Each ADR decision should reference at least one QPS source or state why not applicable.
+  - id: QG-ADR-OCD-003
+    name: qps_to_ocd_traceability
+    rule: Each OCD scenario should reference at least one QPS source or ADR decision.
+  - id: QG-ADR-OCD-004
+    name: corrigendum_impact
+    rule: Each final Corrigendum entry should identify impacted QPS, ADR, OCD, RTM, and DTM objects.
+
+pruning_policy:
+  safe_to_prune:
+    - federation/ADR_OCD/
+    - glossary/GLOSSARY.yaml
+  not_modified_by_this_bridge:
+    - parser/
+    - visualization/
+    - orchestration_ts/
+    - docs/section9/
+    - configs/
