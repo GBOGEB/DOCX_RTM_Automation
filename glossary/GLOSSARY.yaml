@@ -1,0 +1,190 @@
+metadata:
+  glossary_id: GLOSSARY-QPS-ADR-OCD
+  title: Outward-Facing Procurement and Document Glossary
+  version: 0.1.0
+  status: draft
+  owner: GBOGEB
+  scope:
+    - QPS Requirements
+    - ADR
+    - OCD
+    - DOCX_RTM_Automation
+  usage_rule: >
+    Prefer an existing standard_term from this glossary before introducing a new term.
+    Internal aliases may be retained for migration and traceability, but outward-facing
+    procurement documents should use the standard_term.
+
+terms:
+  - term_id: TERM-QPS-001
+    standard_term: QPS Requirements
+    aliases:
+      - RFO
+      - Request for Offer
+      - Technical Addendum
+      - procurement requirements
+    status: preferred
+    outward_facing: true
+    definition: >
+      Main procurement-facing technical requirements used by Applicants to prepare
+      a Fixed Price Offer.
+    use_in:
+      - QPS
+      - ADR
+      - OCD
+      - RTM
+    avoid_when_outward_facing:
+      - RFO
+    notes: >
+      RFO may remain as an internal shorthand in migration notes, legacy folders, or code,
+      but QPS Requirements is the preferred standard term for the current public
+      procurement context.
+
+  - term_id: TERM-ITT-001
+    standard_term: Invitation to Tender
+    aliases:
+      - ITT
+      - tender invitation
+      - call for tenders
+    status: accepted
+    outward_facing: true
+    definition: >
+      Procurement-stage invitation/package by which Applicants are invited to submit
+      a tender or offer under the applicable public procurement procedure.
+    use_in:
+      - QPS
+      - procurement_package
+    notes: >
+      Use where the document package is being described procedurally rather than as
+      the technical requirements content itself.
+
+  - term_id: TERM-FPO-001
+    standard_term: Fixed Price Offer
+    aliases:
+      - fixed priced offer
+      - fixed-price offer
+      - FPO
+    status: preferred
+    outward_facing: true
+    definition: >
+      Commercial offer submitted by an Applicant on a fixed-price basis in response
+      to the procurement package and QPS Requirements.
+    use_in:
+      - QPS
+      - evaluation
+      - contract
+
+  - term_id: TERM-APP-001
+    standard_term: Applicant
+    aliases:
+      - candidate
+      - supplier candidate
+      - bidder
+      - tenderer
+    status: preferred_at_current_stage
+    outward_facing: true
+    definition: >
+      Economic operator participating at the current procurement stage before final
+      contract award.
+    use_in:
+      - QPS
+      - correspondence
+      - evaluation
+    notes: >
+      Tenderer or bidder may be appropriate once a formal tender has been submitted
+      or where platform terminology requires it.
+
+  - term_id: TERM-NEG-001
+    standard_term: Negotiation Stage
+    aliases:
+      - negotiation round
+      - negotiation phase
+    status: preferred
+    outward_facing: true
+    definition: >
+      Formal procurement interaction stage in which clarifications, technical alignment,
+      commercial alignment, or amendments may be discussed before the final tender position.
+    use_in:
+      - procurement_process
+      - change_control
+
+  - term_id: TERM-COR-001
+    standard_term: Corrigendum
+    aliases:
+      - correction notice
+      - tender amendment
+      - amendment notice
+    status: preferred
+    outward_facing: true
+    definition: >
+      Formal amendment or correction to the published tender package used to record
+      and communicate changes after publication.
+    use_in:
+      - procurement_process
+      - change_log
+      - release_manifest
+    notes: >
+      Use for the final formal correction/amendment package after publication changes
+      have been agreed or required.
+
+  - term_id: TERM-ADR-001
+    standard_term: Architecture Design Report
+    aliases:
+      - ADR
+      - architecture report
+    status: preferred
+    outward_facing: false
+    definition: >
+      Controlled design-rationale document linking QPS Requirements to system architecture,
+      design decisions, interfaces, constraints, and verification evidence.
+    use_in:
+      - ADR
+      - RTM
+      - lineage
+
+  - term_id: TERM-OCD-001
+    standard_term: Operational Concept Document
+    aliases:
+      - OCD
+      - operational concept
+      - concept of operations
+      - CONOPS
+    status: preferred
+    outward_facing: false
+    definition: >
+      Controlled operational document linking QPS Requirements and ADR architecture
+      to roles, modes, scenarios, workflows, constraints, diagnostics, training, and evidence.
+    use_in:
+      - OCD
+      - RTM
+      - OTC
+      - lineage
+
+  - term_id: TERM-RTM-001
+    standard_term: Requirements Traceability Matrix
+    aliases:
+      - RTM
+    status: preferred
+    outward_facing: false
+    definition: >
+      Traceability artifact linking requirements to source sections, verification methods,
+      evidence, deliverables, and implementation status.
+    use_in:
+      - QPS
+      - ADR
+      - OCD
+      - verification
+
+  - term_id: TERM-DTM-001
+    standard_term: Deliverables Traceability Matrix
+    aliases:
+      - DTM
+    status: preferred
+    outward_facing: false
+    definition: >
+      Traceability artifact linking deliverables to requirements, sections, evidence,
+      owners, due phases, and acceptance criteria.
+    use_in:
+      - QPS
+      - ADR
+      - OCD
+      - deliverables
