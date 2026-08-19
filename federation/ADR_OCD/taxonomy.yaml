@@ -1,0 +1,97 @@
+taxonomy_id: ADR_OCD_QPS_TAXONOMY
+version: 0.1.0
+status: draft
+purpose: >
+  Provide isolated parser and traceability terminology hooks for QPS Requirements,
+  ADR, OCD, negotiation stages, and corrigendum handling without changing the parser engine.
+
+document_roles:
+  - role_id: DOC-QPS
+    standard_term: QPS Requirements
+    aliases:
+      - RFO
+      - Request for Offer
+      - Technical Addendum
+    parser_tags:
+      - qps_requirements
+      - procurement_requirements
+      - technical_requirements
+    outward_facing: true
+
+  - role_id: DOC-ADR
+    standard_term: Architecture Design Report
+    aliases:
+      - ADR
+      - architecture report
+    parser_tags:
+      - architecture_design_report
+      - design_rationale
+      - decision_register
+    outward_facing: false
+
+  - role_id: DOC-OCD
+    standard_term: Operational Concept Document
+    aliases:
+      - OCD
+      - operational concept
+      - CONOPS
+    parser_tags:
+      - operational_concept_document
+      - operational_scenarios
+      - operator_workflows
+    outward_facing: false
+
+procurement_terms:
+  - term: Applicant
+    parser_tags:
+      - applicant
+      - candidate
+      - bidder
+      - tenderer
+  - term: Fixed Price Offer
+    parser_tags:
+      - fixed_price_offer
+      - fixed_price_contract
+      - commercial_offer
+  - term: Invitation to Tender
+    parser_tags:
+      - invitation_to_tender
+      - itt
+      - tender_package
+  - term: Negotiation Stage
+    parser_tags:
+      - negotiation_stage
+      - negotiation_round
+      - negotiation_phase
+  - term: Corrigendum
+    parser_tags:
+      - corrigendum
+      - amendment_notice
+      - correction_notice
+
+traceability_relations:
+  - relation: justified_by
+    from: QPS Requirement
+    to: ADR Design Decision
+  - relation: operated_by
+    from: QPS Requirement
+    to: OCD Operational Scenario
+  - relation: constrains
+    from: ADR Design Decision
+    to: OCD Workflow
+  - relation: amended_by
+    from: QPS Requirement
+    to: Corrigendum Entry
+  - relation: incorporated_into
+    from: Corrigendum Entry
+    to: Contract Baseline
+
+extraction_categories:
+  - qps_requirement
+  - adr_decision
+  - ocd_scenario
+  - ocd_workflow
+  - deliverable
+  - verification_evidence
+  - corrigendum_entry
+  - negotiation_action
