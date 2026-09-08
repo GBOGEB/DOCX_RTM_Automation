@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'triage/renegade-self-analysis-*'
+      - 'triage/standalone-modernization-*'
     paths-ignore:
       - 'triage/repo_index/ARTIFACT_INDEX.yaml'
       - 'triage/repo_index/FILE_INDEX.tsv'
