@@ -27,6 +27,23 @@ def test_extracts_headings_requirements_tests_deliverables_and_tables(tmp_path: 
     assert any(r["source_kind"] == "table_row" for r in result["rtm_requirements"])
 
 
+def test_source_clause_is_stable_but_not_promoted_to_canonical_rtm(tmp_path: Path):
+    doc = Document()
+    doc.add_heading("Cybersecurity", level=1)
+    doc.add_paragraph("3.3.18.10 The Contractor shall comply with the customer security policy.")
+    path = tmp_path / "source.docx"
+    doc.save(path)
+
+    result = extract_document(path)
+    requirement = result["rtm_requirements"][0]
+
+    assert requirement["id"] == "SRC-3.3.18.10"
+    assert requirement["source_clause"] == "3.3.18.10"
+    assert requirement["canonical_id_state"] == "UNBOUND"
+    assert result["counts"]["rtm_with_source_clause"] == 1
+    assert "not canonical RTM IDs" in result["crosswalk_boundary"]
+
+
 def test_rejects_non_docx(tmp_path: Path):
     path = tmp_path / "source.txt"
     path.write_text("RTM-1 shall do something", encoding="utf-8")
