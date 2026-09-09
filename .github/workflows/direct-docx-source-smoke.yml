@@ -1,0 +1,48 @@
+name: Direct DOCX source smoke
+
+on:
+  pull_request:
+    paths:
+      - 'parser/source_extractor.py'
+      - 'scripts/parse_document_current.py'
+      - 'tests/test_source_extractor.py'
+      - '.github/workflows/direct-docx-source-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cryoplant-addendum-source-extraction:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install focused dependency
+        run: python -m pip install python-docx
+      - name: Extract tracked Cryoplant Addendum II source
+        run: |
+          python scripts/parse_document_current.py \
+            addenda/Addendum_II_Cryoplant_Technical_Requirements.docx \
+            --output out/addendum_ii_source_extraction.json
+      - name: Fail closed on empty source populations
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('out/addendum_ii_source_extraction.json')
+          d = json.loads(p.read_text(encoding='utf-8'))
+          counts = d['counts']
+          print(counts)
+          assert counts['sections'] > 0, counts
+          assert counts['rtm_requirements'] > 0, counts
+          assert 'formal compliance' in d['classification_boundary'], d['classification_boundary']
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cryoplant-addendum-ii-source-extraction
+          path: out/addendum_ii_source_extraction.json
+          if-no-files-found: error
