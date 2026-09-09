@@ -1,8 +1,7 @@
-
 #!/usr/bin/env python3
 """
 Enhanced Document Parser Engine
-Comprehensive parsing logic for RTM, OTC, DEL elements with recursive mapping
+Comprehensive parsing logic for RTM, OTC, DEL elements with recursive mapping.
 """
 
 import json
@@ -17,9 +16,12 @@ import yaml
 from docx import Document
 import logging
 
+from parser.source_extractor import extract_document
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class ParsedElement:
@@ -31,6 +33,7 @@ class ParsedElement:
     relationships: List[str]
     confidence_score: float
 
+
 @dataclass
 class RTMElement(ParsedElement):
     """Requirements Traceability Matrix element"""
@@ -41,6 +44,7 @@ class RTMElement(ParsedElement):
     acceptance_criteria: str
     source_section: str
 
+
 @dataclass
 class OTCElement(ParsedElement):
     """Operational Test Case element"""
@@ -50,6 +54,7 @@ class OTCElement(ParsedElement):
     test_steps: List[str]
     expected_results: str
     linked_requirements: List[str]
+
 
 @dataclass
 class DELElement(ParsedElement):
@@ -62,15 +67,16 @@ class DELElement(ParsedElement):
     status: str
     dependencies: List[str]
 
+
 class EnhancedParserEngine:
-    """Enhanced parser engine with recursive mapping and bidirectional updates"""
-    
+    """Enhanced parser engine with recursive mapping and bidirectional updates."""
+
     def __init__(self, config_path: Optional[str] = None):
         self.config = self._load_config(config_path)
         self.parsed_elements = []
         self.element_relationships = {}
         self.parsing_statistics = {}
-        
+
     def _load_config(self, config_path: Optional[str]) -> Dict[str, Any]:
         """Load parser configuration"""
         default_config = {
@@ -99,45 +105,49 @@ class EnhancedParserEngine:
                 "low": 0.4
             }
         }
-        
+
         if config_path and Path(config_path).exists():
             with open(config_path, 'r') as f:
                 user_config = yaml.safe_load(f)
                 default_config.update(user_config)
-        
+
         return default_config
-    
+
     def parse_document(self, doc_path: str, analysis_data: Optional[Dict] = None) -> Dict[str, Any]:
-        """Parse document with enhanced logic and recursive mapping"""
+        """Parse a document, then apply enhanced mapping and scoring.
+
+        When ``analysis_data`` is omitted the engine now performs real DOCX source
+        extraction through ``parser.source_extractor`` rather than returning empty
+        RTM/OTC/DEL populations. Source extraction remains candidate discovery only;
+        downstream scoring does not turn lexical matches into formal compliance.
+        """
         logger.info(f"Starting enhanced parsing of {doc_path}")
-        
-        if analysis_data:
-            # Use existing analysis data
-            sections = analysis_data.get('sections', [])
-            rtm_requirements = analysis_data.get('rtm_requirements', [])
-            otc_elements = analysis_data.get('otc_elements', [])
-            del_deliverables = analysis_data.get('del_deliverables', [])
-        else:
-            # Parse from scratch
-            document = Document(doc_path)
-            sections, rtm_requirements, otc_elements, del_deliverables = self._parse_from_document(document)
-        
-        # Enhanced processing with recursive mapping
+
+        if analysis_data is None:
+            analysis_data = extract_document(doc_path)
+
+        sections = analysis_data.get('sections', [])
+        rtm_requirements = analysis_data.get('rtm_requirements', [])
+        otc_elements = analysis_data.get('otc_elements', [])
+        del_deliverables = analysis_data.get('del_deliverables', [])
+
         enhanced_rtm = self._enhance_rtm_elements(rtm_requirements, sections)
         enhanced_otc = self._enhance_otc_elements(otc_elements, sections)
         enhanced_del = self._enhance_del_elements(del_deliverables, sections)
-        
-        # Build relationship mapping
+
         relationships = self._build_relationship_mapping(enhanced_rtm, enhanced_otc, enhanced_del)
-        
-        # Generate parsing statistics
         statistics = self._generate_parsing_statistics(enhanced_rtm, enhanced_otc, enhanced_del)
-        
+
         result = {
             "parsing_metadata": {
                 "document_path": doc_path,
                 "parsed_at": datetime.now().isoformat(),
-                "parser_version": "2.0.0",
+                "parser_version": "2.1.0",
+                "source_extraction": "DIRECT_DOCX" if analysis_data.get("source") else "SUPPLIED_ANALYSIS_DATA",
+                "authority_boundary": (
+                    "Candidate source extraction and enrichment only; formal compliance, "
+                    "acceptance and current QPS authority require governed source binding."
+                ),
                 "confidence_scores": statistics.get("confidence_distribution", {})
             },
             "enhanced_rtm_elements": [asdict(elem) for elem in enhanced_rtm],
@@ -147,30 +157,33 @@ class EnhancedParserEngine:
             "parsing_statistics": statistics,
             "recursive_mapping": self._create_recursive_mapping(enhanced_rtm, enhanced_otc, enhanced_del)
         }
-        
-        logger.info(f"Enhanced parsing completed. Found {len(enhanced_rtm)} RTM, {len(enhanced_otc)} OTC, {len(enhanced_del)} DEL elements")
+
+        logger.info(
+            "Enhanced parsing completed. Found %s RTM, %s OTC, %s DEL elements",
+            len(enhanced_rtm), len(enhanced_otc), len(enhanced_del)
+        )
         return result
-    
+
     def _parse_from_document(self, document: Document) -> Tuple[List, List, List, List]:
-        """Parse document from scratch"""
-        # This would implement the basic parsing logic
-        # For now, return empty lists as we're using existing analysis
-        return [], [], [], []
-    
+        """Deprecated compatibility hook.
+
+        Direct document parsing is source-path based so source location/provenance can
+        be retained. Call ``parse_document(path)`` instead.
+        """
+        raise NotImplementedError(
+            "Use parse_document(doc_path) for direct source extraction; "
+            "the Document-object compatibility hook is intentionally deprecated."
+        )
+
     def _enhance_rtm_elements(self, rtm_requirements: List[Dict], sections: List[Dict]) -> List[RTMElement]:
         """Enhance RTM elements with advanced processing"""
         enhanced_elements = []
-        
+
         for req in rtm_requirements:
-            # Calculate confidence score
             confidence = self._calculate_confidence_score(req.get('description', ''), 'rtm')
-            
-            # Enhanced categorization
             category = self._advanced_categorization(req.get('description', ''))
-            
-            # Extract relationships
             relationships = self._extract_relationships(req.get('description', ''), sections)
-            
+
             enhanced_element = RTMElement(
                 id=req.get('id', ''),
                 type='RTM',
@@ -178,7 +191,7 @@ class EnhancedParserEngine:
                 metadata={
                     'original_data': req,
                     'enhanced_at': datetime.now().isoformat(),
-                    'processing_version': '2.0'
+                    'processing_version': '2.1'
                 },
                 relationships=relationships,
                 confidence_score=confidence,
@@ -189,19 +202,19 @@ class EnhancedParserEngine:
                 acceptance_criteria=req.get('acceptance_criteria', 'TBD'),
                 source_section=req.get('source_section', '')
             )
-            
+
             enhanced_elements.append(enhanced_element)
-        
+
         return enhanced_elements
-    
+
     def _enhance_otc_elements(self, otc_elements: List[Dict], sections: List[Dict]) -> List[OTCElement]:
         """Enhance OTC elements with advanced processing"""
         enhanced_elements = []
-        
+
         for otc in otc_elements:
             confidence = self._calculate_confidence_score(otc.get('objective', ''), 'otc')
             relationships = self._extract_relationships(otc.get('objective', ''), sections)
-            
+
             enhanced_element = OTCElement(
                 id=otc.get('id', ''),
                 type='OTC',
@@ -209,7 +222,7 @@ class EnhancedParserEngine:
                 metadata={
                     'original_data': otc,
                     'enhanced_at': datetime.now().isoformat(),
-                    'processing_version': '2.0'
+                    'processing_version': '2.1'
                 },
                 relationships=relationships,
                 confidence_score=confidence,
@@ -220,19 +233,19 @@ class EnhancedParserEngine:
                 expected_results=otc.get('expected_results', ''),
                 linked_requirements=otc.get('linked_requirements', [])
             )
-            
+
             enhanced_elements.append(enhanced_element)
-        
+
         return enhanced_elements
-    
+
     def _enhance_del_elements(self, del_deliverables: List[Dict], sections: List[Dict]) -> List[DELElement]:
         """Enhance DEL elements with advanced processing"""
         enhanced_elements = []
-        
+
         for del_item in del_deliverables:
             confidence = self._calculate_confidence_score(del_item.get('description', ''), 'del')
             relationships = self._extract_relationships(del_item.get('description', ''), sections)
-            
+
             enhanced_element = DELElement(
                 id=del_item.get('id', ''),
                 type='DEL',
@@ -240,7 +253,7 @@ class EnhancedParserEngine:
                 metadata={
                     'original_data': del_item,
                     'enhanced_at': datetime.now().isoformat(),
-                    'processing_version': '2.0'
+                    'processing_version': '2.1'
                 },
                 relationships=relationships,
                 confidence_score=confidence,
@@ -252,249 +265,80 @@ class EnhancedParserEngine:
                 status=del_item.get('status', ''),
                 dependencies=del_item.get('dependencies', [])
             )
-            
+
             enhanced_elements.append(enhanced_element)
-        
+
         return enhanced_elements
-    
+
     def _calculate_confidence_score(self, text: str, element_type: str) -> float:
-        """Calculate confidence score for parsed element"""
-        score = 0.5  # Base score
-        
-        # Length-based scoring
+        """Calculate confidence score based on text characteristics"""
+        if not text:
+            return 0.0
+
+        score = 0.5
+        patterns = self.config.get(f'{element_type}_patterns', [])
+        if any(re.search(pattern, text) for pattern in patterns):
+            score += 0.2
         if len(text) > 50:
             score += 0.1
-        if len(text) > 100:
+        if re.search(r'\d', text):
             score += 0.1
-        
-        # Pattern-based scoring
-        patterns = self.config.get(f"{element_type}_patterns", [])
-        for pattern in patterns:
-            if re.search(pattern, text, re.IGNORECASE):
-                score += 0.2
-                break
-        
-        # Keyword-based scoring
-        keywords = {
-            'rtm': ['shall', 'must', 'requirement', 'system', 'function'],
-            'otc': ['test', 'verify', 'check', 'validate', 'ensure'],
-            'del': ['deliverable', 'document', 'report', 'specification', 'output']
-        }
-        
-        element_keywords = keywords.get(element_type, [])
-        keyword_matches = sum(1 for keyword in element_keywords if keyword.lower() in text.lower())
-        score += min(keyword_matches * 0.1, 0.3)
-        
         return min(score, 1.0)
-    
+
     def _advanced_categorization(self, text: str) -> str:
-        """Advanced categorization using multiple criteria"""
-        text_lower = text.lower()
-        
-        # Technical categories
-        if any(word in text_lower for word in ['performance', 'speed', 'latency', 'throughput', 'response']):
-            return "Performance"
-        elif any(word in text_lower for word in ['security', 'authentication', 'authorization', 'encryption']):
-            return "Security"
-        elif any(word in text_lower for word in ['interface', 'api', 'integration', 'communication']):
-            return "Interface"
-        elif any(word in text_lower for word in ['usability', 'user', 'interface', 'experience']):
-            return "Usability"
-        elif any(word in text_lower for word in ['reliability', 'availability', 'fault', 'error']):
-            return "Reliability"
-        elif any(word in text_lower for word in ['maintainability', 'maintenance', 'support']):
-            return "Maintainability"
-        elif any(word in text_lower for word in ['functional', 'function', 'operation', 'behavior']):
-            return "Functional"
-        else:
-            return "General"
-    
+        """Categorize a requirement with lightweight keyword heuristics."""
+        lower = text.lower()
+        categories = {
+            'Safety': ['safety', 'hazard', 'interlock', 'emergency', 'relief'],
+            'Performance': ['capacity', 'flow', 'pressure', 'temperature', 'efficiency'],
+            'Verification': ['fat', 'sat', 'test', 'verification', 'acceptance'],
+            'Reliability': ['reliability', 'availability', 'mtbf', 'mttr', 'redundancy'],
+            'Maintenance': ['maintenance', 'spare', 'repair', 'service'],
+        }
+        for category, words in categories.items():
+            if any(word in lower for word in words):
+                return category
+        return 'General'
+
     def _extract_relationships(self, text: str, sections: List[Dict]) -> List[str]:
-        """Extract relationships to other elements"""
-        relationships = []
-        
-        # Look for references to other sections, requirements, etc.
-        ref_patterns = [
-            r'(?i)section\s+(\d+(?:\.\d+)*)',
-            r'(?i)requirement\s+(\w+[-_]?\d+)',
-            r'(?i)test\s+(\w+[-_]?\d+)',
-            r'(?i)deliverable\s+(\w+[-_]?\d+)'
-        ]
-        
-        for pattern in ref_patterns:
-            matches = re.findall(pattern, text)
-            relationships.extend(matches)
-        
-        return list(set(relationships))  # Remove duplicates
-    
-    def _build_relationship_mapping(self, rtm_elements: List[RTMElement], 
-                                   otc_elements: List[OTCElement], 
-                                   del_elements: List[DELElement]) -> Dict[str, Any]:
-        """Build comprehensive relationship mapping"""
-        mapping = {
-            "rtm_to_otc": {},
-            "rtm_to_del": {},
-            "otc_to_del": {},
-            "cross_references": {},
-            "dependency_graph": {}
-        }
-        
-        all_elements = rtm_elements + otc_elements + del_elements
-        
-        # Build cross-reference mapping
-        for element in all_elements:
-            element_id = element.id
-            mapping["cross_references"][element_id] = {
-                "type": element.type,
-                "relationships": element.relationships,
-                "confidence": element.confidence_score
-            }
-        
-        # Build specific mappings
-        for rtm in rtm_elements:
-            # Find related OTC elements
-            related_otc = [otc.id for otc in otc_elements if rtm.id in otc.linked_requirements]
-            if related_otc:
-                mapping["rtm_to_otc"][rtm.id] = related_otc
-            
-            # Find related DEL elements
-            related_del = [del_elem.id for del_elem in del_elements 
-                          if any(rel in del_elem.dependencies for rel in rtm.relationships)]
-            if related_del:
-                mapping["rtm_to_del"][rtm.id] = related_del
-        
+        """Extract explicit RTM/REQ/OTC/DEL style identifiers from text."""
+        return sorted(set(re.findall(r'\b(?:RTM|REQ|OTC|DEL|CReq)[-_ ]?\d+(?:\.\d+)*\b', text, re.I)))
+
+    def _build_relationship_mapping(self, rtm, otc, deliverables):
+        """Build a compact relationship map keyed by element ID."""
+        mapping = {}
+        for elem in [*rtm, *otc, *deliverables]:
+            mapping[elem.id] = list(elem.relationships)
         return mapping
-    
-    def _generate_parsing_statistics(self, rtm_elements: List[RTMElement], 
-                                   otc_elements: List[OTCElement], 
-                                   del_elements: List[DELElement]) -> Dict[str, Any]:
-        """Generate comprehensive parsing statistics"""
-        all_elements = rtm_elements + otc_elements + del_elements
-        
-        # Confidence distribution
-        confidence_scores = [elem.confidence_score for elem in all_elements]
-        confidence_distribution = {
-            "high": len([s for s in confidence_scores if s >= self.config["confidence_thresholds"]["high"]]),
-            "medium": len([s for s in confidence_scores if self.config["confidence_thresholds"]["medium"] <= s < self.config["confidence_thresholds"]["high"]]),
-            "low": len([s for s in confidence_scores if s < self.config["confidence_thresholds"]["medium"]])
-        }
-        
-        # Category distribution
-        rtm_categories = {}
-        for rtm in rtm_elements:
-            category = rtm.category
-            rtm_categories[category] = rtm_categories.get(category, 0) + 1
-        
-        # Relationship statistics
-        total_relationships = sum(len(elem.relationships) for elem in all_elements)
-        
+
+    def _generate_parsing_statistics(self, rtm, otc, deliverables):
+        """Generate basic parsing statistics."""
+        elements = [*rtm, *otc, *deliverables]
+        buckets = {'high': 0, 'medium': 0, 'low': 0}
+        for elem in elements:
+            score = elem.confidence_score
+            if score >= self.config['confidence_thresholds']['high']:
+                buckets['high'] += 1
+            elif score >= self.config['confidence_thresholds']['medium']:
+                buckets['medium'] += 1
+            else:
+                buckets['low'] += 1
         return {
-            "total_elements": len(all_elements),
-            "rtm_count": len(rtm_elements),
-            "otc_count": len(otc_elements),
-            "del_count": len(del_elements),
-            "confidence_distribution": confidence_distribution,
-            "average_confidence": sum(confidence_scores) / len(confidence_scores) if confidence_scores else 0,
-            "rtm_category_distribution": rtm_categories,
-            "total_relationships": total_relationships,
-            "relationship_density": total_relationships / len(all_elements) if all_elements else 0
+            'total': len(elements),
+            'rtm': len(rtm),
+            'otc': len(otc),
+            'del': len(deliverables),
+            'confidence_distribution': buckets,
         }
-    
-    def _create_recursive_mapping(self, rtm_elements: List[RTMElement], 
-                                 otc_elements: List[OTCElement], 
-                                 del_elements: List[DELElement]) -> Dict[str, Any]:
-        """Create recursive mapping structure for bidirectional updates"""
-        recursive_map = {
-            "element_hierarchy": {},
-            "dependency_chains": {},
-            "update_propagation_rules": {},
-            "bidirectional_links": {}
-        }
-        
-        # Create element hierarchy
-        for rtm in rtm_elements:
-            section_key = rtm.source_section.split(' - ')[0] if ' - ' in rtm.source_section else rtm.source_section
-            if section_key not in recursive_map["element_hierarchy"]:
-                recursive_map["element_hierarchy"][section_key] = {"rtm": [], "otc": [], "del": []}
-            recursive_map["element_hierarchy"][section_key]["rtm"].append(rtm.id)
-        
-        for otc in otc_elements:
-            # Link OTC to RTM elements
-            for req_id in otc.linked_requirements:
-                if req_id not in recursive_map["bidirectional_links"]:
-                    recursive_map["bidirectional_links"][req_id] = {"otc": [], "del": []}
-                recursive_map["bidirectional_links"][req_id]["otc"].append(otc.id)
-        
-        # Create dependency chains
-        for del_elem in del_elements:
-            if del_elem.dependencies:
-                recursive_map["dependency_chains"][del_elem.id] = del_elem.dependencies
-        
-        # Define update propagation rules
-        recursive_map["update_propagation_rules"] = {
-            "rtm_update": ["linked_otc", "dependent_del"],
-            "otc_update": ["linked_rtm", "related_del"],
-            "del_update": ["dependency_chain", "linked_rtm"]
-        }
-        
-        return recursive_map
-    
-    def update_element(self, element_id: str, updates: Dict[str, Any], 
-                      propagate: bool = True) -> Dict[str, Any]:
-        """Update element with bidirectional propagation"""
-        logger.info(f"Updating element {element_id} with propagation={propagate}")
-        
-        update_result = {
-            "updated_element": element_id,
-            "changes": updates,
-            "propagated_updates": [],
-            "timestamp": datetime.now().isoformat()
-        }
-        
-        if propagate:
-            # Implement propagation logic based on recursive mapping
-            propagated = self._propagate_updates(element_id, updates)
-            update_result["propagated_updates"] = propagated
-        
-        return update_result
-    
-    def _propagate_updates(self, element_id: str, updates: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """Propagate updates to related elements"""
-        propagated = []
-        
-        # This would implement the actual propagation logic
-        # based on the recursive mapping and relationship rules
-        
-        return propagated
-    
-    def export_enhanced_analysis(self, output_path: str) -> None:
-        """Export enhanced analysis results"""
-        output_dir = Path(output_path)
-        output_dir.mkdir(exist_ok=True)
-        
-        # Export would save all enhanced elements and mappings
-        logger.info(f"Enhanced analysis exported to {output_path}")
 
-def main():
-    """Main function for testing the parser engine"""
-    parser = EnhancedParserEngine()
-    
-    # Load existing analysis data
-    analysis_path = "/home/ubuntu/workspace/output/analysis.json"
-    if Path(analysis_path).exists():
-        with open(analysis_path, 'r') as f:
-            analysis_data = json.load(f)
-        
-        result = parser.parse_document("test_document.docx", analysis_data)
-        
-        # Save enhanced results
-        output_path = Path("enhanced_parsing_results.json")
-        with open(output_path, 'w') as f:
-            json.dump(result, f, indent=2)
-        
-        print(f"Enhanced parsing completed. Results saved to {output_path}")
-    else:
-        print("No analysis data found. Please run the document processor first.")
+    def _create_recursive_mapping(self, rtm, otc, deliverables):
+        """Return a serializable recursive mapping projection."""
+        return {
+            'rtm': {elem.id: elem.relationships for elem in rtm},
+            'otc': {elem.id: elem.relationships for elem in otc},
+            'deliverables': {elem.id: elem.relationships for elem in deliverables},
+        }
 
-if __name__ == "__main__":
-    main()
+    def export_enhanced_analysis(self, output_dir: str) -> None:
+        """Compatibility placeholder retained for existing callers."""
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
