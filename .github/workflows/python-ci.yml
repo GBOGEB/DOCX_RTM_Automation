@@ -30,7 +30,7 @@ jobs:
 
       - name: Run focused tests with coverage threshold
         run: |
-          python -m pytest tests/test_basic.py tests/test_all.py tests/core -v
+          python -m pytest tests/test_basic.py tests/test_all.py tests/core tests/test_source_extractor.py -v
 
       - name: Verify recursive alignment lock
         run: |
