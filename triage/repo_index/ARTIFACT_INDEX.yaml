@@ -1,13 +1,13 @@
 schema: triage-repo-artifact-index/v0.2
 repository: "https://github.com/GBOGEB/DOCX_RTM_Automation"
-indexed_source_sha: 642c233f3997a9a25eeb8c492c117f2f2c8080f5
-artifact_count: 821
-total_size_bytes: 36050141
+indexed_source_sha: 610e3f770351ac4482be9008db5cf8c505a24af8
+artifact_count: 823
+total_size_bytes: 36057406
 ordering: artifact_type_then_path_casefold
 scope_summary:
   CORE:
-    count: 689
-    total_size_bytes: 34985316
+    count: 691
+    total_size_bytes: 34992581
   ENVIRONMENT_VENDOR:
     count: 0
     total_size_bytes: 0
@@ -1887,8 +1887,8 @@ artifact_types:
         git_object: "0ffbbbd75a453663117bb44299ae739b45109e7d"
         text_searchable: true
   "Python":
-    count: 455
-    total_size_bytes: 3240482
+    count: 457
+    total_size_bytes: 3247747
     artifacts:
       - path: "__init__.py"
         scope: CORE
@@ -3114,6 +3114,13 @@ artifact_types:
         size_bytes: 9554
         sha256: "c5e3ca92f2b185927454fc5c2dca3ec4f323fd02b6fd0186f93cd6a828decaf4"
         git_object: "6937ad327812b665ad20381f8ce101cc87129073"
+        text_searchable: true
+      - path: "parser/direct_docx.py"
+        scope: CORE
+        kind: file
+        size_bytes: 5737
+        sha256: "bc9344860c28ee40235d0d8ddc5634d5dee142ccf387fdf0ef44fd2e639b6e55"
+        git_object: "72f6cd6b25a678b953395a1e282dc7c4b62afed2"
         text_searchable: true
       - path: "parser/engine.py"
         scope: CORE
@@ -4927,6 +4934,13 @@ artifact_types:
         size_bytes: 1115
         sha256: "7b2773d78673b4d58399add6f730f9da5eb3bb4e5e4931d59316e92eab691621"
         git_object: "3763c45db8387f20481277b1ff22ff0adfe56679"
+        text_searchable: true
+      - path: "tests/test_direct_docx.py"
+        scope: CORE
+        kind: file
+        size_bytes: 1528
+        sha256: "609e9dd07c86565212f631ed5c99e98ebb59ac4f1c2848b3d934cb653d39832b"
+        git_object: "efc7a9078168076f59f37eb3e27068d708fbe7d4"
         text_searchable: true
       - path: "tests/test_example.py"
         scope: CORE
