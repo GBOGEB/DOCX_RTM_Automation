@@ -1,13 +1,13 @@
 schema: triage-repo-artifact-index/v0.2
 repository: "https://github.com/GBOGEB/DOCX_RTM_Automation"
-indexed_source_sha: 610e3f770351ac4482be9008db5cf8c505a24af8
-artifact_count: 823
-total_size_bytes: 36057406
+indexed_source_sha: 193cafd25ea343c01036342400dca4eaa0252536
+artifact_count: 824
+total_size_bytes: 36058854
 ordering: artifact_type_then_path_casefold
 scope_summary:
   CORE:
-    count: 691
-    total_size_bytes: 34992581
+    count: 692
+    total_size_bytes: 34994029
   ENVIRONMENT_VENDOR:
     count: 0
     total_size_bytes: 0
@@ -1887,8 +1887,8 @@ artifact_types:
         git_object: "0ffbbbd75a453663117bb44299ae739b45109e7d"
         text_searchable: true
   "Python":
-    count: 457
-    total_size_bytes: 3247747
+    count: 458
+    total_size_bytes: 3249195
     artifacts:
       - path: "__init__.py"
         scope: CORE
@@ -3779,6 +3779,13 @@ artifact_types:
         size_bytes: 12499
         sha256: "d69339f5e3f87e33c4e91ec074f5bda015221fcf78943d34724f20a44e45ecf6"
         git_object: "c5ef36cf63487afe4a10dc6ed1c6469a3d4a5ed0"
+        text_searchable: true
+      - path: "scripts/parse_docx_direct.py"
+        scope: CORE
+        kind: file
+        size_bytes: 1448
+        sha256: "ca73f909ea52d8bd6bbf7adb0afd9b0117d64ecfb03b2a7bcaf6fed0e1b83adc"
+        git_object: "249cd1e04a4378c57921fc541408aeabb114942f"
         text_searchable: true
       - path: "scripts/placeholder_script.py"
         scope: CORE
