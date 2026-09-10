@@ -4,7 +4,8 @@
 This validator intentionally uses only dependencies already present in the
 repository requirements: PyYAML plus the Python standard library. It performs a
 focused structural validation against the bridge JSON schema files and catches
-missing required fields, duplicate glossary IDs, and broken core terminology.
+missing required fields, duplicate glossary IDs, broken core terminology, and
+QPS triage applicability gaps.
 """
 
 from __future__ import annotations
@@ -21,6 +22,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_GLOSSARY = REPO_ROOT / "glossary" / "GLOSSARY.yaml"
 DEFAULT_MANIFEST = REPO_ROOT / "federation" / "ADR_OCD" / "bridge_manifest.yaml"
 DEFAULT_TAXONOMY = REPO_ROOT / "federation" / "ADR_OCD" / "taxonomy.yaml"
+DEFAULT_APPLICABILITY = REPO_ROOT / "federation" / "ADR_OCD" / "qps_triage_applicability.yaml"
 GLOSSARY_SCHEMA = REPO_ROOT / "schemas" / "glossary.schema.json"
 MANIFEST_SCHEMA = REPO_ROOT / "schemas" / "adr_ocd_bridge_manifest.schema.json"
 
@@ -158,8 +160,61 @@ def validate_taxonomy(taxonomy: dict[str, Any]) -> None:
         if expected not in role_terms:
             raise ValidationError(f"taxonomy missing document role: {expected}")
 
+    categories = set(taxonomy.get("extraction_categories", []))
+    expected_categories = {"qps_requirement", "adr_decision", "ocd_scenario", "triage_item", "triage_disposition", "maturity_level"}
+    missing_categories = sorted(expected_categories - categories)
+    if missing_categories:
+        raise ValidationError("taxonomy missing QPS triage extraction categories: " + ", ".join(missing_categories))
 
-def validate_all(glossary_path: Path, manifest_path: Path, taxonomy_path: Path) -> list[str]:
+
+def validate_applicability(applicability: dict[str, Any]) -> None:
+    require_keys(
+        applicability,
+        ["applicability_id", "version", "status", "purpose", "scope", "terminology_policy", "triage_lanes", "triage_dispositions", "maturity_levels", "priority_scoring", "qps_to_triage_edges", "control_gates"],
+        "qps_triage_applicability",
+    )
+
+    applies_to = set(applicability["scope"].get("applies_to", []))
+    for expected in ["QPS Requirements", "Triage", "Requirements Traceability Matrix", "Deliverables Traceability Matrix"]:
+        if expected not in applies_to:
+            raise ValidationError(f"qps_triage_applicability.scope.applies_to missing {expected}")
+
+    policy = applicability["terminology_policy"]
+    if policy.get("preferred_outward_facing") != "QPS Requirements":
+        raise ValidationError("terminology_policy.preferred_outward_facing must be QPS Requirements")
+    if policy.get("legacy_internal_alias") != "RFO":
+        raise ValidationError("terminology_policy.legacy_internal_alias must be RFO")
+
+    lanes = applicability["triage_lanes"]
+    if not isinstance(lanes, list) or not lanes:
+        raise ValidationError("triage_lanes must be a non-empty list")
+    lane_ids = {lane.get("lane_id") for lane in lanes if isinstance(lane, dict)}
+    for expected in ["TRIAGE-QPS", "TRIAGE-ADR", "TRIAGE-OCD", "TRIAGE-RTM-DTM"]:
+        if expected not in lane_ids:
+            raise ValidationError(f"triage_lanes missing {expected}")
+
+    dispositions = {item.get("disposition") for item in applicability["triage_dispositions"] if isinstance(item, dict)}
+    for expected in ["ACCEPT", "DEFER", "REJECT", "NEEDS_SOURCE", "NEEDS_IMPLEMENTATION", "NEEDS_REVIEW"]:
+        if expected not in dispositions:
+            raise ValidationError(f"triage_dispositions missing {expected}")
+
+    maturity_levels = {str(item.get("level")) for item in applicability["maturity_levels"] if isinstance(item, dict)}
+    for expected in ["0.0", "0.3", "0.6", "0.8", "1.0"]:
+        if expected not in maturity_levels:
+            raise ValidationError(f"maturity_levels missing {expected}")
+
+    edge_relations = {edge.get("relation") for edge in applicability["qps_to_triage_edges"] if isinstance(edge, dict)}
+    for expected in ["classified_as", "design_impact_to", "operational_impact_to", "traceability_impact_to", "deliverable_impact_to", "amendment_impact_to"]:
+        if expected not in edge_relations:
+            raise ValidationError(f"qps_to_triage_edges missing {expected}")
+
+
+def validate_all(
+    glossary_path: Path,
+    manifest_path: Path,
+    taxonomy_path: Path,
+    applicability_path: Path = DEFAULT_APPLICABILITY,
+) -> list[str]:
     glossary_schema = load_json(GLOSSARY_SCHEMA)
     manifest_schema = load_json(MANIFEST_SCHEMA)
     glossary = load_yaml(glossary_path)
@@ -170,11 +225,18 @@ def validate_all(glossary_path: Path, manifest_path: Path, taxonomy_path: Path) 
     validate_manifest(manifest, manifest_schema)
     validate_taxonomy(taxonomy)
 
-    return [
+    messages = [
         f"validated glossary: {glossary_path}",
         f"validated bridge manifest: {manifest_path}",
         f"validated taxonomy: {taxonomy_path}",
     ]
+
+    if applicability_path.exists():
+        applicability = load_yaml(applicability_path)
+        validate_applicability(applicability)
+        messages.append(f"validated QPS triage applicability: {applicability_path}")
+
+    return messages
 
 
 def parse_args() -> argparse.Namespace:
@@ -182,13 +244,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--glossary", type=Path, default=DEFAULT_GLOSSARY)
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--taxonomy", type=Path, default=DEFAULT_TAXONOMY)
+    parser.add_argument("--applicability", type=Path, default=DEFAULT_APPLICABILITY)
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
     try:
-        messages = validate_all(args.glossary, args.manifest, args.taxonomy)
+        messages = validate_all(args.glossary, args.manifest, args.taxonomy, args.applicability)
     except ValidationError as exc:
         print(f"ADR_OCD bridge validation failed: {exc}", file=sys.stderr)
         return 1
