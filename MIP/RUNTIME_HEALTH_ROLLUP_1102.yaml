@@ -1,0 +1,10 @@
+schema_version: "0.1"
+rollup_id: ABACUS-1102-RUNTIME-HEALTH
+seed: {repo: GBOGEB/ABACUS, pr: 1102, merge_sha: 8841dc701a1896233273413c81d7c88d268b9498}
+active_window: 24h
+role: SATELLITE_SOURCE_EXTRACTION_WORKER
+runtime_health_relevance: [RUNNERS, MCP, DEBUG_TELEMETRY]
+may_produce: [exact_sha_execution_receipt, source_output_digest, runner_health]
+may_not_produce: [QPS_ENGINEERING_AUTHORITY, COMPLIANCE_PROMOTION]
+authority_transfer: false
+next_victory: repeat source-clause reconciliation on fresh exact head and attach runtime-health receipt
