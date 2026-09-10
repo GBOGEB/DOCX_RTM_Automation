@@ -1,0 +1,35 @@
+schema: mip-reconciliation-control/v1
+pulse: W102
+parent:
+  pulse: W101
+  exact_head: 26e48114cbdc4f1b4d97405be39f95620e970239
+  workflow_run: 34430378055
+  artifact:
+    name: w101-serialized-source-handoff
+    sha256: 911e906302ee08b9972bba8e71d4d8e30ee135e96edc2211bca5c6e92d730d6d
+    semantic_digest: 5d5e7aa2d8792db6428e974468bb5174f879a91ee09635e9a5900d53614ceae2
+mip:
+  modernize:
+    - repaired the invalid public-worker dependency on private QPS canonical data
+    - retained source extraction as an independently runnable product boundary
+  innovate:
+    - parallel clause, text and family source-feature workers
+    - serialized downstream canonical join rather than cross-repo authority leakage
+  perpetuate:
+    - repeat-run idempotence checks on worker semantic digests
+    - recursive residual-only backlog handoff
+    - semantic_as_of separated from observed_at
+backlog:
+  source_atoms: 757
+  prior_exact_text: 28
+  prior_source_unmatched: 729
+  prior_canonical_unmatched: 694
+control_rules:
+  - worker outputs never grant canonical RTM identity
+  - later runs with unchanged inputs must preserve semantic_digest
+  - observed_at may change without creating semantic delta
+  - next pulse consumes only residual source atoms
+  - ambiguous joins remain unpromoted
+authority_effect: NONE
+compliance_credit: false
+release_credit: false
