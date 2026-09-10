@@ -1,0 +1,42 @@
+wave: W69
+program: MIP_DOCX_RTM_INGESTION
+repository: GBOGEB/DOCX_RTM_Automation
+role: document_requirement_ingestion_producer
+existing_capabilities:
+  - parser/engine.py
+  - pipeline/main.py
+  - orchestration_ts/server.ts
+  - docs/section9/section9_generator.py
+modernize:
+  - census parser, RTM, OTC, DEL and orchestration surfaces against actual executable code
+  - replace broad enterprise claims with observed exact-SHA receipts
+  - normalize extracted requirements to stable logical IDs and source locators
+innovate:
+  - emit source-bound requirement atoms and bidirectional DOCX_to_RTM lineage edges
+  - attach confidence, extraction method and source paragraph/table locator to every atom
+  - route semantic normalization through CODEX and completeness analytics through ABACUS
+  - permit cryoplant child to ACCEPT_REJECT_DEFER each proposed requirement atom
+perpetuate:
+  - rerun extraction after source DOCX or parser change
+  - compare requirement set and lineage digest against predecessor
+  - recurse on first lost, duplicated or semantically changed requirement
+outputs:
+  - requirement_atoms.json
+  - docx_rtm_lineage.json
+  - extraction_receipt.json
+  - requirement_set_digest
+federation:
+  producer: DOCX_RTM_Automation
+  semantic_consumer: CODEX
+  analytics_consumer: ABACUS
+  authority_consumer: cryoplant-project
+victory:
+  - process one real DOCX with greater_than_0 extracted requirements
+  - every emitted requirement has source locator and stable logical ID
+  - CODEX semantic receipt exists
+  - ABACUS completeness receipt exists
+  - child records explicit ACCEPT_REJECT_DEFER disposition
+claim_guards:
+  - EXTRACTION_NE_REQUIREMENT_AUTHORITY
+  - CONFIDENCE_NE_COMPLIANCE
+  - GENERATED_RTM_NE_ACCEPTED_RTM
