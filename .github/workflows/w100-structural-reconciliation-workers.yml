@@ -1,0 +1,68 @@
+name: W100 Structural Reconciliation Workers
+on:
+  pull_request:
+    paths:
+      - 'scripts/structural_reconcile_workers.py'
+      - '.github/workflows/w100-structural-reconciliation-workers.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  worker:
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [exact, section, containment]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build immutable local source extraction
+        run: |
+          python -m pip install python-docx
+          python scripts/parse_document_current.py addenda/Addendum_II_Cryoplant_Technical_Requirements.docx --output out/source.json
+      - name: Materialise governed 722 semantic source from registered fixture
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('triage/w100_canonical_722.json')
+          if not p.exists():
+              raise SystemExit('missing governed 722 semantic materialisation fixture')
+          d=json.loads(p.read_text()); assert len(d['records'])==722
+          PY
+      - name: Run lane
+        run: |
+          python scripts/structural_reconcile_workers.py --extraction out/source.json --canonical triage/w100_canonical_722.json --worker ${{ matrix.lane }} --output out/${{ matrix.lane }}.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: w100-${{ matrix.lane }}
+          path: out/${{ matrix.lane }}.json
+  serialize:
+    needs: worker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: w100-*
+          path: out
+          merge-multiple: true
+      - name: Serialize worker summaries
+        run: |
+          python - <<'PY'
+          import glob,json,pathlib
+          docs=[json.load(open(p)) for p in sorted(glob.glob('out/*.json'))]
+          lanes={}
+          for d in docs:
+              lanes.update(d['workers'])
+          assert set(lanes)=={'exact','section','containment'}
+          summary={'schema':'w100-serialized-reconciliation/v1','order':['exact','section','containment'],'workers':{k:v['summary'] for k,v in lanes.items()},'promotion_rule':'EXACT_TEXT first; STRUCTURAL_PARENT only for still-unmatched source atoms; TEXT_CONTAINMENT diagnostic until independently accepted','authority_effect':'NONE','compliance_credit':False,'release_credit':False}
+          pathlib.Path('W100_SERIALIZED_SUMMARY.json').write_text(json.dumps(summary,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(summary,sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: w100-serialized-summary
+          path: W100_SERIALIZED_SUMMARY.json
