@@ -1,0 +1,19 @@
+schema: gbogeb-federation-activity/1.0.0
+as_of: '2026-09-10T06:47:00+02:00'
+repo: GBOGEB/DOCX_RTM_Automation
+classification: SATELLITE_ACTIVE
+federation_role: DOCUMENT_RTM_SOURCE_EXTRACTION_AND_RECONCILIATION
+recent_activity:
+  - {pr_range: '22-26', role: source_clause_reconciliation_recursive_workers_and_mip}
+mip_state: {modernize: ACTIVE, innovate: ACTIVE, perpetuate: GATED}
+three_p_capability: {P1_source_atom: true, P2_integration_graph: true, P3_evidence_control: true}
+runtime_proof: {state: PARTIAL, required: repeated_exact_head_source_clause_receipts}
+source_authority: {state: EXTRACTION_AND_MAPPING_ONLY, may_override_qps_child: false}
+produces_receipts: [source_clause_receipt, rtm_mapping_receipt, outward_document_manifest]
+consumes_receipts: [qps_requirement_contract, source_locator_contract]
+current_blocker: repeated exact-head source-clause reconciliation proof across distinct SHAs
+next_victory: execute source-clause reconciliation on a fresh head and emit locator plus output digests for federation return
+federation_dependencies:
+  upstream: [GBOGEB/cryoplant-project, GBOGEB/CODEX]
+  downstream: [GBOGEB/document-organization-system, GBOGEB/ABACUS]
+controls: {authority_effect: NONE, engineering_credit: false, compliance_credit: false}
