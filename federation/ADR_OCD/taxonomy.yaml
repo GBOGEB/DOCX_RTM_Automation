@@ -1,9 +1,10 @@
 taxonomy_id: ADR_OCD_QPS_TAXONOMY
-version: 0.1.0
+version: 0.2.0
 status: draft
 purpose: >
   Provide isolated parser and traceability terminology hooks for QPS Requirements,
-  ADR, OCD, negotiation stages, and corrigendum handling without changing the parser engine.
+  ADR, OCD, negotiation stages, corrigendum handling, and triage classification
+  without changing the parser engine.
 
 document_roles:
   - role_id: DOC-QPS
@@ -41,6 +42,21 @@ document_roles:
       - operator_workflows
     outward_facing: false
 
+  - role_id: DOC-TRIAGE
+    standard_term: Triage
+    aliases:
+      - triage register
+      - triage item
+      - disposition register
+      - issue triage
+    parser_tags:
+      - triage
+      - triage_item
+      - disposition
+      - maturity
+      - evidence_gap
+    outward_facing: false
+
 procurement_terms:
   - term: Applicant
     parser_tags:
@@ -69,6 +85,38 @@ procurement_terms:
       - amendment_notice
       - correction_notice
 
+triage_terms:
+  - term: ACCEPT
+    parser_tags:
+      - accept
+      - accepted
+      - source_supported
+  - term: DEFER
+    parser_tags:
+      - defer
+      - deferred
+      - source_missing
+  - term: REJECT
+    parser_tags:
+      - reject
+      - rejected
+      - not_applicable
+  - term: NEEDS_SOURCE
+    parser_tags:
+      - needs_source
+      - source_required
+      - evidence_required
+  - term: NEEDS_IMPLEMENTATION
+    parser_tags:
+      - needs_implementation
+      - implementation_gap
+      - not_wired
+  - term: NEEDS_REVIEW
+    parser_tags:
+      - needs_review
+      - engineering_review
+      - procurement_review
+
 traceability_relations:
   - relation: justified_by
     from: QPS Requirement
@@ -85,9 +133,26 @@ traceability_relations:
   - relation: incorporated_into
     from: Corrigendum Entry
     to: Contract Baseline
+  - relation: classified_as
+    from: QPS Requirement
+    to: Triage Item
+  - relation: design_impact_to
+    from: Triage Item
+    to: ADR Design Decision
+  - relation: operational_impact_to
+    from: Triage Item
+    to: OCD Operational Scenario
+  - relation: traceability_impact_to
+    from: Triage Item
+    to: RTM Row
+  - relation: deliverable_impact_to
+    from: Triage Item
+    to: DTM Row
 
 extraction_categories:
   - qps_requirement
+  - qps_disposition
+  - qps_change
   - adr_decision
   - ocd_scenario
   - ocd_workflow
@@ -95,3 +160,9 @@ extraction_categories:
   - verification_evidence
   - corrigendum_entry
   - negotiation_action
+  - triage_item
+  - triage_lane
+  - triage_disposition
+  - maturity_level
+  - evidence_gap
+  - implementation_gap
