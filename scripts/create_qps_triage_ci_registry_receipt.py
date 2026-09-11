@@ -11,7 +11,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -30,6 +29,24 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _normalize_artifact_digest(value: str) -> str:
+    """Normalize upload-artifact digest output to sha256:<64-hex>.
+
+    actions/upload-artifact currently exposes a raw 64-character hexadecimal
+    `artifact-digest` output, while the GitHub REST artifact object may expose
+    the same digest with a `sha256:` prefix. Accept both representations and
+    store one canonical prefixed form in the registry receipt.
+    """
+    digest = value.strip().lower()
+    if digest.startswith("sha256:"):
+        hex_digest = digest[7:]
+    else:
+        hex_digest = digest
+    if len(hex_digest) != 64 or any(char not in "0123456789abcdef" for char in hex_digest):
+        raise ValueError("Artifact digest must be a 64-hex SHA256 value, optionally prefixed with sha256:")
+    return f"sha256:{hex_digest}"
+
+
 def build_registry_receipt(
     bundle_dir: str | Path,
     *,
@@ -45,8 +62,7 @@ def build_registry_receipt(
 
     if not artifact_id or not artifact_url:
         raise ValueError("Artifact id and URL are required")
-    if not artifact_digest.startswith("sha256:") or len(artifact_digest) != 71:
-        raise ValueError("Artifact digest must be a sha256:<64-hex> value")
+    normalized_digest = _normalize_artifact_digest(artifact_digest)
 
     identity = governed.get("identity", {})
     git_sha = str(identity.get("git_sha", ""))
@@ -58,7 +74,7 @@ def build_registry_receipt(
 
     return {
         "registry_receipt_id": f"QPS-TRIAGE-W9-{git_sha[:12]}",
-        "registry_receipt_version": "1.0.0",
+        "registry_receipt_version": "1.0.1",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "status": "PASS",
         "identity": identity,
@@ -75,7 +91,7 @@ def build_registry_receipt(
             "artifact_id": str(artifact_id),
             "artifact_name": artifact_name,
             "artifact_url": artifact_url,
-            "artifact_digest": artifact_digest,
+            "artifact_digest": normalized_digest,
             "digest_algorithm": "SHA256",
         },
         "governance": {
