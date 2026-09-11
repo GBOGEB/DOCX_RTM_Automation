@@ -1,12 +1,10 @@
 config_id: QPS_TRIAGE_PARSER_CONFIG
-version: 0.6.0
+version: 0.7.0
 status: draft
 purpose: >
-  Wire the ADR_OCD taxonomy and QPS triage applicability model into parser-side
-  enrichment, persist QPS triage outputs, generate downstream dashboard/report
-  artifacts, link them into the canonical dashboard, orchestrate the full chain,
-  bind generated evidence to an exact Git SHA and CI run, and bind the resulting
-  bundle to the external GitHub Actions artifact object that stores it.
+  Wire ADR_OCD/QPS triage through parser enrichment, persisted exports,
+  dashboard/report generation, exact-SHA evidence governance, external CI
+  artifact registry binding, and downstream release/baseline consumption.
 
 qps_triage:
   enabled: true
@@ -53,65 +51,30 @@ outputs:
     - qps_triage_governed_receipt.json
     - SHA256SUMS
     - qps_triage_ci_registry_receipt.json
+    - qps_release_baseline_evidence.json
 
 waves:
-  wave_2a:
-    name: parser_configuration_wiring
-    status: implemented_by_parser_qps_triage_bridge
-  wave_2b:
-    name: triage_item_emission
-    status: implemented_by_QPSTriageBridge.emit_triage_items
-  wave_3:
-    name: traceability_export_rows
-    status: implemented_by_QPSTriageBridge.export_traceability_rows
-  wave_4a:
-    name: optional_engine_integration
-    status: implemented_by_EnhancedParserEngine_parse_document_flag
-  wave_4b:
-    name: export_persistence_and_downstream_index
-    status: implemented_by_EnhancedParserEngine_export_enhanced_analysis
-  wave_5:
-    name: downstream_report_generation
-    status: implemented_by_QPSTriageDashboardGenerator
-  wave_6:
-    name: canonical_dashboard_link
-    status: implemented_by_canonical_dashboard_collect_stats
-  wave_7:
-    name: one_command_pipeline_and_ci_archive
-    status: superseded_by_wave_8_governed_pipeline
+  wave_2a: {name: parser_configuration_wiring, status: implemented_by_parser_qps_triage_bridge}
+  wave_2b: {name: triage_item_emission, status: implemented_by_QPSTriageBridge.emit_triage_items}
+  wave_3: {name: traceability_export_rows, status: implemented_by_QPSTriageBridge.export_traceability_rows}
+  wave_4a: {name: optional_engine_integration, status: implemented_by_EnhancedParserEngine_parse_document_flag}
+  wave_4b: {name: export_persistence_and_downstream_index, status: implemented_by_EnhancedParserEngine_export_enhanced_analysis}
+  wave_5: {name: downstream_report_generation, status: implemented_by_QPSTriageDashboardGenerator}
+  wave_6: {name: canonical_dashboard_link, status: implemented_by_canonical_dashboard_collect_stats}
+  wave_7: {name: one_command_pipeline_and_ci_archive, status: superseded_by_wave_8_governed_pipeline}
   wave_8:
     name: exact_sha_evidence_governance
     status: implemented_and_runtime_verified
-    command: >
-      python scripts/run_qps_triage_pipeline.py --input-analysis
-      tests/fixtures/qps_triage_pipeline_input.json --output-dir
-      .artifacts/qps-triage-wave8
-    verification_command: >
-      python scripts/verify_qps_triage_receipt.py .artifacts/qps-triage-wave8
-    identity_fields:
-      - repository
-      - git_sha
-      - checkout_sha
-      - git_ref
-      - git_head_ref
-      - workflow
-      - workflow_ref
-      - run_id
-      - run_number
-      - run_attempt
-      - job
-      - actor
     hash_algorithm: SHA256
     parity_rule: >
-      Every regular pipeline payload artifact shall appear exactly once in the
-      evidence manifest with matching path, byte size, and SHA256. The governed
-      receipt shall bind the pipeline manifest and evidence manifest by SHA256.
-      SHA256SUMS shall cover every bundle file except itself.
+      Every regular pipeline payload artifact appears exactly once in the
+      evidence manifest with matching path, byte size and SHA256; the governed
+      receipt binds the pipeline/evidence manifests and SHA256SUMS covers the bundle.
     ci_artifact: qps-triage-wave8-${exact_head_sha}
     retention_days: 14
   wave_9:
     name: external_ci_artifact_registry_receipt
-    status: implemented_pending_runtime_verification
+    status: implemented_and_runtime_verified
     producer: scripts/create_qps_triage_ci_registry_receipt.py
     source_artifact: qps-triage-wave8-${exact_head_sha}
     binds:
@@ -123,9 +86,26 @@ waves:
       - workflow_run_id
       - qps_triage_governed_receipt_sha256
       - SHA256SUMS_sha256
-    provider_digest: actions/upload-artifact@v4.artifact-digest
     registry_artifact: qps-triage-wave9-registry-${exact_head_sha}
-    victory_condition: >
-      Wave 8 bundle upload PASS, provider artifact id/url/digest returned,
-      registry receipt generated from those observed outputs, and the registry
-      receipt itself uploaded successfully for the same exact head SHA.
+  wave_10:
+    name: registry_receipt_consumption
+    status: implemented_pending_runtime_verification
+    consumer: src/dashboard/qps_receipt_consumer.py
+    dashboard: src/dashboard/canonical_dashboard.py
+    decision_output: qps_release_baseline_evidence.json
+    decision_rule:
+      ACCEPT: >
+        Registry receipt exists, status is PASS, observed Git SHA equals the
+        explicitly expected 40-character Git SHA, external artifact binding is
+        present, and provider SHA256 is valid.
+      DEFER: >
+        Receipt is absent, invalid, non-PASS, stale/mismatched, lacks the exact
+        expected SHA, lacks external artifact binding, or lacks a valid provider digest.
+    ci_command: >
+      python src/dashboard/qps_receipt_consumer.py
+      .artifacts/qps-triage-wave9/qps_triage_ci_registry_receipt.json
+      --expected-git-sha ${exact_head_sha}
+      --output .artifacts/qps-triage-wave10/qps_release_baseline_evidence.json
+      --require-accept
+    ci_artifact: qps-triage-wave10-consumption-${exact_head_sha}
+    retention_days: 14
