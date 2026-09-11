@@ -7,6 +7,9 @@ import sys
 REPO_ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = REPO_ROOT / "tests" / "fixtures" / "qps_triage_pipeline_input.json"
 
+sys.path.insert(0, str(REPO_ROOT))
+from scripts.create_qps_triage_ci_registry_receipt import build_registry_receipt
+
 
 def run_pipeline(tmp_path: Path):
     return subprocess.run(
@@ -103,3 +106,33 @@ def test_wave8_verifier_detects_payload_tampering(tmp_path):
     verify = run_verifier(tmp_path)
     assert verify.returncode == 1
     assert "mismatch" in verify.stdout.lower()
+
+
+def test_wave9_registry_receipt_binds_external_artifact_object(tmp_path):
+    governed = {
+        "receipt_id": "QPS-TRIAGE-W8-0123456789ab",
+        "identity": {
+            "git_sha": "0123456789abcdef0123456789abcdef01234567",
+            "run_id": "34562560294",
+            "run_number": "37",
+            "workflow": "ADR_OCD Bridge Validation",
+        },
+    }
+    (tmp_path / "qps_triage_governed_receipt.json").write_text(
+        json.dumps(governed), encoding="utf-8"
+    )
+    (tmp_path / "SHA256SUMS").write_text("abc  example.json\n", encoding="utf-8")
+
+    receipt = build_registry_receipt(
+        tmp_path,
+        artifact_id="10184837991",
+        artifact_url="https://github.com/GBOGEB/DOCX_RTM_Automation/actions/runs/34562560294/artifacts/10184837991",
+        artifact_digest="sha256:" + "a" * 64,
+        artifact_name="qps-triage-wave8-0123456789abcdef0123456789abcdef01234567",
+    )
+
+    assert receipt["status"] == "PASS"
+    assert receipt["github_artifact"]["artifact_id"] == "10184837991"
+    assert receipt["github_artifact"]["artifact_digest"] == "sha256:" + "a" * 64
+    assert receipt["governance"]["external_artifact_object_bound"] is True
+    assert receipt["identity"]["git_sha"] == governed["identity"]["git_sha"]
