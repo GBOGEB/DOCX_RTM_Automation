@@ -3,11 +3,13 @@
 Canonical Artefacts Dashboard.
 
 Reads canonical/artefacts/ JSON files and canonical/LOCK.json and renders
-a summary to the terminal (plain text or rich if available).
+a summary to the terminal (plain text or rich if available). Optionally links a
+QPS triage dashboard JSON artifact into the canonical dashboard index.
 
 Usage:
     python src/dashboard/canonical_dashboard.py
-    python src/dashboard/canonical_dashboard.py --json   # machine-readable
+    python src/dashboard/canonical_dashboard.py --json
+    python src/dashboard/canonical_dashboard.py --qps-triage-dashboard output/qps_triage_dashboard.json
 """
 
 from __future__ import annotations
@@ -58,7 +60,41 @@ def _latest_artefacts() -> dict[str, Path]:
     return {name: sorted(versions)[-1][1] for name, versions in found.items()}
 
 
-def collect_stats() -> dict:
+def _relative_or_absolute(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(_REPO_ROOT))
+    except ValueError:
+        return str(path)
+
+
+def _load_qps_triage_dashboard(qps_triage_dashboard_path: str | Path | None) -> dict:
+    if not qps_triage_dashboard_path:
+        return {"present": False}
+    path = Path(qps_triage_dashboard_path)
+    data = _load_json(path)
+    if not isinstance(data, dict):
+        return {
+            "present": False,
+            "path": _relative_or_absolute(path),
+            "status": "missing_or_invalid",
+        }
+
+    summary = data.get("summary", {}) if isinstance(data.get("summary", {}), dict) else {}
+    counts = data.get("counts", {}) if isinstance(data.get("counts", {}), dict) else {}
+    return {
+        "present": True,
+        "path": _relative_or_absolute(path),
+        "generated_at": data.get("generated_at", "—"),
+        "triage_item_count": summary.get("triage_item_count", 0),
+        "traceability_row_count": summary.get("traceability_row_count", 0),
+        "rtm_row_count": summary.get("rtm_row_count", 0),
+        "dtm_row_count": summary.get("dtm_row_count", 0),
+        "by_disposition": counts.get("by_disposition", {}),
+        "by_relation": counts.get("by_relation", {}),
+    }
+
+
+def collect_stats(qps_triage_dashboard_path: str | Path | None = None) -> dict:
     lock = _load_json(_LOCK_PATH) or {}
     latest = _latest_artefacts()
     manifest_data = _load_json(_ARTEFACTS_DIR / "extraction_manifest.json") or {}
@@ -67,6 +103,7 @@ def collect_stats() -> dict:
         "lock_tag": lock.get("tag", "not locked"),
         "locked_at": lock.get("locked_at", "—")[:10] if lock.get("locked_at") else "—",
         "artefacts": {},
+        "qps_triage_dashboard": _load_qps_triage_dashboard(qps_triage_dashboard_path),
     }
 
     for name, path in latest.items():
@@ -135,6 +172,12 @@ def render_plain(stats: dict) -> None:
     print(f"  Extract runs: {stats['extraction_runs']}")
     if stats["coverage_pct"] is not None:
         print(f"  RTM Coverage: {stats['coverage_pct']}%")
+    qps = stats.get("qps_triage_dashboard", {})
+    if qps.get("present"):
+        print(
+            f"  QPS Triage: {qps.get('triage_item_count', 0)} items | "
+            f"RTM {qps.get('rtm_row_count', 0)} | DTM {qps.get('dtm_row_count', 0)}"
+        )
     print()
     print(f"  {'Artefact':<30} {'Version':<25} {'Records':>8}  {'Locked':>6}")
     print("  " + "-" * 75)
@@ -148,6 +191,14 @@ def render_plain(stats: dict) -> None:
 
 def render_rich(stats: dict) -> None:
     console = Console()
+    qps = stats.get("qps_triage_dashboard", {})
+    qps_suffix = ""
+    if qps.get("present"):
+        qps_suffix = (
+            f"   QPS Triage: [green]{qps.get('triage_item_count', 0)}[/green] items "
+            f"RTM [green]{qps.get('rtm_row_count', 0)}[/green] "
+            f"DTM [green]{qps.get('dtm_row_count', 0)}[/green]"
+        )
     console.print(
         Panel.fit(
             f"[bold cyan]Canonical Artefacts Dashboard[/bold cyan]\n"
@@ -158,7 +209,8 @@ def render_rich(stats: dict) -> None:
                 f"   RTM Coverage: [green]{stats['coverage_pct']}%[/green]"
                 if stats["coverage_pct"] is not None
                 else ""
-            ),
+            )
+            + qps_suffix,
             border_style="cyan",
         )
     )
@@ -196,9 +248,14 @@ def main() -> int:
 
     parser = argparse.ArgumentParser(description="Canonical artefacts dashboard")
     parser.add_argument("--json", action="store_true", help="Output as JSON")
+    parser.add_argument(
+        "--qps-triage-dashboard",
+        default=None,
+        help="Optional path to qps_triage_dashboard.json for QPS triage index linking",
+    )
     args = parser.parse_args()
 
-    stats = collect_stats()
+    stats = collect_stats(args.qps_triage_dashboard)
 
     if args.json:
         render_json_output(stats)
