@@ -1,88 +1,124 @@
 # ADR_OCD Drop-In Engineering Handoff
 
-Use this text at the start of the next engineering, coding, or chat-agent session.
+Status: **READY_TO_EDIT candidate — Wave 9 runtime gate pending current-head CI**
+
+Use this text at the start of the next engineering, coding, review, or chat-agent session.
 
 ---
 
-You are continuing work on GBOGEB/DOCX_RTM_Automation, active draft PR 17, branch feature/ADR_OCD-qps-procurement-bridge.
+You are continuing work on `GBOGEB/DOCX_RTM_Automation`.
 
-The objective is to keep ADR and OCD inside DOCX_RTM_Automation while aligning outward-facing procurement terminology with QPS Requirements rather than RFO.
+Active implementation is PR **#43**, branch `feature/qps-triage-wave9-ci-registry-receipt`, based on `main` after merged Wave 8 PR #42.
 
-Important terminology rules:
+## Objective
 
-1. Use QPS Requirements as the preferred outward-facing term for the main procurement-facing technical requirements used by Applicants to prepare a Fixed Price Offer.
-2. Treat RFO as an internal legacy alias only.
-3. Use Invitation to Tender only where describing the procurement package or procedure.
-4. Use Corrigendum for formal amendments or corrections after publication.
-5. Use Negotiation Stage for the intermediate procurement alignment rounds.
-6. Reuse glossary/GLOSSARY.yaml before inventing new terms.
+Keep ADR and OCD inside `DOCX_RTM_Automation` while providing a governed QPS Requirements pipeline from parser output through RTM/DTM traceability, dashboards, exact-SHA evidence receipts, and externally registered CI artifacts.
 
-Current files in the PR:
+## Terminology controls
 
-- glossary/GLOSSARY.yaml
-- schemas/glossary.schema.json
-- schemas/adr_ocd_bridge_manifest.schema.json
-- scripts/validate_adr_ocd_bridge.py
-- tests/test_adr_ocd_bridge_validation.py
-- federation/ADR_OCD/README.md
-- federation/ADR_OCD/bridge_manifest.yaml
-- federation/ADR_OCD/taxonomy.yaml
-- federation/ADR_OCD/CHANGELOG.md
-- federation/ADR_OCD/PR_ACTIVE_MANIFEST.md
-- federation/ADR_OCD/SESSION_REPLAY.md
-- federation/ADR_OCD/DROP_IN_HANDOFF.md
+1. Use **QPS Requirements** as the preferred outward-facing term for procurement-facing technical requirements used by Applicants to prepare a Fixed Price Offer.
+2. Treat **RFO** as an internal legacy alias only.
+3. Use **Invitation to Tender** only for the procurement package or procedure.
+4. Use **Corrigendum** for formal amendments/corrections after publication.
+5. Use **Negotiation Stage** for intermediate procurement alignment rounds.
+6. Reuse `glossary/GLOSSARY.yaml` before inventing new terms.
 
-Current implementation state:
+## Implemented waves
 
-- Governance bridge exists.
-- Glossary exists.
-- Bridge manifest exists.
-- Session replay exists.
-- Active PR manifest exists.
-- Drop-in handoff exists.
-- Wave 1 schema validation is implemented.
-- Parser taxonomy bridge has started through taxonomy.yaml.
-- No invasive parser, visualization, orchestration, docs/section9, or config changes have been made yet.
+- Wave 0 — ADR/OCD governance bridge: COMPLETE.
+- Wave 1 — schema validation and focused tests: COMPLETE.
+- Wave 2 — parser taxonomy/config wiring and triage-item emission: COMPLETE.
+- Wave 3 — QPS triage traceability rows: COMPLETE.
+- Wave 4 — parser-engine integration plus persistent RTM/DTM exports: COMPLETE.
+- Wave 5 — QPS triage JSON/Markdown/HTML report generation: COMPLETE.
+- Wave 6 — canonical dashboard link: COMPLETE.
+- Wave 7 — one-command parser -> export -> QPS dashboard -> canonical dashboard pipeline plus CI archive: COMPLETE/SUPERSEDED by governed pipeline.
+- Wave 8 — SHA256 evidence governance, exact source SHA/run identity, parity verifier, governed receipt, `SHA256SUMS`: COMPLETE and merged in PR #42.
+- Wave 9 — bind the Wave 8 governed bundle to the actual GitHub Actions artifact object and provider digest: IMPLEMENTED; current-head runtime verification is the remaining gate.
 
-Validation commands:
+## Current one-command pipeline
 
-python scripts/validate_adr_ocd_bridge.py
-pytest tests/test_adr_ocd_bridge_validation.py
+```bash
+python scripts/run_qps_triage_pipeline.py \
+  --input-analysis tests/fixtures/qps_triage_pipeline_input.json \
+  --output-dir .artifacts/qps-triage-wave8
 
-Next low-hanging technical implementation:
+python scripts/verify_qps_triage_receipt.py \
+  .artifacts/qps-triage-wave8
+```
 
-1. Connect federation/ADR_OCD/taxonomy.yaml to the existing parser configuration or extraction taxonomy.
-2. Keep the parser change narrow and reversible.
-3. Add RTM and DTM export placeholders for QPS to ADR to OCD traceability edges.
-4. Add negotiation-stage and final-corrigendum release manifest templates.
+The Wave 8 bundle contains parser/export outputs, QPS triage dashboard artifacts, canonical dashboard JSON, evidence manifest, governed receipt, and `SHA256SUMS`.
 
-Three moves forward:
+## Wave 9 terminal registry receipt
 
-Move 1: Parser taxonomy bridge.
-Connect taxonomy.yaml to parser extraction configuration so QPS, ADR, OCD, Corrigendum, Negotiation Stage, Fixed Price Offer, Applicant, RTM, and DTM can be recognized consistently.
+After `actions/upload-artifact@v4` uploads the Wave 8 bundle, CI passes the observed provider values to:
 
-Move 2: Traceability export bridge.
-Add a first QPS to ADR to OCD traceability export model that can later feed RTM and DTM generation.
+```bash
+python scripts/create_qps_triage_ci_registry_receipt.py \
+  .artifacts/qps-triage-wave8 \
+  --artifact-id <provider-artifact-id> \
+  --artifact-url <provider-artifact-url> \
+  --artifact-digest <provider-sha256> \
+  --artifact-name <artifact-name> \
+  --output .artifacts/qps-triage-wave9/qps_triage_ci_registry_receipt.json
+```
 
-Move 3: Corrigendum and negotiation release bridge.
-Add release manifests for publication baseline, negotiation stage 1, negotiation stage 2, final Corrigendum, and contract baseline.
+The receipt normalizes both raw 64-hex `actions/upload-artifact` digest output and `sha256:<64-hex>` REST-style representation to canonical `sha256:<64-hex>`.
 
-Major waves:
+## Evidence chain
 
-Wave 0: Governance bridge bootstrap. Implemented.
-Wave 1: Schema validation and tests. Implemented.
-Wave 2: Parser taxonomy hooks. Started through taxonomy.yaml, not yet wired to parser.
-Wave 3: RTM and DTM traceability expansion.
-Wave 4: DOCX rendering for ADR and OCD.
-Wave 5: Negotiation-stage and Corrigendum release manifests.
-Wave 6: Final contract-baseline packaging and dashboard reporting.
+`exact source SHA -> parser/export -> dashboard -> Wave 8 evidence manifest -> governed receipt -> SHA256SUMS -> verified Wave 8 CI bundle -> provider artifact ID/URL/SHA256 -> Wave 9 registry receipt -> registry receipt CI artifact`
 
-Engineering rule:
+Important distinction:
 
-First in, first to complete. Complete the easiest durable files first, especially glossary, manifest, schema, validation, taxonomy, and tests. Avoid broad refactors until the bridge vocabulary and traceability objects are stable.
+- `git_sha` = exact source/head SHA being evidenced.
+- `checkout_sha` = GitHub pull-request merge checkout SHA when CI runs on a PR merge ref.
 
-Chat-agent handling rule:
+Do not substitute one for the other.
 
-When asked about RFO, respond that RFO is a legacy/internal shorthand. For outward-facing procurement content, use QPS Requirements as the standard term unless the context specifically calls for Invitation to Tender, Corrigendum, Applicant, Tenderer, Bidder, Fixed Price Offer, or Negotiation Stage.
+## Current runtime evidence
+
+Wave 8 PR #42 passed Python CI and ADR_OCD Bridge Validation and was merged. Its focused workflow executed the parser pipeline, independent hash/parity verifier, and artifact upload successfully.
+
+For Wave 9 PR #43, the first observed run passed all Wave 8 stages and uploaded the Wave 8 bundle, then failed only because `actions/upload-artifact@v4` returned its `artifact-digest` as raw 64-hex while the first registry-receipt implementation required a `sha256:` prefix. That format mismatch has been repaired and regression coverage added.
+
+## READY_TO_EDIT gate
+
+Promote this handoff/PR to **READY_TO_EDIT** only when the current PR head demonstrates:
+
+1. Python CI PASS.
+2. ADR_OCD Bridge Validation PASS.
+3. Wave 8 pipeline PASS.
+4. Wave 8 independent hash/parity verification PASS.
+5. Wave 8 artifact upload PASS.
+6. Wave 9 registry receipt creation PASS using provider-returned ID, URL, and digest.
+7. Wave 9 registry receipt artifact upload PASS.
+8. PR remains mergeable and no unresolved PR-induced red gate exists.
+
+Until those are observed on the current head, use `READY_TO_EDIT candidate`, not a false completed claim.
+
+## Files central to continuation
+
+- `glossary/GLOSSARY.yaml`
+- `federation/ADR_OCD/bridge_manifest.yaml`
+- `federation/ADR_OCD/taxonomy.yaml`
+- `federation/ADR_OCD/qps_triage_applicability.yaml`
+- `configs/qps_triage_parser_config.yaml`
+- `parser/qps_triage_bridge.py`
+- `parser/engine.py`
+- `scripts/run_qps_triage_pipeline.py`
+- `scripts/verify_qps_triage_receipt.py`
+- `scripts/create_qps_triage_ci_registry_receipt.py`
+- `src/dashboard/qps_triage_dashboard.py`
+- `src/dashboard/canonical_dashboard.py`
+- `tests/test_qps_triage_bridge.py`
+- `tests/test_qps_triage_pipeline.py`
+- `.github/workflows/adr_ocd_bridge_validation.yml`
+
+## Next edit surface after Wave 9 closes
+
+Do not add another evidence framework layer merely because Wave 9 exists. The next useful edit should consume the governed receipt: expose receipt/registry status in the canonical dashboard and/or release/contract-baseline manifest, with explicit ACCEPT / DEFER when an exact-SHA receipt is present/missing.
+
+Engineering rule: recurse on the first observed red gate; repair the smallest causal defect; rerun; promote only from observed evidence.
 
 ---

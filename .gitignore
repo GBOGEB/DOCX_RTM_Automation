@@ -71,6 +71,9 @@ output/
 temp/
 cache/
 
+# MIP generated evidence is private by default
+MIP/receipts/
+
 # Sensitive files
 config.ini
 secrets.json
@@ -152,6 +155,3 @@ site/
 
 # Temporary refactoring files
 temp_*
-
-# MIP generated receipts (local/private evidence)
-MIP/receipts/

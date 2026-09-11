@@ -1,0 +1,17 @@
+{
+  "schema": "gbogeb-level1-ssot/v1",
+  "repo": "GBOGEB/DOCX_RTM_Automation",
+  "role": "SOURCE_EXTRACTION_RTM_WORKER",
+  "default_branch": "main",
+  "existing_runtime_refs": ["parser/engine.py", "pipeline/main.py", "orchestration_ts/server.ts", "AGENT_ENTRYPOINT.md"],
+  "inputs": ["DOCX", "DOC", "PDF", "TXT", "RTM/OTC/DEL source material"],
+  "outputs": ["extraction objects", "RTM mappings", "execution receipts", "source/output digests"],
+  "authority": {
+    "may": ["extract", "map", "validate local execution", "emit exact-SHA receipts"],
+    "must_not": ["promote QPS engineering truth", "promote compliance", "replace original source with derived extraction"]
+  },
+  "federation_targets": ["GBOGEB/pipeline-automation-hub", "GBOGEB/CODEX", "GBOGEB/ABACUS", "GBOGEB/cryoplant-project"],
+  "status": "PC3_LEVEL1_CANDIDATE",
+  "promotion_requires": "12/12 census gates and green exact-head Level 1 MIP workflow",
+  "authority_transfer": false
+}

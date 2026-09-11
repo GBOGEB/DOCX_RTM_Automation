@@ -1,9 +1,12 @@
 metadata:
   glossary_id: GLOSSARY-QPS-ADR-OCD
   title: Outward-Facing Procurement and Document Glossary
-  version: 0.1.0
-  status: draft
+  version: 0.2.0
+  status: controlled_projection_candidate
   owner: GBOGEB
+  qps_authority_source:
+    repo: GBOGEB/cryoplant-project
+    artifact: ocd-adr/20_canonical/control/QPS_GLOBAL_ADR_OCD_SSOT_v1.json
   scope:
     - QPS Requirements
     - ADR
@@ -11,8 +14,8 @@ metadata:
     - DOCX_RTM_Automation
   usage_rule: >
     Prefer an existing standard_term from this glossary before introducing a new term.
-    Internal aliases may be retained for migration and traceability, but outward-facing
-    procurement documents should use the standard_term.
+    Internal aliases may be retained for migration and traceability, but QPS engineering
+    terminology shall resolve to the child-authoritative QPS ADR/OCD registry.
 
 terms:
   - term_id: TERM-QPS-001
@@ -127,37 +130,47 @@ terms:
       have been agreed or required.
 
   - term_id: TERM-ADR-001
-    standard_term: Architecture Design Report
+    standard_term: Architecture Decision Record
     aliases:
       - ADR
+      - Architecture Design Report
       - architecture report
-    status: preferred
+    status: preferred_qps
     outward_facing: false
     definition: >
-      Controlled design-rationale document linking QPS Requirements to system architecture,
-      design decisions, interfaces, constraints, and verification evidence.
+      Controlled architecture decision record linking governed QPS evidence to a specific
+      decision, rationale, alternatives, consequences, status, approval boundary, and lineage.
+      A set of ADRs is indexed by the child-authoritative QPS ADR register.
     use_in:
       - ADR
       - RTM
       - lineage
+    notes: >
+      Architecture Design Report is retained only as a legacy DOCX bridge alias and is not
+      the canonical expansion of ADR in the QPS child authority model.
 
   - term_id: TERM-OCD-001
-    standard_term: Operational Concept Document
+    standard_term: Operational Concept Description
     aliases:
       - OCD
+      - Operational Concept Document
       - operational concept
       - concept of operations
       - CONOPS
-    status: preferred
+    status: preferred_qps
     outward_facing: false
     definition: >
-      Controlled operational document linking QPS Requirements and ADR architecture
-      to roles, modes, scenarios, workflows, constraints, diagnostics, training, and evidence.
+      Controlled operational concept description linking QPS Requirements and architecture
+      decisions to roles, modes, scenarios, workflows, constraints, diagnostics, training,
+      interfaces, abnormal-event handling, and evidence.
     use_in:
       - OCD
       - RTM
       - OTC
       - lineage
+    notes: >
+      Operational Concept Document remains a compatibility alias; the current child product
+      is the QPS Operational Concept Description.
 
   - term_id: TERM-RTM-001
     standard_term: Requirements Traceability Matrix

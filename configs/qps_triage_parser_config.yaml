@@ -1,0 +1,131 @@
+config_id: QPS_TRIAGE_PARSER_CONFIG
+version: 0.6.0
+status: draft
+purpose: >
+  Wire the ADR_OCD taxonomy and QPS triage applicability model into parser-side
+  enrichment, persist QPS triage outputs, generate downstream dashboard/report
+  artifacts, link them into the canonical dashboard, orchestrate the full chain,
+  bind generated evidence to an exact Git SHA and CI run, and bind the resulting
+  bundle to the external GitHub Actions artifact object that stores it.
+
+qps_triage:
+  enabled: true
+  taxonomy_path: federation/ADR_OCD/taxonomy.yaml
+  applicability_path: federation/ADR_OCD/qps_triage_applicability.yaml
+  fail_on_error: true
+
+inputs:
+  taxonomy: federation/ADR_OCD/taxonomy.yaml
+  applicability: federation/ADR_OCD/qps_triage_applicability.yaml
+  enhanced_parser_keys:
+    rtm: enhanced_rtm_elements
+    otc: enhanced_otc_elements
+    dtm: enhanced_del_elements
+
+outputs:
+  triage_items_key: qps_triage_items
+  traceability_rows_key: qps_triage_traceability_rows
+  json_export_name: qps_triage_enriched_analysis.json
+  traceability_csv_name: qps_triage_traceability_rows.csv
+  engine_export_files:
+    - enhanced_analysis.json
+    - enhanced_rtm_elements.json
+    - enhanced_otc_elements.json
+    - enhanced_del_elements.json
+    - relationship_mapping.json
+    - recursive_mapping.json
+    - parsing_statistics.json
+    - qps_triage_items.json
+    - qps_triage_traceability_rows.json
+    - qps_triage_traceability_rows.csv
+    - qps_triage_downstream_index.json
+    - qps_triage_rtm_rows.csv
+    - qps_triage_dtm_rows.csv
+    - export_manifest.json
+  dashboard_files:
+    - qps_triage_dashboard.json
+    - qps_triage_dashboard.md
+    - qps_triage_dashboard.html
+    - canonical_dashboard.json
+    - qps_triage_pipeline_manifest.json
+  governance_files:
+    - qps_triage_evidence_manifest.json
+    - qps_triage_governed_receipt.json
+    - SHA256SUMS
+    - qps_triage_ci_registry_receipt.json
+
+waves:
+  wave_2a:
+    name: parser_configuration_wiring
+    status: implemented_by_parser_qps_triage_bridge
+  wave_2b:
+    name: triage_item_emission
+    status: implemented_by_QPSTriageBridge.emit_triage_items
+  wave_3:
+    name: traceability_export_rows
+    status: implemented_by_QPSTriageBridge.export_traceability_rows
+  wave_4a:
+    name: optional_engine_integration
+    status: implemented_by_EnhancedParserEngine_parse_document_flag
+  wave_4b:
+    name: export_persistence_and_downstream_index
+    status: implemented_by_EnhancedParserEngine_export_enhanced_analysis
+  wave_5:
+    name: downstream_report_generation
+    status: implemented_by_QPSTriageDashboardGenerator
+  wave_6:
+    name: canonical_dashboard_link
+    status: implemented_by_canonical_dashboard_collect_stats
+  wave_7:
+    name: one_command_pipeline_and_ci_archive
+    status: superseded_by_wave_8_governed_pipeline
+  wave_8:
+    name: exact_sha_evidence_governance
+    status: implemented_and_runtime_verified
+    command: >
+      python scripts/run_qps_triage_pipeline.py --input-analysis
+      tests/fixtures/qps_triage_pipeline_input.json --output-dir
+      .artifacts/qps-triage-wave8
+    verification_command: >
+      python scripts/verify_qps_triage_receipt.py .artifacts/qps-triage-wave8
+    identity_fields:
+      - repository
+      - git_sha
+      - checkout_sha
+      - git_ref
+      - git_head_ref
+      - workflow
+      - workflow_ref
+      - run_id
+      - run_number
+      - run_attempt
+      - job
+      - actor
+    hash_algorithm: SHA256
+    parity_rule: >
+      Every regular pipeline payload artifact shall appear exactly once in the
+      evidence manifest with matching path, byte size, and SHA256. The governed
+      receipt shall bind the pipeline manifest and evidence manifest by SHA256.
+      SHA256SUMS shall cover every bundle file except itself.
+    ci_artifact: qps-triage-wave8-${exact_head_sha}
+    retention_days: 14
+  wave_9:
+    name: external_ci_artifact_registry_receipt
+    status: implemented_pending_runtime_verification
+    producer: scripts/create_qps_triage_ci_registry_receipt.py
+    source_artifact: qps-triage-wave8-${exact_head_sha}
+    binds:
+      - artifact_id
+      - artifact_name
+      - artifact_url
+      - artifact_digest
+      - exact_head_sha
+      - workflow_run_id
+      - qps_triage_governed_receipt_sha256
+      - SHA256SUMS_sha256
+    provider_digest: actions/upload-artifact@v4.artifact-digest
+    registry_artifact: qps-triage-wave9-registry-${exact_head_sha}
+    victory_condition: >
+      Wave 8 bundle upload PASS, provider artifact id/url/digest returned,
+      registry receipt generated from those observed outputs, and the registry
+      receipt itself uploaded successfully for the same exact head SHA.

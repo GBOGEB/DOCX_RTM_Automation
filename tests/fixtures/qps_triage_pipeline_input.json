@@ -1,0 +1,33 @@
+{
+  "sections": [],
+  "rtm_requirements": [
+    {
+      "id": "QPS-REQ-001",
+      "description": "The QPS Requirements shall define an architecture decision and Corrigendum impact for the fixed price contract.",
+      "priority": "High",
+      "verification_method": "Review",
+      "acceptance_criteria": "Traceability row exists",
+      "source_section": "1.1 - QPS"
+    }
+  ],
+  "otc_elements": [
+    {
+      "id": "OCD-OTC-001",
+      "name": "Operational scenario",
+      "objective": "Operational scenario workflow shall verify training and maintenance response.",
+      "preconditions": "QPS baseline exists",
+      "test_steps": ["Review scenario"],
+      "expected_results": "Scenario is traceable",
+      "linked_requirements": ["QPS-REQ-001"]
+    }
+  ],
+  "del_deliverables": [
+    {
+      "id": "DTM-DEL-001",
+      "name": "Traceability package",
+      "description": "Deliverable traceability evidence package is missing source confirmation.",
+      "type": "DTM",
+      "dependencies": ["QPS-REQ-001"]
+    }
+  ]
+}
