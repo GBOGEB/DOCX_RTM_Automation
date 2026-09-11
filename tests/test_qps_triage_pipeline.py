@@ -108,7 +108,7 @@ def test_wave8_verifier_detects_payload_tampering(tmp_path):
     assert "mismatch" in verify.stdout.lower()
 
 
-def test_wave9_registry_receipt_binds_external_artifact_object(tmp_path):
+def _write_wave9_source_receipt(tmp_path: Path):
     governed = {
         "receipt_id": "QPS-TRIAGE-W8-0123456789ab",
         "identity": {
@@ -122,6 +122,11 @@ def test_wave9_registry_receipt_binds_external_artifact_object(tmp_path):
         json.dumps(governed), encoding="utf-8"
     )
     (tmp_path / "SHA256SUMS").write_text("abc  example.json\n", encoding="utf-8")
+    return governed
+
+
+def test_wave9_registry_receipt_binds_external_artifact_object(tmp_path):
+    governed = _write_wave9_source_receipt(tmp_path)
 
     receipt = build_registry_receipt(
         tmp_path,
@@ -136,3 +141,19 @@ def test_wave9_registry_receipt_binds_external_artifact_object(tmp_path):
     assert receipt["github_artifact"]["artifact_digest"] == "sha256:" + "a" * 64
     assert receipt["governance"]["external_artifact_object_bound"] is True
     assert receipt["identity"]["git_sha"] == governed["identity"]["git_sha"]
+
+
+def test_wave9_registry_receipt_normalizes_raw_upload_artifact_digest(tmp_path):
+    _write_wave9_source_receipt(tmp_path)
+
+    receipt = build_registry_receipt(
+        tmp_path,
+        artifact_id="10186575972",
+        artifact_url="https://github.com/GBOGEB/DOCX_RTM_Automation/actions/runs/34567601222/artifacts/10186575972",
+        artifact_digest="e6129142f68301ebf2b69fa9392b97fb8c1808e6ccecd6d01052c507cb2f3492",
+        artifact_name="qps-triage-wave8-0123456789abcdef0123456789abcdef01234567",
+    )
+
+    assert receipt["github_artifact"]["artifact_digest"] == (
+        "sha256:e6129142f68301ebf2b69fa9392b97fb8c1808e6ccecd6d01052c507cb2f3492"
+    )
