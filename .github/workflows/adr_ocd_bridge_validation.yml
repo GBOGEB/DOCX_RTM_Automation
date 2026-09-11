@@ -4,14 +4,13 @@ on:
   pull_request:
     paths:
       - 'glossary/GLOSSARY.yaml'
-      - 'schemas/glossary.schema.json'
-      - 'schemas/adr_ocd_bridge_manifest.schema.json'
+      - 'schemas/**'
       - 'federation/ADR_OCD/**'
       - 'configs/qps_triage_parser_config.yaml'
-      - 'parser/engine.py'
-      - 'parser/qps_triage_bridge.py'
+      - 'parser/**'
       - 'src/dashboard/canonical_dashboard.py'
       - 'src/dashboard/qps_triage_dashboard.py'
+      - 'src/dashboard/qps_receipt_consumer.py'
       - 'scripts/validate_adr_ocd_bridge.py'
       - 'scripts/export_qps_triage_traceability.py'
       - 'scripts/run_qps_triage_pipeline.py'
@@ -21,6 +20,7 @@ on:
       - 'tests/test_adr_ocd_bridge_validation.py'
       - 'tests/test_qps_triage_bridge.py'
       - 'tests/test_qps_triage_pipeline.py'
+      - 'tests/test_qps_receipt_consumer.py'
       - '.github/workflows/adr_ocd_bridge_validation.yml'
   push:
     branches:
@@ -31,16 +31,16 @@ on:
       - feature/qps-triage-export-persistence
       - feature/qps-triage-wave8-evidence-governance
       - feature/qps-triage-wave9-ci-registry-receipt
+      - feature/qps-triage-wave10-receipt-consumption
     paths:
       - 'glossary/GLOSSARY.yaml'
-      - 'schemas/glossary.schema.json'
-      - 'schemas/adr_ocd_bridge_manifest.schema.json'
+      - 'schemas/**'
       - 'federation/ADR_OCD/**'
       - 'configs/qps_triage_parser_config.yaml'
-      - 'parser/engine.py'
-      - 'parser/qps_triage_bridge.py'
+      - 'parser/**'
       - 'src/dashboard/canonical_dashboard.py'
       - 'src/dashboard/qps_triage_dashboard.py'
+      - 'src/dashboard/qps_receipt_consumer.py'
       - 'scripts/validate_adr_ocd_bridge.py'
       - 'scripts/export_qps_triage_traceability.py'
       - 'scripts/run_qps_triage_pipeline.py'
@@ -50,6 +50,7 @@ on:
       - 'tests/test_adr_ocd_bridge_validation.py'
       - 'tests/test_qps_triage_bridge.py'
       - 'tests/test_qps_triage_pipeline.py'
+      - 'tests/test_qps_receipt_consumer.py'
       - '.github/workflows/adr_ocd_bridge_validation.yml'
 
 jobs:
@@ -73,13 +74,13 @@ jobs:
         run: python scripts/validate_adr_ocd_bridge.py
 
       - name: Run bridge and governed pipeline tests
-        run: pytest -o addopts='' tests/test_adr_ocd_bridge_validation.py tests/test_qps_triage_bridge.py tests/test_qps_triage_pipeline.py
+        run: pytest -o addopts='' tests/test_adr_ocd_bridge_validation.py tests/test_qps_triage_bridge.py tests/test_qps_triage_pipeline.py tests/test_qps_receipt_consumer.py
 
       - name: Run Wave 8 governed pipeline fixture
         env:
           QPS_EVIDENCE_GIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
-          rm -rf .artifacts/qps-triage-wave8 .artifacts/qps-triage-wave9
+          rm -rf .artifacts/qps-triage-wave8 .artifacts/qps-triage-wave9 .artifacts/qps-triage-wave10
           python scripts/run_qps_triage_pipeline.py \
             --input-analysis tests/fixtures/qps_triage_pipeline_input.json \
             --output-dir .artifacts/qps-triage-wave8
@@ -107,10 +108,32 @@ jobs:
             --artifact-name 'qps-triage-wave8-${{ github.event.pull_request.head.sha || github.sha }}' \
             --output .artifacts/qps-triage-wave9/qps_triage_ci_registry_receipt.json
 
+      - name: Consume Wave 9 receipt into release baseline
+        run: |
+          mkdir -p .artifacts/qps-triage-wave10
+          python src/dashboard/qps_receipt_consumer.py \
+            .artifacts/qps-triage-wave9/qps_triage_ci_registry_receipt.json \
+            --expected-git-sha '${{ github.event.pull_request.head.sha || github.sha }}' \
+            --output .artifacts/qps-triage-wave10/qps_release_baseline_evidence.json \
+            --require-accept
+          python src/dashboard/canonical_dashboard.py --json \
+            --qps-triage-dashboard .artifacts/qps-triage-wave8/qps_triage_dashboard.json \
+            --qps-registry-receipt .artifacts/qps-triage-wave9/qps_triage_ci_registry_receipt.json \
+            --expected-git-sha '${{ github.event.pull_request.head.sha || github.sha }}' \
+            > .artifacts/qps-triage-wave10/canonical_dashboard.json
+
       - name: Upload Wave 9 registry receipt
         uses: actions/upload-artifact@v4
         with:
           name: qps-triage-wave9-registry-${{ github.event.pull_request.head.sha || github.sha }}
           path: .artifacts/qps-triage-wave9/qps_triage_ci_registry_receipt.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Wave 10 consumption decision
+        uses: actions/upload-artifact@v4
+        with:
+          name: qps-triage-wave10-consumption-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .artifacts/qps-triage-wave10/
           if-no-files-found: error
           retention-days: 14
