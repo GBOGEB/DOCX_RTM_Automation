@@ -1,0 +1,166 @@
+schema_version: docx-rtm-qps-power-utility-bridge/0.1
+wave: W111
+status: CONTROL_CANDIDATE
+repo: GBOGEB/DOCX_RTM_Automation
+authority_scope: TOOLING_TRANSFORM
+engineering_promotion_forbidden: true
+
+qps_child_authority:
+  repo: GBOGEB/cryoplant-project
+  source_ssot: ocd-adr/20_canonical/control/QPS_W111_POWER_UTILITY_SOURCE_SSOT_v1.json
+  source_ssot_git_blob_sha: d19975a150a3530cc4db3bd2fbbf4180f757c2a4
+  global_ssot: ocd-adr/20_canonical/control/QPS_GLOBAL_ADR_OCD_SSOT_v1.json
+  child_manifest: triage/w111/QPS_W111_POWER_UTILITY_FEDERATION_MANIFEST_v0.1.yaml
+
+purpose: >-
+  Project child-accepted W111 electrical, HP/PVPS, heat-recovery, HVAC and invCOP evidence into RTM/document/card
+  surfaces while preserving source identity, page/section locator, evidence class and engineering authority.
+  This bridge never creates or promotes engineering truth.
+
+source_topics:
+  electrical:
+    offer: OFFER-33
+    rtm: [RTM-396, RTM-397, RTM-398, RTM-399, RTM-400, RTM-401, RTM-402]
+  cooling_heat_recovery:
+    offer: OFFER-34
+    rtm: [RTM-403, RTM-404, RTM-405, RTM-406, RTM-407, RTM-408, RTM-409, RTM-410, RTM-411, RTM-417, RTM-418, RTM-419, RTM-420, RTM-421, RTM-422, RTM-423, RTM-424, RTM-425, RTM-426, RTM-427, RTM-428]
+  HVAC:
+    offer: OFFER-35
+    rtm: [RTM-434, RTM-435]
+
+projection_grain:
+  required_keys:
+    - canonical_atom_id
+    - bidder
+    - subsystem
+    - operating_mode
+    - quantity_name
+    - value
+    - unit
+    - evidence_class
+    - source_id
+    - source_sha256_or_member_sha256
+    - source_document
+    - source_page_or_section
+    - child_disposition
+  optional_keys:
+    - electrical_boundary_E0_E4
+    - thermal_boundary_T0_T5
+    - uncertainty
+    - parent_receipt_digest
+    - derivation
+
+source_locator_policy:
+  exact_examples:
+    HP_2KOP:
+      source_id: SRC-LKT-OFFER-BOOKMARKED-CURRENT
+      source_document: LKT_P522_2096_AP-P-SE_1001_EN_Issue_01
+      source_page_or_section: "bookmarked p.398 / embedded p.6/11 / section 3.1 Refrigeration Performance Expected"
+    HP_FSD575_max:
+      source_id: SRC-LKT-OFFER-BOOKMARKED-CURRENT
+      source_document: P230000201-MOL-16_Proposal_Technical_Part_Issue_01_2026-08-10
+      source_page_or_section: "bookmarked p.113 / section 6.2.1 Helium Recycle Screw Compressor"
+    PVPS:
+      source_id: SRC-LKT-PVPS-W57-CURRENT
+      source_document: "&AP-P-MP 1001 (EN), Issue 01"
+      source_page_or_section: "pp.3-4/11; navigation pp.153-154; electrical table around p.106; OFFER-12 p.1/3"
+  rules:
+    - source_locator_must_survive_every_document_or_table_projection
+    - working_SSOT_name_alone_is_not_a_sufficient_source_citation
+    - preserve_bidder_source_hash_distinct_from_working_SSOT_hash
+    - do_not_cross_substitute_8d074d_and_d92af4_LKT_source_representations
+
+projection_targets:
+  equipment_cards:
+    - HP_FSD575
+    - PVPS_SV750BF
+    - CC
+  utility_cards:
+    - ELECTRICAL_E0_E4
+    - COOLING_WATER
+    - HEAT_RECOVERY_T1_T2
+    - HVAC_T3_T5
+    - UPS_AND_BACKUP_POWER
+  interface_cards:
+    - CONTRACTOR_TO_SCK_ELECTRICAL_TERMINAL
+    - CONTRACTOR_TO_SCK_HVAC_EXTRACT_PENETRATION
+    - HEAT_RECOVERY_BYPASS_AND_CONTROL
+  review_surfaces:
+    - RTM_OFFER_crosswalk
+    - source_citation_table
+    - evidence_class_table
+    - power_and_heat_boundary_table
+    - open_RFI_table
+
+accepted_vs_unaccepted:
+  accepted_child_atoms:
+    projection_state: CURRENT_ACCEPTED_PROJECTION
+  child_DEFER_or_UNKNOWN:
+    projection_state: OPEN_VISIBLE_NO_PROMOTION
+    render_rule: show_UNKNOWN_or_DEFER_explicitly_never_blank_as_zero
+  parent_only_findings:
+    projection_state: ADVISORY_RECEIPT
+    render_rule: must_show_parent_repo_and_receipt_digest_and_engineering_promotion_forbidden
+
+scope_transfer_projection:
+  object: HVAC_EXTRACTION_AND_PENETRATION
+  required_columns:
+    - physical_item
+    - terminal_point
+    - contractor_supply
+    - contractor_install
+    - SCK_supply
+    - SCK_install
+    - controls_owner
+    - test_commission_owner
+    - CAPEX_owner
+    - OPEX_energy_owner
+    - evidence_locator
+    - status
+  items:
+    - HP_to_exhaust_duct_connection
+    - internal_exhaust_duct
+    - wall_or_roof_penetration
+    - fire_damper
+    - weather_louvre
+    - backdraft_damper
+    - extract_fan
+    - make_up_air_path
+    - make_up_air_fan
+    - airflow_balancing
+    - QPS_CIS_interlock
+    - bypass_mode
+
+confidentiality:
+  allow: [typed_numeric_atom_if_already_child_released, source_id, source_hash, locator, evidence_class, accepted_derivation]
+  deny: [raw_bidder_PDF_bytes, proprietary_offer_paragraphs, unrestricted_price_tables]
+
+quality_gates:
+  - child_authority_binding
+  - exact_source_locator_preserved
+  - evidence_class_preserved
+  - no_parent_promotion
+  - no_unknown_zero_fill
+  - confidentiality_boundary
+  - RTM_OFFER_link_preserved
+
+pipeline:
+  - receive_child_accepted_or_visible_open_atoms
+  - validate_projection_grain
+  - map_to_RTM_OFFER
+  - map_to_equipment_utility_interface_cards
+  - render_source_citations
+  - render_open_unknowns
+  - QA_no_semantic_mutation
+  - emit_projection_receipt
+
+DoD:
+  manifest_present: true
+  ADR_OCD_bridge_crosslink: PENDING
+  executable_validation: PENDING
+  CI: PENDING
+  projection_receipt: PENDING
+
+victory: >-
+  Every projected electrical/thermal/HVAC atom can be traced from user-facing RTM/card/document output back to the exact
+  child source SSOT and bidder source locator without DOCX_RTM becoming an engineering authority.
