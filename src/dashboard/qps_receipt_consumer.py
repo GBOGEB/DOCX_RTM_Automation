@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 """Consume Wave 9 QPS triage registry receipts into a release disposition.
 
-Policy:
-- ACCEPT only when a registry receipt is present, structurally valid, PASS,
-  exact-SHA matched, externally artifact-bound, and provider digest-bound.
-- DEFER for absent, invalid, stale, mismatched, or incomplete evidence.
-
-The output is intentionally small and reusable by canonical dashboards,
-release manifests, Corrigendum packs, and contract-baseline packaging.
+ACCEPT requires present PASS evidence, exact-SHA match, external artifact
+binding and a valid provider SHA256. Every absent/stale/mismatched/incomplete
+state resolves to DEFER with a machine-readable reason.
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 from typing import Any
@@ -32,12 +29,7 @@ def _load_json(path: str | Path | None) -> tuple[dict[str, Any] | None, str | No
     return value, None
 
 
-def evaluate_registry_receipt(
-    receipt_path: str | Path | None,
-    *,
-    expected_git_sha: str | None,
-) -> dict[str, Any]:
-    """Return an ACCEPT/DEFER decision for a Wave 9 registry receipt."""
+def evaluate_registry_receipt(receipt_path: str | Path | None, *, expected_git_sha: str | None) -> dict[str, Any]:
     receipt, load_error = _load_json(receipt_path)
     base = {
         "disposition": "DEFER",
@@ -62,7 +54,6 @@ def evaluate_registry_receipt(
     identity = receipt.get("identity", {}) if isinstance(receipt.get("identity"), dict) else {}
     governance = receipt.get("governance", {}) if isinstance(receipt.get("governance"), dict) else {}
     artifact = receipt.get("github_artifact", {}) if isinstance(receipt.get("github_artifact"), dict) else {}
-
     observed_sha = str(identity.get("git_sha", ""))
     artifact_digest = str(artifact.get("artifact_digest", ""))
     artifact_id = str(artifact.get("artifact_id", ""))
@@ -73,54 +64,41 @@ def evaluate_registry_receipt(
         governance.get("provider_digest_present")
         and artifact_digest.startswith("sha256:")
         and len(artifact_digest) == 71
+        and all(char in "0123456789abcdef" for char in artifact_digest[7:].lower())
     )
-
-    base.update(
-        {
-            "observed_git_sha": observed_sha or None,
-            "receipt_id": receipt.get("registry_receipt_id"),
-            "artifact_id": artifact_id or None,
-            "artifact_digest": artifact_digest or None,
-            "checks": {
-                "receipt_present": True,
-                "receipt_status_pass": status_pass,
-                "exact_sha_match": exact_sha_match,
-                "external_artifact_bound": external_bound,
-                "provider_digest_present": provider_digest,
-            },
-        }
-    )
+    base.update({
+        "observed_git_sha": observed_sha or None,
+        "receipt_id": receipt.get("registry_receipt_id"),
+        "artifact_id": artifact_id or None,
+        "artifact_digest": artifact_digest or None,
+        "checks": {
+            "receipt_present": True,
+            "receipt_status_pass": status_pass,
+            "exact_sha_match": exact_sha_match,
+            "external_artifact_bound": external_bound,
+            "provider_digest_present": provider_digest,
+        },
+    })
 
     if not expected_git_sha:
         base["reason"] = "expected_git_sha_missing"
-        return base
-    if len(expected_git_sha) != 40:
+    elif len(expected_git_sha) != 40:
         base["reason"] = "expected_git_sha_invalid"
-        return base
-    if not status_pass:
+    elif not status_pass:
         base["reason"] = "receipt_status_not_pass"
-        return base
-    if not exact_sha_match:
+    elif not exact_sha_match:
         base["reason"] = "exact_sha_mismatch"
-        return base
-    if not external_bound:
+    elif not external_bound:
         base["reason"] = "external_artifact_binding_missing"
-        return base
-    if not provider_digest:
+    elif not provider_digest:
         base["reason"] = "provider_digest_missing_or_invalid"
-        return base
-
-    base["disposition"] = "ACCEPT"
-    base["reason"] = "exact_sha_registry_evidence_verified"
+    else:
+        base["disposition"] = "ACCEPT"
+        base["reason"] = "exact_sha_registry_evidence_verified"
     return base
 
 
-def build_release_baseline_evidence(
-    receipt_path: str | Path | None,
-    *,
-    expected_git_sha: str | None,
-) -> dict[str, Any]:
-    """Build a small release/contract-baseline evidence object."""
+def build_release_baseline_evidence(receipt_path: str | Path | None, *, expected_git_sha: str | None) -> dict[str, Any]:
     decision = evaluate_registry_receipt(receipt_path, expected_git_sha=expected_git_sha)
     return {
         "evidence_type": "qps_triage_registry_receipt",
@@ -135,3 +113,22 @@ def build_release_baseline_evidence(
         },
         "checks": decision["checks"],
     }
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Resolve QPS registry receipt to ACCEPT/DEFER")
+    parser.add_argument("receipt", help="Wave 9 registry receipt JSON")
+    parser.add_argument("--expected-git-sha", required=True)
+    parser.add_argument("--output", required=True)
+    parser.add_argument("--require-accept", action="store_true", help="Return non-zero unless disposition is ACCEPT")
+    args = parser.parse_args()
+    evidence = build_release_baseline_evidence(args.receipt, expected_git_sha=args.expected_git_sha)
+    output = Path(args.output)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(json.dumps(evidence, indent=2))
+    return 0 if not args.require_accept or evidence["disposition"] == "ACCEPT" else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
