@@ -1,5 +1,5 @@
 manifest_id: ADR_OCD_QPS_BRIDGE
-version: 0.2.0
+version: 0.3.0
 status: controlled_projection_candidate
 branch: main
 base_repository: GBOGEB/DOCX_RTM_Automation
@@ -45,86 +45,62 @@ naming_policy:
 federated_documents:
   qps_requirements:
     canonical_name: QPS Requirements
-    legacy_aliases:
-      - RFO
-      - Technical Addendum
+    legacy_aliases: [RFO, Technical Addendum]
     role: procurement_facing_requirements_baseline
-    primary_users:
-      - Applicants
-      - evaluation_team
-      - contracting_authority
+    primary_users: [Applicants, evaluation_team, contracting_authority]
     outputs: [docx, markdown, json, rtm]
-
   adr:
     canonical_name: Architecture Decision Record
     abbreviation: ADR
-    legacy_aliases:
-      - Architecture Design Report
+    legacy_aliases: [Architecture Design Report]
     role: decision_rationale_and_architecture_bridge
-    parent_sources:
-      - qps_requirements
+    parent_sources: [qps_requirements]
     outputs: [docx, markdown, json, decision_register, lineage]
-
   ocd:
     canonical_name: Operational Concept Description
     abbreviation: OCD
-    legacy_aliases:
-      - Operational Concept Document
+    legacy_aliases: [Operational Concept Document]
     role: operational_scenarios_and_workflows_bridge
-    parent_sources:
-      - qps_requirements
-      - adr
+    parent_sources: [qps_requirements, adr]
     outputs: [docx, markdown, json, operational_test_cases, lineage]
 
+cross_domain_bridges:
+  W111_POWER_UTILITY:
+    manifest: federation/POWER_UTILITY/W111_bridge_manifest.yaml
+    child_source_ssot: ocd-adr/20_canonical/control/QPS_W111_POWER_UTILITY_SOURCE_SSOT_v1.json
+    source_topics: [OFFER-33, OFFER-34, OFFER-35]
+    outputs: [RTM_projection, equipment_cards, utility_cards, interface_cards, source_citation_table, open_RFI_table]
+    mandatory_metadata: [source_id, source_sha256_or_member_sha256, source_document, source_page_or_section, evidence_class, child_disposition]
+    rule: power_utility_projection_may_transform_only_and_must_not_promote_QPS_engineering_state
+
 change_process:
-  stages:
-    - publication_baseline
-    - negotiation_stage_1
-    - negotiation_stage_2
-    - final_corrigendum
-    - contract_baseline
+  stages: [publication_baseline, negotiation_stage_1, negotiation_stage_2, final_corrigendum, contract_baseline]
   rule: >
     Any agreed change after publication shall be traceable from QPS source requirement
     to ADR decision impact, OCD operational impact, RTM row, DTM row, and final Corrigendum entry.
     No transformed or derived bridge content may promote child engineering state.
 
 traceability_edges:
-  - from: QPS Requirement
-    to: ADR Design Decision
-    relation: justified_by
-  - from: QPS Requirement
-    to: OCD Operational Scenario
-    relation: operated_by
-  - from: ADR Design Decision
-    to: OCD Workflow
-    relation: constrains
-  - from: QPS Requirement
-    to: Corrigendum Entry
-    relation: amended_by
-  - from: Corrigendum Entry
-    to: Contract Baseline
-    relation: incorporated_into
+  - {from: QPS Requirement, to: ADR Design Decision, relation: justified_by}
+  - {from: QPS Requirement, to: OCD Operational Scenario, relation: operated_by}
+  - {from: ADR Design Decision, to: OCD Workflow, relation: constrains}
+  - {from: QPS Requirement, to: Corrigendum Entry, relation: amended_by}
+  - {from: Corrigendum Entry, to: Contract Baseline, relation: incorporated_into}
+  - {from: W111 Power Utility Atom, to: RTM/OFFER Row, relation: projected_with_source_locator}
+  - {from: W111 HVAC Scope Transfer, to: Interface Card, relation: projected_without_authority_transfer}
 
 quality_gates:
-  - id: QG-ADR-OCD-001
-    name: glossary_reuse
-    rule: All outward-facing terms should resolve to glossary/GLOSSARY.yaml.
-  - id: QG-ADR-OCD-002
-    name: qps_to_adr_traceability
-    rule: Each ADR decision should reference at least one QPS source or state why not applicable.
-  - id: QG-ADR-OCD-003
-    name: qps_to_ocd_traceability
-    rule: Each OCD scenario should reference at least one QPS source or ADR decision.
-  - id: QG-ADR-OCD-004
-    name: corrigendum_impact
-    rule: Each final Corrigendum entry should identify impacted QPS, ADR, OCD, RTM, and DTM objects.
-  - id: QG-ADR-OCD-005
-    name: child_authority_binding
-    rule: Every QPS engineering projection binds the child global ADR/OCD SSOT and forbids engineering promotion outside child re-entry.
+  - {id: QG-ADR-OCD-001, name: glossary_reuse, rule: All outward-facing terms should resolve to glossary/GLOSSARY.yaml.}
+  - {id: QG-ADR-OCD-002, name: qps_to_adr_traceability, rule: Each ADR decision should reference at least one QPS source or state why not applicable.}
+  - {id: QG-ADR-OCD-003, name: qps_to_ocd_traceability, rule: Each OCD scenario should reference at least one QPS source or ADR decision.}
+  - {id: QG-ADR-OCD-004, name: corrigendum_impact, rule: Each final Corrigendum entry should identify impacted QPS ADR OCD RTM and DTM objects.}
+  - {id: QG-ADR-OCD-005, name: child_authority_binding, rule: Every QPS engineering projection binds the child global ADR/OCD SSOT and forbids engineering promotion outside child re-entry.}
+  - {id: QG-ADR-OCD-006, name: power_utility_source_locator, rule: Every W111 power utility projection retains bidder/SSOT source identity hash locator evidence class and child disposition.}
 
 pruning_policy:
   safe_to_prune:
     - federation/ADR_OCD/
+    - federation/POWER_UTILITY/
     - glossary/GLOSSARY.yaml
   not_modified_by_this_bridge:
     - parser/
