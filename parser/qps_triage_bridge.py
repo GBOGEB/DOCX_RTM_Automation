@@ -182,14 +182,20 @@ class QPSTriageBridge:
 
     def _primary_lane(self, source_type: str, content: str) -> str:
         content_lower = content.lower()
-        if source_type == "RTM" or "qps" in content_lower or "shall" in content_lower or "requirement" in content_lower:
+        if source_type == "RTM":
             return "TRIAGE-QPS"
+        if source_type == "OTC":
+            return "TRIAGE-OCD"
+        if source_type == "DTM":
+            return "TRIAGE-RTM-DTM"
         if "adr" in content_lower or "decision" in content_lower or "architecture" in content_lower:
             return "TRIAGE-ADR"
-        if source_type == "OTC" or "operational" in content_lower or "workflow" in content_lower or "scenario" in content_lower:
+        if "operational" in content_lower or "workflow" in content_lower or "scenario" in content_lower:
             return "TRIAGE-OCD"
-        if source_type == "DTM" or "deliverable" in content_lower or "traceability" in content_lower:
+        if "deliverable" in content_lower or "traceability" in content_lower:
             return "TRIAGE-RTM-DTM"
+        if "qps" in content_lower or "shall" in content_lower or "requirement" in content_lower:
+            return "TRIAGE-QPS"
         return "TRIAGE-QPS"
 
     @staticmethod

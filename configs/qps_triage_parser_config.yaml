@@ -1,9 +1,11 @@
 config_id: QPS_TRIAGE_PARSER_CONFIG
-version: 0.2.0
+version: 0.4.0
 status: draft
 purpose: >
   Wire the ADR_OCD taxonomy and QPS triage applicability model into parser-side
-  enrichment and optionally enable direct EnhancedParserEngine integration.
+  enrichment, persist QPS triage outputs, generate downstream dashboard/report
+  artifacts, link them into the canonical dashboard, and orchestrate the full
+  parser-to-report chain as one reproducible pipeline target.
 
 qps_triage:
   enabled: true
@@ -24,38 +26,38 @@ outputs:
   traceability_rows_key: qps_triage_traceability_rows
   json_export_name: qps_triage_enriched_analysis.json
   traceability_csv_name: qps_triage_traceability_rows.csv
+  engine_export_files:
+    - enhanced_analysis.json
+    - enhanced_rtm_elements.json
+    - enhanced_otc_elements.json
+    - enhanced_del_elements.json
+    - relationship_mapping.json
+    - recursive_mapping.json
+    - parsing_statistics.json
+    - qps_triage_items.json
+    - qps_triage_traceability_rows.json
+    - qps_triage_traceability_rows.csv
+    - qps_triage_downstream_index.json
+    - qps_triage_rtm_rows.csv
+    - qps_triage_dtm_rows.csv
+    - export_manifest.json
+  dashboard_files:
+    - qps_triage_dashboard.json
+    - qps_triage_dashboard.md
+    - qps_triage_dashboard.html
+    - canonical_dashboard.json
+    - qps_triage_pipeline_manifest.json
 
 waves:
   wave_2a:
     name: parser_configuration_wiring
     status: implemented_by_parser_qps_triage_bridge
-    checks:
-      - taxonomy_yaml_loads
-      - applicability_yaml_loads
-      - parser_config_declares_input_keys
   wave_2b:
     name: triage_item_emission
     status: implemented_by_QPSTriageBridge.emit_triage_items
-    emits:
-      - triage_id
-      - source_id
-      - source_type
-      - primary_lane
-      - disposition
-      - maturity_level
-      - priority_score
   wave_3:
     name: traceability_export_rows
     status: implemented_by_QPSTriageBridge.export_traceability_rows
-    emits:
-      - row_id
-      - triage_id
-      - from_object
-      - relation
-      - to_object
-      - disposition
-      - maturity_level
-      - evidence_class
   wave_4a:
     name: optional_engine_integration
     status: implemented_by_EnhancedParserEngine_parse_document_flag
@@ -63,7 +65,39 @@ waves:
       EnhancedParserEngine.parse_document() calls QPSTriageBridge.enrich_analysis()
       only when qps_triage.enabled is true. The default parser config keeps the
       bridge disabled for backward compatibility.
+  wave_4b:
+    name: export_persistence_and_downstream_index
+    status: implemented_by_EnhancedParserEngine_export_enhanced_analysis
     emits:
-      - qps_triage_items
-      - qps_triage_traceability_rows
-      - parsing_metadata.qps_triage_bridge
+      - qps_triage_items.json
+      - qps_triage_traceability_rows.json
+      - qps_triage_traceability_rows.csv
+      - qps_triage_downstream_index.json
+      - qps_triage_rtm_rows.csv
+      - qps_triage_dtm_rows.csv
+  wave_5:
+    name: downstream_report_generation
+    status: implemented_by_QPSTriageDashboardGenerator
+    emits:
+      - qps_triage_dashboard.json
+      - qps_triage_dashboard.md
+      - qps_triage_dashboard.html
+  wave_6:
+    name: canonical_dashboard_link
+    status: implemented_by_canonical_dashboard_collect_stats
+    emits:
+      - canonical_dashboard.qps_triage_dashboard
+  wave_7:
+    name: one_command_pipeline_and_ci_archive
+    status: implemented_by_scripts_run_qps_triage_pipeline_py
+    command: >
+      python scripts/run_qps_triage_pipeline.py --input-analysis
+      tests/fixtures/qps_triage_pipeline_input.json --output-dir
+      .artifacts/qps-triage-wave7
+    stages:
+      - parser
+      - enhanced_export
+      - qps_triage_dashboard
+      - canonical_dashboard
+    ci_artifact: qps-triage-wave7-${github.sha}
+    retention_days: 14
