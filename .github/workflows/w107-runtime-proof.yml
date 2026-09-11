@@ -1,0 +1,73 @@
+name: W107 RTM Runtime Proof
+
+on:
+  pull_request:
+    paths:
+      - "federation/w107/**"
+      - ".github/workflows/w107-runtime-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-head-reconciliation-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact source head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Execute deterministic reconciliation twice
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+          ACTUAL_SHA="$(git rev-parse HEAD)"
+          test "$ACTUAL_SHA" = "$SOURCE_SHA"
+          mkdir -p /tmp/w107
+          cat > /tmp/w107/canonical.json <<'JSON'
+          {"metadata":{"rtm_semantic_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","workbook_sha256":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},"records":[{"controlled_id":"RTM-001","statement":"The QPS shall provide redundant links.","source_locator":"p1"},{"controlled_id":"RTM-002","statement":"The Contractor shall provide a dossier.","source_locator":"p2"}]}
+          JSON
+          cat > /tmp/w107/extraction.json <<'JSON'
+          {"rtm_requirements":[{"id":"SRC-4.1","description":"The QPS shall provide redundant links.","source_clause":"4.1"},{"id":"SRC-4.2","description":"Different wording.","source_clause":"4.2"}]}
+          JSON
+          python scripts/reconcile_source_to_canonical_rtm.py --mode TEST --extraction /tmp/w107/extraction.json --canonical /tmp/w107/canonical.json --output /tmp/w107/receipt-a.json
+          python scripts/reconcile_source_to_canonical_rtm.py --mode TEST --extraction /tmp/w107/extraction.json --canonical /tmp/w107/canonical.json --output /tmp/w107/receipt-b.json
+          cmp /tmp/w107/receipt-a.json /tmp/w107/receipt-b.json
+          RECEIPT_SHA="$(sha256sum /tmp/w107/receipt-a.json | awk '{print $1}')"
+          INPUT_SHA="$(cat /tmp/w107/extraction.json /tmp/w107/canonical.json | sha256sum | awk '{print $1}')"
+          python - <<PY
+          import json
+          r=json.load(open('/tmp/w107/receipt-a.json', encoding='utf-8'))
+          assert r['counts']['source_atoms'] == 2
+          assert r['counts']['EXACT_TEXT'] == 1
+          assert r['counts']['UNMATCHED'] == 1
+          payload={
+            'schema_version':'w107-satellite-runtime-proof/0.1',
+            'satellite':'GBOGEB/DOCX_RTM_Automation',
+            'source_sha':'$SOURCE_SHA',
+            'actual_sha':'$ACTUAL_SHA',
+            'capability':'docx_rtm_source_extraction_reconciliation',
+            'executed_reconciliations':2,
+            'deterministic_repeat':True,
+            'input_pair_sha256':'$INPUT_SHA',
+            'output_receipt_sha256':'$RECEIPT_SHA',
+            'counts':r['counts'],
+            'disposition':'ACCEPT_RUNTIME_EXECUTION',
+            'guards':['reconciliation_not_compliance','no_QPS_truth_promotion','no_score_promotion']
+          }
+          with open('/tmp/w107/W107_RUNTIME_PROOF.json','w',encoding='utf-8') as f:
+            json.dump(payload,f,indent=2,sort_keys=True); f.write('\n')
+          PY
+          cat /tmp/w107/W107_RUNTIME_PROOF.json
+      - name: Upload proof receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: w107-rtm-runtime-proof
+          path: /tmp/w107/W107_RUNTIME_PROOF.json
+          if-no-files-found: error
