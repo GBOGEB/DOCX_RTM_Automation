@@ -4,8 +4,8 @@
 This validator intentionally uses only dependencies already present in the
 repository requirements: PyYAML plus the Python standard library. It performs a
 focused structural validation against the bridge JSON schema files and catches
-missing required fields, duplicate glossary IDs, broken core terminology, and
-QPS triage applicability gaps.
+missing required fields, duplicate glossary IDs, broken core terminology, QPS
+child-authority violations, and QPS triage applicability gaps.
 """
 
 from __future__ import annotations
@@ -25,6 +25,13 @@ DEFAULT_TAXONOMY = REPO_ROOT / "federation" / "ADR_OCD" / "taxonomy.yaml"
 DEFAULT_APPLICABILITY = REPO_ROOT / "federation" / "ADR_OCD" / "qps_triage_applicability.yaml"
 GLOSSARY_SCHEMA = REPO_ROOT / "schemas" / "glossary.schema.json"
 MANIFEST_SCHEMA = REPO_ROOT / "schemas" / "adr_ocd_bridge_manifest.schema.json"
+
+QPS_AUTHORITY_REPO = "GBOGEB/cryoplant-project"
+QPS_AUTHORITY_ARTIFACT = "ocd-adr/20_canonical/control/QPS_GLOBAL_ADR_OCD_SSOT_v1.json"
+QPS_CANONICAL_OCD = "ocd-adr/20_canonical/ocd/QPS_OCD_v0.8_CONSOLIDATED.md"
+QPS_CANONICAL_ADR_REGISTER = "ocd-adr/20_canonical/adr/QPS_ADR_REGISTER_v0.3.md"
+ADR_TERM = "Architecture Decision Record"
+OCD_TERM = "Operational Concept Description"
 
 
 class ValidationError(ValueError):
@@ -62,6 +69,28 @@ def schema_required_keys(schema: dict[str, Any]) -> list[str]:
     if not isinstance(required, list):
         raise ValidationError("Schema required field must be a list")
     return [str(item) for item in required]
+
+
+def validate_authority_source(authority: Any, label: str, *, projection_role: str | None = None) -> None:
+    if not isinstance(authority, dict):
+        raise ValidationError(f"{label} must be a mapping")
+    require_keys(
+        authority,
+        ["repo", "artifact", "authority_scope", "projection_role", "engineering_promotion_forbidden", "source_or_payload_digest_when_exchanged"],
+        label,
+    )
+    if authority["repo"] != QPS_AUTHORITY_REPO:
+        raise ValidationError(f"{label}.repo must be {QPS_AUTHORITY_REPO}")
+    if authority["artifact"] != QPS_AUTHORITY_ARTIFACT:
+        raise ValidationError(f"{label}.artifact must be {QPS_AUTHORITY_ARTIFACT}")
+    if authority["authority_scope"] != "QPS_ENGINEERING":
+        raise ValidationError(f"{label}.authority_scope must be QPS_ENGINEERING")
+    if authority["engineering_promotion_forbidden"] is not True:
+        raise ValidationError(f"{label}.engineering_promotion_forbidden must be true")
+    if authority["source_or_payload_digest_when_exchanged"] != "REQUIRED":
+        raise ValidationError(f"{label}.source_or_payload_digest_when_exchanged must be REQUIRED")
+    if projection_role and authority["projection_role"] != projection_role:
+        raise ValidationError(f"{label}.projection_role must be {projection_role}")
 
 
 def validate_glossary(glossary: dict[str, Any], schema: dict[str, Any]) -> None:
@@ -102,16 +131,27 @@ def validate_glossary(glossary: dict[str, Any], schema: dict[str, Any]) -> None:
         "Applicant",
         "Negotiation Stage",
         "Corrigendum",
-        "Architecture Design Report",
-        "Operational Concept Document",
+        ADR_TERM,
+        OCD_TERM,
     }
     missing_terms = sorted(expected_terms - standard_terms)
     if missing_terms:
         raise ValidationError("Glossary missing core terms: " + ", ".join(missing_terms))
 
+    authority = metadata.get("qps_authority_source")
+    if not isinstance(authority, dict) or authority.get("repo") != QPS_AUTHORITY_REPO or authority.get("artifact") != QPS_AUTHORITY_ARTIFACT:
+        raise ValidationError("glossary.metadata.qps_authority_source must bind the QPS child global ADR/OCD SSOT")
+
 
 def validate_manifest(manifest: dict[str, Any], schema: dict[str, Any]) -> None:
     require_keys(manifest, schema_required_keys(schema), "bridge_manifest")
+    authority = manifest["qps_authority_source"]
+    validate_authority_source(authority, "bridge_manifest.qps_authority_source", projection_role="TOOLING_TRANSFORM")
+    if authority.get("canonical_ocd") != QPS_CANONICAL_OCD:
+        raise ValidationError(f"bridge_manifest.qps_authority_source.canonical_ocd must be {QPS_CANONICAL_OCD}")
+    if authority.get("canonical_adr_register") != QPS_CANONICAL_ADR_REGISTER:
+        raise ValidationError(f"bridge_manifest.qps_authority_source.canonical_adr_register must be {QPS_CANONICAL_ADR_REGISTER}")
+
     federated = manifest["federated_documents"]
     if not isinstance(federated, dict):
         raise ValidationError("bridge_manifest.federated_documents must be a mapping")
@@ -124,6 +164,11 @@ def validate_manifest(manifest: dict[str, Any], schema: dict[str, Any]) -> None:
         require_keys(document, ["canonical_name", "role", "outputs"], f"federated_documents.{doc_key}")
         if not isinstance(document["outputs"], list) or not document["outputs"]:
             raise ValidationError(f"federated_documents.{doc_key}.outputs must be a non-empty list")
+
+    if federated["adr"]["canonical_name"] != ADR_TERM:
+        raise ValidationError(f"federated_documents.adr.canonical_name must be {ADR_TERM}")
+    if federated["ocd"]["canonical_name"] != OCD_TERM:
+        raise ValidationError(f"federated_documents.ocd.canonical_name must be {OCD_TERM}")
 
     stages = manifest["change_process"].get("stages", [])
     if "final_corrigendum" not in stages:
@@ -144,19 +189,22 @@ def validate_manifest(manifest: dict[str, Any], schema: dict[str, Any]) -> None:
         if not isinstance(gate, dict):
             raise ValidationError(f"quality_gates[{index}] must be a mapping")
         require_keys(gate, ["id", "name", "rule"], f"quality_gates[{index}]")
+    if not any(gate.get("name") == "child_authority_binding" for gate in quality_gates if isinstance(gate, dict)):
+        raise ValidationError("quality_gates must include child_authority_binding")
 
 
 def validate_taxonomy(taxonomy: dict[str, Any]) -> None:
     require_keys(
         taxonomy,
-        ["taxonomy_id", "version", "status", "purpose", "document_roles", "procurement_terms", "traceability_relations", "extraction_categories"],
+        ["taxonomy_id", "version", "status", "purpose", "qps_authority_source", "document_roles", "procurement_terms", "traceability_relations", "extraction_categories"],
         "taxonomy",
     )
+    validate_authority_source(taxonomy["qps_authority_source"], "taxonomy.qps_authority_source", projection_role="TOOLING_TAXONOMY")
     roles = taxonomy["document_roles"]
     if not isinstance(roles, list) or len(roles) < 3:
         raise ValidationError("taxonomy.document_roles must include QPS, ADR, and OCD roles")
     role_terms = {str(role.get("standard_term")) for role in roles if isinstance(role, dict)}
-    for expected in ["QPS Requirements", "Architecture Design Report", "Operational Concept Document"]:
+    for expected in ["QPS Requirements", ADR_TERM, OCD_TERM]:
         if expected not in role_terms:
             raise ValidationError(f"taxonomy missing document role: {expected}")
 
@@ -170,12 +218,13 @@ def validate_taxonomy(taxonomy: dict[str, Any]) -> None:
 def validate_applicability(applicability: dict[str, Any]) -> None:
     require_keys(
         applicability,
-        ["applicability_id", "version", "status", "purpose", "scope", "terminology_policy", "triage_lanes", "triage_dispositions", "maturity_levels", "priority_scoring", "qps_to_triage_edges", "control_gates"],
+        ["applicability_id", "version", "status", "purpose", "qps_authority_source", "scope", "terminology_policy", "triage_lanes", "triage_dispositions", "maturity_levels", "priority_scoring", "qps_to_triage_edges", "control_gates"],
         "qps_triage_applicability",
     )
+    validate_authority_source(applicability["qps_authority_source"], "qps_triage_applicability.qps_authority_source", projection_role="TOOLING_TRIAGE")
 
     applies_to = set(applicability["scope"].get("applies_to", []))
-    for expected in ["QPS Requirements", "Triage", "Requirements Traceability Matrix", "Deliverables Traceability Matrix"]:
+    for expected in ["QPS Requirements", ADR_TERM, OCD_TERM, "Triage", "Requirements Traceability Matrix", "Deliverables Traceability Matrix"]:
         if expected not in applies_to:
             raise ValidationError(f"qps_triage_applicability.scope.applies_to missing {expected}")
 
