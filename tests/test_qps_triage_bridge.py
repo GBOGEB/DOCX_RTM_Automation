@@ -114,6 +114,44 @@ def test_enhanced_parser_engine_enriches_when_config_flag_enabled():
     assert any(row["relation"] == "classified_as" for row in result["qps_triage_traceability_rows"])
 
 
+def test_engine_export_persists_qps_triage_outputs(tmp_path):
+    parser = EnhancedParserEngine(config_path="configs/qps_triage_parser_config.yaml")
+    parser.parse_document("sample-qps.docx", raw_parser_input())
+    parser.export_enhanced_analysis(str(tmp_path))
+
+    expected_files = {
+        "enhanced_analysis.json",
+        "enhanced_rtm_elements.json",
+        "enhanced_otc_elements.json",
+        "enhanced_del_elements.json",
+        "relationship_mapping.json",
+        "recursive_mapping.json",
+        "parsing_statistics.json",
+        "qps_triage_items.json",
+        "qps_triage_traceability_rows.json",
+        "qps_triage_traceability_rows.csv",
+        "qps_triage_downstream_index.json",
+        "qps_triage_rtm_rows.csv",
+        "qps_triage_dtm_rows.csv",
+        "export_manifest.json",
+    }
+    assert expected_files.issubset({path.name for path in tmp_path.iterdir()})
+
+    manifest = json.loads((tmp_path / "export_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["qps_triage_enabled"] is True
+    assert manifest["triage_item_count"] == 3
+    assert manifest["traceability_row_count"] > 0
+
+    downstream_index = json.loads((tmp_path / "qps_triage_downstream_index.json").read_text(encoding="utf-8"))
+    assert downstream_index["rtm_rows"]
+    assert downstream_index["dtm_rows"]
+
+    with (tmp_path / "qps_triage_traceability_rows.csv").open("r", encoding="utf-8") as handle:
+        rows = list(csv.DictReader(handle))
+    assert rows
+    assert {"row_id", "triage_id", "relation", "evidence_class"}.issubset(rows[0].keys())
+
+
 def test_export_cli_writes_json_and_csv(tmp_path):
     input_path = tmp_path / "analysis.json"
     output_json = tmp_path / "qps_triage_enriched_analysis.json"
