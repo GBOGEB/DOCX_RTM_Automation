@@ -11,10 +11,32 @@
   "receipt_type": "remote_bootstrap",
   "boundary": "This bootstrap receipt proves MIP contract seeding through the GitHub contents API. It is not a substitute for the executable repo_self_index receipt generated in a checked-out repo or CI runner.",
   "observed_root_signals": {
-    "debug_ldab": ["DIAGNOSTIC_SUMMARY.md", "run_debug_simple.bat", "run_pipeline_debug.bat"],
-    "runners_mcp": [".github/", "Makefile", "run.py", "run_health_check.sh", "run_pipeline.bat", "workflows/"],
-    "codz_health_selfheal": ["run_health_check.sh", "run_health_check.bat", "run_syntax_fix.bat", "syntax_checker.py"],
-    "repo_self_produce": ["AGENT_ENTRYPOINT.md", "WORD_MARKDOWN_GUIDE.md", "src/", "tools/", "rtm_deliverables/"]
+    "debug_ldab": [
+      "DIAGNOSTIC_SUMMARY.md",
+      "run_debug_simple.bat",
+      "run_pipeline_debug.bat"
+    ],
+    "runners_mcp": [
+      ".github/",
+      "Makefile",
+      "run.py",
+      "run_health_check.sh",
+      "run_pipeline.bat",
+      "workflows/"
+    ],
+    "codz_health_selfheal": [
+      "run_health_check.sh",
+      "run_health_check.bat",
+      "run_syntax_fix.bat",
+      "syntax_checker.py"
+    ],
+    "repo_self_produce": [
+      "AGENT_ENTRYPOINT.md",
+      "WORD_MARKDOWN_GUIDE.md",
+      "src/",
+      "tools/",
+      "rtm_deliverables/"
+    ]
   },
   "lane_states": {
     "repo_self_index": "SEEDED_REMOTE_PENDING_EXECUTION",
@@ -23,5 +45,5 @@
     "repo_self_assess_codz_health_selfheal": "SEEDED_WITH_ROOT_SIGNALS",
     "repo_self_produce": "SEEDED_WITH_DOCX_RTM_CANDIDATES"
   },
-  "next_victory_condition": "Run scripts/mip_repo_self_index.py in a local or CI checkout, commit MIP/receipts/repo_self_index.json, then recurse on the first red or amber lane."
+  "next_victory_condition": "Run scripts/mip_repo_self_index.py in a local or controlled CI checkout, retain the generated receipt privately under MIP/RECEIPT_POLICY.md, then recurse on the first red or amber lane. Publish only reviewed sanitized conclusions."
 }
