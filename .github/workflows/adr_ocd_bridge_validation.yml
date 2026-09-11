@@ -8,6 +8,7 @@ on:
       - 'schemas/adr_ocd_bridge_manifest.schema.json'
       - 'federation/ADR_OCD/**'
       - 'configs/qps_triage_parser_config.yaml'
+      - 'parser/engine.py'
       - 'parser/qps_triage_bridge.py'
       - 'scripts/validate_adr_ocd_bridge.py'
       - 'scripts/export_qps_triage_traceability.py'
@@ -19,12 +20,14 @@ on:
       - feature/ADR_OCD-qps-procurement-bridge
       - feature/ADR_OCD-qps-triage-applicability
       - feature/qps-triage-parser-export-waves
+      - feature/qps-triage-engine-integration
     paths:
       - 'glossary/GLOSSARY.yaml'
       - 'schemas/glossary.schema.json'
       - 'schemas/adr_ocd_bridge_manifest.schema.json'
       - 'federation/ADR_OCD/**'
       - 'configs/qps_triage_parser_config.yaml'
+      - 'parser/engine.py'
       - 'parser/qps_triage_bridge.py'
       - 'scripts/validate_adr_ocd_bridge.py'
       - 'scripts/export_qps_triage_traceability.py'
@@ -47,7 +50,7 @@ jobs:
       - name: Install lightweight validation dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pyyaml pytest
+          python -m pip install pyyaml pytest pandas python-docx
 
       - name: Validate bridge artifacts
         run: python scripts/validate_adr_ocd_bridge.py

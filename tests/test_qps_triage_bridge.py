@@ -4,6 +4,7 @@ import json
 import subprocess
 import sys
 
+from parser.engine import EnhancedParserEngine
 from parser.qps_triage_bridge import QPSTriageBridge
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -42,6 +43,42 @@ def sample_analysis():
     }
 
 
+def raw_parser_input():
+    return {
+        "sections": [],
+        "rtm_requirements": [
+            {
+                "id": "QPS-REQ-001",
+                "description": "The QPS Requirements shall define an architecture decision and Corrigendum impact for the fixed price contract.",
+                "priority": "High",
+                "verification_method": "Review",
+                "acceptance_criteria": "Traceability row exists",
+                "source_section": "1.1 - QPS",
+            }
+        ],
+        "otc_elements": [
+            {
+                "id": "OCD-OTC-001",
+                "name": "Operational scenario",
+                "objective": "Operational scenario workflow shall verify training and maintenance response.",
+                "preconditions": "QPS baseline exists",
+                "test_steps": ["Review scenario"],
+                "expected_results": "Scenario is traceable",
+                "linked_requirements": ["QPS-REQ-001"],
+            }
+        ],
+        "del_deliverables": [
+            {
+                "id": "DTM-DEL-001",
+                "name": "Traceability package",
+                "description": "Deliverable traceability evidence package is missing source confirmation.",
+                "type": "DTM",
+                "dependencies": ["QPS-REQ-001"],
+            }
+        ],
+    }
+
+
 def test_bridge_emits_triage_items_and_traceability_rows():
     bridge = QPSTriageBridge()
     enriched = bridge.enrich_analysis(sample_analysis())
@@ -58,6 +95,23 @@ def test_bridge_emits_triage_items_and_traceability_rows():
     assert any(row["relation"] == "classified_as" for row in rows)
     assert any(row["relation"] == "design_impact_to" for row in rows)
     assert any(row["relation"] == "amendment_impact_to" for row in rows)
+
+
+def test_enhanced_parser_engine_leaves_qps_triage_disabled_by_default():
+    parser = EnhancedParserEngine()
+    result = parser.parse_document("sample-qps.docx", raw_parser_input())
+    assert "qps_triage_items" not in result
+    assert result["parsing_metadata"]["qps_triage_bridge"]["enabled"] is False
+
+
+def test_enhanced_parser_engine_enriches_when_config_flag_enabled():
+    parser = EnhancedParserEngine(config_path="configs/qps_triage_parser_config.yaml")
+    result = parser.parse_document("sample-qps.docx", raw_parser_input())
+    assert "qps_triage_items" in result
+    assert "qps_triage_traceability_rows" in result
+    assert len(result["qps_triage_items"]) == 3
+    assert result["parsing_metadata"]["qps_triage_bridge"]["triage_item_count"] == 3
+    assert any(row["relation"] == "classified_as" for row in result["qps_triage_traceability_rows"])
 
 
 def test_export_cli_writes_json_and_csv(tmp_path):
