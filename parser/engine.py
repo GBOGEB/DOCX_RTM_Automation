@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 Enhanced Document Parser Engine
@@ -97,12 +96,18 @@ class EnhancedParserEngine:
                 "high": 0.8,
                 "medium": 0.6,
                 "low": 0.4
+            },
+            "qps_triage": {
+                "enabled": False,
+                "taxonomy_path": "federation/ADR_OCD/taxonomy.yaml",
+                "applicability_path": "federation/ADR_OCD/qps_triage_applicability.yaml",
+                "fail_on_error": False
             }
         }
         
         if config_path and Path(config_path).exists():
             with open(config_path, 'r') as f:
-                user_config = yaml.safe_load(f)
+                user_config = yaml.safe_load(f) or {}
                 default_config.update(user_config)
         
         return default_config
@@ -148,8 +153,38 @@ class EnhancedParserEngine:
             "recursive_mapping": self._create_recursive_mapping(enhanced_rtm, enhanced_otc, enhanced_del)
         }
         
+        result = self._maybe_enrich_qps_triage(result)
         logger.info(f"Enhanced parsing completed. Found {len(enhanced_rtm)} RTM, {len(enhanced_otc)} OTC, {len(enhanced_del)} DEL elements")
         return result
+
+    def _maybe_enrich_qps_triage(self, result: Dict[str, Any]) -> Dict[str, Any]:
+        """Optionally enrich parser output with QPS triage items and trace rows."""
+        qps_config = self.config.get("qps_triage", {})
+        if not isinstance(qps_config, dict) or not qps_config.get("enabled", False):
+            result.setdefault("parsing_metadata", {})["qps_triage_bridge"] = {
+                "enabled": False,
+                "reason": "disabled_by_config"
+            }
+            return result
+
+        try:
+            from parser.qps_triage_bridge import QPSTriageBridge
+
+            bridge = QPSTriageBridge(
+                taxonomy_path=qps_config.get("taxonomy_path", "federation/ADR_OCD/taxonomy.yaml"),
+                applicability_path=qps_config.get("applicability_path", "federation/ADR_OCD/qps_triage_applicability.yaml"),
+            )
+            return bridge.enrich_analysis(result)
+        except Exception as exc:  # pragma: no cover - defensive runtime guard
+            logger.exception("QPS triage enrichment failed")
+            if qps_config.get("fail_on_error", False):
+                raise
+            result.setdefault("parsing_metadata", {})["qps_triage_bridge"] = {
+                "enabled": True,
+                "status": "failed",
+                "error": str(exc)
+            }
+            return result
     
     def _parse_from_document(self, document: Document) -> Tuple[List, List, List, List]:
         """Parse document from scratch"""
