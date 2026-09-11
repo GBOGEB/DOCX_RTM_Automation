@@ -14,8 +14,11 @@ on:
       - 'src/dashboard/qps_triage_dashboard.py'
       - 'scripts/validate_adr_ocd_bridge.py'
       - 'scripts/export_qps_triage_traceability.py'
+      - 'scripts/run_qps_triage_pipeline.py'
+      - 'tests/fixtures/qps_triage_pipeline_input.json'
       - 'tests/test_adr_ocd_bridge_validation.py'
       - 'tests/test_qps_triage_bridge.py'
+      - 'tests/test_qps_triage_pipeline.py'
       - '.github/workflows/adr_ocd_bridge_validation.yml'
   push:
     branches:
@@ -36,8 +39,11 @@ on:
       - 'src/dashboard/qps_triage_dashboard.py'
       - 'scripts/validate_adr_ocd_bridge.py'
       - 'scripts/export_qps_triage_traceability.py'
+      - 'scripts/run_qps_triage_pipeline.py'
+      - 'tests/fixtures/qps_triage_pipeline_input.json'
       - 'tests/test_adr_ocd_bridge_validation.py'
       - 'tests/test_qps_triage_bridge.py'
+      - 'tests/test_qps_triage_pipeline.py'
       - '.github/workflows/adr_ocd_bridge_validation.yml'
 
 jobs:
@@ -61,4 +67,19 @@ jobs:
         run: python scripts/validate_adr_ocd_bridge.py
 
       - name: Run bridge tests
-        run: pytest -o addopts='' tests/test_adr_ocd_bridge_validation.py tests/test_qps_triage_bridge.py
+        run: pytest -o addopts='' tests/test_adr_ocd_bridge_validation.py tests/test_qps_triage_bridge.py tests/test_qps_triage_pipeline.py
+
+      - name: Run Wave 7 pipeline fixture
+        run: |
+          rm -rf .artifacts/qps-triage-wave7
+          python scripts/run_qps_triage_pipeline.py \
+            --input-analysis tests/fixtures/qps_triage_pipeline_input.json \
+            --output-dir .artifacts/qps-triage-wave7
+
+      - name: Upload Wave 7 generated artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: qps-triage-wave7-${{ github.sha }}
+          path: .artifacts/qps-triage-wave7/
+          if-no-files-found: error
+          retention-days: 14
