@@ -6,6 +6,7 @@ import sys
 
 from parser.engine import EnhancedParserEngine
 from parser.qps_triage_bridge import QPSTriageBridge
+from src.dashboard.qps_triage_dashboard import QPSTriageDashboardGenerator
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -150,6 +151,32 @@ def test_engine_export_persists_qps_triage_outputs(tmp_path):
         rows = list(csv.DictReader(handle))
     assert rows
     assert {"row_id", "triage_id", "relation", "evidence_class"}.issubset(rows[0].keys())
+
+
+def test_parser_to_dashboard_e2e_generates_report_artifacts(tmp_path):
+    parser = EnhancedParserEngine(config_path="configs/qps_triage_parser_config.yaml")
+    parser.parse_document("sample-qps.docx", raw_parser_input())
+    parser.export_enhanced_analysis(str(tmp_path))
+
+    generator = QPSTriageDashboardGenerator(tmp_path)
+    outputs = generator.write_outputs(tmp_path)
+
+    assert Path(outputs["json"]).exists()
+    assert Path(outputs["markdown"]).exists()
+    assert Path(outputs["html"]).exists()
+
+    dashboard = json.loads(Path(outputs["json"]).read_text(encoding="utf-8"))
+    assert dashboard["summary"]["triage_item_count"] == 3
+    assert dashboard["summary"]["rtm_row_count"] > 0
+    assert dashboard["summary"]["dtm_row_count"] > 0
+    assert dashboard["counts"]["by_relation"]["classified_as"] >= 3
+    assert dashboard["rtm_rows"]
+    assert dashboard["dtm_rows"]
+
+    markdown = Path(outputs["markdown"]).read_text(encoding="utf-8")
+    assert "# QPS Triage Dashboard" in markdown
+    assert "RTM rows exported" in markdown
+    assert "DTM rows exported" in markdown
 
 
 def test_export_cli_writes_json_and_csv(tmp_path):
