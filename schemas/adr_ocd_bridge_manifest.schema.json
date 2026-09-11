@@ -10,6 +10,7 @@
     "status",
     "branch",
     "base_repository",
+    "qps_authority_source",
     "purpose",
     "naming_policy",
     "federated_documents",
@@ -24,6 +25,7 @@
     "status": {"type": "string"},
     "branch": {"type": "string"},
     "base_repository": {"type": "string"},
+    "qps_authority_source": {"$ref": "#/$defs/qps_authority_source"},
     "purpose": {"type": "string"},
     "naming_policy": {"type": "object"},
     "federated_documents": {
@@ -48,6 +50,30 @@
     "pruning_policy": {"type": "object"}
   },
   "$defs": {
+    "qps_authority_source": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "repo",
+        "artifact",
+        "canonical_ocd",
+        "canonical_adr_register",
+        "authority_scope",
+        "projection_role",
+        "engineering_promotion_forbidden",
+        "source_or_payload_digest_when_exchanged"
+      ],
+      "properties": {
+        "repo": {"const": "GBOGEB/cryoplant-project"},
+        "artifact": {"const": "ocd-adr/20_canonical/control/QPS_GLOBAL_ADR_OCD_SSOT_v1.json"},
+        "canonical_ocd": {"const": "ocd-adr/20_canonical/ocd/QPS_OCD_v0.8_CONSOLIDATED.md"},
+        "canonical_adr_register": {"const": "ocd-adr/20_canonical/adr/QPS_ADR_REGISTER_v0.3.md"},
+        "authority_scope": {"const": "QPS_ENGINEERING"},
+        "projection_role": {"const": "TOOLING_TRANSFORM"},
+        "engineering_promotion_forbidden": {"const": true},
+        "source_or_payload_digest_when_exchanged": {"const": "REQUIRED"}
+      }
+    },
     "federated_document": {
       "type": "object",
       "additionalProperties": true,

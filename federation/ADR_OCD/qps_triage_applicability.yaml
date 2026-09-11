@@ -1,100 +1,81 @@
 applicability_id: ADR_OCD_QPS_TRIAGE_APPLICABILITY
-version: 0.1.0
-status: draft
+version: 0.2.0
+status: controlled_projection_candidate
 purpose: >
   Make the ADR_OCD federation bridge directly usable for QPS Requirements and
   triage workflows by defining shared statuses, lanes, evidence classes, and
-  progression gates.
+  progression gates while preserving QPS child engineering authority.
+
+qps_authority_source:
+  repo: GBOGEB/cryoplant-project
+  artifact: ocd-adr/20_canonical/control/QPS_GLOBAL_ADR_OCD_SSOT_v1.json
+  authority_scope: QPS_ENGINEERING
+  projection_role: TOOLING_TRIAGE
+  engineering_promotion_forbidden: true
+  source_or_payload_digest_when_exchanged: REQUIRED
 
 scope:
   applies_to:
     - QPS Requirements
-    - Architecture Design Report
-    - Operational Concept Document
+    - Architecture Decision Record
+    - Operational Concept Description
     - Requirements Traceability Matrix
     - Deliverables Traceability Matrix
     - Corrigendum
     - Triage
   repositories:
-    primary:
+    engineering_authority:
+      - GBOGEB/cryoplant-project
+    tooling_primary:
       - GBOGEB/DOCX_RTM_Automation
-    federation_candidates:
+    federation_parents:
       - GBOGEB/CODEX
       - GBOGEB/ABACUS
-      - GBOGEB/cryoplant-project
 
 terminology_policy:
   preferred_outward_facing: QPS Requirements
   legacy_internal_alias: RFO
+  adr_standard_term: Architecture Decision Record
+  ocd_standard_term: Operational Concept Description
   triage_name: Triage
   rule: >
-    Use QPS Requirements for procurement-facing content. Use Triage for
-    classification, disposition, prioritization, repair waves, and evidence
-    maturity management. Keep RFO only as a legacy/internal alias.
+    Use QPS Requirements for procurement-facing content. Use QPS child canonical terms
+    for ADR and OCD. Use Triage for classification, disposition, prioritization, repair
+    waves, and evidence maturity management. Keep RFO, Architecture Design Report and
+    Operational Concept Document only as legacy/internal aliases.
 
 triage_lanes:
   - lane_id: TRIAGE-QPS
     name: QPS Requirements lane
     purpose: Classify source requirements, tender changes, and applicant-facing obligations.
-    accepted_inputs:
-      - qps_requirement
-      - corrigendum_entry
-      - negotiation_action
-      - applicant_question
-      - requirement_change
-    outputs:
-      - qps_disposition
-      - rtm_update
-      - corrigendum_impact
+    accepted_inputs: [qps_requirement, corrigendum_entry, negotiation_action, applicant_question, requirement_change]
+    outputs: [qps_disposition, rtm_update, corrigendum_impact]
 
   - lane_id: TRIAGE-ADR
-    name: ADR design-decision lane
-    purpose: Classify architecture impact, decision rationale, and design-risk propagation.
-    accepted_inputs:
-      - adr_decision
-      - interface_decision
-      - control_decision
-      - reliability_decision
-      - material_decision
-    outputs:
-      - adr_disposition
-      - decision_register_update
-      - design_impact
+    name: ADR decision lane
+    purpose: Classify architecture decision impact, rationale, and design-risk propagation without promoting child engineering state.
+    accepted_inputs: [adr_decision, interface_decision, control_decision, reliability_decision, material_decision]
+    outputs: [adr_disposition_candidate, decision_register_update_candidate, design_impact]
 
   - lane_id: TRIAGE-OCD
     name: OCD operational-impact lane
-    purpose: Classify operational scenarios, workflows, degraded modes, training, and evidence impacts.
-    accepted_inputs:
-      - ocd_scenario
-      - ocd_workflow
-      - operational_constraint
-      - training_need
-      - maintenance_need
-    outputs:
-      - ocd_disposition
-      - otc_update
-      - operational_impact
+    purpose: Classify operational scenarios, workflows, degraded modes, training, and evidence impacts without replacing the child OCD.
+    accepted_inputs: [ocd_scenario, ocd_workflow, operational_constraint, training_need, maintenance_need]
+    outputs: [ocd_disposition_candidate, otc_update, operational_impact]
 
   - lane_id: TRIAGE-RTM-DTM
     name: RTM DTM traceability lane
     purpose: Classify missing, stale, weak, or conflicting traceability edges.
-    accepted_inputs:
-      - rtm_row
-      - dtm_row
-      - lineage_edge
-      - evidence_gap
-    outputs:
-      - traceability_update
-      - evidence_request
-      - maturity_delta
+    accepted_inputs: [rtm_row, dtm_row, lineage_edge, evidence_gap]
+    outputs: [traceability_update_candidate, evidence_request, maturity_delta]
 
 triage_dispositions:
   - disposition: ACCEPT
-    meaning: Source-supported, structurally valid, and ready for controlled reuse.
+    meaning: Source-supported, structurally valid, and ready for controlled tooling reuse; not automatic QPS engineering acceptance.
   - disposition: DEFER
     meaning: Structurally captured but missing authoritative evidence or implementation binding.
   - disposition: REJECT
-    meaning: Conflicting, obsolete, unsupported, or not applicable to the controlled baseline.
+    meaning: Conflicting, obsolete, unsupported, or not applicable to the controlled projection.
   - disposition: NEEDS_SOURCE
     meaning: Requires source, page, file, SHA, receipt, or evidence locator before promotion.
   - disposition: NEEDS_IMPLEMENTATION
@@ -114,10 +95,10 @@ maturity_levels:
     gate: Item passes schema and validator checks.
   - level: 0.8
     name: traceable
-    gate: Item is linked to QPS, ADR, OCD, RTM, DTM, or Corrigendum edge.
+    gate: Item is linked to QPS, ADR, OCD, RTM, DTM, or Corrigendum edge and child authority metadata.
   - level: 1.0
     name: controlled
-    gate: Item is source-supported, tested, CI-visible, and ready for merge or release.
+    gate: Item is source-supported, tested, CI-visible, authority-bound, and ready for merge or release as a tooling projection.
 
 priority_scoring:
   fields:
@@ -164,10 +145,13 @@ control_gates:
     rule: Every triage item has exactly one primary lane and may have secondary lanes.
   - gate_id: QPS-TRIAGE-GATE-003
     name: disposition_assignment
-    rule: Every triage item has one controlled disposition.
+    rule: Every triage item has one tooling disposition and cannot use it as automatic QPS engineering disposition.
   - gate_id: QPS-TRIAGE-GATE-004
     name: maturity_assignment
     rule: Every triage item has a maturity level from 0.0 to 1.0.
   - gate_id: QPS-TRIAGE-GATE-005
     name: downstream_impact
     rule: Items affecting QPS Requirements identify ADR, OCD, RTM, DTM, or Corrigendum impact where applicable.
+  - gate_id: QPS-TRIAGE-GATE-006
+    name: child_authority
+    rule: QPS engineering promotion requires explicit child re-entry against the child global ADR/OCD SSOT.
