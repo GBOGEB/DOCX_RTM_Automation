@@ -6,6 +6,7 @@ import sys
 
 from parser.engine import EnhancedParserEngine
 from parser.qps_triage_bridge import QPSTriageBridge
+from src.dashboard.canonical_dashboard import collect_stats
 from src.dashboard.qps_triage_dashboard import QPSTriageDashboardGenerator
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -78,6 +79,13 @@ def raw_parser_input():
             }
         ],
     }
+
+
+def write_fixture_dashboard(tmp_path: Path) -> dict[str, str]:
+    parser = EnhancedParserEngine(config_path="configs/qps_triage_parser_config.yaml")
+    parser.parse_document("sample-qps.docx", raw_parser_input())
+    parser.export_enhanced_analysis(str(tmp_path))
+    return QPSTriageDashboardGenerator(tmp_path).write_outputs(tmp_path)
 
 
 def test_bridge_emits_triage_items_and_traceability_rows():
@@ -154,12 +162,7 @@ def test_engine_export_persists_qps_triage_outputs(tmp_path):
 
 
 def test_parser_to_dashboard_e2e_generates_report_artifacts(tmp_path):
-    parser = EnhancedParserEngine(config_path="configs/qps_triage_parser_config.yaml")
-    parser.parse_document("sample-qps.docx", raw_parser_input())
-    parser.export_enhanced_analysis(str(tmp_path))
-
-    generator = QPSTriageDashboardGenerator(tmp_path)
-    outputs = generator.write_outputs(tmp_path)
+    outputs = write_fixture_dashboard(tmp_path)
 
     assert Path(outputs["json"]).exists()
     assert Path(outputs["markdown"]).exists()
@@ -174,9 +177,25 @@ def test_parser_to_dashboard_e2e_generates_report_artifacts(tmp_path):
     assert dashboard["dtm_rows"]
 
     markdown = Path(outputs["markdown"]).read_text(encoding="utf-8")
+    html = Path(outputs["html"]).read_text(encoding="utf-8")
     assert "# QPS Triage Dashboard" in markdown
     assert "RTM rows exported" in markdown
     assert "DTM rows exported" in markdown
+    assert "QPS Triage Dashboard" in html
+    assert "RTM rows exported" in html
+    assert "DTM rows exported" in html
+
+
+def test_canonical_dashboard_indexes_qps_triage_dashboard_json(tmp_path):
+    outputs = write_fixture_dashboard(tmp_path)
+    stats = collect_stats(outputs["json"])
+
+    qps = stats["qps_triage_dashboard"]
+    assert qps["present"] is True
+    assert qps["triage_item_count"] == 3
+    assert qps["rtm_row_count"] > 0
+    assert qps["dtm_row_count"] > 0
+    assert qps["by_relation"]["classified_as"] >= 3
 
 
 def test_export_cli_writes_json_and_csv(tmp_path):
