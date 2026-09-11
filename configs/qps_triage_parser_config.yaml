@@ -1,10 +1,11 @@
 config_id: QPS_TRIAGE_PARSER_CONFIG
-version: 0.7.0
+version: 0.8.0
 status: draft
 purpose: >
   Wire ADR_OCD/QPS triage through parser enrichment, persisted exports,
   dashboard/report generation, exact-SHA evidence governance, external CI
-  artifact registry binding, and downstream release/baseline consumption.
+  artifact registry binding, downstream evidence consumption, and controlled
+  procurement release-baseline promotion.
 
 qps_triage:
   enabled: true
@@ -52,6 +53,7 @@ outputs:
     - SHA256SUMS
     - qps_triage_ci_registry_receipt.json
     - qps_release_baseline_evidence.json
+    - qps_release_baseline_manifest.json
 
 waves:
   wave_2a: {name: parser_configuration_wiring, status: implemented_by_parser_qps_triage_bridge}
@@ -66,32 +68,17 @@ waves:
     name: exact_sha_evidence_governance
     status: implemented_and_runtime_verified
     hash_algorithm: SHA256
-    parity_rule: >
-      Every regular pipeline payload artifact appears exactly once in the
-      evidence manifest with matching path, byte size and SHA256; the governed
-      receipt binds the pipeline/evidence manifests and SHA256SUMS covers the bundle.
     ci_artifact: qps-triage-wave8-${exact_head_sha}
     retention_days: 14
   wave_9:
     name: external_ci_artifact_registry_receipt
     status: implemented_and_runtime_verified
     producer: scripts/create_qps_triage_ci_registry_receipt.py
-    source_artifact: qps-triage-wave8-${exact_head_sha}
-    binds:
-      - artifact_id
-      - artifact_name
-      - artifact_url
-      - artifact_digest
-      - exact_head_sha
-      - workflow_run_id
-      - qps_triage_governed_receipt_sha256
-      - SHA256SUMS_sha256
     registry_artifact: qps-triage-wave9-registry-${exact_head_sha}
   wave_10:
     name: registry_receipt_consumption
-    status: implemented_pending_runtime_verification
+    status: implemented_and_runtime_verified
     consumer: src/dashboard/qps_receipt_consumer.py
-    dashboard: src/dashboard/canonical_dashboard.py
     decision_output: qps_release_baseline_evidence.json
     decision_rule:
       ACCEPT: >
@@ -101,11 +88,23 @@ waves:
       DEFER: >
         Receipt is absent, invalid, non-PASS, stale/mismatched, lacks the exact
         expected SHA, lacks external artifact binding, or lacks a valid provider digest.
-    ci_command: >
-      python src/dashboard/qps_receipt_consumer.py
-      .artifacts/qps-triage-wave9/qps_triage_ci_registry_receipt.json
-      --expected-git-sha ${exact_head_sha}
-      --output .artifacts/qps-triage-wave10/qps_release_baseline_evidence.json
-      --require-accept
     ci_artifact: qps-triage-wave10-consumption-${exact_head_sha}
+    retention_days: 14
+  wave_11:
+    name: procurement_release_baseline_gate
+    status: implemented_pending_runtime_verification
+    producer: scripts/build_qps_release_baseline.py
+    input: qps_release_baseline_evidence.json
+    output: qps_release_baseline_manifest.json
+    stage_sequence:
+      - publication_baseline
+      - negotiation_stage_1
+      - negotiation_stage_2
+      - final_corrigendum
+      - contract_baseline
+    decision_rule:
+      PROMOTE: exact SHA matches and Wave 10 evidence disposition is ACCEPT
+      HOLD: evidence is DEFER or exact SHA mismatches
+    ci_stage: final_corrigendum
+    ci_artifact: qps-triage-wave11-release-${exact_head_sha}
     retention_days: 14

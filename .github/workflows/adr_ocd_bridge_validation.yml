@@ -16,11 +16,13 @@ on:
       - 'scripts/run_qps_triage_pipeline.py'
       - 'scripts/verify_qps_triage_receipt.py'
       - 'scripts/create_qps_triage_ci_registry_receipt.py'
+      - 'scripts/build_qps_release_baseline.py'
       - 'tests/fixtures/qps_triage_pipeline_input.json'
       - 'tests/test_adr_ocd_bridge_validation.py'
       - 'tests/test_qps_triage_bridge.py'
       - 'tests/test_qps_triage_pipeline.py'
       - 'tests/test_qps_receipt_consumer.py'
+      - 'tests/test_qps_release_baseline.py'
       - '.github/workflows/adr_ocd_bridge_validation.yml'
   push:
     branches:
@@ -32,6 +34,7 @@ on:
       - feature/qps-triage-wave8-evidence-governance
       - feature/qps-triage-wave9-ci-registry-receipt
       - feature/qps-triage-wave10-receipt-consumption
+      - feature/qps-triage-wave11-release-baseline-gate
     paths:
       - 'glossary/GLOSSARY.yaml'
       - 'schemas/**'
@@ -46,11 +49,13 @@ on:
       - 'scripts/run_qps_triage_pipeline.py'
       - 'scripts/verify_qps_triage_receipt.py'
       - 'scripts/create_qps_triage_ci_registry_receipt.py'
+      - 'scripts/build_qps_release_baseline.py'
       - 'tests/fixtures/qps_triage_pipeline_input.json'
       - 'tests/test_adr_ocd_bridge_validation.py'
       - 'tests/test_qps_triage_bridge.py'
       - 'tests/test_qps_triage_pipeline.py'
       - 'tests/test_qps_receipt_consumer.py'
+      - 'tests/test_qps_release_baseline.py'
       - '.github/workflows/adr_ocd_bridge_validation.yml'
 
 jobs:
@@ -74,13 +79,13 @@ jobs:
         run: python scripts/validate_adr_ocd_bridge.py
 
       - name: Run bridge and governed pipeline tests
-        run: pytest -o addopts='' tests/test_adr_ocd_bridge_validation.py tests/test_qps_triage_bridge.py tests/test_qps_triage_pipeline.py tests/test_qps_receipt_consumer.py
+        run: pytest -o addopts='' tests/test_adr_ocd_bridge_validation.py tests/test_qps_triage_bridge.py tests/test_qps_triage_pipeline.py tests/test_qps_receipt_consumer.py tests/test_qps_release_baseline.py
 
       - name: Run Wave 8 governed pipeline fixture
         env:
           QPS_EVIDENCE_GIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
-          rm -rf .artifacts/qps-triage-wave8 .artifacts/qps-triage-wave9 .artifacts/qps-triage-wave10
+          rm -rf .artifacts/qps-triage-wave8 .artifacts/qps-triage-wave9 .artifacts/qps-triage-wave10 .artifacts/qps-triage-wave11
           python scripts/run_qps_triage_pipeline.py \
             --input-analysis tests/fixtures/qps_triage_pipeline_input.json \
             --output-dir .artifacts/qps-triage-wave8
@@ -108,7 +113,7 @@ jobs:
             --artifact-name 'qps-triage-wave8-${{ github.event.pull_request.head.sha || github.sha }}' \
             --output .artifacts/qps-triage-wave9/qps_triage_ci_registry_receipt.json
 
-      - name: Consume Wave 9 receipt into release baseline
+      - name: Consume Wave 9 receipt into release evidence
         run: |
           mkdir -p .artifacts/qps-triage-wave10
           python src/dashboard/qps_receipt_consumer.py \
@@ -121,6 +126,16 @@ jobs:
             --qps-registry-receipt .artifacts/qps-triage-wave9/qps_triage_ci_registry_receipt.json \
             --expected-git-sha '${{ github.event.pull_request.head.sha || github.sha }}' \
             > .artifacts/qps-triage-wave10/canonical_dashboard.json
+
+      - name: Promote Wave 11 procurement release baseline
+        run: |
+          mkdir -p .artifacts/qps-triage-wave11
+          python scripts/build_qps_release_baseline.py \
+            --evidence .artifacts/qps-triage-wave10/qps_release_baseline_evidence.json \
+            --stage final_corrigendum \
+            --expected-git-sha '${{ github.event.pull_request.head.sha || github.sha }}' \
+            --output .artifacts/qps-triage-wave11/qps_release_baseline_manifest.json \
+            --require-promote
 
       - name: Upload Wave 9 registry receipt
         uses: actions/upload-artifact@v4
@@ -135,5 +150,13 @@ jobs:
         with:
           name: qps-triage-wave10-consumption-${{ github.event.pull_request.head.sha || github.sha }}
           path: .artifacts/qps-triage-wave10/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Wave 11 release baseline decision
+        uses: actions/upload-artifact@v4
+        with:
+          name: qps-triage-wave11-release-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .artifacts/qps-triage-wave11/
           if-no-files-found: error
           retention-days: 14
