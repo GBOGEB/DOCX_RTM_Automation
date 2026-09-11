@@ -1,9 +1,10 @@
 config_id: QPS_TRIAGE_PARSER_CONFIG
-version: 0.2.0
+version: 0.3.0
 status: draft
 purpose: >
   Wire the ADR_OCD taxonomy and QPS triage applicability model into parser-side
-  enrichment and optionally enable direct EnhancedParserEngine integration.
+  enrichment, optionally enable direct EnhancedParserEngine integration, and
+  persist QPS triage outputs through the normal enhanced-analysis export path.
 
 qps_triage:
   enabled: true
@@ -24,6 +25,21 @@ outputs:
   traceability_rows_key: qps_triage_traceability_rows
   json_export_name: qps_triage_enriched_analysis.json
   traceability_csv_name: qps_triage_traceability_rows.csv
+  engine_export_files:
+    - enhanced_analysis.json
+    - enhanced_rtm_elements.json
+    - enhanced_otc_elements.json
+    - enhanced_del_elements.json
+    - relationship_mapping.json
+    - recursive_mapping.json
+    - parsing_statistics.json
+    - qps_triage_items.json
+    - qps_triage_traceability_rows.json
+    - qps_triage_traceability_rows.csv
+    - qps_triage_downstream_index.json
+    - qps_triage_rtm_rows.csv
+    - qps_triage_dtm_rows.csv
+    - export_manifest.json
 
 waves:
   wave_2a:
@@ -67,3 +83,17 @@ waves:
       - qps_triage_items
       - qps_triage_traceability_rows
       - parsing_metadata.qps_triage_bridge
+  wave_4b:
+    name: export_persistence_and_downstream_index
+    status: implemented_by_EnhancedParserEngine_export_enhanced_analysis
+    rule: >
+      EnhancedParserEngine.export_enhanced_analysis() persists the last parse
+      result and, when QPS triage outputs are present, writes triage JSON, trace
+      CSV, and RTM/DTM downstream index files for report generators.
+    emits:
+      - qps_triage_items.json
+      - qps_triage_traceability_rows.json
+      - qps_triage_traceability_rows.csv
+      - qps_triage_downstream_index.json
+      - qps_triage_rtm_rows.csv
+      - qps_triage_dtm_rows.csv
