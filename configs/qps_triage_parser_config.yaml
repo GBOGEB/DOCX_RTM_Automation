@@ -1,11 +1,12 @@
 config_id: QPS_TRIAGE_PARSER_CONFIG
-version: 0.5.0
+version: 0.6.0
 status: draft
 purpose: >
   Wire the ADR_OCD taxonomy and QPS triage applicability model into parser-side
   enrichment, persist QPS triage outputs, generate downstream dashboard/report
   artifacts, link them into the canonical dashboard, orchestrate the full chain,
-  and bind generated evidence to an exact Git SHA and CI run.
+  bind generated evidence to an exact Git SHA and CI run, and bind the resulting
+  bundle to the external GitHub Actions artifact object that stores it.
 
 qps_triage:
   enabled: true
@@ -51,6 +52,7 @@ outputs:
     - qps_triage_evidence_manifest.json
     - qps_triage_governed_receipt.json
     - SHA256SUMS
+    - qps_triage_ci_registry_receipt.json
 
 waves:
   wave_2a:
@@ -77,14 +79,9 @@ waves:
   wave_7:
     name: one_command_pipeline_and_ci_archive
     status: superseded_by_wave_8_governed_pipeline
-    stages:
-      - parser
-      - enhanced_export
-      - qps_triage_dashboard
-      - canonical_dashboard
   wave_8:
     name: exact_sha_evidence_governance
-    status: implemented_by_governed_pipeline_and_receipt_verifier
+    status: implemented_and_runtime_verified
     command: >
       python scripts/run_qps_triage_pipeline.py --input-analysis
       tests/fixtures/qps_triage_pipeline_input.json --output-dir
@@ -112,3 +109,23 @@ waves:
       SHA256SUMS shall cover every bundle file except itself.
     ci_artifact: qps-triage-wave8-${exact_head_sha}
     retention_days: 14
+  wave_9:
+    name: external_ci_artifact_registry_receipt
+    status: implemented_pending_runtime_verification
+    producer: scripts/create_qps_triage_ci_registry_receipt.py
+    source_artifact: qps-triage-wave8-${exact_head_sha}
+    binds:
+      - artifact_id
+      - artifact_name
+      - artifact_url
+      - artifact_digest
+      - exact_head_sha
+      - workflow_run_id
+      - qps_triage_governed_receipt_sha256
+      - SHA256SUMS_sha256
+    provider_digest: actions/upload-artifact@v4.artifact-digest
+    registry_artifact: qps-triage-wave9-registry-${exact_head_sha}
+    victory_condition: >
+      Wave 8 bundle upload PASS, provider artifact id/url/digest returned,
+      registry receipt generated from those observed outputs, and the registry
+      receipt itself uploaded successfully for the same exact head SHA.

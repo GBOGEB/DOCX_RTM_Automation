@@ -16,6 +16,7 @@ on:
       - 'scripts/export_qps_triage_traceability.py'
       - 'scripts/run_qps_triage_pipeline.py'
       - 'scripts/verify_qps_triage_receipt.py'
+      - 'scripts/create_qps_triage_ci_registry_receipt.py'
       - 'tests/fixtures/qps_triage_pipeline_input.json'
       - 'tests/test_adr_ocd_bridge_validation.py'
       - 'tests/test_qps_triage_bridge.py'
@@ -29,6 +30,7 @@ on:
       - feature/qps-triage-engine-integration
       - feature/qps-triage-export-persistence
       - feature/qps-triage-wave8-evidence-governance
+      - feature/qps-triage-wave9-ci-registry-receipt
     paths:
       - 'glossary/GLOSSARY.yaml'
       - 'schemas/glossary.schema.json'
@@ -43,6 +45,7 @@ on:
       - 'scripts/export_qps_triage_traceability.py'
       - 'scripts/run_qps_triage_pipeline.py'
       - 'scripts/verify_qps_triage_receipt.py'
+      - 'scripts/create_qps_triage_ci_registry_receipt.py'
       - 'tests/fixtures/qps_triage_pipeline_input.json'
       - 'tests/test_adr_ocd_bridge_validation.py'
       - 'tests/test_qps_triage_bridge.py'
@@ -76,7 +79,7 @@ jobs:
         env:
           QPS_EVIDENCE_GIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
-          rm -rf .artifacts/qps-triage-wave8
+          rm -rf .artifacts/qps-triage-wave8 .artifacts/qps-triage-wave9
           python scripts/run_qps_triage_pipeline.py \
             --input-analysis tests/fixtures/qps_triage_pipeline_input.json \
             --output-dir .artifacts/qps-triage-wave8
@@ -85,9 +88,29 @@ jobs:
         run: python scripts/verify_qps_triage_receipt.py .artifacts/qps-triage-wave8
 
       - name: Upload Wave 8 governed evidence bundle
+        id: wave8_bundle
         uses: actions/upload-artifact@v4
         with:
           name: qps-triage-wave8-${{ github.event.pull_request.head.sha || github.sha }}
           path: .artifacts/qps-triage-wave8/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Create Wave 9 CI registry receipt
+        run: |
+          mkdir -p .artifacts/qps-triage-wave9
+          python scripts/create_qps_triage_ci_registry_receipt.py \
+            .artifacts/qps-triage-wave8 \
+            --artifact-id '${{ steps.wave8_bundle.outputs.artifact-id }}' \
+            --artifact-url '${{ steps.wave8_bundle.outputs.artifact-url }}' \
+            --artifact-digest '${{ steps.wave8_bundle.outputs.artifact-digest }}' \
+            --artifact-name 'qps-triage-wave8-${{ github.event.pull_request.head.sha || github.sha }}' \
+            --output .artifacts/qps-triage-wave9/qps_triage_ci_registry_receipt.json
+
+      - name: Upload Wave 9 registry receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: qps-triage-wave9-registry-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .artifacts/qps-triage-wave9/qps_triage_ci_registry_receipt.json
           if-no-files-found: error
           retention-days: 14
