@@ -1,13 +1,24 @@
 manifest_id: ADR_OCD_QPS_BRIDGE
-version: 0.1.0
-status: draft
-branch: feature/ADR_OCD-qps-procurement-bridge
+version: 0.2.0
+status: controlled_projection_candidate
+branch: main
 base_repository: GBOGEB/DOCX_RTM_Automation
 
+qps_authority_source:
+  repo: GBOGEB/cryoplant-project
+  artifact: ocd-adr/20_canonical/control/QPS_GLOBAL_ADR_OCD_SSOT_v1.json
+  canonical_ocd: ocd-adr/20_canonical/ocd/QPS_OCD_v0.8_CONSOLIDATED.md
+  canonical_adr_register: ocd-adr/20_canonical/adr/QPS_ADR_REGISTER_v0.3.md
+  authority_scope: QPS_ENGINEERING
+  projection_role: TOOLING_TRANSFORM
+  engineering_promotion_forbidden: true
+  source_or_payload_digest_when_exchanged: REQUIRED
+
 purpose: >
-  Federate QPS Requirements, Architecture Design Report, and Operational Concept
-  Document content inside DOCX_RTM_Automation without disrupting the existing parser,
-  RTM, DEL, OTC, DMAIC, visualization, or orchestration implementation.
+  Federate QPS Requirements, Architecture Decision Record, and Operational Concept
+  Description content inside DOCX_RTM_Automation without disrupting the existing parser,
+  RTM, DEL, OTC, DMAIC, visualization, or orchestration implementation. This bridge is a
+  non-authoritative tooling projection of child-owned QPS engineering content.
 
 naming_policy:
   internal_legacy_alias:
@@ -18,6 +29,12 @@ naming_policy:
     term: QPS Requirements
     required: true
     reason: Main technical requirements content used by Applicants preparing Fixed Price Offers.
+  qps_document_semantics:
+    adr: Architecture Decision Record
+    ocd: Operational Concept Description
+    legacy_aliases:
+      - Architecture Design Report
+      - Operational Concept Document
   procurement_package_terms:
     - Invitation to Tender
     - Tender Specifications
@@ -36,38 +53,28 @@ federated_documents:
       - Applicants
       - evaluation_team
       - contracting_authority
-    outputs:
-      - docx
-      - markdown
-      - json
-      - rtm
+    outputs: [docx, markdown, json, rtm]
 
   adr:
-    canonical_name: Architecture Design Report
+    canonical_name: Architecture Decision Record
     abbreviation: ADR
-    role: design_rationale_and_architecture_bridge
+    legacy_aliases:
+      - Architecture Design Report
+    role: decision_rationale_and_architecture_bridge
     parent_sources:
       - qps_requirements
-    outputs:
-      - docx
-      - markdown
-      - json
-      - decision_register
-      - lineage
+    outputs: [docx, markdown, json, decision_register, lineage]
 
   ocd:
-    canonical_name: Operational Concept Document
+    canonical_name: Operational Concept Description
     abbreviation: OCD
+    legacy_aliases:
+      - Operational Concept Document
     role: operational_scenarios_and_workflows_bridge
     parent_sources:
       - qps_requirements
       - adr
-    outputs:
-      - docx
-      - markdown
-      - json
-      - operational_test_cases
-      - lineage
+    outputs: [docx, markdown, json, operational_test_cases, lineage]
 
 change_process:
   stages:
@@ -79,6 +86,7 @@ change_process:
   rule: >
     Any agreed change after publication shall be traceable from QPS source requirement
     to ADR decision impact, OCD operational impact, RTM row, DTM row, and final Corrigendum entry.
+    No transformed or derived bridge content may promote child engineering state.
 
 traceability_edges:
   - from: QPS Requirement
@@ -110,6 +118,9 @@ quality_gates:
   - id: QG-ADR-OCD-004
     name: corrigendum_impact
     rule: Each final Corrigendum entry should identify impacted QPS, ADR, OCD, RTM, and DTM objects.
+  - id: QG-ADR-OCD-005
+    name: child_authority_binding
+    rule: Every QPS engineering projection binds the child global ADR/OCD SSOT and forbids engineering promotion outside child re-entry.
 
 pruning_policy:
   safe_to_prune:
