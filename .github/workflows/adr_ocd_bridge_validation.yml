@@ -7,19 +7,29 @@ on:
       - 'schemas/glossary.schema.json'
       - 'schemas/adr_ocd_bridge_manifest.schema.json'
       - 'federation/ADR_OCD/**'
+      - 'configs/qps_triage_parser_config.yaml'
+      - 'parser/qps_triage_bridge.py'
       - 'scripts/validate_adr_ocd_bridge.py'
+      - 'scripts/export_qps_triage_traceability.py'
       - 'tests/test_adr_ocd_bridge_validation.py'
+      - 'tests/test_qps_triage_bridge.py'
       - '.github/workflows/adr_ocd_bridge_validation.yml'
   push:
     branches:
       - feature/ADR_OCD-qps-procurement-bridge
+      - feature/ADR_OCD-qps-triage-applicability
+      - feature/qps-triage-parser-export-waves
     paths:
       - 'glossary/GLOSSARY.yaml'
       - 'schemas/glossary.schema.json'
       - 'schemas/adr_ocd_bridge_manifest.schema.json'
       - 'federation/ADR_OCD/**'
+      - 'configs/qps_triage_parser_config.yaml'
+      - 'parser/qps_triage_bridge.py'
       - 'scripts/validate_adr_ocd_bridge.py'
+      - 'scripts/export_qps_triage_traceability.py'
       - 'tests/test_adr_ocd_bridge_validation.py'
+      - 'tests/test_qps_triage_bridge.py'
       - '.github/workflows/adr_ocd_bridge_validation.yml'
 
 jobs:
@@ -43,4 +53,4 @@ jobs:
         run: python scripts/validate_adr_ocd_bridge.py
 
       - name: Run bridge tests
-        run: pytest tests/test_adr_ocd_bridge_validation.py
+        run: pytest tests/test_adr_ocd_bridge_validation.py tests/test_qps_triage_bridge.py
