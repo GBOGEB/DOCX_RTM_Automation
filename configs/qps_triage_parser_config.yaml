@@ -1,0 +1,52 @@
+config_id: QPS_TRIAGE_PARSER_CONFIG
+version: 0.1.0
+status: draft
+purpose: >
+  Wire the ADR_OCD taxonomy and QPS triage applicability model into parser-side
+  enrichment without changing the core parser contract.
+
+inputs:
+  taxonomy: federation/ADR_OCD/taxonomy.yaml
+  applicability: federation/ADR_OCD/qps_triage_applicability.yaml
+  enhanced_parser_keys:
+    rtm: enhanced_rtm_elements
+    otc: enhanced_otc_elements
+    dtm: enhanced_del_elements
+
+outputs:
+  triage_items_key: qps_triage_items
+  traceability_rows_key: qps_triage_traceability_rows
+  json_export_name: qps_triage_enriched_analysis.json
+  traceability_csv_name: qps_triage_traceability_rows.csv
+
+waves:
+  wave_2a:
+    name: parser_configuration_wiring
+    status: implemented_by_parser_qps_triage_bridge
+    checks:
+      - taxonomy_yaml_loads
+      - applicability_yaml_loads
+      - parser_config_declares_input_keys
+  wave_2b:
+    name: triage_item_emission
+    status: implemented_by_QPSTriageBridge.emit_triage_items
+    emits:
+      - triage_id
+      - source_id
+      - source_type
+      - primary_lane
+      - disposition
+      - maturity_level
+      - priority_score
+  wave_3:
+    name: traceability_export_rows
+    status: implemented_by_QPSTriageBridge.export_traceability_rows
+    emits:
+      - row_id
+      - triage_id
+      - from_object
+      - relation
+      - to_object
+      - disposition
+      - maturity_level
+      - evidence_class
