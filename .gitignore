@@ -152,3 +152,6 @@ site/
 
 # Temporary refactoring files
 temp_*
+
+# MIP generated receipts (local/private evidence)
+MIP/receipts/
