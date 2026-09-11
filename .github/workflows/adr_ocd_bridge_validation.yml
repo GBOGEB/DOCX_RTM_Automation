@@ -53,7 +53,7 @@ jobs:
       - name: Install lightweight validation dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pyyaml pytest pandas python-docx
+          python -m pip install pyyaml pytest pytest-cov pandas python-docx
 
       - name: Validate bridge artifacts
         run: python scripts/validate_adr_ocd_bridge.py
