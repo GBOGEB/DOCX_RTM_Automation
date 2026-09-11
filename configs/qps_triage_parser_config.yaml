@@ -1,9 +1,15 @@
 config_id: QPS_TRIAGE_PARSER_CONFIG
-version: 0.1.0
+version: 0.2.0
 status: draft
 purpose: >
   Wire the ADR_OCD taxonomy and QPS triage applicability model into parser-side
-  enrichment without changing the core parser contract.
+  enrichment and optionally enable direct EnhancedParserEngine integration.
+
+qps_triage:
+  enabled: true
+  taxonomy_path: federation/ADR_OCD/taxonomy.yaml
+  applicability_path: federation/ADR_OCD/qps_triage_applicability.yaml
+  fail_on_error: true
 
 inputs:
   taxonomy: federation/ADR_OCD/taxonomy.yaml
@@ -50,3 +56,14 @@ waves:
       - disposition
       - maturity_level
       - evidence_class
+  wave_4a:
+    name: optional_engine_integration
+    status: implemented_by_EnhancedParserEngine_parse_document_flag
+    rule: >
+      EnhancedParserEngine.parse_document() calls QPSTriageBridge.enrich_analysis()
+      only when qps_triage.enabled is true. The default parser config keeps the
+      bridge disabled for backward compatibility.
+    emits:
+      - qps_triage_items
+      - qps_triage_traceability_rows
+      - parsing_metadata.qps_triage_bridge
