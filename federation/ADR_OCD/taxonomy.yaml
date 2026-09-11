@@ -1,10 +1,19 @@
 taxonomy_id: ADR_OCD_QPS_TAXONOMY
-version: 0.2.0
-status: draft
+version: 0.3.0
+status: controlled_projection_candidate
 purpose: >
   Provide isolated parser and traceability terminology hooks for QPS Requirements,
   ADR, OCD, negotiation stages, corrigendum handling, and triage classification
-  without changing the parser engine.
+  without changing the parser engine. QPS engineering terms are projections of the
+  child-authoritative global ADR/OCD SSOT.
+
+qps_authority_source:
+  repo: GBOGEB/cryoplant-project
+  artifact: ocd-adr/20_canonical/control/QPS_GLOBAL_ADR_OCD_SSOT_v1.json
+  authority_scope: QPS_ENGINEERING
+  projection_role: TOOLING_TAXONOMY
+  engineering_promotion_forbidden: true
+  source_or_payload_digest_when_exchanged: REQUIRED
 
 document_roles:
   - role_id: DOC-QPS
@@ -20,23 +29,27 @@ document_roles:
     outward_facing: true
 
   - role_id: DOC-ADR
-    standard_term: Architecture Design Report
+    standard_term: Architecture Decision Record
     aliases:
       - ADR
+      - Architecture Design Report
       - architecture report
     parser_tags:
+      - architecture_decision_record
       - architecture_design_report
       - design_rationale
       - decision_register
     outward_facing: false
 
   - role_id: DOC-OCD
-    standard_term: Operational Concept Document
+    standard_term: Operational Concept Description
     aliases:
       - OCD
+      - Operational Concept Document
       - operational concept
       - CONOPS
     parser_tags:
+      - operational_concept_description
       - operational_concept_document
       - operational_scenarios
       - operator_workflows
@@ -59,63 +72,29 @@ document_roles:
 
 procurement_terms:
   - term: Applicant
-    parser_tags:
-      - applicant
-      - candidate
-      - bidder
-      - tenderer
+    parser_tags: [applicant, candidate, bidder, tenderer]
   - term: Fixed Price Offer
-    parser_tags:
-      - fixed_price_offer
-      - fixed_price_contract
-      - commercial_offer
+    parser_tags: [fixed_price_offer, fixed_price_contract, commercial_offer]
   - term: Invitation to Tender
-    parser_tags:
-      - invitation_to_tender
-      - itt
-      - tender_package
+    parser_tags: [invitation_to_tender, itt, tender_package]
   - term: Negotiation Stage
-    parser_tags:
-      - negotiation_stage
-      - negotiation_round
-      - negotiation_phase
+    parser_tags: [negotiation_stage, negotiation_round, negotiation_phase]
   - term: Corrigendum
-    parser_tags:
-      - corrigendum
-      - amendment_notice
-      - correction_notice
+    parser_tags: [corrigendum, amendment_notice, correction_notice]
 
 triage_terms:
   - term: ACCEPT
-    parser_tags:
-      - accept
-      - accepted
-      - source_supported
+    parser_tags: [accept, accepted, source_supported]
   - term: DEFER
-    parser_tags:
-      - defer
-      - deferred
-      - source_missing
+    parser_tags: [defer, deferred, source_missing]
   - term: REJECT
-    parser_tags:
-      - reject
-      - rejected
-      - not_applicable
+    parser_tags: [reject, rejected, not_applicable]
   - term: NEEDS_SOURCE
-    parser_tags:
-      - needs_source
-      - source_required
-      - evidence_required
+    parser_tags: [needs_source, source_required, evidence_required]
   - term: NEEDS_IMPLEMENTATION
-    parser_tags:
-      - needs_implementation
-      - implementation_gap
-      - not_wired
+    parser_tags: [needs_implementation, implementation_gap, not_wired]
   - term: NEEDS_REVIEW
-    parser_tags:
-      - needs_review
-      - engineering_review
-      - procurement_review
+    parser_tags: [needs_review, engineering_review, procurement_review]
 
 traceability_relations:
   - relation: justified_by
