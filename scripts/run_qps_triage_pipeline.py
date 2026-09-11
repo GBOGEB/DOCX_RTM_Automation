@@ -49,6 +49,11 @@ def _sha256(path: Path) -> str:
 
 
 def _git_sha() -> str:
+    # On pull_request workflows GITHUB_SHA is the synthetic merge ref. CI passes
+    # QPS_EVIDENCE_GIT_SHA explicitly so the governed receipt binds to the exact
+    # source/head commit that produced the payload.
+    if os.getenv("QPS_EVIDENCE_GIT_SHA"):
+        return os.environ["QPS_EVIDENCE_GIT_SHA"]
     if os.getenv("GITHUB_SHA"):
         return os.environ["GITHUB_SHA"]
     try:
@@ -61,6 +66,7 @@ def _run_identity() -> dict[str, Any]:
     return {
         "repository": os.getenv("GITHUB_REPOSITORY", "GBOGEB/DOCX_RTM_Automation"),
         "git_sha": _git_sha(),
+        "checkout_sha": os.getenv("GITHUB_SHA", "LOCAL"),
         "git_ref": os.getenv("GITHUB_REF", "LOCAL"),
         "git_head_ref": os.getenv("GITHUB_HEAD_REF", ""),
         "workflow": os.getenv("GITHUB_WORKFLOW", "LOCAL"),
@@ -110,7 +116,6 @@ def run_pipeline(
     dashboard_outputs = QPSTriageDashboardGenerator(target).write_outputs(target)
     qps_dashboard_path = Path(dashboard_outputs["json"])
 
-    # Wave 7 repair: use the defined dashboard path when constructing canonical stats.
     canonical_stats = collect_stats(qps_dashboard_path)
     canonical_dashboard_path = target / "canonical_dashboard.json"
     _write_json(canonical_dashboard_path, canonical_stats)
