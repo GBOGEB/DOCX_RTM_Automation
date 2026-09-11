@@ -15,6 +15,7 @@ on:
       - 'scripts/validate_adr_ocd_bridge.py'
       - 'scripts/export_qps_triage_traceability.py'
       - 'scripts/run_qps_triage_pipeline.py'
+      - 'scripts/verify_qps_triage_receipt.py'
       - 'tests/fixtures/qps_triage_pipeline_input.json'
       - 'tests/test_adr_ocd_bridge_validation.py'
       - 'tests/test_qps_triage_bridge.py'
@@ -27,6 +28,7 @@ on:
       - feature/qps-triage-parser-export-waves
       - feature/qps-triage-engine-integration
       - feature/qps-triage-export-persistence
+      - feature/qps-triage-wave8-evidence-governance
     paths:
       - 'glossary/GLOSSARY.yaml'
       - 'schemas/glossary.schema.json'
@@ -40,6 +42,7 @@ on:
       - 'scripts/validate_adr_ocd_bridge.py'
       - 'scripts/export_qps_triage_traceability.py'
       - 'scripts/run_qps_triage_pipeline.py'
+      - 'scripts/verify_qps_triage_receipt.py'
       - 'tests/fixtures/qps_triage_pipeline_input.json'
       - 'tests/test_adr_ocd_bridge_validation.py'
       - 'tests/test_qps_triage_bridge.py'
@@ -66,20 +69,25 @@ jobs:
       - name: Validate bridge artifacts
         run: python scripts/validate_adr_ocd_bridge.py
 
-      - name: Run bridge tests
+      - name: Run bridge and governed pipeline tests
         run: pytest -o addopts='' tests/test_adr_ocd_bridge_validation.py tests/test_qps_triage_bridge.py tests/test_qps_triage_pipeline.py
 
-      - name: Run Wave 7 pipeline fixture
+      - name: Run Wave 8 governed pipeline fixture
+        env:
+          QPS_EVIDENCE_GIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
-          rm -rf .artifacts/qps-triage-wave7
+          rm -rf .artifacts/qps-triage-wave8
           python scripts/run_qps_triage_pipeline.py \
             --input-analysis tests/fixtures/qps_triage_pipeline_input.json \
-            --output-dir .artifacts/qps-triage-wave7
+            --output-dir .artifacts/qps-triage-wave8
 
-      - name: Upload Wave 7 generated artifacts
+      - name: Verify Wave 8 hashes and manifest parity
+        run: python scripts/verify_qps_triage_receipt.py .artifacts/qps-triage-wave8
+
+      - name: Upload Wave 8 governed evidence bundle
         uses: actions/upload-artifact@v4
         with:
-          name: qps-triage-wave7-${{ github.sha }}
-          path: .artifacts/qps-triage-wave7/
+          name: qps-triage-wave8-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .artifacts/qps-triage-wave8/
           if-no-files-found: error
           retention-days: 14
