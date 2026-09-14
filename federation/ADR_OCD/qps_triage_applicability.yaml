@@ -1,5 +1,5 @@
 applicability_id: ADR_OCD_QPS_TRIAGE_APPLICABILITY
-version: 0.3.0
+version: 0.3.1
 status: controlled_projection_candidate
 purpose: >
   Make the ADR_OCD federation bridge directly usable for QPS Requirements and
@@ -96,31 +96,37 @@ triage_lanes:
     accepted_inputs: [rtm_row, dtm_row, lineage_edge, evidence_gap]
     outputs: [traceability_update_candidate, evidence_request, maturity_delta]
 
-  - lane_id: TRIAGE-RELIABILITY
-    name: Reliability analytical-consumer lane
-    purpose: >
-      Consume source-bound or explicitly scenario-labelled reliability inputs and derive
-      deterministic MTBF/lambda/exposure/Poisson diagnostics while preserving component,
-      architecture, consequence, common-cause and Table-10 authority boundaries.
-    accepted_inputs:
-      - reliability_source_atom
-      - mtbf_input
-      - lambda_input
-      - operating_state_exposure
-      - architecture_response
-      - recovery_or_mdt
-      - containment_or_propagation_input
-      - reliability_scenario
-    outputs:
-      - reliability_model_candidate
-      - campaign_probability_projection
-      - poisson_count_projection
-      - reliability_provenance
-      - reliability_readiness
-      - child_reentry_request
-    guard: >
-      Component MTBF or model ACTIVE state cannot be promoted to QPS system-event MTBF,
-      Table-10 consumption, N+1 proof, or engineering acceptance without explicit child re-entry.
+reliability_analysis_profile:
+  profile_id: QPS_RELIABILITY_CROSSCUT
+  role: ANALYTICAL_CONSUMER_PROFILE
+  topic_is_not_lane: true
+  primary_lane_rule: >
+    Reliability evidence retains exactly one primary lane from the four canonical triage lanes.
+    Reliability analysis is a cross-cutting profile and shall not become a competing fifth lane.
+  lane_mapping:
+    contractual_requirement: TRIAGE-QPS
+    architecture_redundancy_common_cause: TRIAGE-ADR
+    degraded_recovery_maintenance_state: TRIAGE-OCD
+    source_evidence_traceability: TRIAGE-RTM-DTM
+  accepted_inputs:
+    - reliability_source_atom
+    - mtbf_input
+    - lambda_input
+    - operating_state_exposure
+    - architecture_response
+    - recovery_or_mdt
+    - containment_or_propagation_input
+    - reliability_scenario
+  outputs:
+    - reliability_model_candidate
+    - campaign_probability_projection
+    - poisson_count_projection
+    - reliability_provenance
+    - reliability_readiness
+    - child_reentry_request
+  guard: >
+    Component MTBF or model ACTIVE state cannot be promoted to QPS system-event MTBF,
+    Table-10 consumption, N+1 proof, or engineering acceptance without explicit child re-entry.
 
 triage_dispositions:
   - disposition: ACCEPT
@@ -282,7 +288,7 @@ control_gates:
     rule: Every outward-facing term resolves to glossary/GLOSSARY.yaml or an explicitly governed federation term.
   - gate_id: QPS-TRIAGE-GATE-002
     name: lane_assignment
-    rule: Every triage item has exactly one primary lane and may have secondary lanes.
+    rule: Every triage item has exactly one primary lane from TRIAGE-QPS, TRIAGE-ADR, TRIAGE-OCD, or TRIAGE-RTM-DTM and may have secondary impacts.
   - gate_id: QPS-TRIAGE-GATE-003
     name: disposition_assignment
     rule: Every triage item has one tooling disposition and cannot use it as automatic QPS engineering disposition.
@@ -310,3 +316,6 @@ control_gates:
   - gate_id: QPS-TRIAGE-GATE-011
     name: method_selection
     rule: 3PR, MIP, 3PC and 3P3 are selected only when their entry condition can create new evidence, remove a blocker, protect recurrence or prove required propagation; otherwise STOP/REPEAT.
+  - gate_id: QPS-TRIAGE-GATE-012
+    name: reliability_crosscut
+    rule: Reliability Analysis is a cross-cutting analytical profile; TRIAGE-RELIABILITY is forbidden as a primary triage lane and reliability evidence must retain one canonical primary lane.
