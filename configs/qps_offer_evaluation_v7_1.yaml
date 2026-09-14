@@ -1,0 +1,187 @@
+profile_id: QPS_OFFER_EVALUATION_V7_1
+version: 7.1
+status: controlled_projection_candidate
+purpose: >
+  Bind the OFFER-01..OFFER-50 static/cold evaluation method into QPS Triage as
+  a procurement-facing prioritisation and evidence-review profile without
+  promoting evaluation outputs into QPS engineering truth.
+
+authority_boundary:
+  qps_engineering_authority: GBOGEB/cryoplant-project
+  qps_tooling_repo: GBOGEB/DOCX_RTM_Automation
+  evaluation_role: PROCUREMENT_EVALUATION_METHOD
+  engineering_promotion_forbidden: true
+  seeded_bidder_values_are_engineering_evidence: false
+  seeded_bidder_values_evidence_class: POSTULATED
+  exact_binary_hash_binding: DEFER
+  exact_binary_hash_reason: >
+    Chat-produced v7.1 Word/Excel/PPT artifacts are not yet repository-bound by
+    exact SHA256 in this PR. Their filenames/version are method references only
+    until a governed artifact receipt is attached.
+
+method_lock:
+  static_requirement_ranking_first: true
+  bidder_scoring_second: true
+  risk_overlay_third: true
+  deterministic: true
+  stochastic_production_seed: false
+  schedule_policy: gate_only
+  cost_activation: only_if_technical_near_tie
+  precedence:
+    - legal_gate
+    - functional_non_negotiable
+    - reliability_2K_continuity
+    - performance_heat_load_match
+    - verifiability_QA_FAT_SAT
+    - lifecycle_maintainability
+    - cost
+
+core_equations:
+  base_score: "Score_i = W_i * E_i * G_i"
+  pairwise_bidder: "BT(A,B) = sum_i(w_i * S_i(A,B))"
+  total_risk: "R_i = BaseRisk_i + BidderRisk_i + SystemRisk_i"
+  adjusted_score: "Adjusted_i = Score_i * (1 - R_i)"
+  interpretation:
+    ranking: requirement_importance
+    risk: delivery_confidence
+
+cold_rank:
+  tier_0_gates:
+    - OFFER-01
+    - OFFER-02
+    - OFFER-03
+    - OFFER-47
+    - OFFER-48
+    - OFFER-49
+  tier_1_primary:
+    - OFFER-11
+    - OFFER-04
+    - OFFER-21
+    - OFFER-22
+    - OFFER-28
+    - OFFER-39
+    - OFFER-20
+    - OFFER-13
+    - OFFER-27
+    - OFFER-29
+  tier_2_secondary:
+    - OFFER-06
+    - OFFER-07
+    - OFFER-12
+    - OFFER-19
+    - OFFER-23
+    - OFFER-24
+    - OFFER-26
+    - OFFER-30
+    - OFFER-33
+    - OFFER-41
+    - OFFER-42
+    - OFFER-43
+    - OFFER-46
+    - OFFER-37
+    - OFFER-34
+    - OFFER-35
+  tier_3_contextual:
+    - OFFER-05
+    - OFFER-08
+    - OFFER-09
+    - OFFER-10
+    - OFFER-14
+    - OFFER-15
+    - OFFER-16
+    - OFFER-17
+    - OFFER-18
+    - OFFER-25
+    - OFFER-31
+    - OFFER-32
+    - OFFER-36
+    - OFFER-38
+    - OFFER-40
+    - OFFER-44
+    - OFFER-45
+    - OFFER-50
+
+triage_projection:
+  primary_lane: TRIAGE-QPS
+  secondary_lanes:
+    reliability: [TRIAGE-RTM-DTM, TRIAGE-OCD]
+    controls: [TRIAGE-ADR, TRIAGE-OCD, TRIAGE-RTM-DTM]
+    verification_quality: [TRIAGE-RTM-DTM]
+  default_disposition_before_bidder_source_binding: NEEDS_SOURCE
+  default_maturity_before_bidder_source_binding: 0.3
+  rules:
+    - >
+      Static rank may influence triage priority but may not be used as QPS
+      engineering acceptance or compliance credit.
+    - >
+      Seeded bidder A/B values remain POSTULATED until replaced by exact-source
+      bidder evidence and a governed source identity.
+    - >
+      Risk is independent of static rank; risk may change bidder comparison but
+      must not rewrite the requirement-importance hierarchy.
+    - >
+      Gate failure overrides score. Cost cannot rescue a legal, functional, or
+      dominant technical failure.
+
+reliability_bridge_candidates:
+  - offer_id: OFFER-11
+    topic: MTBF / recovery / intervention philosophy
+    bridge_role: primary_reliability_evidence_candidate
+    qps_triage_lane: TRIAGE-QPS
+    downstream: [QPS_RELIABILITY_BRIDGE]
+    activation_requires:
+      - exact_source_identity
+      - upstream_ACCEPT
+      - unit_reference_period
+      - architecture_completeness
+      - deterministic_model_consistency
+  - offer_id: OFFER-21
+    topic: LOOP strategy
+    bridge_role: degraded_state_and_recovery_context
+    downstream: [QPS_RELIABILITY_BRIDGE, TRIAGE-OCD]
+  - offer_id: OFFER-22
+    topic: helium recovery / S-line handling
+    bridge_role: abnormal_recovery_context
+    downstream: [QPS_RELIABILITY_BRIDGE, TRIAGE-OCD]
+  - offer_id: OFFER-20
+    topic: leak / detection / helium loss
+    bridge_role: reliability_and_inventory_loss_context
+    downstream: [QPS_RELIABILITY_BRIDGE, TRIAGE-RTM-DTM]
+  - offer_id: OFFER-41
+    topic: strategic spares / critical components
+    bridge_role: maintainability_context
+    downstream: [QPS_RELIABILITY_BRIDGE, TRIAGE-RTM-DTM]
+  - offer_id: OFFER-42
+    topic: after-sales service
+    bridge_role: recovery_resource_context
+    downstream: [QPS_RELIABILITY_BRIDGE]
+  - offer_id: OFFER-43
+    topic: maintenance hours
+    bridge_role: MTTR_context
+    downstream: [QPS_RELIABILITY_BRIDGE]
+  - offer_id: OFFER-46
+    topic: risk management plan
+    bridge_role: execution_risk_context
+    downstream: [TRIAGE-QPS, TRIAGE-RTM-DTM]
+
+artifact_references:
+  canonical_word: OFFER_audit_v7_1_DELTA.docx
+  excel_engine: OFFER_ANALYSIS_v7_1_DELTA.xlsx
+  method_deck: OFFER_BT_METHOD_v7_1_DELTA.pptx
+  evaluation_deck: OFFER_EVAL_v7_1_DELTA.pptx
+  artifact_binding_status: DEFER
+
+control:
+  no_regeneration_rule: true
+  update_mode: locked_delta_integration
+  changes_allowed:
+    - presentation_tweak
+    - integration_tweak
+    - controlled_content_completion
+  forbidden_changes:
+    - rebuild_method
+    - simplify_logic
+    - change_equations
+    - change_weights
+    - change_precedence
+    - change_risk_model
