@@ -1,9 +1,12 @@
+import json
 import math
+from pathlib import Path
 
 from src.dashboard.qps_reliability_bridge import build_bridge, evaluate_item
 
 
 SHA = "a" * 40
+FIXTURES = Path(__file__).parent / "fixtures"
 
 
 def source_item(**overrides):
@@ -83,3 +86,21 @@ def test_bridge_summary_counts_pilot_records():
         "scenario_only_count": 1,
         "excluded_count": 1,
     }
+
+
+def test_real_alat_hp_atom_is_exact_source_bound_but_fail_closed():
+    payload = json.loads((FIXTURES / "qps_reliability_alat_hp_bound.json").read_text(encoding="utf-8"))
+    result = build_bridge(payload, campaign_days=90)
+    atom = result["items"][0]
+
+    assert atom["component"] == "HP_COMPRESSOR"
+    assert atom["provenance"]["source_sha_valid"] is True
+    assert atom["provenance"]["evidence_disposition"] == "DEFER"
+    assert atom["model_readiness"]["disposition"] == "SCENARIO_ONLY"
+    assert atom["model_scope"] == "component_only"
+    assert math.isclose(atom["model"]["mtbf_hours"], 333450.0)
+    assert math.isclose(atom["model"]["mtbf_years"], 333450.0 / 8760.0)
+    assert math.isclose(atom["model"]["lambda_per_year"], 8760.0 / 333450.0)
+    assert atom["model_readiness"]["checks"]["source_identity"] is True
+    assert atom["model_readiness"]["checks"]["evidence_accept"] is False
+    assert atom["model_readiness"]["checks"]["architecture"] is False
