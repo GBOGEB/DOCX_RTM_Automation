@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Canonical Artefacts Dashboard with QPS triage evidence disposition."""
+"""Canonical Artefacts Dashboard with QPS triage and reliability consumers."""
 
 from __future__ import annotations
 
@@ -77,18 +77,37 @@ def _load_qps_triage_dashboard(path_value: str | Path | None) -> dict:
     }
 
 
+def _load_qps_reliability_bridge(path_value: str | Path | None) -> dict:
+    if not path_value:
+        return {"present": False}
+    path = Path(path_value)
+    data = _load_json(path)
+    if not isinstance(data, dict) or data.get("type") != "qps_reliability_bridge":
+        return {"present": False, "path": _relative_or_absolute(path), "status": "missing_or_invalid"}
+    summary = data.get("summary", {}) if isinstance(data.get("summary"), dict) else {}
+    return {
+        "present": True,
+        "path": _relative_or_absolute(path),
+        "schema_version": data.get("schema_version"),
+        "campaign_days": data.get("campaign_days"),
+        "item_count": summary.get("item_count", 0),
+        "active_count": summary.get("active_count", 0),
+        "scenario_only_count": summary.get("scenario_only_count", 0),
+        "excluded_count": summary.get("excluded_count", 0),
+        "authority_boundary": data.get("authority_boundary"),
+    }
+
+
 def collect_stats(
     qps_triage_dashboard_path: str | Path | None = None,
     qps_registry_receipt_path: str | Path | None = None,
     expected_git_sha: str | None = None,
+    qps_reliability_bridge_path: str | Path | None = None,
 ) -> dict:
     lock = _load_json(_LOCK_PATH) or {}
     latest = _latest_artefacts()
     manifest_data = _load_json(_ARTEFACTS_DIR / "extraction_manifest.json") or {}
-    release_evidence = build_release_baseline_evidence(
-        qps_registry_receipt_path,
-        expected_git_sha=expected_git_sha,
-    )
+    release_evidence = build_release_baseline_evidence(qps_registry_receipt_path, expected_git_sha=expected_git_sha)
 
     stats: dict = {
         "lock_tag": lock.get("tag", "not locked"),
@@ -96,15 +115,12 @@ def collect_stats(
         "artefacts": {},
         "qps_triage_dashboard": _load_qps_triage_dashboard(qps_triage_dashboard_path),
         "qps_triage_release_evidence": release_evidence,
+        "qps_reliability_bridge": _load_qps_reliability_bridge(qps_reliability_bridge_path),
     }
 
     for name, path in latest.items():
         data = _load_json(path) or {}
-        entry: dict = {
-            "path": str(path.relative_to(_REPO_ROOT)),
-            "version": path.stem,
-            "locked": name in lock.get("locked_artefacts", {}),
-        }
+        entry: dict = {"path": str(path.relative_to(_REPO_ROOT)), "version": path.stem, "locked": name in lock.get("locked_artefacts", {})}
         a_type = data.get("type", "")
         if a_type == "master_requirements":
             entry["record_count"] = len(data.get("requirements", {})); entry["label"] = "Requirements"
@@ -141,6 +157,9 @@ def render_plain(stats: dict) -> None:
         print(f"  QPS Triage  : {qps.get('triage_item_count', 0)} items | RTM {qps.get('rtm_row_count', 0)} | DTM {qps.get('dtm_row_count', 0)}")
     evidence = stats["qps_triage_release_evidence"]
     print(f"  QPS Evidence: {evidence['disposition']} — {evidence['reason']}")
+    reliability = stats.get("qps_reliability_bridge", {})
+    if reliability.get("present"):
+        print(f"  Reliability : {reliability['active_count']} active | {reliability['scenario_only_count']} scenario | {reliability['excluded_count']} excluded")
     print()
     print(f"  {'Artefact':<30} {'Version':<25} {'Records':>8}  {'Locked':>6}")
     print("  " + "-" * 75)
@@ -153,15 +172,20 @@ def render_rich(stats: dict) -> None:
     console = Console()
     qps = stats.get("qps_triage_dashboard", {})
     evidence = stats["qps_triage_release_evidence"]
+    reliability = stats.get("qps_reliability_bridge", {})
     disposition_colour = "green" if evidence["disposition"] == "ACCEPT" else "yellow"
     qps_suffix = ""
     if qps.get("present"):
         qps_suffix = f"   QPS: [green]{qps.get('triage_item_count', 0)}[/green] items RTM [green]{qps.get('rtm_row_count', 0)}[/green] DTM [green]{qps.get('dtm_row_count', 0)}[/green]"
+    reliability_suffix = ""
+    if reliability.get("present"):
+        reliability_suffix = f"\nReliability bridge: [green]{reliability['active_count']} active[/green] | [yellow]{reliability['scenario_only_count']} scenario[/yellow] | [red]{reliability['excluded_count']} excluded[/red]"
     console.print(Panel.fit(
         f"[bold cyan]Canonical Artefacts Dashboard[/bold cyan]\n"
         f"Lock: [yellow]{stats['lock_tag']}[/yellow]   Runs: [yellow]{stats['extraction_runs']}[/yellow]"
         + qps_suffix
-        + f"\nQPS Evidence: [{disposition_colour}]{evidence['disposition']}[/{disposition_colour}] — {evidence['reason']}",
+        + f"\nQPS Evidence: [{disposition_colour}]{evidence['disposition']}[/{disposition_colour}] — {evidence['reason']}"
+        + reliability_suffix,
         border_style="cyan",
     ))
     table = Table(show_header=True, header_style="bold magenta")
@@ -183,8 +207,9 @@ def main() -> int:
     parser.add_argument("--qps-triage-dashboard", default=None)
     parser.add_argument("--qps-registry-receipt", default=None, help="Wave 9 qps_triage_ci_registry_receipt.json")
     parser.add_argument("--expected-git-sha", default=None, help="Exact 40-character source Git SHA required for ACCEPT")
+    parser.add_argument("--qps-reliability-bridge", default=None, help="Narrow qps_reliability_bridge.json analysis consumer")
     args = parser.parse_args()
-    stats = collect_stats(args.qps_triage_dashboard, args.qps_registry_receipt, args.expected_git_sha)
+    stats = collect_stats(args.qps_triage_dashboard, args.qps_registry_receipt, args.expected_git_sha, args.qps_reliability_bridge)
     if args.json:
         render_json_output(stats)
     elif _HAS_RICH:

@@ -1,0 +1,28 @@
+{
+  "items": [
+    {
+      "component": "HP_COMPRESSOR",
+      "qps_item_id": "TODO-009/OFFER-16/FM-HP-001",
+      "origin": "SOURCE_BOUND",
+      "evidence_disposition": "DEFER",
+      "source_git_sha": "63121ad911b65869783adfbd50e10b2703f6eb8e",
+      "source_ref": "GBOGEB/cryoplant-project:ocd-adr/20_canonical/analysis/QPS_HP_COMPRESSOR_ALAT_EVIDENCE_v0.1.yaml@63121ad911b65869783adfbd50e10b2703f6eb8e",
+      "reference_period": "custom_operating_hours",
+      "mtbf_hours": 333450,
+      "architecture": {
+        "redundancy_basis_known": false,
+        "common_cause_basis_known": false,
+        "degraded_state_known": false,
+        "recovery_hours": 78
+      },
+      "source_notes": {
+        "bidder": "ALAT",
+        "compressor_model": "FSD_475_SFC",
+        "source_location": "C1462-TN-001_page_51",
+        "upstream_status": "OFFER_EVIDENCE_BOUND_CONSEQUENCE_OPEN",
+        "mtbf_gate": "PASS_OFFER_EVIDENCE_BOUND",
+        "prohibited_inference": "component_MTBF_is_not_service_event_MTBF"
+      }
+    }
+  ]
+}
