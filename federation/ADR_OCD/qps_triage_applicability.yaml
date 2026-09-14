@@ -143,8 +143,8 @@ reliability_model_states:
     meaning: Model is calculable but source, architecture, consequence or governance gates prevent governed activation.
   - state: EXCLUDED
     meaning: Invalid scope, missing/inconsistent reliability input, or invalid reference basis prevents analytical use.
-  rule: >
-    Reliability model states are not triage dispositions and are never QPS engineering dispositions.
+reliability_model_state_rule: >
+  Reliability model states are not triage dispositions and are never QPS engineering dispositions.
 
 reliability_input_contract:
   source_classes: [SOURCE_BOUND, SCENARIO, USER_OVERRIDE]
