@@ -1,0 +1,14 @@
+{
+  "sections": [],
+  "rtm_requirements": [
+    {"id":"QPS-REL-PPT-001","description":"Outward reliability argument closure","priority":"High","verification_method":"Review","acceptance_criteria":"Requirement, model, architecture, operations, acceptance, and traceability are represented without process-history wording in the outward layer.","source_section":"slides_2_to_19"},
+    {"id":"QPS-REL-NUM-002","description":"Reliability numeric consistency","priority":"High","verification_method":"Analysis","acceptance_criteria":"R_single(90d)=0.841 is interpreted as approximately 16 percent failure probability; redundancy is credited only where subsystem architecture actually provides it.","source_section":"reliability_equations_and_failure_budget"},
+    {"id":"QPS-REL-REGEN-003","description":"Idempotent regeneration control","priority":"High","verification_method":"Inspection","acceptance_criteria":"Re-running the build preserves slide count/order unless an explicit change request authorizes mutation, and build rules remain machine-readable.","source_section":"build_artifacts"}
+  ],
+  "otc_elements": [
+    {"id":"QPS-REL-OTC-001","name":"Review-board presentation scenario","objective":"Verify that an external reviewer can follow outcome -> proof burden -> model -> architecture -> operations -> acceptance without build-process narration.","preconditions":"Phase 7.2 reliability deck exists","test_steps":["Review outward narrative","Check numeric traceability","Check artifact links"],"expected_results":"Scenario is traceable and reviewable","linked_requirements":["QPS-REL-PPT-001","QPS-REL-NUM-002"]}
+  ],
+  "del_deliverables": [
+    {"id":"QPS-REL-DTM-001","name":"Reliability engineering pack triage evidence","description":"PPTX plus machine-readable layout rules, regeneration code, QPS bridge manifest, hashes, and audit receipt.","type":"DTM","dependencies":["QPS-REL-PPT-001","QPS-REL-NUM-002","QPS-REL-REGEN-003"]}
+  ]
+}
