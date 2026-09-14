@@ -1,10 +1,11 @@
 applicability_id: ADR_OCD_QPS_TRIAGE_APPLICABILITY
-version: 0.2.0
+version: 0.3.0
 status: controlled_projection_candidate
 purpose: >
   Make the ADR_OCD federation bridge directly usable for QPS Requirements and
-  triage workflows by defining shared statuses, lanes, evidence classes, and
-  progression gates while preserving QPS child engineering authority.
+  triage workflows by defining shared statuses, lanes, evidence classes, progression
+  gates, reliability-analysis consumers, and Mission Control method applicability
+  while preserving QPS child engineering authority.
 
 qps_authority_source:
   repo: GBOGEB/cryoplant-project
@@ -23,6 +24,8 @@ scope:
     - Deliverables Traceability Matrix
     - Corrigendum
     - Triage
+    - Reliability Analysis
+    - Mission Control Projection
   repositories:
     engineering_authority:
       - GBOGEB/cryoplant-project
@@ -31,6 +34,8 @@ scope:
     federation_parents:
       - GBOGEB/CODEX
       - GBOGEB/ABACUS
+    mission_control:
+      - GBOGEB/pipeline-automation-hub
 
 terminology_policy:
   preferred_outward_facing: QPS Requirements
@@ -42,7 +47,29 @@ terminology_policy:
     Use QPS Requirements for procurement-facing content. Use QPS child canonical terms
     for ADR and OCD. Use Triage for classification, disposition, prioritization, repair
     waves, and evidence maturity management. Keep RFO, Architecture Design Report and
-    Operational Concept Document only as legacy/internal aliases.
+    Operational Concept Document only as legacy/internal aliases. Reliability and Mission
+    Control terms are analytical/orchestration projections and do not create child authority.
+
+state_class_policy:
+  rule: >
+    Engineering, tooling-triage, analytical-model and mission-execution states are distinct
+    state classes. A state value in one class shall not silently promote or overwrite another.
+  classes:
+    qps_child_engineering:
+      authority: GBOGEB/cryoplant-project
+      examples: [ACCEPT, DEFER, REJECT]
+    tooling_triage:
+      authority: GBOGEB/DOCX_RTM_Automation
+      examples: [ACCEPT, DEFER, REJECT, NEEDS_SOURCE, NEEDS_IMPLEMENTATION, NEEDS_REVIEW]
+      note: Tooling ACCEPT means controlled tooling reuse, not QPS engineering acceptance.
+    reliability_model:
+      authority: ANALYTICAL_CONSUMER
+      examples: [ACTIVE, SCENARIO_ONLY, EXCLUDED]
+      note: ACTIVE means mathematically/model-ready under its declared inputs, not engineering accepted.
+    mission_execution:
+      authority: GBOGEB/pipeline-automation-hub
+      examples: [DIAGNOSE, RECURSE_FIRST_BG, PROVE, COMMIT_OR_REENTER, PROPAGATE_ONCE, STOP]
+      note: Mission state may route work but may not promote engineering truth.
 
 triage_lanes:
   - lane_id: TRIAGE-QPS
@@ -69,6 +96,32 @@ triage_lanes:
     accepted_inputs: [rtm_row, dtm_row, lineage_edge, evidence_gap]
     outputs: [traceability_update_candidate, evidence_request, maturity_delta]
 
+  - lane_id: TRIAGE-RELIABILITY
+    name: Reliability analytical-consumer lane
+    purpose: >
+      Consume source-bound or explicitly scenario-labelled reliability inputs and derive
+      deterministic MTBF/lambda/exposure/Poisson diagnostics while preserving component,
+      architecture, consequence, common-cause and Table-10 authority boundaries.
+    accepted_inputs:
+      - reliability_source_atom
+      - mtbf_input
+      - lambda_input
+      - operating_state_exposure
+      - architecture_response
+      - recovery_or_mdt
+      - containment_or_propagation_input
+      - reliability_scenario
+    outputs:
+      - reliability_model_candidate
+      - campaign_probability_projection
+      - poisson_count_projection
+      - reliability_provenance
+      - reliability_readiness
+      - child_reentry_request
+    guard: >
+      Component MTBF or model ACTIVE state cannot be promoted to QPS system-event MTBF,
+      Table-10 consumption, N+1 proof, or engineering acceptance without explicit child re-entry.
+
 triage_dispositions:
   - disposition: ACCEPT
     meaning: Source-supported, structurally valid, and ready for controlled tooling reuse; not automatic QPS engineering acceptance.
@@ -83,6 +136,84 @@ triage_dispositions:
   - disposition: NEEDS_REVIEW
     meaning: Requires human engineering, procurement, legal, or contract review.
 
+reliability_model_states:
+  - state: ACTIVE
+    meaning: Deterministic model inputs and declared readiness gates pass for the bounded analytical scope only.
+  - state: SCENARIO_ONLY
+    meaning: Model is calculable but source, architecture, consequence or governance gates prevent governed activation.
+  - state: EXCLUDED
+    meaning: Invalid scope, missing/inconsistent reliability input, or invalid reference basis prevents analytical use.
+  rule: >
+    Reliability model states are not triage dispositions and are never QPS engineering dispositions.
+
+reliability_input_contract:
+  source_classes: [SOURCE_BOUND, SCENARIO, USER_OVERRIDE]
+  required_for_source_bound:
+    - qps_item_id_or_child_locator
+    - source_ref
+    - exact_source_identity
+    - evidence_disposition
+    - reference_period
+  deterministic_quantities:
+    - mtbf_years
+    - mtbf_hours
+    - lambda_per_year
+    - lambda_per_hour
+    - campaign_mu
+    - p0
+    - p_ge_1
+    - poisson_counts
+  architecture_fields:
+    - redundancy_basis
+    - common_cause_basis
+    - degraded_or_preserved_state
+    - recovery_or_mdt
+    - consequence_class
+    - table10_promotion_state
+  anti_overclaim:
+    - COMPONENT_MTBF_NE_SYSTEM_EVENT_MTBF
+    - MODEL_ACTIVE_NE_QPS_ENGINEERING_ACCEPTED
+    - TOOLING_ACCEPT_NE_CHILD_ACCEPT
+    - POISSON_CONFIDENCE_NE_CONTRACT_COUNT_COMPLIANCE
+
+mission_control_projection:
+  repo: GBOGEB/pipeline-automation-hub
+  horizontal_lane: H4_QPS_TRIAGE
+  role: PLAN_ROUTE_MEASURE_COMPARE_RECOMMEND
+  authority_transfer: false
+  operational_primitive: Mission -> Wave -> Pulse -> Receipt -> Reallocate -> Recurse
+  pulse_alignment:
+    H1_QPS: CHILD_ENGINEERING_RUNTIME_AND_FINAL_DISPOSITION
+    H2_KEB: SEMANTIC_PROVENANCE_EXACT_SOURCE_CHALLENGE
+    H3_DOW: INDEPENDENT_CONSUMER_AND_DELIVERY_CLOSURE
+    H4_QPS_TRIAGE: VETO_BT_SCHEDULING_AND_FALSE_PROMOTION_PREVENTION
+
+method_applicability:
+  controller_semantics_owner: GBOGEB/CODEX
+  controller_reference: federation/mesh/MESH_CLOSURE_CONTROLLER_v1.json
+  selection_rule: >
+    Select only methods that create new evidence, remove a current blocker, protect a
+    recurrent failure mode, or prove one required propagation edge. Stop when bounded DoV is met.
+  methods:
+    3PR:
+      purpose: Refresh current content, runtime evidence, authority and first blocker before choosing work.
+      use_when: repo_pr_check_or_evidence_state_changed_materially
+      output: refreshed_CG_BG_EX_QH_KR_and_first_red
+    MIP:
+      purpose: Modernize, Innovate and Perpetuate only when an observed structural or recurrence gap warrants improvement.
+      use_when: observed_structural_or_recurrence_gap
+      output: repaired_structure_plus_bounded_innovation_plus_control_hook
+    3PC:
+      purpose: Prepare, Prove and Commit a bounded publication, re-entry, acceptance or exact-SHA transaction.
+      use_when: bounded_transaction_or_reentry_required
+      output: COMMIT_ACCEPT_or_explicit_HOLD_DEFER_receipt
+    3P3:
+      purpose: Run one propagation/generalisation proof after local DoV when reusable cross-repo proof is missing.
+      use_when: local_dov_satisfied_and_generalisation_missing
+      output: one_propagation_receipt_then_STOP
+  default_sequence: [3PR, MIP_IF_NEEDED, 3PC_IF_TRANSACTIONAL, 3P3_IF_GENERALISATION_MISSING]
+  no_ceremonial_repetition: true
+
 maturity_levels:
   - level: 0.0
     name: captured
@@ -95,7 +226,7 @@ maturity_levels:
     gate: Item passes schema and validator checks.
   - level: 0.8
     name: traceable
-    gate: Item is linked to QPS, ADR, OCD, RTM, DTM, or Corrigendum edge and child authority metadata.
+    gate: Item is linked to QPS, ADR, OCD, RTM, DTM, Corrigendum, Reliability Analysis, or child authority metadata.
   - level: 1.0
     name: controlled
     gate: Item is source-supported, tested, CI-visible, authority-bound, and ready for merge or release as a tooling projection.
@@ -114,7 +245,7 @@ priority_scoring:
       weight: 4
   rule: >
     Higher scores move first unless a lower-effort item can be completed immediately
-    without blocking higher-risk work.
+    without blocking higher-risk work. PCA/BT/PB may prioritize work but never grant authority.
 
 qps_to_triage_edges:
   - from: QPS Requirement
@@ -135,11 +266,20 @@ qps_to_triage_edges:
   - from: Triage Item
     to: Corrigendum Entry
     relation: amendment_impact_to
+  - from: Triage Item
+    to: Reliability Analysis
+    relation: analytical_impact_to
+  - from: Reliability Analysis
+    to: QPS Child Re-entry
+    relation: requests_reentry_when_engineering_promotion_required
+  - from: Mission Control Pulse
+    to: Triage Item
+    relation: routes_without_authority_transfer
 
 control_gates:
   - gate_id: QPS-TRIAGE-GATE-001
     name: term_reuse
-    rule: Every outward-facing term resolves to glossary/GLOSSARY.yaml.
+    rule: Every outward-facing term resolves to glossary/GLOSSARY.yaml or an explicitly governed federation term.
   - gate_id: QPS-TRIAGE-GATE-002
     name: lane_assignment
     rule: Every triage item has exactly one primary lane and may have secondary lanes.
@@ -151,7 +291,22 @@ control_gates:
     rule: Every triage item has a maturity level from 0.0 to 1.0.
   - gate_id: QPS-TRIAGE-GATE-005
     name: downstream_impact
-    rule: Items affecting QPS Requirements identify ADR, OCD, RTM, DTM, or Corrigendum impact where applicable.
+    rule: Items affecting QPS Requirements identify ADR, OCD, RTM, DTM, Corrigendum, or Reliability Analysis impact where applicable.
   - gate_id: QPS-TRIAGE-GATE-006
     name: child_authority
     rule: QPS engineering promotion requires explicit child re-entry against the child global ADR/OCD SSOT.
+  - gate_id: QPS-TRIAGE-GATE-007
+    name: state_class_separation
+    rule: QPS child, tooling triage, reliability model and mission execution states remain separately typed and cannot self-promote across classes.
+  - gate_id: QPS-TRIAGE-GATE-008
+    name: reliability_origin
+    rule: Every reliability input declares SOURCE_BOUND, SCENARIO or USER_OVERRIDE and preserves that origin through outputs.
+  - gate_id: QPS-TRIAGE-GATE-009
+    name: reliability_system_consequence
+    rule: Component MTBF/lambda cannot become system event rate or Table-10 consumption until architecture, common cause, preserved state, recovery and consequence are child-bound.
+  - gate_id: QPS-TRIAGE-GATE-010
+    name: mission_control_projection
+    rule: Mission Control may plan, route, measure and recommend but authority_transfer remains false and child engineering promotion remains forbidden.
+  - gate_id: QPS-TRIAGE-GATE-011
+    name: method_selection
+    rule: 3PR, MIP, 3PC and 3P3 are selected only when their entry condition can create new evidence, remove a blocker, protect recurrence or prove required propagation; otherwise STOP/REPEAT.
