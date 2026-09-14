@@ -1,19 +1,10 @@
 #!/usr/bin/env python3
 """Narrow QPS triage -> reliability model bridge.
 
-This module consumes already-governed QPS evidence/scenario inputs and emits
-reliability-model records for a deliberately small pilot surface:
-
-- HP_COMPRESSOR
-- PVPS
-- COLD_COMPRESSOR_TRAIN
-- TURBINE_EXPANDER
-- QPLANT_CLASS_A_SYSTEM
-
-It does not establish engineering compliance or procurement acceptance.  It
-preserves the upstream evidence disposition and derives deterministic MTBF,
-lambda, P(0), P(>=1), and Poisson count probabilities for analysis/dashboard
-consumption.
+Consumes governed QPS Triage evidence and emits deterministic reliability-model
+records for a deliberately small pilot surface.  This remains an analysis
+consumer: it cannot establish QPS engineering/compliance truth or promote
+procurement evaluation state.
 """
 
 from __future__ import annotations
@@ -33,7 +24,21 @@ ALLOWED_COMPONENTS = {
     "QPLANT_CLASS_A_SYSTEM",
 }
 ALLOWED_ORIGINS = {"SOURCE_BOUND", "SCENARIO", "USER_OVERRIDE"}
-ALLOWED_EVIDENCE = {"ACCEPT", "DEFER"}
+TRIAGE_DISPOSITIONS = {
+    "ACCEPT",
+    "DEFER",
+    "REJECT",
+    "NEEDS_SOURCE",
+    "NEEDS_IMPLEMENTATION",
+    "NEEDS_REVIEW",
+}
+ALLOWED_TRIAGE_LANES = {
+    "TRIAGE-QPS",
+    "TRIAGE-ADR",
+    "TRIAGE-OCD",
+    "TRIAGE-RTM-DTM",
+}
+ALLOWED_MATURITY_LEVELS = {0.0, 0.3, 0.6, 0.8, 1.0}
 ALLOWED_REFERENCE_PERIODS = {
     "calendar_year",
     "operating_hours_year",
@@ -54,14 +59,21 @@ def _positive_number(value: Any) -> float | None:
     return number if math.isfinite(number) and number > 0 else None
 
 
+def _maturity_level(value: Any) -> float | None:
+    try:
+        level = float(value)
+    except (TypeError, ValueError):
+        return None
+    return level if level in ALLOWED_MATURITY_LEVELS else None
+
+
 def _normalise_rates(item: dict[str, Any]) -> tuple[dict[str, float] | None, list[str]]:
     errors: list[str] = []
     mtbf_y = _positive_number(item.get("mtbf_years"))
     mtbf_h = _positive_number(item.get("mtbf_hours"))
     lam_y = _positive_number(item.get("lambda_per_year"))
 
-    supplied = [value is not None for value in (mtbf_y, mtbf_h, lam_y)]
-    if not any(supplied):
+    if not any(value is not None for value in (mtbf_y, mtbf_h, lam_y)):
         return None, ["reliability_value_missing"]
 
     candidates: list[float] = []
@@ -78,12 +90,11 @@ def _normalise_rates(item: dict[str, Any]) -> tuple[dict[str, float] | None, lis
             errors.append("reliability_values_inconsistent")
             break
 
-    mtbf_years = reference
     return {
-        "mtbf_years": mtbf_years,
-        "mtbf_hours": mtbf_years * HOURS_PER_YEAR,
-        "lambda_per_year": 1.0 / mtbf_years,
-        "lambda_per_hour": 1.0 / (mtbf_years * HOURS_PER_YEAR),
+        "mtbf_years": reference,
+        "mtbf_hours": reference * HOURS_PER_YEAR,
+        "lambda_per_year": 1.0 / reference,
+        "lambda_per_hour": 1.0 / (reference * HOURS_PER_YEAR),
     }, errors
 
 
@@ -98,8 +109,12 @@ def evaluate_item(item: dict[str, Any], *, campaign_days: float = 90.0, histogra
     errors: list[str] = []
     component = str(item.get("component", "")).upper()
     origin = str(item.get("origin", "")).upper()
-    evidence = str(item.get("evidence_disposition", "DEFER")).upper()
-    qps_item_id = str(item.get("qps_item_id", "")).strip() or None
+    triage_disposition = str(
+        item.get("triage_disposition", item.get("evidence_disposition", "DEFER"))
+    ).upper()
+    triage_item_id = str(item.get("triage_item_id", item.get("qps_item_id", ""))).strip() or None
+    triage_lane = str(item.get("triage_lane", "")).strip() or None
+    maturity_level = _maturity_level(item.get("maturity_level"))
     reference_period = str(item.get("reference_period", "")).strip()
     source_sha = str(item.get("source_git_sha", "")).strip() or None
 
@@ -107,8 +122,8 @@ def evaluate_item(item: dict[str, Any], *, campaign_days: float = 90.0, histogra
         errors.append("component_not_in_pilot_scope")
     if origin not in ALLOWED_ORIGINS:
         errors.append("origin_invalid")
-    if evidence not in ALLOWED_EVIDENCE:
-        errors.append("evidence_disposition_invalid")
+    if triage_disposition not in TRIAGE_DISPOSITIONS:
+        errors.append("triage_disposition_invalid")
     if reference_period not in ALLOWED_REFERENCE_PERIODS:
         errors.append("reference_period_missing_or_invalid")
 
@@ -116,9 +131,14 @@ def evaluate_item(item: dict[str, Any], *, campaign_days: float = 90.0, histogra
     errors.extend(rate_errors)
 
     provenance = {
-        "qps_item_id": qps_item_id,
+        "triage_item_id": triage_item_id,
+        "qps_item_id": triage_item_id,
+        "triage_lane": triage_lane,
+        "maturity_level": maturity_level,
         "origin": origin,
-        "evidence_disposition": evidence,
+        "triage_disposition": triage_disposition,
+        # Backward-compatible mirror; QPS Triage is the controlling vocabulary.
+        "evidence_disposition": triage_disposition,
         "source_git_sha": source_sha,
         "source_sha_valid": _is_exact_sha(source_sha),
         "source_ref": item.get("source_ref"),
@@ -134,15 +154,19 @@ def evaluate_item(item: dict[str, Any], *, campaign_days: float = 90.0, histogra
     }
 
     source_bound = origin == "SOURCE_BOUND"
-    source_identity_ok = (not source_bound) or (_is_exact_sha(source_sha) and bool(qps_item_id))
-    evidence_ok = (not source_bound) or evidence == "ACCEPT"
+    source_identity_ok = (not source_bound) or (_is_exact_sha(source_sha) and bool(triage_item_id))
+    triage_accept_ok = (not source_bound) or triage_disposition == "ACCEPT"
+    triage_context_ok = (not source_bound) or (
+        triage_lane in ALLOWED_TRIAGE_LANES and maturity_level in ALLOWED_MATURITY_LEVELS
+    )
     reference_ok = reference_period in ALLOWED_REFERENCE_PERIODS
     architecture_complete = all(arch_checks.values())
     model_scope = "system" if architecture_complete else "component_only"
 
     readiness_checks = {
         "source_identity": source_identity_ok,
-        "evidence_accept": evidence_ok,
+        "evidence_accept": triage_accept_ok,
+        "triage_context": triage_context_ok,
         "units_reference_period": reference_ok,
         "architecture": architecture_complete,
         "deterministic_model": rates is not None and not rate_errors,
@@ -164,11 +188,15 @@ def evaluate_item(item: dict[str, Any], *, campaign_days: float = 90.0, histogra
             "poisson_counts": _poisson_pmf(mu, histogram_max_count),
         }
 
-    if errors:
+    if errors or triage_disposition == "REJECT":
         disposition = "EXCLUDED"
-    elif source_bound and not (source_identity_ok and evidence_ok):
+    elif not source_bound:
+        # Seeded bidder values, scenarios and overrides are useful for analysis,
+        # but must never look governed/ACTIVE without source binding.
         disposition = "SCENARIO_ONLY"
-    elif readiness_score < 5:
+    elif not (source_identity_ok and triage_accept_ok and triage_context_ok):
+        disposition = "SCENARIO_ONLY"
+    elif readiness_score < len(readiness_checks):
         disposition = "SCENARIO_ONLY"
     else:
         disposition = "ACTIVE"
@@ -202,7 +230,7 @@ def build_bridge(payload: dict[str, Any], *, campaign_days: float = 90.0, histog
         counts[item["model_readiness"]["disposition"]] += 1
     return {
         "type": "qps_reliability_bridge",
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "pilot_scope": sorted(ALLOWED_COMPONENTS),
         "campaign_days": float(campaign_days),
         "items": items,
