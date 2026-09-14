@@ -2,9 +2,9 @@ profile_id: QPS_OFFER_EVALUATION_V7_1
 version: 7.1
 status: controlled_projection_candidate
 purpose: >
-  Bind the OFFER-01..OFFER-50 static/cold evaluation method into QPS Triage as
-  a procurement-facing prioritisation and evidence-review profile without
-  promoting evaluation outputs into QPS engineering truth.
+  Bind the OFFER-01..OFFER-50 deterministic static evaluation method into QPS
+  Triage as a procurement-facing prioritisation and evidence-review profile
+  without promoting evaluation outputs into QPS engineering truth.
 
 authority_boundary:
   qps_engineering_authority: GBOGEB/cryoplant-project
@@ -45,14 +45,66 @@ core_equations:
     ranking: requirement_importance
     risk: delivery_confidence
 
+# Locked to the canonical v7.1 Word/Excel static ranking.  Tier membership must
+# not be recomputed from bidder evidence or risk.
+static_order:
+  - OFFER-01
+  - OFFER-02
+  - OFFER-03
+  - OFFER-05
+  - OFFER-11
+  - OFFER-04
+  - OFFER-21
+  - OFFER-22
+  - OFFER-28
+  - OFFER-39
+  - OFFER-20
+  - OFFER-49
+  - OFFER-47
+  - OFFER-48
+  - OFFER-06
+  - OFFER-07
+  - OFFER-12
+  - OFFER-13
+  - OFFER-19
+  - OFFER-23
+  - OFFER-24
+  - OFFER-26
+  - OFFER-27
+  - OFFER-29
+  - OFFER-30
+  - OFFER-33
+  - OFFER-41
+  - OFFER-42
+  - OFFER-43
+  - OFFER-46
+  - OFFER-08
+  - OFFER-09
+  - OFFER-10
+  - OFFER-14
+  - OFFER-15
+  - OFFER-16
+  - OFFER-17
+  - OFFER-18
+  - OFFER-25
+  - OFFER-31
+  - OFFER-32
+  - OFFER-34
+  - OFFER-35
+  - OFFER-36
+  - OFFER-37
+  - OFFER-38
+  - OFFER-40
+  - OFFER-44
+  - OFFER-45
+  - OFFER-50
+
 cold_rank:
   tier_0_gates:
     - OFFER-01
     - OFFER-02
     - OFFER-03
-    - OFFER-47
-    - OFFER-48
-    - OFFER-49
+    - OFFER-05
   tier_1_primary:
     - OFFER-11
     - OFFER-04
@@ -61,28 +113,27 @@ cold_rank:
     - OFFER-28
     - OFFER-39
     - OFFER-20
-    - OFFER-13
-    - OFFER-27
-    - OFFER-29
+    - OFFER-49
+    - OFFER-47
+    - OFFER-48
   tier_2_secondary:
     - OFFER-06
     - OFFER-07
     - OFFER-12
+    - OFFER-13
     - OFFER-19
     - OFFER-23
     - OFFER-24
     - OFFER-26
+    - OFFER-27
+    - OFFER-29
     - OFFER-30
     - OFFER-33
     - OFFER-41
     - OFFER-42
     - OFFER-43
     - OFFER-46
-    - OFFER-37
-    - OFFER-34
-    - OFFER-35
   tier_3_contextual:
-    - OFFER-05
     - OFFER-08
     - OFFER-09
     - OFFER-10
@@ -94,7 +145,10 @@ cold_rank:
     - OFFER-25
     - OFFER-31
     - OFFER-32
+    - OFFER-34
+    - OFFER-35
     - OFFER-36
+    - OFFER-37
     - OFFER-38
     - OFFER-40
     - OFFER-44
@@ -122,9 +176,13 @@ triage_projection:
     - >
       Gate failure overrides score. Cost cannot rescue a legal, functional, or
       dominant technical failure.
+    - >
+      OFFER evaluation tiers are procurement-evaluation metadata. They do not
+      replace QPS Triage disposition, maturity, or child engineering authority.
 
 reliability_bridge_candidates:
   - offer_id: OFFER-11
+    source_anchor: Addendum_II_4.3.2
     topic: MTBF / recovery / intervention philosophy
     bridge_role: primary_reliability_evidence_candidate
     qps_triage_lane: TRIAGE-QPS
@@ -135,41 +193,52 @@ reliability_bridge_candidates:
       - unit_reference_period
       - architecture_completeness
       - deterministic_model_consistency
+  - offer_id: OFFER-20
+    source_anchor: Addendum_II_4.4.7
+    topic: leak / detection / helium loss
+    bridge_role: reliability_and_inventory_loss_context
+    downstream: [QPS_RELIABILITY_BRIDGE, TRIAGE-RTM-DTM]
   - offer_id: OFFER-21
+    source_anchor: Addendum_II_4.4.7.1
     topic: LOOP strategy
     bridge_role: degraded_state_and_recovery_context
     downstream: [QPS_RELIABILITY_BRIDGE, TRIAGE-OCD]
   - offer_id: OFFER-22
+    source_anchor: Addendum_II_4.4.7.3
     topic: helium recovery / S-line handling
     bridge_role: abnormal_recovery_context
     downstream: [QPS_RELIABILITY_BRIDGE, TRIAGE-OCD]
-  - offer_id: OFFER-20
-    topic: leak / detection / helium loss
-    bridge_role: reliability_and_inventory_loss_context
-    downstream: [QPS_RELIABILITY_BRIDGE, TRIAGE-RTM-DTM]
   - offer_id: OFFER-41
+    source_anchor: Addendum_II_4.14.3
     topic: strategic spares / critical components
     bridge_role: maintainability_context
     downstream: [QPS_RELIABILITY_BRIDGE, TRIAGE-RTM-DTM]
   - offer_id: OFFER-42
+    source_anchor: Addendum_II_4.15
     topic: after-sales service
     bridge_role: recovery_resource_context
     downstream: [QPS_RELIABILITY_BRIDGE]
   - offer_id: OFFER-43
+    source_anchor: Addendum_II_4.15
     topic: maintenance hours
     bridge_role: MTTR_context
     downstream: [QPS_RELIABILITY_BRIDGE]
   - offer_id: OFFER-46
+    source_anchor: Addendum_II_7.5
     topic: risk management plan
     bridge_role: execution_risk_context
     downstream: [TRIAGE-QPS, TRIAGE-RTM-DTM]
 
 artifact_references:
   canonical_word: OFFER_audit_v7_1_DELTA.docx
-  excel_engine: OFFER_ANALYSIS_v7_1_DELTA.xlsx
+  excel_engine_review_candidate: OFFER_ANALYSIS_v7_FINAL_BOARD_PATCHED_v3_Usser.xlsx
+  canonical_excel_target: OFFER_ANALYSIS_v7_1_DELTA.xlsx
   method_deck: OFFER_BT_METHOD_v7_1_DELTA.pptx
   evaluation_deck: OFFER_EVAL_v7_1_DELTA.pptx
   artifact_binding_status: DEFER
+  note: >
+    The current Excel review candidate is recorded by filename only. It remains
+    non-authoritative until exact binary identity is registered by governed receipt.
 
 control:
   no_regeneration_rule: true
