@@ -81,6 +81,24 @@ Disposition:
 
 Incomplete architecture forces `component_only`; the bridge does not infer system reliability from component quantity alone.
 
+## First real controlled atom — ALAT HP compressor
+
+The pilot now binds the real child-authoritative record:
+
+`GBOGEB/cryoplant-project:ocd-adr/20_canonical/analysis/QPS_HP_COMPRESSOR_ALAT_EVIDENCE_v0.1.yaml@63121ad911b65869783adfbd50e10b2703f6eb8e`
+
+Bound reliability value:
+
+- applicant: ALAT
+- selected model: KAESER FSD 475 SFC
+- component MTBF: `333450 h`
+- total MTTR: `78 h`
+- source locator: `C1462-TN-001 page 51`
+
+The source explicitly keeps selected-design N-1 capacity, preserved state, common-cause consequence and acceptance trace open and prohibits converting the component MTBF into a Table-10 service-event rate. The bridge therefore binds the exact source but emits `SCENARIO_ONLY` + `component_only`, not `ACTIVE` system reliability. This is the intended fail-closed result.
+
+Fixture: `tests/fixtures/qps_reliability_alat_hp_bound.json`.
+
 ## Authority boundary
 
 This module is an **analysis consumer**. It does not:
@@ -105,11 +123,13 @@ python src/dashboard/qps_reliability_bridge.py \
 ## v1 DoV
 
 1. focused tests pass;
-2. one source-bound reliability atom is exact-SHA and ACCEPT-bound;
+2. one real source-bound reliability atom is exact-SHA bound and preserves its upstream disposition without promotion;
 3. MTBF/lambda conversions reproduce deterministically;
 4. P(0), P(>=1), and Poisson counts reproduce deterministically;
 5. provenance survives output unchanged;
 6. no authority promotion occurs;
 7. canonical dashboard can consume the bridge summary.
+
+`ACTIVE` source-bound system-model promotion remains a separate gate: it requires upstream ACCEPT plus complete architecture evidence. The ALAT HP atom deliberately does not satisfy that gate yet.
 
 Only after v1 DoV should the pilot expand to additional QPS triage rows or bidder-return/minute-resolution evidence.
