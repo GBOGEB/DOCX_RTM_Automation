@@ -1,184 +1,301 @@
-# QPS TRIAGE Reliability — Global Roll-up and 3P/MIP Control v1
+# QPS TRIAGE Reliability — Global Roll-up and 3P/MIP Control v1.1
 
-Status: **3PR pulse 1 executed / MIP hardening admitted**  
-Local tooling repo: `GBOGEB/DOCX_RTM_Automation`  
+Status: **W1 3PR + MIP-M burned in / W2 3PC + MIP-I HOLD on repository-local runtime admission**  
+Tooling / analytical consumer: `GBOGEB/DOCX_RTM_Automation`  
 QPS engineering authority: `GBOGEB/cryoplant-project`  
 Global controller semantics: `GBOGEB/CODEX`  
-Runtime orchestration plane: `GBOGEB/ABACUS`  
-Grand-mission control: `GBOGEB/pipeline-automation-hub`
+Independent runtime / measurement plane: `GBOGEB/ABACUS`  
+Grand-mission / Mission Control: `GBOGEB/pipeline-automation-hub`
 
-## 1. Why this roll-up exists
+## 1. Executive conclusion
 
-The reliability work has now crossed three distinct boundaries and must not be treated as a slide-only or repo-local feature:
+The QPS reliability work is no longer a repo-local reliability feature. It is a
+controlled applicability profile spanning child engineering authority, tooling,
+semantic challenge, independent measurement, and Mission Control.
 
-1. **Governed evidence runtime** — merged PR #53 proved exact-head Wave 8 -> Wave 9 -> Wave 10 ACCEPT -> Wave 11 PROMOTE and added measured intake/traceability census.
-2. **Reliability analysis consumer** — merged PR #54 added the narrow five-atom reliability bridge and preserved source/architecture gates without engineering promotion.
-3. **Federation/scout layer** — PR #55 exposes reusable PCA/math diagnostics while retaining QPS/visual/math-provider authority boundaries.
+The canonical selector is:
 
-The next problem is therefore not another reliability framework. It is **canonical QPS TRIAGE applicability + controlled propagation**.
+`3PR -> MIP only if a measured structural/recurrence gap exists -> 3PC if a bounded transaction remains -> one 3P3 if reusable propagation proof is missing -> STOP`
 
-## 2. Authority map
+This selector is now the burn-in method for H4 QPS TRIAGE. Do not invent another
+3P family or another reliability framework unless a new measured failure class
+requires it.
 
-| Plane | Repository | Authority / role |
-|---|---|---|
-| Global closure semantics | `GBOGEB/CODEX` | owns mesh closure-control method semantics; may route/classify, not promote QPS engineering truth |
-| Runtime orchestration | `GBOGEB/ABACUS` | execution/orchestration plane for cross-repo runtime proof |
-| QPS child engineering | `GBOGEB/cryoplant-project` | engineering truth, child dispositions, Mission Control H4_QPS_TRIAGE |
-| Tooling / projection | `GBOGEB/DOCX_RTM_Automation` | QPS triage parser, governed receipts, reliability evidence consumer |
-| Fleet / grand missions | `GBOGEB/pipeline-automation-hub` | grand-mission genealogy/scaling only; no child authority transfer |
+Current state:
 
-## 3. QPS TRIAGE applicability conclusion
+- W1 `3PR + MIP-M`: **CONTROL / bounded DoV**;
+- P1 child content boundary: **PASS/CANONICAL**;
+- P2 semantic/provenance challenge: **PASS/CANONICAL**;
+- P3 five-atom independent baseline: **PASS/CANONICAL**;
+- one retained P1 runtime KR: **DEFER / repository-local Actions admission**;
+- W2 `3PC + MIP-I`: **HOLD**;
+- W3 `3P3 + MIP-P`: **gated by W2 local DoV**.
 
-**Do not create a fifth `TRIAGE-RELIABILITY` lane.** Reliability is cross-cutting and already decomposes cleanly across the controlled lanes in `federation/ADR_OCD/qps_triage_applicability.yaml`:
+The latest exact-head child probe is `GBOGEB/cryoplant-project#1135` at
+`90322dc4d7f299f737e42bf45effa36300f367fa`. The intended applicability job
+failed before execution with `runner_id=0` and zero steps. This is a platform /
+repository admission first-red, not a validator, profile, model, semantic, or
+engineering failure.
 
-- `TRIAGE-QPS` — contractual reliability requirement, event-count or campaign obligation;
-- `TRIAGE-ADR` — redundancy, common-cause, preserved-state, architecture consequence and reliability design decisions;
-- `TRIAGE-OCD` — campaign state, degraded mode, recovery, maintenance and operating scenario;
-- `TRIAGE-RTM-DTM` — source identity, derivation, evidence maturity, deliverable and traceability edges.
+## 2. Global authority and mission map
 
-A reliability item may have one primary lane and secondary lanes. Topic != lane. This avoids a competing reliability SSOT and preserves child authority.
+| Plane | Repository | Authority / role | Current H4 relation |
+|---|---|---|---|
+| QPS child engineering | `GBOGEB/cryoplant-project` | engineering truth, source consequence, child disposition and re-entry | H1 source/authority + P1 runtime cell |
+| Tooling / projection | `GBOGEB/DOCX_RTM_Automation` | parser, receipts, OFFER profile, reliability analytical consumer | controlled tooling projection |
+| Semantic / governance | `GBOGEB/CODEX` | semantics, provenance, state separation, federation challenge | H2 PASS/CANONICAL; return to control |
+| Independent runtime / measurement | `GBOGEB/ABACUS` | denominator, executable proof, independent readiness/measurement | H3 PASS/CANONICAL; return to control |
+| Mission Control / fleet | `GBOGEB/pipeline-automation-hub` | H4 scheduling, veto, receipts, stop/re-entry, GM genealogy | coordinator only; no child authority |
 
-## 4. Current measured state from the reliability pulses
+Authority does not flow backwards from a dashboard, PCA, Bradley-Terry pressure,
+Mission Control score, tooling merge, or model state into QPS engineering truth.
 
-### PR #53 — exact-SHA governed runtime
+## 3. QPS TRIAGE applicability model
 
-Observed repaired-head proof:
+Reliability is cross-cutting. The child still has exactly four primary
+engineering-routing lanes:
 
-- RTM `3/3`, OTC `1/1`, DTM `1/1`;
-- triage items `5/5`;
-- traceability `5/5` items, `11` rows;
-- source-intake fraction `1.0`;
-- traceability fraction `1.0`;
-- Wave 10 `ACCEPT`;
-- Wave 11 `PROMOTE`.
+- `TRIAGE-QPS` — contractual reliability requirement, event/campaign obligation,
+  availability or acceptance threshold;
+- `TRIAGE-ADR` — redundancy, common cause, preserved state, architecture
+  consequence and reliability design decision;
+- `TRIAGE-OCD` — campaign state, degraded mode, recovery, maintenance and
+  operating-state exposure;
+- `TRIAGE-RTM-DTM` — exact source identity, evidence maturity, requirement and
+  deliverable traceability.
 
-Maturity remains intentionally non-closed: `DEFER=3`, `NEEDS_REVIEW=2`; evidence classes `structured=3`, `traceable=2`.
+`TRIAGE-RELIABILITY` is canonical only as a **non-authoritative analytical
+overlay**. It may consume an atom and produce MTBF/lambda/state-exposure/P(0)/
+P(>=1)/Poisson/provenance/readiness diagnostics, but it is not a fifth child
+engineering lane and cannot grant `ACCEPT` or Table-10 credit.
 
-### PR #54 — reliability consumer
+One primary child lane plus optional analytical overlay and secondary impacts is
+the governing assignment model.
 
-The five pilot component classes are:
+## 4. Canonical W1 burn-in
 
-- HP compressor;
-- PVPS;
-- cold-compressor train;
-- turbine/expander;
-- QPLANT Class-A system campaign.
+W1 used `3PR + MIP-M` because the starting problem was applicability and
+cross-repo state clarity rather than a new engineering transaction.
 
-The first real ALAT HP-compressor source atom is exact-source bound but remains `SCENARIO_ONLY / component_only`; selected-design N-1 capacity, common-cause consequence, preserved state and acceptance remain open. This is a correct fail-closed outcome.
+### Pulse 1 — Refresh / authority map
 
-## 5. Mesh-closure classification — first execution
+Resolved the current repo/PR/source state and kept QPS engineering authority in
+the child. This prevented tooling and Grand Mission artifacts from becoming a
+competing SSOT.
 
-Current classification: **HARDENING**.
+### Pulse 2 — Reconcile / semantic challenge
 
-- **CG** — canonical cross-repo reliability applicability profile is child-bound, exact-source aware, measurable, and reusable by Mission Control without creating a new authority lane.
-- **BG** — the generic TRIAGE contract already accepts `reliability_decision`, but the cross-lane reliability evidence profile and Mission Control binding are not yet explicit/canonical.
-- **EX** — local execution exists and is >0: #53 exact-SHA governed runtime and #54 focused reliability bridge both executed and merged.
-- **QH** — local quality is acceptable; substantive reliability maturity is deliberately mixed and therefore cannot be blanket-promoted.
-- **KR** — merged exact-SHA receipts and source-bound ALAT HP evidence provide durable evidence.
-- **DR** — QPS child authority, H4_QPS_TRIAGE, and GM-IV F01 tooling pilot are all present.
-- **SR** — existing lane semantics are compatible; no new reliability lane is required.
-- **WD** — continue with one bounded MIP hardening pass, then one transactional 3PC, then one 3P3 propagation proof if generalisation is still missing.
-- **PB** — measured intake/traceability may be reported; no engineering/compliance/negotiation/release credit is created by this roll-up.
+Bound the canonical TRIAGE dispositions, evidence/provenance semantics,
+analytical-overlay boundary, and source-versus-scenario state separation. H2
+closed and returned to control.
 
-## 6. Three-pulse wave configuration
+### Pulse 3 — Re-entry / independent proof
 
-### Pulse R — `3PR-QRT-01` — Refresh / diagnose / re-entry map
+Bound the child-native applicability boundary and the independent five-atom
+consumer baseline. H1 content and H3 measurement closed; only one child runtime
+receipt remains externally deferred.
 
-Purpose: establish exact current state before changing contracts.
+### MIP-M — Modernize
 
-Outputs:
+The structural gap was real: applicability existed across prose and tooling but
+was not child-native and machine-readable. MIP-M therefore codified the child
+profile, validator, exact-source rules, maturity vector, Mission Control hooks,
+and no-promotion invariants. This is now canonical and should not be reworked
+without a material source/repo/evidence change.
 
-1. bind #53/#54/#55 lineage;
-2. map every reliability atom to existing QPS TRIAGE lanes;
-3. identify current BG and next CG;
-4. bind Mission Control `H4_QPS_TRIAGE` and Grand Mission `GM-IV/F01` relationship;
-5. freeze no-new-lane decision unless evidence disproves it.
+Canonical W1 result: `BOUNDED_DOV_WITH_ONE_EXTERNAL_RUNTIME_DEFER`.
 
-**Pulse R is now STARTED and its first diagnosis is recorded in this document.**
+## 5. Current first-red and control decision
 
-### Pulse C — `3PC-QRT-02` — Prepare / Prove / Commit child transaction
+The exact-head runtime probe deliberately re-triggered the existing child
+workflow without changing validator logic.
 
-Purpose: make the profile child-native and exact-SHA transactional.
+Observed:
 
-Target transaction:
+- child PR: `GBOGEB/cryoplant-project#1135`;
+- exact head: `90322dc4d7f299f737e42bf45effa36300f367fa`;
+- workflow: `QPS TRIAGE Reliability Applicability`;
+- run: `34825502815`;
+- job: `103916589064`;
+- `runner_id = 0`;
+- executed steps = `0`;
+- conclusion = `failure`.
 
-- prepare a machine-readable reliability applicability profile;
-- prove lane assignment + authority preservation + source identity + maturity semantics on exact SHA;
-- commit it through the QPS child control lane;
-- return the child receipt to the tooling consumer without self-promotion.
+Classification: `REX_006_PREEXECUTION_REPO_LOCAL_ADMISSION`, mapped to the
+existing non-compensating veto `QPS_REPO_LOCAL_RUNNER_923`.
 
-### Pulse G — `3P3-QRT-03` — Propagation/generalisation proof
+Therefore:
 
-Purpose: prove reuse once local child DoV is satisfied.
+- do not repair validator/profile/model code;
+- do not start another method PR;
+- do not release W2;
+- repair/restore repository-local Actions admission or attach the supported
+  runner path;
+- rerun the same applicability workflow unchanged;
+- platform victory is `runner_id != 0` and `steps > 0`;
+- only the first real validator result may change the W2 entry decision.
 
-Consumers to prove without authority transfer:
+## 6. W2 configuration — `3PC + MIP-I`
 
-- `GBOGEB/CODEX` — controller/semantic routing;
-- `GBOGEB/ABACUS` — runtime/orchestration consumption;
-- `GBOGEB/pipeline-automation-hub` — GM-IV/F01 mission-status consumption;
-- `GBOGEB/DOCX_RTM_Automation` — tooling projection/reliability consumer.
+W2 is the correct next wave because the next problem is a bounded transaction,
+not another refresh.
 
-Stop after one successful generalisation proof. Do not repeat propagation ceremonially.
+Preferred atom: `COLD_COMPRESSOR_TRAIN`.  
+Fallback atom: the already source-bound ALAT `HP_COMPRESSOR`.
 
-## 7. MIP sequence between Pulse R and Pulse C
+### P1 — Prepare
 
-### M — Modernize
+Bind one atom with:
 
-- codify the reliability cross-lane profile rather than relying on prose;
-- add exact source / evidence maturity / architecture completeness fields where the current generic contract is too implicit;
-- retain the four existing TRIAGE lanes.
+- exact source identity and SHA;
+- OFFER / QPS item identifiers where applicable;
+- child locator and primary TRIAGE lane;
+- tooling/profile/consumer version;
+- unit/reference-period basis;
+- architecture state: redundancy, common cause, preserved/degraded state,
+  recovery duration;
+- artifact/receipt/hash intent;
+- explicit operating-state exposure fields.
 
-### I — Innovate
+### P2 — Prove
 
-Add a measured reliability maturity vector that separates:
+Run one deterministic consumer path and prove:
 
-1. source identity;
-2. upstream disposition;
-3. model/unit consistency;
-4. architecture completeness;
-5. system-consequence eligibility;
-6. traceability/deliverable binding.
+- exact-source preservation;
+- upstream disposition preservation;
+- fail-closed system consequence;
+- exact-SHA runtime receipt;
+- independent H2 semantic/provenance check;
+- independent H3 executable/result check.
 
-This vector is diagnostic/control evidence, not engineering acceptance.
+### P3 — Commit
 
-### P — Perpetuate
+Commit only a bounded child result: `ACCEPT`, `DEFER`, or `HOLD` under child
+authority. Tooling cannot self-promote an atom to engineering acceptance.
 
-Burn the method into durable controls:
+### MIP-I — Innovate, only if justified
 
-- machine-readable profile;
-- validator/tests;
-- exact-SHA receipt;
-- Mission Control pointer;
-- restart/handover card;
-- stop/re-entry rules.
+The only currently admitted innovation is a **shared operating-state/evidence
+ledger adapter** if W2 proves duplicated or drifting state/exposure fields across
+H1/H2/H3/tooling consumers. It is not a new reliability engine and not a new
+provenance framework.
 
-## 8. Mission alignment
+W2 entry condition remains one intended child exact-head validation with
+`EX > 0` and durable KR, or an explicit bounded waiver that preserves the same
+proof obligation.
 
-### Horizontal Mission Control
+## 7. W3 configuration — `3P3 + MIP-P`
 
-Primary horizontal lane: **H4_QPS_TRIAGE**.
+W3 is not a fleet fan-out. It is one bounded propagation/generalisation proof
+after W2 local DoV.
 
-The reliability roll-up is a TRIAGE applicability/control concern. H1/H2/H3 remain supporting evidence/semantic/consumer surfaces only where exact payloads are required; they must not be promoted merely because reliability math exists.
+Propagation order:
 
-### Local QPS mission
+1. `GBOGEB/CODEX` consumes the semantic/provenance contract without changing it;
+2. `GBOGEB/ABACUS` independently consumes the executable/measurement contract;
+3. Mission Control consumes the returned receipts and routes one child re-entry
+   result without authority transfer.
 
-The work is a tooling/analysis projection under QPS child authority. Any engineering promotion must re-enter `GBOGEB/cryoplant-project` against child-controlled evidence.
+Stop after one successful generalisation class.
 
-### Grand Mission fleet
+### MIP-P — Perpetuate
 
-`GBOGEB/DOCX_RTM_Automation` is already a controlled `GM-IV` pilot frontier (`F01`). The reliability bridge is therefore a useful GM-IV propagation specimen, but **GM-IV status must only change after Pulse G exact-SHA propagation proof**.
+Persist only what W1/W2/W3 prove useful:
 
-## 9. Sub-chat / session split
+- exact-SHA receipt pattern;
+- restart/handover pointer;
+- first-red classification;
+- recurrence/REX rule;
+- stop/re-entry predicates;
+- selective pruning/no-growth guard.
 
-Recommended bounded sessions:
+Do not institutionalize unused dashboards, telemetry services, PCA layers or
+frameworks merely because infrastructure exists.
 
-1. **QRT-A / Applicability** — child profile, lane mapping, authority and maturity vector;
-2. **QRT-B / Evidence burn-down** — bind the five pilot atoms to real source/architecture evidence, starting with ALAT HP compressor;
-3. **QRT-C / Propagation** — CODEX + ABACUS + Mission Fleet consumer proof after child DoV;
-4. **QRT-D / Presentation reuse** — feed only accepted/controlled outputs back into PPT/Word/Excel engineering pack generation.
+## 8. Mission Control and adjacent missions
 
-These sessions are parallel only where they do not share the same first blocker.
+Primary horizontal: `H4_QPS_TRIAGE`.
 
-## 10. Next narrow victory
+Supporting horizontals:
 
-**MIP-Modernize first:** create and child-bind the machine-readable reliability applicability profile using the four existing lanes, then validate the five current reliability atoms against it. No new dashboard or global score before that exact-SHA child receipt exists.
+- H1_QPS — child source, consequence, architecture and final engineering
+  disposition only;
+- H2_KEB — semantics, provenance and state-separation challenge only;
+- H3_DOW — executable proof, denominators, independent calculation and delivery
+  QA only;
+- H4_QPS_TRIAGE — veto, BT/resource pressure, receipt/pointer, STOP/restart and
+  false-promotion prevention.
+
+Relevant global mission reuse:
+
+- provenance/attestation patterns: reuse exact source/artifact/receipt semantics;
+- MCP/control missions: reuse bounded recurrence and selective pruning;
+- cryogenic analytical kernels: separate valid math from stale/project-source
+  promotion;
+- observed BT: use reverse pressure for scheduling only, never engineering truth;
+- licensed Windows/Excel/HEPAK capacity: keep resource-separate from H4.
+
+Parallel, non-compensating fronts remain separate: G6 release identity, visual
+N200, OFFER workbook delta, W152 evidence return, and the repo-local runner
+admission blocker.
+
+## 9. Sub-chat / session topology
+
+### QRT-A — Applicability control / runtime gate
+
+Owner: H4 + H1.  
+State: **ACTIVE but blocked on repository-local Actions admission**.  
+Goal: obtain one real exact-head validator/test/receipt execution and make the W2
+entry decision.
+
+### QRT-B — Evidence burn-down
+
+Owner: H1.  
+State: **parallel preparation allowed, no promotion**.  
+Goal: source/architecture census for the W2 preferred cold-compressor-train atom,
+including exact source, unit basis, redundancy/common-cause/degraded-state/
+recovery and RTM/DTM edges.
+
+### QRT-C — W2 transaction / runtime proof
+
+Owner: H3 with H2 support.  
+State: **gated by W2 release**.  
+Goal: execute Prepare -> Prove -> Commit and the ledger adapter only if evidence
+shows duplicated state fields.
+
+### QRT-D — Presentation reuse
+
+Owner: tooling/presentation.  
+State: **parked**.  
+Goal: return only controlled outputs to DOCX/XLSX/PPTX/HTML after the model and
+authority contract are stable. OFFER workbook logic remains a separate locked
+method and must not be rewritten by the reliability work.
+
+### Control sessions
+
+- `S-H4`: portfolio roll-up, mission pointers, receipts, resource reallocation,
+  STOP/restart decisions;
+- `S-H1`: source/consequence/architecture/Table-10 engineering re-entry;
+- `S-H2`: semantic/provenance challenge;
+- `S-H3`: executable proof/metrics/independent calculations.
+
+## 10. Next goals and DoD
+
+Immediate P0 is not another QPS method improvement. It is the repository-local
+runtime admission defect. Restore admission or runner attachment and rerun the
+same child applicability workflow.
+
+When `runner_id != 0` and `steps > 0`:
+
+1. consume the first real validator result;
+2. if green and receipt-complete, release W2 from HOLD;
+3. execute one cold-compressor `3PC` transaction;
+4. admit MIP-I only if measured duplication/drift exists;
+5. after local W2 DoV, execute one 3P3 propagation proof;
+6. burn restart/REX/STOP controls with MIP-P;
+7. move the stable component from IMPROVE to CONTROL.
+
+Global DoD is reached when the child authority, tooling projection, semantic
+consumer, independent runtime consumer and Mission Control all reproduce the
+same bounded transaction and authority boundary from exact identities, with no
+unresolved first-red hidden by another framework layer.
