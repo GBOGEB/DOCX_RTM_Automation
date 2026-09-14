@@ -3,13 +3,21 @@ name: QPS Reliability Phase 7.4 Runtime Binding
 on:
   pull_request:
     paths:
-      - 'tests/fixtures/qps_reliability_phase7_4_input.json'
-      - '.github/workflows/qps_reliability_phase7_4.yml'
+      - 'glossary/GLOSSARY.yaml'
+      - 'schemas/**'
+      - 'federation/ADR_OCD/**'
+      - 'configs/qps_triage_parser_config.yaml'
+      - 'parser/**'
+      - 'src/dashboard/canonical_dashboard.py'
+      - 'src/dashboard/qps_triage_dashboard.py'
+      - 'src/dashboard/qps_receipt_consumer.py'
       - 'scripts/run_qps_triage_pipeline.py'
       - 'scripts/verify_qps_triage_receipt.py'
       - 'scripts/create_qps_triage_ci_registry_receipt.py'
-      - 'src/dashboard/qps_receipt_consumer.py'
       - 'scripts/build_qps_release_baseline.py'
+      - 'scripts/measure_qps_reliability_coverage.py'
+      - 'tests/fixtures/qps_reliability_phase7_4_input.json'
+      - '.github/workflows/qps_reliability_phase7_4.yml'
   push:
     branches:
       - feature/qps-reliability-phase7-4-runtime-binding
@@ -19,6 +27,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify checkout identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          ACTUAL_SHA="$(git rev-parse HEAD)"
+          test "$ACTUAL_SHA" = "$EXPECTED_SHA"
+          echo "Exact checkout SHA verified: $ACTUAL_SHA"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -33,6 +50,9 @@ jobs:
           rm -rf .artifacts/qps-rel-wave8 .artifacts/qps-rel-wave9 .artifacts/qps-rel-wave10 .artifacts/qps-rel-wave11
           python scripts/run_qps_triage_pipeline.py --input-analysis tests/fixtures/qps_reliability_phase7_4_input.json --output-dir .artifacts/qps-rel-wave8
           python scripts/verify_qps_triage_receipt.py .artifacts/qps-rel-wave8
+      - name: Measure reliability-pack coverage - Phase 7.5
+        run: |
+          python scripts/measure_qps_reliability_coverage.py .artifacts/qps-rel-wave8 --expected-rtm 3 --expected-otc 1 --expected-dtm 1 --require-complete
       - name: Upload governed reliability evidence
         id: rel_bundle
         uses: actions/upload-artifact@v4
