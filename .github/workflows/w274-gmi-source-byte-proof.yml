@@ -1,0 +1,52 @@
+name: W274 GMI source byte proof
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/prove_w274_gmi_source_bytes.py'
+      - '.github/workflows/w274-gmi-source-byte-proof.yml'
+      - 'main.py'
+      - 'src/core/extraction_manifest.py'
+      - 'src/extractors/extract_master_docx.py'
+      - 'scripts/verify_canonical.py'
+      - 'addenda/QPS_Addendum_II_Master.docx'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-byte-and-canonical-extraction-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout provider repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install focused DOCX dependency
+        run: python -m pip install python-docx==1.2.0
+
+      - name: Prove indexed bytes and run native canonical extraction
+        run: python scripts/prove_w274_gmi_source_bytes.py
+
+      - name: Show proof receipt
+        run: cat out/w274_gmi_source_byte_proof.json
+
+      - name: Upload provider proof receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: w274-gmi-source-byte-proof
+          path: |
+            out/w274_gmi_source_byte_proof.json
+            canonical/artefacts/extraction_manifest.json
+            canonical/artefacts/master_requirements_*.json
+          if-no-files-found: error
+          retention-days: 30
