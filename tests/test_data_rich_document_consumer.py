@@ -12,6 +12,7 @@ from docx import Document
 REPO = Path(__file__).resolve().parents[1]
 CONSUMER_PATH = REPO / "src" / "bridges" / "data_rich_document_consumer.py"
 BUILDER_PATH = REPO / "scripts" / "build_data_rich_reference_docx.py"
+LAYOUT_PATH = REPO / "scripts" / "fix_requirement_page_splits.py"
 
 
 def load_module(name, path):
@@ -24,6 +25,7 @@ def load_module(name, path):
 
 consumer = load_module("data_rich_document_consumer", CONSUMER_PATH)
 builder = load_module("build_data_rich_reference_docx", BUILDER_PATH)
+layout = load_module("fix_requirement_page_splits", LAYOUT_PATH)
 
 
 class DataRichDocumentConsumerTests(unittest.TestCase):
@@ -101,7 +103,7 @@ class DataRichDocumentConsumerTests(unittest.TestCase):
             self.assertEqual(proof["levels"]["2"]["lvl_text"], "%1.%2.%3")
 
 
-    def test_requirement_pagination_wraps_block_in_non_splitting_row(self):
+    def test_requirement_pagination_applies_structural_hints(self):
         with tempfile.TemporaryDirectory() as tmp:
             docx_path = Path(tmp) / "requirement.docx"
             doc = Document()
@@ -124,8 +126,43 @@ class DataRichDocumentConsumerTests(unittest.TestCase):
             inspection = consumer.inspect_requirement_pagination(docx_path)
             self.assertEqual(inspection["status"], "PASS")
             self.assertEqual(inspection["requirement_block_count"], 1)
-            self.assertEqual(inspection["mode"], "BORDERLESS_TABLE_ROW_CANT_SPLIT")
+            self.assertEqual(inspection["mode"], "KEEP_WITH_NEXT_HINTS")
             self.assertEqual(inspection["observations"][0]["requirement_id"], "REQ-002")
+
+    def test_layout_feedback_detects_split_and_adds_page_break(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            docx_path = Path(tmp) / "layout.docx"
+            doc = Document()
+            doc.add_paragraph("Architecture", style="Heading 1")
+            doc.add_paragraph("REQ-002 — Approved iterative refinement")
+            doc.add_paragraph("The document model shall record approved change sets.")
+            doc.add_paragraph("Priority: MUST")
+            doc.add_paragraph("Risk: HIGH")
+            doc.add_paragraph("Interfaces", style="Heading 2")
+            doc.save(docx_path)
+
+            page_1 = layout.normalize(
+                "Architecture REQ-002 — Approved iterative refinement "
+                "The document model shall record approved change sets. Priority: MUST"
+            )
+            page_2 = layout.normalize("Risk: HIGH Interfaces")
+            split = layout.detect_split_requirements(docx_path, [page_1, page_2])
+            self.assertEqual(split, ["REQ-002"])
+
+            self.assertEqual(layout.add_page_breaks(docx_path, split), 1)
+            repaired = Document(docx_path)
+            req = next(p for p in repaired.paragraphs if p.text.startswith("REQ-002"))
+            self.assertTrue(req.paragraph_format.page_break_before)
+
+            final_page = layout.normalize(
+                "REQ-002 — Approved iterative refinement "
+                "The document model shall record approved change sets. "
+                "Priority: MUST Risk: HIGH Interfaces"
+            )
+            self.assertEqual(
+                layout.detect_split_requirements(docx_path, ["Architecture", final_page]),
+                [],
+            )
 
     def test_manifest_validation_accepts_exact_hash_and_ref(self):
         with tempfile.TemporaryDirectory() as tmp:
