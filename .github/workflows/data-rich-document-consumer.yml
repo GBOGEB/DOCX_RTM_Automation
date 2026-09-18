@@ -91,6 +91,7 @@ jobs:
               "heading_style_check",
               "template_numbering_check",
               "duplicate_numbering_check",
+              "requirement_pagination_check",
           ):
               assert receipt[key] == "PASS", (key, receipt[key])
           assert receipt["authority"]["authority_transfer"] is False
