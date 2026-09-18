@@ -1,0 +1,118 @@
+name: Data-rich JSON DOCX consumer
+
+on:
+  pull_request:
+    paths:
+      - 'federation/DATA_RICH_DOCUMENT/**'
+      - 'scripts/build_data_rich_reference_docx.py'
+      - 'src/bridges/data_rich_document_consumer.py'
+      - 'tests/test_data_rich_document_consumer.py'
+      - '.github/workflows/data-rich-document-consumer.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'federation/DATA_RICH_DOCUMENT/**'
+      - 'scripts/build_data_rich_reference_docx.py'
+      - 'src/bridges/data_rich_document_consumer.py'
+      - 'tests/test_data_rich_document_consumer.py'
+      - '.github/workflows/data-rich-document-consumer.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact consumer commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Checkout proven producer adapter
+        uses: actions/checkout@v4
+        with:
+          repository: GBOGEB/document-organization-system
+          ref: e181903236e70b7b798b56fd59fc8948cd9885c0
+          path: producer
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install DOCX render dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install python-docx
+          sudo apt-get update
+          sudo apt-get install -y pandoc libreoffice-writer poppler-utils
+
+      - name: Run consumer fail-closed tests
+        run: >-
+          python -m unittest
+          tests.test_data_rich_document_consumer
+
+      - name: Build governed reference DOCX
+        run: >-
+          python scripts/build_data_rich_reference_docx.py
+          --output config/reference.docx
+
+      - name: Build projection from proven producer
+        run: |
+          rm -rf projection output render
+          mkdir -p projection output render
+          python producer/adapters/docx_rtm/build_projection.py \
+            producer/contracts/data_rich_document/examples/adr-001.json \
+            --output-dir projection \
+            --source-repo GBOGEB/document-organization-system \
+            --source-ref e181903236e70b7b798b56fd59fc8948cd9885c0
+
+      - name: Render DOCX and emit return receipt
+        run: |
+          python src/bridges/data_rich_document_consumer.py \
+            --markdown projection/ADR-001.projection.md \
+            --manifest projection/ADR-001.outward_document_manifest.json \
+            --reference-doc config/reference.docx \
+            --output-docx output/ADR-001.docx \
+            --receipt output/ADR-001.render_receipt.json \
+            --expected-source-ref e181903236e70b7b798b56fd59fc8948cd9885c0
+
+      - name: Assert structural receipt gates
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path("output/ADR-001.render_receipt.json").read_text())
+          for key in (
+              "render_status",
+              "heading_style_check",
+              "template_numbering_check",
+              "duplicate_numbering_check",
+          ):
+              assert receipt[key] == "PASS", (key, receipt[key])
+          assert receipt["authority"]["authority_transfer"] is False
+          assert receipt["authority"]["rendered_output_authoritative"] is False
+          print("PASS: structural DOCX return receipt")
+          PY
+
+      - name: Render DOCX to PDF and PNG evidence
+        run: |
+          libreoffice --headless --convert-to pdf --outdir render output/ADR-001.docx
+          test -s render/ADR-001.pdf
+          pdftoppm -png -r 144 render/ADR-001.pdf render/ADR-001-page
+          test -n "$(find render -name 'ADR-001-page-*.png' -print -quit)"
+          pdfinfo render/ADR-001.pdf | head -20
+
+      - name: Upload render receipt bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-rich-docx-render-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            config/reference.docx
+            projection/
+            output/
+            render/
+          if-no-files-found: error
