@@ -347,7 +347,7 @@ def inspect_requirement_pagination(docx_path: Path) -> Dict[str, Any]:
     observations = []
     for row in document.findall(".//w:tr", NS):
         text = "".join(node.text or "" for node in row.findall(".//w:t", NS)).strip()
-        match = re.search(r"REQ-\d+\s+[—-]\s+[^\\n]+", text)
+        match = re.search(r"REQ-\d+", text)
         if not match:
             continue
         cant_split = row.find("./w:trPr/w:cantSplit", NS)
