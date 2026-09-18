@@ -20,6 +20,7 @@ spacy==3.8.4
 textblob==0.18.0
 
 # Visualization and reporting
+graphviz>=0.20.3
 plotly==5.24.1
 matplotlib==3.10.0
 seaborn==0.14.1
@@ -39,6 +40,9 @@ pyyaml==6.0.3
 toml==0.10.2
 configparser==7.1.0
 python-dotenv==1.0.1
+
+# OpenAI structured-output integration
+openai>=1.40.0
 
 # Web framework and API
 flask==3.1.2
