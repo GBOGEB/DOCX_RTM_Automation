@@ -1,19 +1,67 @@
-schema: gbogeb-federation-activity/1.0.0
-as_of: '2026-09-10T06:47:00+02:00'
+schema: gbogeb-federation-activity/1.1.0
+as_of: '2026-09-18T18:03:00+02:00'
 repo: GBOGEB/DOCX_RTM_Automation
 classification: SATELLITE_ACTIVE
-federation_role: DOCUMENT_RTM_SOURCE_EXTRACTION_AND_RECONCILIATION
+federation_role: DOCUMENT_RTM_SOURCE_EXTRACTION_RECONCILIATION_AND_CONTROLLED_RENDER
+
 recent_activity:
   - {pr_range: '22-26', role: source_clause_reconciliation_recursive_workers_and_mip}
-mip_state: {modernize: ACTIVE, innovate: ACTIVE, perpetuate: GATED}
-three_p_capability: {P1_source_atom: true, P2_integration_graph: true, P3_evidence_control: true}
-runtime_proof: {state: PARTIAL, required: repeated_exact_head_source_clause_receipts}
-source_authority: {state: EXTRACTION_AND_MAPPING_ONLY, may_override_qps_child: false}
-produces_receipts: [source_clause_receipt, rtm_mapping_receipt, outward_document_manifest]
-consumes_receipts: [qps_requirement_contract, source_locator_contract]
-current_blocker: repeated exact-head source-clause reconciliation proof across distinct SHAs
-next_victory: execute source-clause reconciliation on a fresh head and emit locator plus output digests for federation return
+  - {branch: bridge/data-rich-json-consumer-v1-20260918, role: data_rich_json_to_docx_consumer, state: EXACT_HEAD_PROOF_PENDING}
+
+mip_state:
+  modernize: ACTIVE
+  innovate: DATA_RICH_JSON_CONSUMER_BRIDGE_ACTIVE
+  perpetuate: GATED_ON_EXACT_HEAD_RENDER_RECEIPT
+
+three_p_capability:
+  P1_source_atom: true
+  P2_integration_graph: true
+  P3_evidence_control: true
+
+runtime_proof:
+  state: PARTIAL
+  existing_required: repeated_exact_head_source_clause_receipts
+  data_rich_document:
+    state: EXACT_HEAD_RENDER_PROOF_PENDING
+    producer_repo: GBOGEB/document-organization-system
+    producer_merge_sha: e181903236e70b7b798b56fd59fc8948cd9885c0
+    consumer_workflow: .github/workflows/data-rich-document-consumer.yml
+    expected_return:
+      - rendered_docx_sha256
+      - reference_doc_sha256
+      - heading_style_check
+      - template_numbering_check
+      - duplicate_numbering_check
+      - PDF_PNG_RENDER_EVIDENCE
+
+source_authority: {state: EXTRACTION_MAPPING_AND_RENDER_ONLY, may_override_qps_child: false}
+
+produces_receipts:
+  - source_clause_receipt
+  - rtm_mapping_receipt
+  - outward_document_manifest
+  - data_rich_docx_render_return_receipt
+
+consumes_receipts:
+  - qps_requirement_contract
+  - source_locator_contract
+  - data_rich_outward_document_manifest
+
+data_rich_document_bridge:
+  contract: federation/DATA_RICH_DOCUMENT/consumer_contract.yaml
+  readme: federation/DATA_RICH_DOCUMENT/README.md
+  reference_builder: scripts/build_data_rich_reference_docx.py
+  consumer: src/bridges/data_rich_document_consumer.py
+  heading_levels: [Heading1, Heading2, Heading3]
+  display_numbering_owner: GENERATED_REFERENCE_DOCX
+  literal_number_filter: FORBIDDEN
+  semantic_writeback: JSON_CHANGE_SET_ONLY
+
+current_blocker: exact-head DOCX render receipt for the data-rich consumer plus existing repeated source-clause reconciliation requirement
+next_victory: render proven producer projection at exact consumer head, return hashes and heading/numbering proof, then bind receipt downstream without authority transfer
+
 federation_dependencies:
-  upstream: [GBOGEB/cryoplant-project, GBOGEB/CODEX]
+  upstream: [GBOGEB/cryoplant-project, GBOGEB/CODEX, GBOGEB/document-organization-system]
   downstream: [GBOGEB/document-organization-system, GBOGEB/ABACUS]
+
 controls: {authority_effect: NONE, engineering_credit: false, compliance_credit: false}
