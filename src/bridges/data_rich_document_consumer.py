@@ -19,8 +19,6 @@ from typing import Any, Dict, List, Tuple
 from xml.etree import ElementTree as ET
 
 from docx import Document
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
 
 
 MANIFEST_SCHEMA = "gbogeb.docx-rtm-outward-document-manifest/1.0.0"
@@ -278,95 +276,53 @@ def _requirement_blocks(doc: Document) -> List[Tuple[int, int]]:
     return blocks
 
 
-def _set_borderless_table(table) -> None:
-    tbl_pr = table._tbl.tblPr
-    borders = OxmlElement("w:tblBorders")
-    for edge in ("top", "left", "bottom", "right", "insideH", "insideV"):
-        element = OxmlElement(f"w:{edge}")
-        element.set(qn("w:val"), "nil")
-        borders.append(element)
-    tbl_pr.append(borders)
-
-
-def _set_zero_cell_margins(cell) -> None:
-    tc_pr = cell._tc.get_or_add_tcPr()
-    tc_mar = OxmlElement("w:tcMar")
-    for edge in ("top", "left", "bottom", "right"):
-        element = OxmlElement(f"w:{edge}")
-        element.set(qn("w:w"), "0")
-        element.set(qn("w:type"), "dxa")
-        tc_mar.append(element)
-    tc_pr.append(tc_mar)
-
-
 def enforce_requirement_block_pagination(docx_path: Path) -> Dict[str, Any]:
-    """Wrap each requirement block in one borderless non-splitting table row."""
+    """Apply Word paragraph pagination hints to requirement blocks."""
     doc = Document(docx_path)
     blocks = _requirement_blocks(doc)
-
-    # Move from the end so paragraph indices captured above remain valid.
-    for start, end in reversed(blocks):
-        paragraphs = doc.paragraphs
-        block = paragraphs[start : end + 1]
-        if not block:
-            continue
-
-        # Preserve paragraph-level protection as a secondary renderer hint.
-        for index, paragraph in enumerate(block):
-            paragraph.paragraph_format.keep_together = True
-            paragraph.paragraph_format.keep_with_next = index < len(block) - 1
-
-        table = doc.add_table(rows=1, cols=1)
-        _set_borderless_table(table)
-        row = table.rows[0]
-        tr_pr = row._tr.get_or_add_trPr()
-        cant_split = OxmlElement("w:cantSplit")
-        tr_pr.append(cant_split)
-
-        cell = row.cells[0]
-        _set_zero_cell_margins(cell)
-
-        # Position the table where the first requirement paragraph was.
-        block[0]._p.addprevious(table._tbl)
-
-        placeholder = cell.paragraphs[0]._p
-        for paragraph in block:
-            placeholder.addprevious(paragraph._p)
-        placeholder.getparent().remove(placeholder)
-
+    for start, end in blocks:
+        for index in range(start, end + 1):
+            fmt = doc.paragraphs[index].paragraph_format
+            fmt.keep_together = True
+            fmt.keep_with_next = index < end
     doc.save(docx_path)
     return {
         "status": "PASS",
         "requirement_block_count": len(blocks),
-        "mode": "BORDERLESS_TABLE_ROW_CANT_SPLIT",
+        "mode": "KEEP_WITH_NEXT_HINTS",
     }
 
 
 def inspect_requirement_pagination(docx_path: Path) -> Dict[str, Any]:
-    document = _zip_xml(docx_path, "word/document.xml")
+    doc = Document(docx_path)
+    blocks = _requirement_blocks(doc)
+    if not blocks:
+        raise ConsumerError(f"{docx_path}: no governed requirement blocks found")
     observations = []
-    for row in document.findall(".//w:tr", NS):
-        text = "".join(node.text or "" for node in row.findall(".//w:t", NS)).strip()
-        match = re.search(r"REQ-\d+", text)
-        if not match:
-            continue
-        cant_split = row.find("./w:trPr/w:cantSplit", NS)
-        if cant_split is None:
-            raise ConsumerError(
-                f"{docx_path}: requirement table row is missing w:cantSplit"
-            )
-        observations.append({"requirement_id": match.group(0), "cant_split": True})
-
-    if not observations:
-        raise ConsumerError(f"{docx_path}: no governed requirement table rows found")
-
+    for start, end in blocks:
+        for index in range(start, end + 1):
+            fmt = doc.paragraphs[index].paragraph_format
+            if fmt.keep_together is not True:
+                raise ConsumerError(
+                    f"{docx_path}: requirement paragraph {index} is not keep-together"
+                )
+            if index < end and fmt.keep_with_next is not True:
+                raise ConsumerError(
+                    f"{docx_path}: requirement paragraph {index} is not keep-with-next"
+                )
+        match = re.search(r"REQ-\d+", doc.paragraphs[start].text)
+        observations.append(
+            {
+                "requirement_id": match.group(0) if match else "",
+                "paragraph_count": end - start + 1,
+            }
+        )
     return {
         "status": "PASS",
         "requirement_block_count": len(observations),
-        "mode": "BORDERLESS_TABLE_ROW_CANT_SPLIT",
+        "mode": "KEEP_WITH_NEXT_HINTS",
         "observations": observations,
     }
-
 def render_docx(
     markdown_path: Path,
     reference_docx: Path,
