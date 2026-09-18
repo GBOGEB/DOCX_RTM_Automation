@@ -101,7 +101,7 @@ class DataRichDocumentConsumerTests(unittest.TestCase):
             self.assertEqual(proof["levels"]["2"]["lvl_text"], "%1.%2.%3")
 
 
-    def test_requirement_pagination_marks_block_keep_with_next(self):
+    def test_requirement_pagination_wraps_block_in_non_splitting_row(self):
         with tempfile.TemporaryDirectory() as tmp:
             docx_path = Path(tmp) / "requirement.docx"
             doc = Document()
@@ -124,10 +124,8 @@ class DataRichDocumentConsumerTests(unittest.TestCase):
             inspection = consumer.inspect_requirement_pagination(docx_path)
             self.assertEqual(inspection["status"], "PASS")
             self.assertEqual(inspection["requirement_block_count"], 1)
-            self.assertEqual(
-                inspection["observations"][0]["title"],
-                "REQ-002 — Approved iterative refinement",
-            )
+            self.assertEqual(inspection["mode"], "BORDERLESS_TABLE_ROW_CANT_SPLIT")
+            self.assertEqual(inspection["observations"][0]["requirement_id"], "REQ-002")
 
     def test_manifest_validation_accepts_exact_hash_and_ref(self):
         with tempfile.TemporaryDirectory() as tmp:
