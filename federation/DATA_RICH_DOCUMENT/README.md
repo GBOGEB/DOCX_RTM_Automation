@@ -44,7 +44,7 @@ The consumer validates:
 7. requirement blocks are bound with Word keep-with-next / keep-together pagination controls;
 8. rendered DOCX SHA-256.
 
-Requirement title, statement and metadata paragraphs are wrapped in one borderless table row marked non-splitting, so LibreOffice/Word pagination cannot orphan the remainder of a requirement block while the row fits on one page.
+Requirement paragraphs first receive Word keep-with-next/keep-together hints. CI then measures the actual LibreOffice PDF pagination. If any requirement spans pages, the consumer inserts an explicit page break before that requirement, re-renders, and fails closed unless the final PDF keeps the entire block on one page.
 
 The CI workflow additionally renders the DOCX to PDF/PNG and uploads the full
 receipt bundle. The binary rendering is evidence of execution; visual approval
