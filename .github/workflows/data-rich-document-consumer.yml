@@ -5,6 +5,7 @@ on:
     paths:
       - 'federation/DATA_RICH_DOCUMENT/**'
       - 'scripts/build_data_rich_reference_docx.py'
+      - 'scripts/fix_requirement_page_splits.py'
       - 'src/bridges/data_rich_document_consumer.py'
       - 'tests/test_data_rich_document_consumer.py'
       - '.github/workflows/data-rich-document-consumer.yml'
@@ -62,8 +63,8 @@ jobs:
 
       - name: Build projection from proven producer
         run: |
-          rm -rf projection output render
-          mkdir -p projection output render
+          rm -rf projection output render render_pre
+          mkdir -p projection output render render_pre
           python producer/adapters/docx_rtm/build_projection.py \
             producer/contracts/data_rich_document/examples/adr-001.json \
             --output-dir projection \
@@ -99,13 +100,68 @@ jobs:
           print("PASS: structural DOCX return receipt")
           PY
 
-      - name: Render DOCX to PDF and PNG evidence
+      - name: Render preflight DOCX layout
         run: |
+          libreoffice --headless --convert-to pdf --outdir render_pre output/ADR-001.docx
+          test -s render_pre/ADR-001.pdf
+          pdfinfo render_pre/ADR-001.pdf | head -20
+
+      - name: Repair measured requirement page splits
+        run: |
+          python scripts/fix_requirement_page_splits.py \
+            --docx output/ADR-001.docx \
+            --pdf render_pre/ADR-001.pdf \
+            --receipt output/ADR-001.pagination_pre.json
+
+      - name: Refresh return receipt after pagination repair
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from src.bridges.data_rich_document_consumer import (
+              build_return_receipt,
+              load_manifest,
+          )
+
+          manifest = load_manifest(Path("projection/ADR-001.outward_document_manifest.json"))
+          receipt = build_return_receipt(
+              manifest,
+              Path("projection/ADR-001.projection.md"),
+              Path("config/reference.docx"),
+              Path("output/ADR-001.docx"),
+          )
+          Path("output/ADR-001.render_receipt.json").write_text(
+              json.dumps(receipt, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
+          print("PASS: refreshed post-layout render receipt")
+          PY
+
+      - name: Render final DOCX to PDF and PNG evidence
+        run: |
+          rm -rf render
+          mkdir -p render
           libreoffice --headless --convert-to pdf --outdir render output/ADR-001.docx
           test -s render/ADR-001.pdf
           pdftoppm -png -r 144 render/ADR-001.pdf render/ADR-001-page
           test -n "$(find render -name 'ADR-001-page-*.png' -print -quit)"
           pdfinfo render/ADR-001.pdf | head -20
+
+      - name: Assert final requirement pagination
+        run: |
+          python scripts/fix_requirement_page_splits.py \
+            --docx output/ADR-001.docx \
+            --pdf render/ADR-001.pdf \
+            --receipt output/ADR-001.pagination_final.json \
+            --check-only
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path("output/ADR-001.pagination_final.json").read_text())
+          assert receipt["status"] == "PASS", receipt
+          assert receipt["split_requirements"] == [], receipt
+          print("PASS: final rendered requirement pagination")
+          PY
 
       - name: Upload render receipt bundle
         uses: actions/upload-artifact@v4
