@@ -41,7 +41,10 @@ The consumer validates:
 4. Pandoc render success;
 5. Heading 1/2/3 counts against the manifest;
 6. absence of literal numeric prefixes in heading text;
-7. rendered DOCX SHA-256.
+7. requirement blocks are bound with Word keep-with-next / keep-together pagination controls;
+8. rendered DOCX SHA-256.
+
+Requirement title, statement and metadata paragraphs are kept together when possible so a page break does not orphan the remainder of a requirement block.
 
 The CI workflow additionally renders the DOCX to PDF/PNG and uploads the full
 receipt bundle. The binary rendering is evidence of execution; visual approval
