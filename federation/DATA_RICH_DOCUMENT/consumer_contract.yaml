@@ -48,7 +48,7 @@ return_receipt:
 
 pagination_contract:
   requirement_blocks_keep_together: true
-  mechanism: WORD_KEEP_WITH_NEXT_AND_KEEP_TOGETHER
+  mechanism: BORDERLESS_TABLE_ROW_CANT_SPLIT
   visual_regression_target: NO_ORPHANED_REQUIREMENT_METADATA
 
 visual_gate:
