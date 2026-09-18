@@ -18,10 +18,13 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple
 from xml.etree import ElementTree as ET
 
+from docx import Document
+
 
 MANIFEST_SCHEMA = "gbogeb.docx-rtm-outward-document-manifest/1.0.0"
 CONSUMER_REPO = "GBOGEB/DOCX_RTM_Automation"
 NUMBERED_TITLE_RE = re.compile(r"^\s*\d{1,3}(?:\.\d+)*[.)]?\s+")
+REQUIREMENT_TITLE_RE = re.compile(r"^\s*REQ-\d+\s+[—-]\s+")
 W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 NS = {"w": W}
 
@@ -238,6 +241,88 @@ def inspect_rendered_headings(
     }
 
 
+
+def _paragraph_style_name(paragraph) -> str:
+    style = paragraph.style
+    return style.name if style is not None else ""
+
+
+def _requirement_blocks(doc: Document) -> List[Tuple[int, int]]:
+    """Return inclusive paragraph ranges for rendered requirement blocks."""
+    paragraphs = doc.paragraphs
+    blocks: List[Tuple[int, int]] = []
+    index = 0
+    while index < len(paragraphs):
+        if not REQUIREMENT_TITLE_RE.match(paragraphs[index].text.strip()):
+            index += 1
+            continue
+
+        start = index
+        end = index
+        cursor = index + 1
+        while cursor < len(paragraphs):
+            text = paragraphs[cursor].text.strip()
+            style_name = _paragraph_style_name(paragraphs[cursor])
+            if style_name in {"Heading 1", "Heading 2", "Heading 3"}:
+                break
+            if REQUIREMENT_TITLE_RE.match(text):
+                break
+            if text:
+                end = cursor
+            cursor += 1
+
+        blocks.append((start, end))
+        index = max(cursor, index + 1)
+    return blocks
+
+
+def enforce_requirement_block_pagination(docx_path: Path) -> Dict[str, Any]:
+    """Apply Word paragraph pagination hints to requirement blocks."""
+    doc = Document(docx_path)
+    blocks = _requirement_blocks(doc)
+    for start, end in blocks:
+        for index in range(start, end + 1):
+            fmt = doc.paragraphs[index].paragraph_format
+            fmt.keep_together = True
+            fmt.keep_with_next = index < end
+    doc.save(docx_path)
+    return {
+        "status": "PASS",
+        "requirement_block_count": len(blocks),
+        "mode": "KEEP_WITH_NEXT_HINTS",
+    }
+
+
+def inspect_requirement_pagination(docx_path: Path) -> Dict[str, Any]:
+    doc = Document(docx_path)
+    blocks = _requirement_blocks(doc)
+    if not blocks:
+        raise ConsumerError(f"{docx_path}: no governed requirement blocks found")
+    observations = []
+    for start, end in blocks:
+        for index in range(start, end + 1):
+            fmt = doc.paragraphs[index].paragraph_format
+            if fmt.keep_together is not True:
+                raise ConsumerError(
+                    f"{docx_path}: requirement paragraph {index} is not keep-together"
+                )
+            if index < end and fmt.keep_with_next is not True:
+                raise ConsumerError(
+                    f"{docx_path}: requirement paragraph {index} is not keep-with-next"
+                )
+        match = re.search(r"REQ-\d+", doc.paragraphs[start].text)
+        observations.append(
+            {
+                "requirement_id": match.group(0) if match else "",
+                "paragraph_count": end - start + 1,
+            }
+        )
+    return {
+        "status": "PASS",
+        "requirement_block_count": len(observations),
+        "mode": "KEEP_WITH_NEXT_HINTS",
+        "observations": observations,
+    }
 def render_docx(
     markdown_path: Path,
     reference_docx: Path,
@@ -264,6 +349,8 @@ def render_docx(
     if not output_docx.exists() or output_docx.stat().st_size == 0:
         raise ConsumerError("pandoc completed without a non-empty DOCX")
 
+    enforce_requirement_block_pagination(output_docx)
+
 
 def build_return_receipt(
     manifest: Dict[str, Any],
@@ -273,6 +360,7 @@ def build_return_receipt(
 ) -> Dict[str, Any]:
     numbering = inspect_numbering_contract(output_docx)
     headings = inspect_rendered_headings(output_docx, manifest)
+    pagination = inspect_requirement_pagination(output_docx)
 
     return {
         "schema": "docx_rtm.data_rich_document_render_receipt/1.0.0",
@@ -285,6 +373,8 @@ def build_return_receipt(
         "heading_style_check": headings["heading_style_check"],
         "template_numbering_check": numbering["status"],
         "duplicate_numbering_check": headings["duplicate_numbering_check"],
+        "requirement_pagination_check": pagination["status"],
+        "requirement_pagination_observations": pagination,
         "heading_observations": headings["observed"],
         "numbering_observations": numbering,
         "authority": {

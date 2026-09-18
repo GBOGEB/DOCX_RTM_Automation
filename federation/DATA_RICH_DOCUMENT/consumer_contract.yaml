@@ -38,11 +38,23 @@ return_receipt:
     - heading_style_check
     - template_numbering_check
     - duplicate_numbering_check
+    - requirement_pagination_check
   acceptance:
     render_status: PASS
     heading_style_check: PASS
     template_numbering_check: PASS
     duplicate_numbering_check: PASS
+    requirement_pagination_check: PASS
+
+pagination_contract:
+  structural_hint: KEEP_WITH_NEXT_HINTS
+  measured_layout_feedback:
+    preflight_pdf_required: true
+    split_detection: REQUIREMENT_PARAGRAPHS_MUST_SHARE_TITLE_PAGE
+    repair: PAGE_BREAK_BEFORE_SPLIT_REQUIREMENT
+    rerender_required: true
+    final_split_check: REQUIRED
+  visual_regression_target: NO_ORPHANED_REQUIREMENT_METADATA
 
 visual_gate:
   binary_render_to_pdf_png: REQUIRED_FOR_CI_EVIDENCE
