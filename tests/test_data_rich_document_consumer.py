@@ -6,6 +6,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from docx import Document
+
 
 REPO = Path(__file__).resolve().parents[1]
 CONSUMER_PATH = REPO / "src" / "bridges" / "data_rich_document_consumer.py"
@@ -97,6 +99,35 @@ class DataRichDocumentConsumerTests(unittest.TestCase):
             self.assertEqual(proof["levels"]["0"]["lvl_text"], "%1")
             self.assertEqual(proof["levels"]["1"]["lvl_text"], "%1.%2")
             self.assertEqual(proof["levels"]["2"]["lvl_text"], "%1.%2.%3")
+
+
+    def test_requirement_pagination_marks_block_keep_with_next(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            docx_path = Path(tmp) / "requirement.docx"
+            doc = Document()
+            doc.add_paragraph("Architecture", style="Heading 1")
+            doc.add_paragraph("REQ-002 — Approved iterative refinement")
+            doc.add_paragraph(
+                "The document model shall record proposed, approved, applied and reverted change sets."
+            )
+            doc.add_paragraph("Priority: MUST")
+            doc.add_paragraph("Risk: HIGH")
+            doc.add_paragraph("Rationale: Continuous refinement must remain auditable.")
+            doc.add_paragraph("Verification: test / planned")
+            doc.add_paragraph("Interfaces", style="Heading 2")
+            doc.save(docx_path)
+
+            proof = consumer.enforce_requirement_block_pagination(docx_path)
+            self.assertEqual(proof["status"], "PASS")
+            self.assertEqual(proof["requirement_block_count"], 1)
+
+            inspection = consumer.inspect_requirement_pagination(docx_path)
+            self.assertEqual(inspection["status"], "PASS")
+            self.assertEqual(inspection["requirement_block_count"], 1)
+            self.assertEqual(
+                inspection["observations"][0]["title"],
+                "REQ-002 — Approved iterative refinement",
+            )
 
     def test_manifest_validation_accepts_exact_hash_and_ref(self):
         with tempfile.TemporaryDirectory() as tmp:
