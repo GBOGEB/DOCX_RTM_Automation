@@ -355,7 +355,7 @@ def inspect_requirement_pagination(docx_path: Path) -> Dict[str, Any]:
             raise ConsumerError(
                 f"{docx_path}: requirement table row is missing w:cantSplit"
             )
-        observations.append({"title": match.group(0), "cant_split": True})
+        observations.append({"requirement_id": match.group(0), "cant_split": True})
 
     if not observations:
         raise ConsumerError(f"{docx_path}: no governed requirement table rows found")
