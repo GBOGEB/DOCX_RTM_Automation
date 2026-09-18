@@ -12,3 +12,7 @@ jsonschema==4.25.1
 # Canonical extraction pipeline
 openpyxl==3.1.5      # Excel (.xlsx/.xls) reading for RTM and Offer extractors
 pdfplumber==0.11.4   # PDF table extraction for offer tables extractor
+
+# QPLANT-AI-AUTO structured intake / spreadsheet export
+pandas==2.2.3
+graphviz==0.21

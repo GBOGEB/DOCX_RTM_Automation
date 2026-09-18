@@ -1,0 +1,8 @@
+{
+  "input_type": "NEW",
+  "source": "Stakeholder Requirement Definition",
+  "target_pillars": ["RFO", "ADR", "OCD"],
+  "dependencies": ["SR", "REQ", "OCD_USE_CASE"],
+  "instructions": "Enhance and integrate into the complete structured project state. Preserve unsupported fields as empty.",
+  "branch_name": ""
+}

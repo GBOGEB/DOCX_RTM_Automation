@@ -155,3 +155,7 @@ site/
 
 # Temporary refactoring files
 temp_*
+
+# QPLANT-AI-AUTO local iteration receipts/state
+state/qplant_input_ledger.jsonl
+output/qplant_ai_auto/
