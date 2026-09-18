@@ -47,8 +47,13 @@ return_receipt:
     requirement_pagination_check: PASS
 
 pagination_contract:
-  requirement_blocks_keep_together: true
-  mechanism: BORDERLESS_TABLE_ROW_CANT_SPLIT
+  structural_hint: KEEP_WITH_NEXT_HINTS
+  measured_layout_feedback:
+    preflight_pdf_required: true
+    split_detection: REQUIREMENT_PARAGRAPHS_MUST_SHARE_TITLE_PAGE
+    repair: PAGE_BREAK_BEFORE_SPLIT_REQUIREMENT
+    rerender_required: true
+    final_split_check: REQUIRED
   visual_regression_target: NO_ORPHANED_REQUIREMENT_METADATA
 
 visual_gate:
