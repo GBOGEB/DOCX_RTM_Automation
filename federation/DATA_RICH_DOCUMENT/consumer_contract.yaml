@@ -1,0 +1,61 @@
+schema: docx_rtm.data_rich_document_consumer/1.0.0
+as_of: '2026-09-18T18:03:00+02:00'
+
+producer:
+  repo: GBOGEB/document-organization-system
+  merged_adapter_sha: e181903236e70b7b798b56fd59fc8948cd9885c0
+  manifest_schema: gbogeb.docx-rtm-outward-document-manifest/1.0.0
+
+consumer:
+  repo: GBOGEB/DOCX_RTM_Automation
+  role: TOOLING_TRANSFORM_ONLY
+  entrypoint: src/bridges/data_rich_document_consumer.py
+  reference_builder: scripts/build_data_rich_reference_docx.py
+
+heading_contract:
+  levels:
+    1: Heading 1
+    2: Heading 2
+    3: Heading 3
+  display_numbering_owner: REFERENCE_DOCX_MULTILEVEL_LIST
+  heading_text_numbering: FORBIDDEN
+  forbidden_filter: config/filters/extend_headings.lua
+
+source_binding:
+  require_exact_git_ref: true
+  require_source_json_sha256: true
+  require_projection_markdown_sha256: true
+  semantic_authority: UPSTREAM_JSON_ONLY
+
+return_receipt:
+  required:
+    - source_json_sha256
+    - projection_markdown_sha256
+    - source_git_ref
+    - reference_doc_sha256
+    - rendered_docx_sha256
+    - render_status
+    - heading_style_check
+    - template_numbering_check
+    - duplicate_numbering_check
+  acceptance:
+    render_status: PASS
+    heading_style_check: PASS
+    template_numbering_check: PASS
+    duplicate_numbering_check: PASS
+
+visual_gate:
+  binary_render_to_pdf_png: REQUIRED_FOR_CI_EVIDENCE
+  human_visual_approval: SEPARATE_GATE
+  consumer_may_self_approve_visuals: false
+
+writeback:
+  direct_docx_to_json_override: false
+  semantic_change_transport: JSON_CHANGE_SET
+  upstream_approval_required: true
+
+controls:
+  authority_transfer: false
+  engineering_credit: false
+  compliance_credit: false
+  procurement_acceptance_credit: false
