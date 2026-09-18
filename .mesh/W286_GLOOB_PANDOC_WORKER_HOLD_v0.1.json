@@ -1,0 +1,20 @@
+{
+  "schema": "gbogeb-p1-worker-hold/1.0",
+  "wave": "W286",
+  "repo": "GBOGEB/DOCX_RTM_Automation",
+  "authority_role": "SOURCE_EXTRACTION_RTM_WORKER",
+  "local_base_sha": "db8bf4902459d710702dd5debb725eee406a6224",
+  "producer": {
+    "repo": "GBOGEB/CODEX",
+    "pr": 771,
+    "head_sha": "9223704e0931cb71ab059a8671eb71e03c84f0cb",
+    "status": "HOLD_WAIT_PRODUCER_CI_MERGE"
+  },
+  "must_not": [
+    "promote_QPS_engineering_truth",
+    "replace_original_source_with_derived_extraction",
+    "claim_PDF_ingress_lossless"
+  ],
+  "next_action": "after producer merge, bind exact merge SHA and validate source/RTM projection parity",
+  "formal_credit_delta": 0
+}
