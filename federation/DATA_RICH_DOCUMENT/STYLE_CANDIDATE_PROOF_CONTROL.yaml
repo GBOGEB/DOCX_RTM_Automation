@@ -1,0 +1,26 @@
+schema: docx_rtm.visual_style_candidate_proof_control/1.0.0
+as_of: '2026-09-19T08:24:00+02:00'
+pr: GBOGEB/DOCX_RTM_Automation#67
+style_id: QPS_TECH_GRAPHITE_TEAL_COPPER_V1
+code_head_before_retry: c4a3a731d7da04b42b97cfac0d798c5903a16112
+code_changed_for_retry: false
+initial_runs:
+  render:
+    run_id: 35426281953
+    job_id: 105852688819
+    status: queued
+    steps: null
+  python_ci:
+    run_id: 35426281962
+    job_id: 105852688882
+    status: queued
+    steps: null
+classification: INFRASTRUCTURE_PREEXECUTION_RUNNER_ADMISSION
+retry:
+  attempt: 1
+  max_attempts: 2
+  method: CONTROL_RECEIPT_COMMIT_ONLY
+  implementation_files_changed: false
+guard:
+  zero_step_is_code_evidence: false
+  repair_from_zero_step_forbidden: true
