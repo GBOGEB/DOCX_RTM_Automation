@@ -137,5 +137,11 @@
     "semantic_content_change_allowed": false,
     "accepted_baseline_mutation_allowed": false,
     "new_user_approval_required_for_baseline_replacement": true
+  },
+  "title_rule": {
+    "enabled": false,
+    "color_role": "rule",
+    "width_eighth_points": 8,
+    "space_pt": 4
   }
 }
