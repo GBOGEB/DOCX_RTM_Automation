@@ -23,6 +23,8 @@ from docx import Document
 
 MANIFEST_SCHEMA = "gbogeb.docx-rtm-outward-document-manifest/1.0.0"
 CONSUMER_REPO = "GBOGEB/DOCX_RTM_Automation"
+STYLE_SCHEMA = "docx_rtm.visual_style/1.0.0"
+DEFAULT_STYLE_PATH = Path(__file__).resolve().parents[2] / "federation" / "DATA_RICH_DOCUMENT" / "visual_style.json"
 NUMBERED_TITLE_RE = re.compile(r"^\s*\d{1,3}(?:\.\d+)*[.)]?\s+")
 REQUIREMENT_TITLE_RE = re.compile(r"^\s*REQ-\d+\s+[—-]\s+")
 W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
@@ -47,6 +49,27 @@ def sha256_file(path: Path) -> str:
 
 def load_manifest(path: Path) -> Dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def load_visual_style(path: Path | None = None) -> Dict[str, Any]:
+    style_path = path or DEFAULT_STYLE_PATH
+    try:
+        style = json.loads(style_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ConsumerError(f"cannot load visual style {style_path}: {exc}") from exc
+
+    if style.get("schema") != STYLE_SCHEMA:
+        raise ConsumerError(
+            f"unsupported visual style schema: {style.get('schema')!r}"
+        )
+    if not style.get("style_id"):
+        raise ConsumerError("visual style style_id is required")
+    governance = style.get("governance", {})
+    if governance.get("semantic_content_change_allowed") is not False:
+        raise ConsumerError("visual style must forbid semantic content changes")
+    if governance.get("accepted_baseline_mutation_allowed") is not False:
+        raise ConsumerError("visual style must forbid accepted baseline mutation")
+    return style
 
 
 def validate_manifest(
