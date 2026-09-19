@@ -196,9 +196,16 @@ def inspect_numbering_contract(docx_path: Path) -> Dict[str, Any]:
             raise ConsumerError(
                 f"{docx_path}: level {ilvl} numbering text mismatch"
             )
+        rpr = lvl.find("./w:rPr", NS)
+        number_color_el = rpr.find("./w:color", NS) if rpr is not None else None
+        number_bold_el = rpr.find("./w:b", NS) if rpr is not None else None
+        number_font_el = rpr.find("./w:rFonts", NS) if rpr is not None else None
         level_details[str(ilvl)] = {
             "pstyle": pstyle.get(w("val"), ""),
             "lvl_text": lvl_text.get(w("val"), ""),
+            "number_color": number_color_el.get(w("val"), "") if number_color_el is not None else "",
+            "number_bold": number_bold_el is not None,
+            "number_font": number_font_el.get(w("ascii"), "") if number_font_el is not None else "",
         }
 
     for level, style_id in enumerate(("Heading1", "Heading2", "Heading3")):
