@@ -353,6 +353,195 @@ def inspect_requirement_pagination(docx_path: Path) -> Dict[str, Any]:
         "mode": "KEEP_WITH_NEXT_HINTS",
         "observations": observations,
     }
+
+def _replace_runs(paragraph, segments: List[Tuple[str, str | None]]) -> None:
+    """Replace plain runs while preserving paragraph identity and exact text."""
+    for run in list(paragraph.runs):
+        paragraph._p.remove(run._r)
+    for text, style_name in segments:
+        if not text:
+            continue
+        run = paragraph.add_run(text)
+        if style_name:
+            run.style = style_name
+
+
+def apply_visual_semantics(
+    docx_path: Path,
+    visual: Dict[str, Any],
+) -> Dict[str, Any]:
+    """Apply governed semantic visual roles after Pandoc rendering."""
+    doc = Document(docx_path)
+    requirements = visual["requirements"]
+    captions = visual["captions"]
+    metadata_prefixes = tuple(requirements.get("metadata_prefixes", []))
+
+    counts = {
+        "requirement_titles": 0,
+        "metadata_lines": 0,
+        "captions": 0,
+    }
+
+    for paragraph in doc.paragraphs:
+        text = paragraph.text
+
+        req_match = re.match(r"^\s*(REQ-\d+)(.*)$", text)
+        if req_match:
+            paragraph.style = doc.styles[requirements["title_paragraph_style"]]
+            _replace_runs(
+                paragraph,
+                [
+                    (req_match.group(1), requirements["id_character_style"]),
+                    (req_match.group(2), None),
+                ],
+            )
+            counts["requirement_titles"] += 1
+            continue
+
+        prefix = next(
+            (item for item in metadata_prefixes if text.startswith(item)),
+            None,
+        )
+        if prefix:
+            paragraph.style = doc.styles[requirements["metadata_paragraph_style"]]
+            _replace_runs(
+                paragraph,
+                [
+                    (prefix, requirements["metadata_label_character_style"]),
+                    (text[len(prefix):], None),
+                ],
+            )
+            counts["metadata_lines"] += 1
+            continue
+
+        caption_match = re.match(r"^\s*((?:Figure|Table)\s+\d+)(.*)$", text)
+        if paragraph.style.name == captions["paragraph_style"] or caption_match:
+            paragraph.style = doc.styles[captions["paragraph_style"]]
+            if caption_match:
+                _replace_runs(
+                    paragraph,
+                    [
+                        (caption_match.group(1), captions["number_character_style"]),
+                        (caption_match.group(2), None),
+                    ],
+                )
+            counts["captions"] += 1
+
+    doc.save(docx_path)
+    return {"status": "PASS", **counts}
+
+
+def _style_observation(doc: Document, name: str) -> Dict[str, Any]:
+    try:
+        style = doc.styles[name]
+    except KeyError as exc:
+        raise ConsumerError(f"{doc.part.partname}: missing visual style {name!r}") from exc
+    rgb = style.font.color.rgb
+    return {
+        "font": style.font.name or "",
+        "size_pt": round(style.font.size.pt, 3) if style.font.size is not None else None,
+        "color": str(rgb).upper() if rgb is not None else "",
+        "bold": style.font.bold,
+        "italic": style.font.italic,
+    }
+
+
+def inspect_visual_style_contract(
+    docx_path: Path,
+    visual: Dict[str, Any],
+) -> Dict[str, Any]:
+    doc = Document(docx_path)
+    sizes = visual["sizes_pt"]
+    colors = visual["colors"]
+    requirements = visual["requirements"]
+    captions = visual["captions"]
+
+    expected = {
+        "Normal": {
+            "font": visual["fonts"]["body"]["name"],
+            "size_pt": float(sizes["body"]),
+            "color": colors["body"].upper(),
+        },
+        "Heading 1": {
+            "font": visual["fonts"]["heading"]["name"],
+            "size_pt": float(sizes["heading_1"]),
+            "color": colors["heading_primary"].upper(),
+        },
+        "Heading 2": {
+            "font": visual["fonts"]["heading"]["name"],
+            "size_pt": float(sizes["heading_2"]),
+            "color": colors["heading_secondary"].upper(),
+        },
+        "Heading 3": {
+            "font": visual["fonts"]["heading"]["name"],
+            "size_pt": float(sizes["heading_3"]),
+            "color": colors["heading_tertiary"].upper(),
+        },
+        captions["paragraph_style"]: {
+            "font": visual["fonts"]["body"]["name"],
+            "size_pt": float(sizes["caption"]),
+            "color": colors["caption"].upper(),
+        },
+        requirements["title_paragraph_style"]: {
+            "font": visual["fonts"]["heading"]["name"],
+            "size_pt": float(sizes["requirement_title"]),
+            "color": colors["requirement_title"].upper(),
+        },
+        requirements["metadata_paragraph_style"]: {
+            "font": visual["fonts"]["body"]["name"],
+            "size_pt": float(sizes["metadata"]),
+            "color": colors["metadata"].upper(),
+        },
+        requirements["id_character_style"]: {
+            "font": visual["fonts"]["heading"]["name"],
+            "size_pt": float(sizes["requirement_title"]),
+            "color": colors["requirement_id"].upper(),
+        },
+        requirements["metadata_label_character_style"]: {
+            "font": visual["fonts"]["body"]["name"],
+            "size_pt": float(sizes["metadata"]),
+            "color": colors["special_number"].upper(),
+        },
+        captions["number_character_style"]: {
+            "font": visual["fonts"]["body"]["name"],
+            "size_pt": float(sizes["caption"]),
+            "color": colors[captions["number_color_role"]].upper(),
+        },
+    }
+
+    observations: Dict[str, Dict[str, Any]] = {}
+    failures: List[str] = []
+    for name, wanted in expected.items():
+        observed = _style_observation(doc, name)
+        observations[name] = observed
+        if observed["font"] != wanted["font"]:
+            failures.append(f"{name}:font={observed['font']!r}!={wanted['font']!r}")
+        if observed["size_pt"] is None or abs(observed["size_pt"] - wanted["size_pt"]) > 0.06:
+            failures.append(f"{name}:size={observed['size_pt']}!={wanted['size_pt']}")
+        if observed["color"] != wanted["color"]:
+            failures.append(f"{name}:color={observed['color']}!={wanted['color']}")
+
+    numbering = inspect_numbering_contract(docx_path)
+    expected_number_color = colors[visual["numbering"]["color_role"]].upper()
+    for level, details in numbering["levels"].items():
+        if details.get("number_color", "").upper() != expected_number_color:
+            failures.append(
+                f"numbering[{level}]:color={details.get('number_color')!r}!={expected_number_color}"
+            )
+        if visual["numbering"].get("bold") is True and details.get("number_bold") is not True:
+            failures.append(f"numbering[{level}]:bold=false")
+
+    if failures:
+        raise ConsumerError("visual style contract failed: " + "; ".join(failures))
+
+    return {
+        "status": "PASS",
+        "style_id": visual["style_id"],
+        "styles": observations,
+        "numbering_color": expected_number_color,
+    }
+
+
 def render_docx(
     markdown_path: Path,
     reference_docx: Path,
