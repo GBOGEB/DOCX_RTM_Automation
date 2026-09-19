@@ -104,6 +104,16 @@ class DataRichDocumentConsumerTests(unittest.TestCase):
             self.assertEqual(proof["levels"]["2"]["lvl_text"], "%1.%2.%3")
 
 
+    def test_visual_style_rejects_quarter_point_font_size(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            style_path = Path(tmp) / "visual_style.json"
+            visual = builder.load_style(STYLE_PATH)
+            visual["sizes_pt"]["body"] = 10.75
+            import json
+            style_path.write_text(json.dumps(visual), encoding="utf-8")
+            with self.assertRaisesRegex(builder.StyleConfigError, "0.5 pt granularity"):
+                builder.load_style(style_path)
+
     def test_visual_style_contract_is_applied_to_reference_docx(self):
         with tempfile.TemporaryDirectory() as tmp:
             ref = Path(tmp) / "reference.docx"
