@@ -17,7 +17,8 @@
     "captions",
     "tables",
     "callouts",
-    "governance"
+    "governance",
+    "title_rule"
   ],
   "properties": {
     "schema": {
@@ -164,6 +165,32 @@
           "const": true
         }
       }
+    },
+    "title_rule": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "color_role",
+        "width_eighth_points",
+        "space_pt"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "color_role": {
+          "type": "string"
+        },
+        "width_eighth_points": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "space_pt": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": true
