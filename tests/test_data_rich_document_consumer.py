@@ -131,6 +131,18 @@ class DataRichDocumentConsumerTests(unittest.TestCase):
                 visual["colors"]["caption"].upper(),
             )
 
+    def test_title_rule_is_disabled_and_legacy_blue_border_removed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ref = Path(tmp) / "reference.docx"
+            visual = builder.load_style(STYLE_PATH)
+            self.assertFalse(visual["title_rule"]["enabled"])
+            builder.build_reference_docx(ref, STYLE_PATH)
+
+            styles = consumer._zip_xml(ref, "word/styles.xml")
+            title = styles.find(".//w:style[@w:styleId='Title']", consumer.NS)
+            self.assertIsNotNone(title)
+            self.assertIsNone(title.find("./w:pPr/w:pBdr", consumer.NS))
+
     def test_visual_semantics_style_requirement_id_metadata_and_caption(self):
         with tempfile.TemporaryDirectory() as tmp:
             ref = Path(tmp) / "reference.docx"
