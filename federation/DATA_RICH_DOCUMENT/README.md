@@ -54,6 +54,8 @@ You can change, independently:
 User fonts are referenced by font **name** only and must exist in the render
 environment. Font files are never embedded or committed by this contract.
 
+Word stores font sizes in half-points, so all size tokens are governed at **0.5 pt** granularity. Quarter-point values are rejected instead of being silently rounded by the renderer.
+
 The current first style candidate is
 `QPS_TECH_GRAPHITE_TEAL_COPPER_V1`: graphite body text, deep-teal hierarchy
 and copper special-number accents. It is a candidate, not a replacement for

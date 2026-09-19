@@ -87,6 +87,10 @@ def load_style(path: Path | None = None) -> Dict[str, Any]:
     for role, value in style["sizes_pt"].items():
         if not isinstance(value, (int, float)) or value <= 0:
             raise StyleConfigError(f"invalid font size for {role}: {value!r}")
+        if abs(float(value) * 2 - round(float(value) * 2)) > 1e-9:
+            raise StyleConfigError(
+                f"font size for {role} must use Word 0.5 pt granularity: {value!r}"
+            )
 
     if style.get("governance", {}).get("semantic_content_change_allowed") is not False:
         raise StyleConfigError("style governance must forbid semantic content changes")
