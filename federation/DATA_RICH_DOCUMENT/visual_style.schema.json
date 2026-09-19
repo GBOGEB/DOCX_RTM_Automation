@@ -48,6 +48,9 @@
         },
         "note": {
           "type": "string"
+        },
+        "word_size_granularity_pt": {
+          "const": 0.5
         }
       },
       "additionalProperties": false
@@ -92,7 +95,8 @@
       ],
       "additionalProperties": {
         "type": "number",
-        "exclusiveMinimum": 0
+        "exclusiveMinimum": 0,
+        "multipleOf": 0.5
       }
     },
     "colors": {
