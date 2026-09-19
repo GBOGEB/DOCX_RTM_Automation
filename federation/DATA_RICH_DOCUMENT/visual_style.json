@@ -12,7 +12,8 @@
   "font_policy": {
     "source": "USER_OR_SYSTEM_INSTALLED_FONT_NAME",
     "embed_fonts": false,
-    "note": "Font files are never stored in this style contract. Change names only to fonts available in the target render environment."
+    "note": "Font files are never stored in this style contract. Change names only to fonts available in the target render environment. Word OOXML font sizes are governed at 0.5 pt granularity.",
+    "word_size_granularity_pt": 0.5
   },
   "fonts": {
     "body": {
@@ -40,12 +41,12 @@
   "sizes_pt": {
     "title": 23,
     "heading_1": 17.5,
-    "heading_2": 14.25,
-    "heading_3": 12.25,
-    "body": 10.75,
-    "caption": 9.25,
-    "requirement_title": 11.25,
-    "metadata": 9.75
+    "heading_2": 14,
+    "heading_3": 12,
+    "body": 10.5,
+    "caption": 9,
+    "requirement_title": 11,
+    "metadata": 9.5
   },
   "colors": {
     "body": "303538",
