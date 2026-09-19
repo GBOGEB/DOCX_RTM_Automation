@@ -6,6 +6,7 @@ on:
       - 'federation/DATA_RICH_DOCUMENT/**'
       - 'scripts/build_data_rich_reference_docx.py'
       - 'scripts/fix_requirement_page_splits.py'
+      - 'scripts/measure_visual_style_diff.py'
       - 'src/bridges/data_rich_document_consumer.py'
       - 'tests/test_data_rich_document_consumer.py'
       - '.github/workflows/data-rich-document-consumer.yml'
@@ -15,6 +16,8 @@ on:
     paths:
       - 'federation/DATA_RICH_DOCUMENT/**'
       - 'scripts/build_data_rich_reference_docx.py'
+      - 'scripts/fix_requirement_page_splits.py'
+      - 'scripts/measure_visual_style_diff.py'
       - 'src/bridges/data_rich_document_consumer.py'
       - 'tests/test_data_rich_document_consumer.py'
       - '.github/workflows/data-rich-document-consumer.yml'
