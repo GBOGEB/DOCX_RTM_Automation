@@ -46,6 +46,7 @@ You can change, independently:
 - Title, Heading 1/2/3, body, caption, requirement-title and metadata sizes;
 - body, hierarchy, special-number, requirement-ID, caption and metadata colors;
 - heading-number appearance separately from heading text;
+- title-rule visibility/color separately from title text (disabled in the current candidate);
 - requirement-ID and metadata-label emphasis;
 - caption and caption-number styling;
 - page margins and paragraph spacing;
