@@ -546,10 +546,12 @@ def render_docx(
     markdown_path: Path,
     reference_docx: Path,
     output_docx: Path,
+    style_config: Path | None = None,
 ) -> None:
     if not reference_docx.exists():
         raise ConsumerError(f"reference DOCX missing: {reference_docx}")
 
+    visual = load_visual_style(style_config)
     reference_proof = inspect_numbering_contract(reference_docx)
     if reference_proof["status"] != "PASS":
         raise ConsumerError("reference numbering contract failed")
@@ -568,6 +570,7 @@ def render_docx(
     if not output_docx.exists() or output_docx.stat().st_size == 0:
         raise ConsumerError("pandoc completed without a non-empty DOCX")
 
+    apply_visual_semantics(output_docx, visual)
     enforce_requirement_block_pagination(output_docx)
 
 
@@ -576,18 +579,27 @@ def build_return_receipt(
     markdown_path: Path,
     reference_docx: Path,
     output_docx: Path,
+    style_config: Path | None = None,
 ) -> Dict[str, Any]:
+    visual = load_visual_style(style_config)
     numbering = inspect_numbering_contract(output_docx)
     headings = inspect_rendered_headings(output_docx, manifest)
     pagination = inspect_requirement_pagination(output_docx)
+    visual_check = inspect_visual_style_contract(output_docx, visual)
+    style_path = style_config or DEFAULT_STYLE_PATH
 
     return {
-        "schema": "docx_rtm.data_rich_document_render_receipt/1.0.0",
+        "schema": "docx_rtm.data_rich_document_render_receipt/1.1.0",
         "source_json_sha256": manifest["source"]["sha256"],
         "projection_markdown_sha256": sha256_file(markdown_path),
         "source_git_ref": manifest["source"]["git_ref"],
         "reference_doc_sha256": sha256_file(reference_docx),
         "rendered_docx_sha256": sha256_file(output_docx),
+        "visual_style_id": visual["style_id"],
+        "visual_style_schema": visual["schema"],
+        "visual_style_sha256": sha256_file(style_path),
+        "visual_style_check": visual_check["status"],
+        "visual_style_observations": visual_check,
         "render_status": "PASS",
         "heading_style_check": headings["heading_style_check"],
         "template_numbering_check": numbering["status"],
@@ -613,6 +625,7 @@ def main() -> int:
     parser.add_argument("--reference-doc", type=Path, required=True)
     parser.add_argument("--output-docx", type=Path, required=True)
     parser.add_argument("--receipt", type=Path, required=True)
+    parser.add_argument("--style-config", type=Path, default=DEFAULT_STYLE_PATH)
     parser.add_argument("--expected-source-ref", default="")
     args = parser.parse_args()
 
@@ -623,12 +636,18 @@ def main() -> int:
             args.markdown,
             expected_source_ref=args.expected_source_ref,
         )
-        render_docx(args.markdown, args.reference_doc, args.output_docx)
+        render_docx(
+            args.markdown,
+            args.reference_doc,
+            args.output_docx,
+            style_config=args.style_config,
+        )
         receipt = build_return_receipt(
             manifest,
             args.markdown,
             args.reference_doc,
             args.output_docx,
+            style_config=args.style_config,
         )
     except (OSError, json.JSONDecodeError, ConsumerError) as exc:
         print(f"FAIL: {exc}")
