@@ -77,7 +77,7 @@ def load_style(path: Path | None = None) -> Dict[str, Any]:
     if not style.get("style_id"):
         raise StyleConfigError("visual style style_id is required")
 
-    for key in ("fonts", "sizes_pt", "colors", "spacing_pt", "page", "numbering"):
+    for key in ("fonts", "sizes_pt", "colors", "spacing_pt", "page", "numbering", "title_rule"):
         _require(style, key)
 
     for role, value in style["colors"].items():
@@ -135,6 +135,24 @@ def _configure_font(
         target_style.font.bold = bold
     if italic is not None:
         target_style.font.italic = italic
+
+def _configure_title_rule(title_style, visual: Dict[str, Any]) -> None:
+    ppr = title_style.element.get_or_add_pPr()
+    _remove_children(ppr, "w:pBdr")
+    rule = visual["title_rule"]
+    if not rule.get("enabled", False):
+        return
+
+    color_role = rule.get("color_role", "rule")
+    border = OxmlElement("w:pBdr")
+    bottom = OxmlElement("w:bottom")
+    _set_attr(bottom, "w:val", "single")
+    _set_attr(bottom, "w:color", _color_hex(visual, color_role))
+    _set_attr(bottom, "w:sz", str(int(rule.get("width_eighth_points", 8))))
+    _set_attr(bottom, "w:space", str(int(round(float(rule.get("space_pt", 4))))))
+    border.append(bottom)
+    ppr.append(border)
+
 
 
 def _link_style_to_numbering(style, num_id: int, ilvl: int) -> None:
@@ -271,6 +289,7 @@ def _configure_styles(doc: Document, visual: Dict[str, Any]) -> None:
         bold=True,
     )
     title.paragraph_format.space_after = Pt(10)
+    _configure_title_rule(title, visual)
 
     caption = _get_or_add_style(doc, visual["captions"]["paragraph_style"], WD_STYLE_TYPE.PARAGRAPH)
     caption.base_style = normal
