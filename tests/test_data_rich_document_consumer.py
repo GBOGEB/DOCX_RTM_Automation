@@ -13,6 +13,7 @@ REPO = Path(__file__).resolve().parents[1]
 CONSUMER_PATH = REPO / "src" / "bridges" / "data_rich_document_consumer.py"
 BUILDER_PATH = REPO / "scripts" / "build_data_rich_reference_docx.py"
 LAYOUT_PATH = REPO / "scripts" / "fix_requirement_page_splits.py"
+STYLE_PATH = REPO / "federation" / "DATA_RICH_DOCUMENT" / "visual_style.json"
 
 
 def load_module(name, path):
@@ -92,7 +93,7 @@ class DataRichDocumentConsumerTests(unittest.TestCase):
     def test_reference_builder_has_heading_1_to_3_numbering(self):
         with tempfile.TemporaryDirectory() as tmp:
             ref = Path(tmp) / "reference.docx"
-            builder.build_reference_docx(ref)
+            builder.build_reference_docx(ref, STYLE_PATH)
             proof = consumer.inspect_numbering_contract(ref)
             self.assertEqual(proof["status"], "PASS")
             self.assertEqual(proof["styles"]["Heading1"]["ilvl"], "0")
@@ -102,6 +103,58 @@ class DataRichDocumentConsumerTests(unittest.TestCase):
             self.assertEqual(proof["levels"]["1"]["lvl_text"], "%1.%2")
             self.assertEqual(proof["levels"]["2"]["lvl_text"], "%1.%2.%3")
 
+
+    def test_visual_style_contract_is_applied_to_reference_docx(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ref = Path(tmp) / "reference.docx"
+            visual = builder.load_style(STYLE_PATH)
+            builder.build_reference_docx(ref, STYLE_PATH)
+            proof = consumer.inspect_visual_style_contract(ref, visual)
+            self.assertEqual(proof["status"], "PASS")
+            self.assertEqual(proof["style_id"], visual["style_id"])
+            self.assertEqual(
+                proof["numbering_color"],
+                visual["colors"]["special_number"].upper(),
+            )
+            self.assertEqual(
+                proof["styles"]["Caption"]["color"],
+                visual["colors"]["caption"].upper(),
+            )
+
+    def test_visual_semantics_style_requirement_id_metadata_and_caption(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ref = Path(tmp) / "reference.docx"
+            candidate = Path(tmp) / "candidate.docx"
+            visual = builder.load_style(STYLE_PATH)
+            builder.build_reference_docx(ref, STYLE_PATH)
+
+            doc = Document(ref)
+            doc.add_paragraph("REQ-077 — Styled requirement")
+            doc.add_paragraph("Priority: MUST")
+            doc.add_paragraph("Figure 7 - Styled caption", style="Caption")
+            doc.save(candidate)
+
+            proof = consumer.apply_visual_semantics(candidate, visual)
+            self.assertEqual(proof["status"], "PASS")
+            self.assertGreaterEqual(proof["requirement_titles"], 1)
+            self.assertGreaterEqual(proof["metadata_lines"], 1)
+            self.assertGreaterEqual(proof["captions"], 1)
+
+            styled = Document(candidate)
+            req = next(p for p in styled.paragraphs if p.text.startswith("REQ-077"))
+            self.assertEqual(req.style.name, visual["requirements"]["title_paragraph_style"])
+            self.assertEqual(req.runs[0].style.name, visual["requirements"]["id_character_style"])
+
+            meta = next(p for p in styled.paragraphs if p.text.startswith("Priority:"))
+            self.assertEqual(meta.style.name, visual["requirements"]["metadata_paragraph_style"])
+            self.assertEqual(
+                meta.runs[0].style.name,
+                visual["requirements"]["metadata_label_character_style"],
+            )
+
+            caption = next(p for p in styled.paragraphs if p.text.startswith("Figure 7"))
+            self.assertEqual(caption.style.name, visual["captions"]["paragraph_style"])
+            self.assertEqual(caption.runs[0].style.name, visual["captions"]["number_character_style"])
 
     def test_requirement_pagination_applies_structural_hints(self):
         with tempfile.TemporaryDirectory() as tmp:

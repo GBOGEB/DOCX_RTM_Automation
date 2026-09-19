@@ -1,5 +1,5 @@
-schema: docx_rtm.data_rich_document_consumer/1.0.0
-as_of: '2026-09-18T18:03:00+02:00'
+schema: docx_rtm.data_rich_document_consumer/1.1.0
+as_of: '2026-09-19T08:20:00+02:00'
 
 producer:
   repo: GBOGEB/document-organization-system
@@ -21,6 +21,35 @@ heading_contract:
   heading_text_numbering: FORBIDDEN
   forbidden_filter: config/filters/extend_headings.lua
 
+visual_style_contract:
+  schema: docx_rtm.visual_style/1.0.0
+  path: federation/DATA_RICH_DOCUMENT/visual_style.json
+  schema_path: federation/DATA_RICH_DOCUMENT/visual_style.schema.json
+  current_style_id: QPS_TECH_GRAPHITE_TEAL_COPPER_V1
+  owner: DOCX_RENDER_LAYER_ONLY
+  semantic_change_allowed: false
+  accepted_baseline_mutation_allowed: false
+  user_font_mode: NAME_REFERENCE_TO_USER_OR_SYSTEM_INSTALLED_FONT
+  embed_font_files: false
+  roles:
+    - body_font
+    - heading_font
+    - mono_font
+    - title_h1_h2_h3_body_caption_requirement_metadata_sizes
+    - body_heading_special_number_requirement_caption_metadata_colors
+    - heading_number_accent
+    - requirement_id_accent
+    - caption_number_accent
+    - tables_callouts_spacing
+
+approved_visual_baseline:
+  status: USER_APPROVED
+  docx_sha256: e936ffcb89eb7da13b8be8d447c8453b5b4499a4907390816846f5c8ec94a6b9
+  pdf_sha256: 654e74630861b5b398ab577d55da5f692bf4549b0af480498822428109353b02
+  artifact_digest: sha256:ce9c806aebcce0cc9f15eaaf728c4e2bb30e4e93cb2db26b80c9e8c3ce8db8f0
+  workflow_run: 35375677112
+  immutable_regression_reference: true
+
 source_binding:
   require_exact_git_ref: true
   require_source_json_sha256: true
@@ -39,12 +68,16 @@ return_receipt:
     - template_numbering_check
     - duplicate_numbering_check
     - requirement_pagination_check
+    - visual_style_id
+    - visual_style_sha256
+    - visual_style_check
   acceptance:
     render_status: PASS
     heading_style_check: PASS
     template_numbering_check: PASS
     duplicate_numbering_check: PASS
     requirement_pagination_check: PASS
+    visual_style_check: PASS
 
 pagination_contract:
   structural_hint: KEEP_WITH_NEXT_HINTS
@@ -58,7 +91,9 @@ pagination_contract:
 
 visual_gate:
   binary_render_to_pdf_png: REQUIRED_FOR_CI_EVIDENCE
-  human_visual_approval: SEPARATE_GATE
+  approved_baseline_visual_diff: REQUIRED_FOR_STYLE_CANDIDATE
+  semantic_projection_invariance: REQUIRED_FOR_STYLE_CANDIDATE
+  human_visual_approval: REQUIRED_TO_REPLACE_ACCEPTED_BASELINE
   consumer_may_self_approve_visuals: false
 
 writeback:

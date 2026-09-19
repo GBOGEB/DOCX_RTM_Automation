@@ -1,0 +1,140 @@
+{
+  "schema": "docx_rtm.visual_style/1.0.0",
+  "style_id": "QPS_TECH_GRAPHITE_TEAL_COPPER_V1",
+  "label": "QPS Technical - Graphite / Teal / Copper",
+  "purpose": "Granular user-editable visual style candidate layered over the approved DOCX/PDF baseline.",
+  "baseline": {
+    "approved_at": "2026-09-19T08:11:00+02:00",
+    "docx_sha256": "e936ffcb89eb7da13b8be8d447c8453b5b4499a4907390816846f5c8ec94a6b9",
+    "pdf_sha256": "654e74630861b5b398ab577d55da5f692bf4549b0af480498822428109353b02",
+    "artifact_digest": "sha256:ce9c806aebcce0cc9f15eaaf728c4e2bb30e4e93cb2db26b80c9e8c3ce8db8f0"
+  },
+  "font_policy": {
+    "source": "USER_OR_SYSTEM_INSTALLED_FONT_NAME",
+    "embed_fonts": false,
+    "note": "Font files are never stored in this style contract. Change names only to fonts available in the target render environment."
+  },
+  "fonts": {
+    "body": {
+      "name": "Aptos",
+      "fallback": [
+        "Liberation Sans",
+        "Arial"
+      ]
+    },
+    "heading": {
+      "name": "Aptos Display",
+      "fallback": [
+        "Aptos",
+        "Liberation Sans"
+      ]
+    },
+    "mono": {
+      "name": "Aptos Mono",
+      "fallback": [
+        "Liberation Mono",
+        "Consolas"
+      ]
+    }
+  },
+  "sizes_pt": {
+    "title": 23,
+    "heading_1": 17.5,
+    "heading_2": 14.25,
+    "heading_3": 12.25,
+    "body": 10.75,
+    "caption": 9.25,
+    "requirement_title": 11.25,
+    "metadata": 9.75
+  },
+  "colors": {
+    "body": "303538",
+    "heading_primary": "0E5A5D",
+    "heading_secondary": "2C7776",
+    "heading_tertiary": "4A6D6C",
+    "special_number": "B56A34",
+    "requirement_id": "B56A34",
+    "requirement_title": "173F41",
+    "metadata": "5F676B",
+    "caption": "6B7174",
+    "subtle_fill": "F3F6F5",
+    "rule": "D8DEDC",
+    "link": "0B6E75",
+    "white": "FFFFFF"
+  },
+  "spacing_pt": {
+    "body_after": 6,
+    "heading_1_before": 15,
+    "heading_1_after": 7,
+    "heading_2_before": 12,
+    "heading_2_after": 5,
+    "heading_3_before": 10,
+    "heading_3_after": 4,
+    "caption_before": 4,
+    "caption_after": 8,
+    "requirement_title_before": 7,
+    "requirement_title_after": 3,
+    "metadata_after": 2
+  },
+  "page": {
+    "size": "LETTER",
+    "orientation": "PORTRAIT",
+    "margins_in": {
+      "top": 0.78,
+      "bottom": 0.78,
+      "left": 0.88,
+      "right": 0.88
+    }
+  },
+  "numbering": {
+    "levels": 3,
+    "color_role": "special_number",
+    "bold": true,
+    "separator": "SPACE",
+    "text": [
+      "%1",
+      "%1.%2",
+      "%1.%2.%3"
+    ]
+  },
+  "requirements": {
+    "title_paragraph_style": "Requirement Title",
+    "metadata_paragraph_style": "Requirement Metadata",
+    "id_character_style": "Requirement ID",
+    "metadata_label_character_style": "Metadata Label",
+    "metadata_prefixes": [
+      "Priority:",
+      "Risk:",
+      "Rationale:",
+      "Verification:"
+    ]
+  },
+  "captions": {
+    "paragraph_style": "Caption",
+    "number_character_style": "Caption Number",
+    "italic": true,
+    "alignment": "CENTER",
+    "number_color_role": "special_number",
+    "supported_sequences": [
+      "Figure",
+      "Table"
+    ]
+  },
+  "tables": {
+    "header_fill_role": "heading_primary",
+    "header_text_role": "white",
+    "border_role": "rule",
+    "body_fill_role": "white",
+    "zebra_striping": false
+  },
+  "callouts": {
+    "accent_role": "special_number",
+    "fill_role": "subtle_fill",
+    "text_role": "body"
+  },
+  "governance": {
+    "semantic_content_change_allowed": false,
+    "accepted_baseline_mutation_allowed": false,
+    "new_user_approval_required_for_baseline_replacement": true
+  }
+}

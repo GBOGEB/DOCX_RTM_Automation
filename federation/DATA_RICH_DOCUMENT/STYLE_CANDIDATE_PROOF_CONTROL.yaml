@@ -1,0 +1,45 @@
+schema: docx_rtm.visual_style_candidate_proof_control/1.0.0
+as_of: '2026-09-19T08:26:00+02:00'
+pr: GBOGEB/DOCX_RTM_Automation#67
+style_id: QPS_TECH_GRAPHITE_TEAL_COPPER_V1
+implementation_head: c4a3a731d7da04b42b97cfac0d798c5903a16112
+implementation_changed_for_retries: false
+
+attempts:
+  - attempt: 0
+    control_head: c4a3a731d7da04b42b97cfac0d798c5903a16112
+    render:
+      run_id: 35426281953
+      job_id: 105852688819
+      status: queued
+      steps: null
+    python_ci:
+      run_id: 35426281962
+      job_id: 105852688882
+      status: queued
+      steps: null
+  - attempt: 1
+    control_head: 0c6de5f55c2f4cd63b081fe2b72fa3ed15a75b11
+    render:
+      run_id: 35426342634
+      job_id: 105852850487
+      status: queued
+      steps: null
+    python_ci:
+      run_id: 35426342627
+      job_id: 105852850464
+      status: queued
+      steps: null
+  - attempt: 2
+    state: TRIGGERED_BY_THIS_CONTROL_UPDATE
+
+classification: INFRASTRUCTURE_PREEXECUTION_RUNNER_ADMISSION
+retry_policy:
+  max_retry_attempts: 2
+  current_retry_attempt: 2
+  exhausted_after_this_attempt: true
+  method: CONTROL_RECEIPT_COMMIT_ONLY
+guard:
+  zero_step_is_code_evidence: false
+  repair_from_zero_step_forbidden: true
+  merge_without_executed_style_proof: false

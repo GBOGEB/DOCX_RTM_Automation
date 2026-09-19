@@ -31,6 +31,39 @@ The reference DOCX links Heading 1/2/3 to one multilevel numbering definition.
 The consumer must not use `config/filters/extend_headings.lua` for this path,
 because that filter inserts literal numbers into heading text.
 
+
+## Governed visual style layer
+
+The accepted DOCX/PDF pair is an immutable visual regression baseline. New
+appearance work is driven only by
+`federation/DATA_RICH_DOCUMENT/visual_style.json`, validated against
+`visual_style.schema.json`.
+
+The style file deliberately separates **roles** from hard-coded formatting.
+You can change, independently:
+
+- body, heading and mono font names;
+- Title, Heading 1/2/3, body, caption, requirement-title and metadata sizes;
+- body, hierarchy, special-number, requirement-ID, caption and metadata colors;
+- heading-number appearance separately from heading text;
+- requirement-ID and metadata-label emphasis;
+- caption and caption-number styling;
+- page margins and paragraph spacing;
+- table-header, border, fill and callout roles.
+
+User fonts are referenced by font **name** only and must exist in the render
+environment. Font files are never embedded or committed by this contract.
+
+The current first style candidate is
+`QPS_TECH_GRAPHITE_TEAL_COPPER_V1`: graphite body text, deep-teal hierarchy
+and copper special-number accents. It is a candidate, not a replacement for
+the approved baseline.
+
+CI proves the style candidate is style-only by comparing source/projection
+hashes with the approved baseline, then measures the rendered PNG delta. A
+new candidate cannot replace the approved visual baseline without explicit
+user approval.
+
 ## Controlled render
 
 The consumer validates:
@@ -53,7 +86,10 @@ remains a separate human-facing review gate.
 ## Files
 
 - `federation/DATA_RICH_DOCUMENT/consumer_contract.yaml`
+- `federation/DATA_RICH_DOCUMENT/visual_style.json`
+- `federation/DATA_RICH_DOCUMENT/visual_style.schema.json`
 - `scripts/build_data_rich_reference_docx.py`
+- `scripts/measure_visual_style_diff.py`
 - `src/bridges/data_rich_document_consumer.py`
 - `tests/test_data_rich_document_consumer.py`
 - `.github/workflows/data-rich-document-consumer.yml`
