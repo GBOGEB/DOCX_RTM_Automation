@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/GBOGEB/DOCX_RTM_Automation/federation/DATA_RICH_DOCUMENT/visual_style.schema.json",
+  "title": "DOCX RTM Visual Style Contract",
+  "type": "object",
+  "required": [
+    "schema",
+    "style_id",
+    "font_policy",
+    "fonts",
+    "sizes_pt",
+    "colors",
+    "spacing_pt",
+    "page",
+    "numbering",
+    "requirements",
+    "captions",
+    "tables",
+    "callouts",
+    "governance"
+  ],
+  "properties": {
+    "schema": {
+      "const": "docx_rtm.visual_style/1.0.0"
+    },
+    "style_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "label": {
+      "type": "string"
+    },
+    "purpose": {
+      "type": "string"
+    },
+    "font_policy": {
+      "type": "object",
+      "required": [
+        "source",
+        "embed_fonts"
+      ],
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "embed_fonts": {
+          "const": false
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "fonts": {
+      "type": "object",
+      "required": [
+        "body",
+        "heading",
+        "mono"
+      ],
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "fallback": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "sizes_pt": {
+      "type": "object",
+      "required": [
+        "title",
+        "heading_1",
+        "heading_2",
+        "heading_3",
+        "body",
+        "caption",
+        "requirement_title",
+        "metadata"
+      ],
+      "additionalProperties": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      }
+    },
+    "colors": {
+      "type": "object",
+      "required": [
+        "body",
+        "heading_primary",
+        "heading_secondary",
+        "heading_tertiary",
+        "special_number",
+        "requirement_id",
+        "requirement_title",
+        "metadata",
+        "caption",
+        "subtle_fill",
+        "rule",
+        "link",
+        "white"
+      ],
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9A-Fa-f]{6}$"
+      }
+    },
+    "spacing_pt": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number",
+        "minimum": 0
+      }
+    },
+    "page": {
+      "type": "object"
+    },
+    "numbering": {
+      "type": "object"
+    },
+    "requirements": {
+      "type": "object"
+    },
+    "captions": {
+      "type": "object"
+    },
+    "tables": {
+      "type": "object"
+    },
+    "callouts": {
+      "type": "object"
+    },
+    "governance": {
+      "type": "object",
+      "required": [
+        "semantic_content_change_allowed",
+        "accepted_baseline_mutation_allowed",
+        "new_user_approval_required_for_baseline_replacement"
+      ],
+      "properties": {
+        "semantic_content_change_allowed": {
+          "const": false
+        },
+        "accepted_baseline_mutation_allowed": {
+          "const": false
+        },
+        "new_user_approval_required_for_baseline_replacement": {
+          "const": true
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}
