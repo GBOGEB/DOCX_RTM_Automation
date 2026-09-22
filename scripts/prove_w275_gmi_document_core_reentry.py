@@ -13,11 +13,14 @@ import argparse
 import hashlib
 import json
 import os
+import sys
 from pathlib import Path
 
-from src.document_core.canonical_requirements_adapter import load_canonical_requirements
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from src.document_core.canonical_requirements_adapter import load_canonical_requirements
 DEFAULT_INPUT = REPO_ROOT / "canonical" / "artefacts" / "master_requirements_v1.json"
 DEFAULT_OUTPUT = REPO_ROOT / "out" / "w275_gmi_document_core.json"
 DEFAULT_RECEIPT = REPO_ROOT / "out" / "w275_gmi_document_core_receipt.json"
