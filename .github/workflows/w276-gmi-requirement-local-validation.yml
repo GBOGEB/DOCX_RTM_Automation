@@ -1,0 +1,87 @@
+name: W276 GMI requirement-local validation
+
+on:
+  pull_request:
+    paths:
+      - 'src/document_core/**'
+      - 'scripts/prove_w276_gmi_requirement_local_validation.py'
+      - 'tests/test_requirement_local_validator.py'
+      - 'tests/fixtures/gmi_w276_legacy_requirements.json'
+      - 'scripts/prove_w274_gmi_source_bytes.py'
+      - 'scripts/prove_w275_gmi_document_core_reentry.py'
+      - '.github/workflows/w276-gmi-requirement-local-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  requirement-local-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout provider repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install focused dependencies
+        run: python -m pip install python-docx pytest
+
+      - name: Run requirement-local adversarial tests
+        run: >-
+          python -m pytest -q -o addopts=''
+          tests/test_requirement_local_validator.py
+
+      - name: Reproduce W274 source and canonical proof
+        run: python scripts/prove_w274_gmi_source_bytes.py
+
+      - name: Reproduce W275 document-core ingress
+        run: python scripts/prove_w275_gmi_document_core_reentry.py
+
+      - name: Execute W276 requirement-local proof
+        run: python scripts/prove_w276_gmi_requirement_local_validation.py
+
+      - name: Fail closed on W276 receipt
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          p = Path('out/w276_gmi_requirement_local_validation_receipt.json')
+          d = json.loads(p.read_text(encoding='utf-8'))
+          assert d['disposition'] == (
+              'ACCEPT_REQUIREMENT_LOCAL_VALIDATION_PRIMITIVE_ONLY'
+          ), d
+          assert d['real_document_core_identity']['record_count'] == 2692, d
+          assert d['real_document_core_identity'][
+              'semantic_compliance_evaluated'
+          ] is False, d
+          assert d['adversarial_fixture'][
+              'cross_requirement_compensation_blocked'
+          ] is True, d
+          assert d['adversarial_fixture']['trap_decisions'] == {
+              'Req. 1': 'ACCEPT',
+              'Req. 2': 'REJECT',
+          }, d
+          assert d['checks']['global_phrase_compensation'] is False, d
+          assert d['checks']['llm_invoked'] is False, d
+          assert d['checks']['source_or_requirement_mutation'] is False, d
+          print(json.dumps(d, indent=2, sort_keys=True))
+          PY
+
+      - name: Upload W276 provider proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: w276-gmi-requirement-local-validation
+          path: |
+            out/w276_gmi_requirement_local_validation_receipt.json
+            tests/fixtures/gmi_w276_legacy_requirements.json
+            out/w275_gmi_document_core_receipt.json
+          if-no-files-found: error
+          retention-days: 30
