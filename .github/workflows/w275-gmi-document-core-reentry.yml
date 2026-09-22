@@ -35,7 +35,7 @@ jobs:
         run: python -m pip install python-docx pytest
 
       - name: Run document-core adapter tests
-        run: python -m pytest -q tests/test_canonical_requirements_adapter.py
+        run: python -m pytest -q -o addopts='' tests/test_canonical_requirements_adapter.py
 
       - name: Reproduce W274 byte-verified canonical input
         run: python scripts/prove_w274_gmi_source_bytes.py
