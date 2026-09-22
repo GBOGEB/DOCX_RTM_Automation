@@ -10,4 +10,11 @@ __all__ = [
     "CanonicalRequirementsError",
     "adapt_canonical_requirements",
     "load_canonical_requirements",
+    "RequirementLocalValidationError",
+    "validate_requirement_rules",
 ]
+
+from .requirement_local_validator import (
+    RequirementLocalValidationError,
+    validate_requirement_rules,
+)
