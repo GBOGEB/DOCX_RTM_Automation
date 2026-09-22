@@ -14,6 +14,8 @@ CONSUMER_PATH = REPO / "src" / "bridges" / "data_rich_document_consumer.py"
 BUILDER_PATH = REPO / "scripts" / "build_data_rich_reference_docx.py"
 LAYOUT_PATH = REPO / "scripts" / "fix_requirement_page_splits.py"
 STYLE_PATH = REPO / "federation" / "DATA_RICH_DOCUMENT" / "visual_style.json"
+FONT_RESOLVER_PATH = REPO / "scripts" / "resolve_visual_style_fonts.py"
+STYLE_SPECIMEN_PATH = REPO / "scripts" / "build_visual_style_specimen.py"
 
 
 def load_module(name, path):
@@ -27,6 +29,8 @@ def load_module(name, path):
 consumer = load_module("data_rich_document_consumer", CONSUMER_PATH)
 builder = load_module("build_data_rich_reference_docx", BUILDER_PATH)
 layout = load_module("fix_requirement_page_splits", LAYOUT_PATH)
+font_resolver = load_module("resolve_visual_style_fonts", FONT_RESOLVER_PATH)
+style_specimen = load_module("build_visual_style_specimen", STYLE_SPECIMEN_PATH)
 
 
 class DataRichDocumentConsumerTests(unittest.TestCase):
@@ -103,6 +107,33 @@ class DataRichDocumentConsumerTests(unittest.TestCase):
             self.assertEqual(proof["levels"]["1"]["lvl_text"], "%1.%2")
             self.assertEqual(proof["levels"]["2"]["lvl_text"], "%1.%2.%3")
 
+
+    def test_font_resolution_uses_first_installed_declared_fallback(self):
+        visual = builder.load_style(STYLE_PATH)
+        resolved, receipt = font_resolver.resolve_style(
+            visual,
+            ["Liberation Sans", "Liberation Mono"],
+        )
+        self.assertEqual(resolved["fonts"]["body"]["name"], "Liberation Sans")
+        self.assertEqual(resolved["fonts"]["heading"]["name"], "Liberation Sans")
+        self.assertEqual(resolved["fonts"]["mono"]["name"], "Liberation Mono")
+        self.assertTrue(receipt["roles"]["body"]["fallback_used"])
+        self.assertEqual(receipt["status"], "PASS")
+
+    def test_font_resolution_fails_when_no_declared_candidate_is_installed(self):
+        visual = builder.load_style(STYLE_PATH)
+        with self.assertRaisesRegex(font_resolver.FontResolutionError, "no installed candidate"):
+            font_resolver.resolve_style(visual, ["Unrelated Font"])
+
+    def test_visual_style_specimen_covers_declared_visible_roles(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            specimen_path = Path(tmp) / "style-specimen.docx"
+            style_specimen.build_specimen(specimen_path, STYLE_PATH)
+            receipt = style_specimen.inspect_specimen(specimen_path, STYLE_PATH)
+            self.assertEqual(receipt["status"], "PASS")
+            self.assertEqual(receipt["failed"], [])
+            self.assertTrue(receipt["checks"]["table_component_present"])
+            self.assertTrue(receipt["checks"]["callout_accent_present"])
 
     def test_visual_style_rejects_quarter_point_font_size(self):
         with tempfile.TemporaryDirectory() as tmp:
