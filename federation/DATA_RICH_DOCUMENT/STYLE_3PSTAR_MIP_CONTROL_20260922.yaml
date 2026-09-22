@@ -37,7 +37,7 @@ sequence:
       - caption_table_callout_visible_coverage
       - machine_coverage_receipt
   - phase: MIP_PERPETUATE
-    state: PENDING_CI
+    state: PASS
     delivered:
       - workflow_gates
       - contract_update
@@ -46,9 +46,9 @@ sequence:
   - phase: 3PC_PREPARE
     state: PASS
   - phase: 3PC_PROVE
-    state: PENDING_CI
+    state: PASS
   - phase: 3PC_COMMIT
-    state: PR_PENDING
+    state: PASS_MERGED
 
 guards:
   - source_visual_style_is_not_mutated_by_resolution
@@ -59,3 +59,57 @@ guards:
 
 next_if_green:
   first_red: STYLE_CANDIDATE_USER_VISUAL_DISPOSITION
+
+proof:
+  functional_head_sha: 7f5cfc7fc693db13fcdebe83a84f1604279f1818
+  merge_sha: fbb931d28b551f33f6988882c9a983dc69dcde42
+  pull_request: 74
+  python_ci:
+    run_id: 35730488649
+    job_id: 106754547629
+    conclusion: success
+  render_ci:
+    run_id: 35730488674
+    job_id: 106754547718
+    conclusion: success
+    executable_steps_gt_zero: true
+  artifact:
+    id: 10694454768
+    digest: sha256:f791e91b39604f5761e316ced3ef0c4cda6fcb39ef10c71aa3edd92d74516b00
+  font_resolution:
+    status: PASS
+    installed_family_count: 20
+    source_style_sha256: 9338e9634185c5ae9184533ddc77541badd7ba84ea6bf7c9fb576c5c01a02df8
+    resolved_style_sha256: 4ea6c9a2b0fe26ddc6ed4e5954832fca8cbaad4572d2c216547c11d8de2c76cf
+    body: "Aptos -> Liberation Sans"
+    heading: "Aptos Display -> Liberation Sans"
+    mono: "Aptos Mono -> Liberation Mono"
+  specimen_coverage:
+    status: PASS
+    docx_sha256: 2a5413ead320950e4ec7756fe6f875f3718ba419bae52f4df44f058a6bc55cdc
+    failed_checks: 0
+    table_count: 2
+  canonical_render:
+    pagination: PASS
+    split_requirements: []
+    docx_sha256: 5f4a075d81a47fa0904bdd24b672d6c13595cc1137c9572836c3f443d525e415
+    pdf_sha256: 8b39a9959756dbc9fea92ee33d28b0fa86396f1f7b6fa58917b39a3292117d30
+    page_count: 2
+    semantic_invariance: PASS
+  visual_delta:
+    page_count_equal: true
+    mean_changed_pixel_ratio: 0.0767814
+    page_1_changed_pixel_ratio: 0.11134631
+    page_2_changed_pixel_ratio: 0.04221649
+  independent_visual_qa:
+    result: PASS
+    specimen_clipping: NONE
+    specimen_overlap: NONE
+    canonical_clipping: NONE
+    canonical_overlap: NONE
+    inherited_sparse_page_2: OBSERVED_NON_REGRESSION
+
+disposition:
+  closed_first_red: STYLE_FONT_RESOLUTION_AND_VISIBLE_TOKEN_COVERAGE
+  new_first_red: STYLE_CANDIDATE_USER_VISUAL_DISPOSITION
+  baseline_replacement: WITHHELD_PENDING_EXPLICIT_USER_APPROVAL
