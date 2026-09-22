@@ -67,3 +67,19 @@ guards:
 expected_if_green:
   close_first_red: CURRENT_MAIN_STYLE_PROOF_FRESHNESS
   next_first_red: USER_STYLE_REVIEW
+
+ci_attempts:
+  - attempt: 1
+    head_sha: cfe9f188def66f31a60a594a01aedb060d9ac64c
+    render_run_id: 35734650599
+    render_job_id: 106768670365
+    render_state: QUEUED_ZERO_STEP
+    python_run_id: 35734650610
+    python_job_id: 106768670682
+    python_state: QUEUED_ZERO_STEP
+    code_evidence: NONE
+    classification: INFRASTRUCTURE_PREEXECUTION_RUNNER_ADMISSION
+
+retry_policy:
+  max_control_only_retries: 2
+  implementation_changed_for_retry: false
