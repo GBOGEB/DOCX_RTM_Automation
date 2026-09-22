@@ -1,0 +1,85 @@
+schema: docx_rtm.style_convergence_control/1.0.0
+as_of: '2026-09-22T15:36:00+02:00'
+repository: GBOGEB/DOCX_RTM_Automation
+authority_transfer: false
+formal_credit_delta: 0
+
+refresh:
+  prior_style_control_start_sha: d295d8af67d513bd13cbbf05dd8ce11d1958dd92
+  current_main_sha: 6c6d40e32c204a496e472f88a4bf9f81c16824ff
+  commits_since_prior_style_control_start: 18
+  current_open_style_prs: 0
+  current_open_style_issues: 0
+
+probe:
+  touched_since_prior_style_control:
+    - .github/workflows/data-rich-document-consumer.yml
+    - tests/test_data_rich_document_consumer.py
+    - federation/DATA_RICH_DOCUMENT/consumer_contract.yaml
+    - federation/DATA_RICH_DOCUMENT/README.md
+    - federation/DATA_RICH_DOCUMENT/STYLE_3PSTAR_MIP_CONTROL_20260922.yaml
+  source_style_semantic_intent_changed: false
+  current_style_id: QPS_TECH_GRAPHITE_TEAL_COPPER_V1
+  current_source_style_sha256: 9338e9634185c5ae9184533ddc77541badd7ba84ea6bf7c9fb576c5c01a02df8
+
+rank:
+  first_red: CURRENT_MAIN_STYLE_PROOF_FRESHNESS
+  reason: workflow_and_test_surface_changed_after_last_style_proof
+
+sequence:
+  - phase: 3PR_REFRESH
+    state: PASS
+  - phase: 3PR_PROBE
+    state: PASS
+  - phase: 3PR_RANK
+    state: PASS
+  - phase: MIP_MODERNIZE
+    state: NO_BEHAVIOR_CHANGE_REQUIRED
+  - phase: MIP_INNOVATE
+    state: NO_NEW_STYLE_TOKEN_REQUIRED
+  - phase: MIP_PERPETUATE
+    state: CURRENT_HEAD_REPROOF_PENDING
+  - phase: 3PC_PREPARE
+    state: PASS
+  - phase: 3PC_PROVE
+    state: PENDING_CI
+  - phase: 3PC_COMMIT
+    state: HOLD_PROOF
+
+accepted_visual_baseline:
+  state: USER_APPROVED_IMMUTABLE_REFERENCE
+  docx_sha256: e936ffcb89eb7da13b8be8d447c8453b5b4499a4907390816846f5c8ec94a6b9
+  pdf_sha256: 654e74630861b5b398ab577d55da5f692bf4549b0af480498822428109353b02
+  replacement: WITHHELD
+
+candidate:
+  style_id: QPS_TECH_GRAPHITE_TEAL_COPPER_V1
+  state: UNCHANGED_PENDING_CURRENT_HEAD_PROOF
+  user_style_approval: NOT_CLAIMED
+
+guards:
+  - no_style_mutation_without_executed_failure_or_user_direction
+  - no_semantic_source_or_projection_change
+  - zero_step_queue_state_is_not_code_evidence
+  - accepted_visual_baseline_remains_immutable
+  - explicit_user_style_approval_required_for_replacement
+
+expected_if_green:
+  close_first_red: CURRENT_MAIN_STYLE_PROOF_FRESHNESS
+  next_first_red: USER_STYLE_REVIEW
+
+ci_attempts:
+  - attempt: 1
+    head_sha: cfe9f188def66f31a60a594a01aedb060d9ac64c
+    render_run_id: 35734650599
+    render_job_id: 106768670365
+    render_state: QUEUED_ZERO_STEP
+    python_run_id: 35734650610
+    python_job_id: 106768670682
+    python_state: QUEUED_ZERO_STEP
+    code_evidence: NONE
+    classification: INFRASTRUCTURE_PREEXECUTION_RUNNER_ADMISSION
+
+retry_policy:
+  max_control_only_retries: 2
+  implementation_changed_for_retry: false
