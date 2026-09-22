@@ -1,0 +1,74 @@
+name: W275 GMI document-core re-entry
+
+on:
+  pull_request:
+    paths:
+      - 'src/document_core/**'
+      - 'scripts/prove_w275_gmi_document_core_reentry.py'
+      - 'tests/test_canonical_requirements_adapter.py'
+      - 'scripts/prove_w274_gmi_source_bytes.py'
+      - 'main.py'
+      - 'src/extractors/extract_master_docx.py'
+      - 'src/core/extraction_manifest.py'
+      - '.github/workflows/w275-gmi-document-core-reentry.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  document-core-reentry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout provider repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install focused dependencies
+        run: python -m pip install python-docx pytest
+
+      - name: Run document-core adapter tests
+        run: python -m pytest -q -o addopts='' tests/test_canonical_requirements_adapter.py
+
+      - name: Reproduce W274 byte-verified canonical input
+        run: python scripts/prove_w274_gmi_source_bytes.py
+
+      - name: Execute W275 document-core ingress
+        run: python scripts/prove_w275_gmi_document_core_reentry.py
+
+      - name: Fail closed on post-source receipt
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          p = Path('out/w275_gmi_document_core_receipt.json')
+          d = json.loads(p.read_text(encoding='utf-8'))
+          assert d['disposition'] == 'ACCEPT_DOCUMENT_CORE_INGRESS_ONLY', d
+          assert d['canonical_input']['observed_record_count'] == 2692, d
+          assert d['canonical_input']['observed_sha256'] == '5bed44a7ae2c0bcbd875e1162cdde292a7d9c8dc717e7328cf4a6d6f0cc13051', d
+          assert d['checks']['llm_invoked'] is False, d
+          assert d['checks']['source_or_requirement_mutation'] is False, d
+          assert d['checks']['canonical_lock_or_tag_performed'] is False, d
+          print(json.dumps(d, indent=2, sort_keys=True))
+          PY
+
+      - name: Upload W275 provider proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: w275-gmi-document-core-reentry
+          path: |
+            out/w274_gmi_source_byte_proof.json
+            out/w275_gmi_document_core_receipt.json
+            out/w275_gmi_document_core.json
+            canonical/artefacts/extraction_manifest.json
+            canonical/artefacts/master_requirements_*.json
+          if-no-files-found: error
+          retention-days: 30
