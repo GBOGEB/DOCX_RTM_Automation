@@ -1,5 +1,5 @@
 schema: docx_rtm.data_rich_document_consumer/1.1.0
-as_of: '2026-09-19T08:20:00+02:00'
+as_of: '2026-09-22T14:55:00+02:00'
 
 producer:
   repo: GBOGEB/document-organization-system
@@ -11,6 +11,8 @@ consumer:
   role: TOOLING_TRANSFORM_ONLY
   entrypoint: src/bridges/data_rich_document_consumer.py
   reference_builder: scripts/build_data_rich_reference_docx.py
+  font_resolver: scripts/resolve_visual_style_fonts.py
+  style_specimen_builder: scripts/build_visual_style_specimen.py
 
 heading_contract:
   levels:
@@ -31,6 +33,13 @@ visual_style_contract:
   accepted_baseline_mutation_allowed: false
   user_font_mode: NAME_REFERENCE_TO_USER_OR_SYSTEM_INSTALLED_FONT
   embed_font_files: false
+  render_host_font_resolution:
+    required: true
+    method: FONTCONFIG_EXACT_FAMILY_THEN_DECLARED_FALLBACK_ORDER
+    source_style_mutated: false
+    resolved_style_artifact: output/visual_style.resolved.json
+    receipt: output/visual_font_resolution.json
+    fail_if_no_declared_candidate_installed: true
   roles:
     - body_font
     - heading_font
@@ -89,10 +98,24 @@ pagination_contract:
     final_split_check: REQUIRED
   visual_regression_target: NO_ORPHANED_REQUIREMENT_METADATA
 
+style_coverage_gate:
+  specimen_docx: output/visual_style_specimen.docx
+  coverage_receipt: output/visual_style_specimen_coverage.json
+  pdf_png_render_required: true
+  required_visible_roles:
+    - title_h1_h2_h3
+    - requirement_title_and_id
+    - metadata_and_label
+    - caption_and_number
+    - table_header_and_border
+    - callout_fill_and_accent
+
 visual_gate:
   binary_render_to_pdf_png: REQUIRED_FOR_CI_EVIDENCE
   approved_baseline_visual_diff: REQUIRED_FOR_STYLE_CANDIDATE
   semantic_projection_invariance: REQUIRED_FOR_STYLE_CANDIDATE
+  deterministic_font_resolution: REQUIRED_FOR_STYLE_CANDIDATE
+  visible_style_token_coverage: REQUIRED_FOR_STYLE_CANDIDATE
   human_visual_approval: REQUIRED_TO_REPLACE_ACCEPTED_BASELINE
   consumer_may_self_approve_visuals: false
 

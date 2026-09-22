@@ -7,6 +7,8 @@ on:
       - 'scripts/build_data_rich_reference_docx.py'
       - 'scripts/fix_requirement_page_splits.py'
       - 'scripts/measure_visual_style_diff.py'
+      - 'scripts/resolve_visual_style_fonts.py'
+      - 'scripts/build_visual_style_specimen.py'
       - 'src/bridges/data_rich_document_consumer.py'
       - 'tests/test_data_rich_document_consumer.py'
       - '.github/workflows/data-rich-document-consumer.yml'
@@ -18,6 +20,8 @@ on:
       - 'scripts/build_data_rich_reference_docx.py'
       - 'scripts/fix_requirement_page_splits.py'
       - 'scripts/measure_visual_style_diff.py'
+      - 'scripts/resolve_visual_style_fonts.py'
+      - 'scripts/build_visual_style_specimen.py'
       - 'src/bridges/data_rich_document_consumer.py'
       - 'tests/test_data_rich_document_consumer.py'
       - '.github/workflows/data-rich-document-consumer.yml'
@@ -53,28 +57,50 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install python-docx pillow
           sudo apt-get update
-          sudo apt-get install -y pandoc libreoffice-writer poppler-utils
+          sudo apt-get install -y pandoc libreoffice-writer poppler-utils fontconfig
 
       - name: Run consumer fail-closed tests
         run: >-
           python -m unittest
           tests.test_data_rich_document_consumer
 
-      - name: Build governed reference DOCX
-        run: >-
-          python scripts/build_data_rich_reference_docx.py
-          --output config/reference.docx
-          --style-config federation/DATA_RICH_DOCUMENT/visual_style.json
-
       - name: Build projection from proven producer
         run: |
-          rm -rf projection output render render_pre
-          mkdir -p projection output render render_pre
+          rm -rf projection output render render_pre style_render
+          mkdir -p projection output render render_pre style_render
           python producer/adapters/docx_rtm/build_projection.py \
             producer/contracts/data_rich_document/examples/adr-001.json \
             --output-dir projection \
             --source-repo GBOGEB/document-organization-system \
             --source-ref e181903236e70b7b798b56fd59fc8948cd9885c0
+
+      - name: Resolve render-host fonts
+        run: |
+          python scripts/resolve_visual_style_fonts.py \
+            --source-style federation/DATA_RICH_DOCUMENT/visual_style.json \
+            --output output/visual_style.resolved.json \
+            --receipt output/visual_font_resolution.json
+          cat output/visual_font_resolution.json
+
+      - name: Build governed reference DOCX
+        run: >-
+          python scripts/build_data_rich_reference_docx.py
+          --output config/reference.docx
+          --style-config output/visual_style.resolved.json
+
+      - name: Build full visual-style specimen
+        run: |
+          python scripts/build_visual_style_specimen.py \
+            --style-config output/visual_style.resolved.json \
+            --output output/visual_style_specimen.docx \
+            --receipt output/visual_style_specimen_coverage.json
+          libreoffice --headless --convert-to pdf --outdir style_render output/visual_style_specimen.docx
+          test -s style_render/visual_style_specimen.pdf
+          pdftoppm -png -r 144 \
+            style_render/visual_style_specimen.pdf \
+            style_render/visual_style_specimen-page
+          test -n "$(find style_render -name 'visual_style_specimen-page-*.png' -print -quit)"
+          cat output/visual_style_specimen_coverage.json
 
       - name: Render DOCX and emit return receipt
         run: |
@@ -84,7 +110,7 @@ jobs:
             --reference-doc config/reference.docx \
             --output-docx output/ADR-001.docx \
             --receipt output/ADR-001.render_receipt.json \
-            --style-config federation/DATA_RICH_DOCUMENT/visual_style.json \
+            --style-config output/visual_style.resolved.json \
             --expected-source-ref e181903236e70b7b798b56fd59fc8948cd9885c0
 
       - name: Assert structural receipt gates
@@ -104,7 +130,11 @@ jobs:
               assert receipt[key] == "PASS", (key, receipt[key])
           assert receipt["authority"]["authority_transfer"] is False
           assert receipt["authority"]["rendered_output_authoritative"] is False
-          print("PASS: structural DOCX return receipt")
+          font_receipt = json.loads(Path("output/visual_font_resolution.json").read_text())
+          coverage = json.loads(Path("output/visual_style_specimen_coverage.json").read_text())
+          assert font_receipt["status"] == "PASS", font_receipt
+          assert coverage["status"] == "PASS", coverage
+          print("PASS: structural DOCX + font resolution + style coverage receipts")
           PY
 
       - name: Render preflight DOCX layout
@@ -136,7 +166,7 @@ jobs:
               Path("projection/ADR-001.projection.md"),
               Path("config/reference.docx"),
               Path("output/ADR-001.docx"),
-              style_config=Path("federation/DATA_RICH_DOCUMENT/visual_style.json"),
+              style_config=Path("output/visual_style.resolved.json"),
           )
           Path("output/ADR-001.render_receipt.json").write_text(
               json.dumps(receipt, indent=2, ensure_ascii=False) + "\n",
@@ -210,5 +240,7 @@ jobs:
             projection/
             output/
             render/
+            style_render/
             federation/DATA_RICH_DOCUMENT/visual_style.json
+            federation/DATA_RICH_DOCUMENT/visual_style.schema.json
           if-no-files-found: error

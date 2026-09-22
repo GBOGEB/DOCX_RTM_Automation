@@ -1,0 +1,61 @@
+schema: docx_rtm.style_3pstar_mip_control/1.0.0
+as_of: '2026-09-22T14:55:00+02:00'
+repository: GBOGEB/DOCX_RTM_Automation
+authority_transfer: false
+formal_credit_delta: 0
+
+starting_point:
+  main_sha: d295d8af67d513bd13cbbf05dd8ce11d1958dd92
+  open_style_prs: 0
+  open_matching_style_issues: 0
+  accepted_visual_baseline:
+    status: USER_APPROVED
+    docx_sha256: e936ffcb89eb7da13b8be8d447c8453b5b4499a4907390816846f5c8ec94a6b9
+    pdf_sha256: 654e74630861b5b398ab577d55da5f692bf4549b0af480498822428109353b02
+
+sequence:
+  - phase: 3PR_REFRESH
+    state: PASS
+  - phase: 3PR_PROBE
+    state: PASS
+    findings:
+      - requested_fonts_and_fallbacks_exist_but_render_host_resolution_is_implicit
+      - captions_tables_callouts_are_declared_but_not_all_visible_in_canonical_ADR_sample
+  - phase: 3PR_RANK
+    state: PASS
+    first_red: STYLE_FONT_RESOLUTION_AND_VISIBLE_TOKEN_COVERAGE
+  - phase: MIP_MODERNIZE
+    state: PASS
+    delivered:
+      - deterministic_fontconfig_resolution
+      - derived_resolved_style
+      - font_resolution_receipt
+  - phase: MIP_INNOVATE
+    state: PASS
+    delivered:
+      - separate_visual_style_specimen
+      - caption_table_callout_visible_coverage
+      - machine_coverage_receipt
+  - phase: MIP_PERPETUATE
+    state: PENDING_CI
+    delivered:
+      - workflow_gates
+      - contract_update
+      - README_update
+      - artifact_bundle_expansion
+  - phase: 3PC_PREPARE
+    state: PASS
+  - phase: 3PC_PROVE
+    state: PENDING_CI
+  - phase: 3PC_COMMIT
+    state: PR_PENDING
+
+guards:
+  - source_visual_style_is_not_mutated_by_resolution
+  - semantic_source_and_projection_hashes_must_remain_invariant
+  - style_specimen_is_QA_only_not_semantic_content
+  - font_files_are_not_committed_or_embedded
+  - no_visual_baseline_promotion_without_explicit_user_approval
+
+next_if_green:
+  first_red: STYLE_CANDIDATE_USER_VISUAL_DISPOSITION

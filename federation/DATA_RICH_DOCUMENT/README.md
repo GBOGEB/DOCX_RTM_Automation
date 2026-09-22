@@ -55,6 +55,10 @@ You can change, independently:
 User fonts are referenced by font **name** only and must exist in the render
 environment. Font files are never embedded or committed by this contract.
 
+Before rendering, CI resolves each requested font role against installed families using `fc-list`, following the declared fallback order exactly. The authored style file is never mutated; a derived `output/visual_style.resolved.json` plus `output/visual_font_resolution.json` records the actual render-host choice.
+
+A separate `visual_style_specimen.docx` exercises roles that may not occur in a particular semantic document - especially captions, tables and callouts. Its coverage receipt is a QA artifact, not semantic source content.
+
 Word stores font sizes in half-points, so all size tokens are governed at **0.5 pt** granularity. Quarter-point values are rejected instead of being silently rounded by the renderer.
 
 The current first style candidate is
@@ -93,6 +97,8 @@ remains a separate human-facing review gate.
 - `federation/DATA_RICH_DOCUMENT/visual_style.schema.json`
 - `scripts/build_data_rich_reference_docx.py`
 - `scripts/measure_visual_style_diff.py`
+- `scripts/resolve_visual_style_fonts.py`
+- `scripts/build_visual_style_specimen.py`
 - `src/bridges/data_rich_document_consumer.py`
 - `tests/test_data_rich_document_consumer.py`
 - `.github/workflows/data-rich-document-consumer.yml`
