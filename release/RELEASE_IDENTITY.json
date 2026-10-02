@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "repository": "GBOGEB/DOCX_RTM_Automation",
+  "repository_release": {
+    "version": "1.0.4",
+    "version_source": "pyproject.toml:[project].version",
+    "changelog": "CHANGELOG.md",
+    "lifecycle": "HARDENING",
+    "tag": null,
+    "release_published": false
+  },
+  "component_versions": {
+    "python_package": {
+      "version": "1.0.4",
+      "source_path": "pyproject.toml",
+      "source_kind": "pyproject",
+      "release_coupled": true
+    },
+    "workflow_contract": {
+      "version": "2.0.0",
+      "source_path": "configs/workflow_config.yaml",
+      "source_kind": "workflow_yaml",
+      "release_coupled": false,
+      "semantic_role": "workflow configuration contract version"
+    },
+    "typescript_orchestration": {
+      "version": "1.0.0",
+      "source_path": "orchestration_ts/package.json",
+      "source_kind": "package_json",
+      "release_coupled": false,
+      "semantic_role": "TypeScript orchestration package version"
+    }
+  },
+  "policy": {
+    "repository_release_version_is_authoritative": true,
+    "component_versions_must_match_declared_sources": true,
+    "independent_components_need_not_equal_repository_release": true,
+    "version_change_requires_guard_update": true
+  },
+  "handover_current": "handover/CURRENT.json",
+  "control_added_on": "2026-10-02"
+}

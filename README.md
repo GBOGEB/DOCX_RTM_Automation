@@ -46,6 +46,13 @@ npm run build
 npm test
 ```
 
+Release-identity control:
+
+```bash
+python scripts/validate_release_identity.py
+python tests/test_release_identity.py
+```
+
 Do not infer production readiness from a successful local command alone. Current readiness is determined by exact-head CI, repository controls and source/provenance evidence.
 
 ## 4. Current status
@@ -58,8 +65,8 @@ Do not infer production readiness from a successful local command alone. Current
 | Python quality gate | Focused pytest/coverage configuration exists; the configured 80% threshold applies to selected modules, not the whole repository | PARTIAL |
 | TypeScript orchestration | Express/WS orchestration package and test/lint/typecheck scripts exist | IMPLEMENTED, PROOF TO BE RE-CENSUSED |
 | GitHub branch protection | `main` is currently not protected in repository metadata, despite `configs/workflow_config.yaml` declaring branch protection | GAP |
-| Version identity | `pyproject.toml` = 1.0.4, workflow config = 2.0.0, TypeScript package = 1.0.0 | DRIFT |
-| Handover identity | `handover/CURRENT.json` still points to Wave-0 / PR 16 while repository history has progressed beyond that state | STALE |
+| Version identity | `release/RELEASE_IDENTITY.json` is the repository release SSOT (`1.0.4`) and maps the independently versioned workflow contract (`2.0.0`) and TypeScript package (`1.0.0`) | CONTROL PRESENT |
+| Handover identity | `handover/CURRENT.json` is refreshed from the PR #82 / `f2527735...` baseline and points to P0-B admission hardening | CURRENT CONTROL POINTER |
 | Security claims | JWT/RBAC/encryption are declared in configuration/docs, but current code search does not establish executable implementation/proof | DECLARED / UNPROVEN |
 | Cloud/Kubernetes deployment | No root `k8s/` deployment surface is present; previous README commands were documentation-only | NOT CLAIMED |
 | Performance/SLA | No current governed benchmark receipt supports the former fixed throughput/latency figures | NOT CLAIMED |
@@ -73,7 +80,7 @@ The word **enterprise** is treated here as a set of verifiable controls, not a m
 | Authority separation | Machine-readable ownership/SSOT boundaries and fail-closed promotion rules | Present in federation/QPS surfaces; keep enforced across new consumers |
 | Provenance and reproducibility | Exact source identity, hashes, manifests, deterministic transforms and exact-head receipts | Strong partial implementation; expand to every outward release product |
 | Change control | Protected default branch, required checks, review policy and non-bypassable merge gates | **TODO P0:** repository enforcement is missing |
-| Version/release governance | One authoritative version, changelog/release manifest and binary/source receipt | **TODO P0:** current version sources disagree |
+| Version/release governance | One authoritative repository release plus explicit component-version map, changelog binding and later binary/source receipt | Release SSOT + drift guard present; binary/source release receipt remains P1 |
 | Test assurance | Complete test inventory, >0-step CI, regression gates and explicit coverage scope | **TODO P0/P1:** recensus whole repo and remove misleading global coverage claims |
 | Security | Implemented authN/authZ, secrets handling, dependency controls, audit evidence and security tests | **TODO P1:** configuration is not proof |
 | Observability | Structured logs, health signals, failure classification and retained run evidence | Partial; define supported production signals and retention |
@@ -86,8 +93,8 @@ The word **enterprise** is treated here as a set of verifiable controls, not a m
 
 ### P0 - restore repository truth and admission controls
 
-- [ ] Reconcile the authoritative version across `pyproject.toml`, `configs/workflow_config.yaml`, `orchestration_ts/package.json`, changelog/release metadata and README.
-- [ ] Refresh `handover/CURRENT.json` from the live repository state; remove the obsolete Wave-0 / PR-16 pointer.
+- [x] Reconcile version identity with `release/RELEASE_IDENTITY.json`: repository release `1.0.4` is authoritative; workflow-contract `2.0.0` and TypeScript `1.0.0` remain explicitly independent component versions and are drift-checked.
+- [x] Refresh `handover/CURRENT.json` from the PR #82 / `f2527735...` baseline and advance the next control edge to P0-B admission hardening.
 - [ ] Enable/enforce `main` branch protection with required exact-head checks and review rules, or change configuration so it does not claim enforcement that is absent.
 - [ ] Generate a current test/workflow census: executable trigger, >0 steps, test collection, coverage scope, false-green risks and protected-family regressions.
 - [ ] Audit root/current docs for unsupported `PRODUCTION READY`, `ENTERPRISE EXCELLENCE`, fixed coverage, throughput, latency and deployment claims; archive or rewrite them as historical evidence.
@@ -109,9 +116,9 @@ The word **enterprise** is treated here as a set of verifiable controls, not a m
 
 ## 7. Next execution order
 
-1. **Root truth cleanup** - merge this README refresh and remove unsupported support/performance/cloud claims from the root surface.
-2. **Version + handover reconciliation** - establish one release identity and refresh `handover/CURRENT.json` from current `main`.
-3. **Admission hardening** - enable branch protection and bind required checks to exact-head, >0-step workflows.
+1. **Root truth cleanup - DONE** - PR #82 removed unsupported support/performance/cloud claims from the root surface.
+2. **Version + handover reconciliation - DONE** - repository release SSOT, component-version map, handover refresh and drift guard are present.
+3. **Admission hardening - NEXT** - enable branch protection and bind required checks to exact-head, >0-step workflows.
 4. **CI/test census** - measure actual test collection, coverage scope and false-green gaps; repair infrastructure/check defects before adding feature work.
 5. **Security proof lane** - map each configured security control to code, tests and runtime evidence; disable or relabel configuration-only controls.
 6. **Release/provenance lane** - produce a reproducible source-to-artefact manifest with SHA-256 receipts for outward products.

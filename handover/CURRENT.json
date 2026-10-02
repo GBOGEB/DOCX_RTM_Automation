@@ -1,12 +1,29 @@
 {
+  "schema_version": "1.0",
   "status": "active",
-  "wave": "Wave-0",
-  "pr": 16,
-  "branch": "feat/orchestration-bootstrap-wave0-pr01",
+  "repository": "GBOGEB/DOCX_RTM_Automation",
+  "refreshed_at": "2026-10-02",
+  "release_identity": {
+    "path": "release/RELEASE_IDENTITY.json",
+    "repository_version": "1.0.4",
+    "lifecycle": "HARDENING"
+  },
+  "basis": {
+    "last_completed_pr": 82,
+    "last_completed_main_sha": "f2527735fb57f242bcaf93e7bb7270a70a3b57be",
+    "description": "Root README truth cleanup merged; release identity and handover reconciliation follows from this baseline."
+  },
+  "completed_control_edges": [
+    "P0_ROOT_TRUTH_CLEANUP",
+    "P0-A_RELEASE_IDENTITY_AND_HANDOVER"
+  ],
+  "next_control_edge": "P0-B_ADMISSION_HARDENING",
   "next_actions": [
-    "Create federation schemas",
-    "Add tests",
-    "Retry env template",
-    "Wire federation endpoints"
-  ]
+    "Enforce main branch protection with exact-head required checks and review rules.",
+    "Generate the full CI/test census: triggers, >0-step execution, test collection, coverage scope and false-green risks.",
+    "Repair infrastructure/check defects before feature or security expansion."
+  ],
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "engineering_credit_delta": 0
 }
