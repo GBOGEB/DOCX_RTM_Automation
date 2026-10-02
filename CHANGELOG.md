@@ -5,6 +5,14 @@ All notable changes to the RTM Automation project will be documented in this fil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Governance
+- Added a repository release identity SSOT and explicit component-version map.
+- Kept repository release `1.0.4` bound to `pyproject.toml` and the existing `1.0.4` changelog entry.
+- Classified workflow-contract `2.0.0` and TypeScript orchestration `1.0.0` as independently versioned components rather than conflicting repository release versions.
+- Added fail-closed release-identity drift validation and refreshed the live handover pointer.
+
 
 
 
