@@ -1,366 +1,153 @@
+# DOCX RTM Automation
 
-# Enhanced DOCX RTM Automation System v2.0
+> Governed document/RTM extraction, traceability, federation and rendering tooling.
+>
+> Status refreshed: 2026-10-02. This README is the root status surface; historical achievement/certification documents are not release or enterprise-readiness evidence unless backed by current executable proof.
 
-## 🚀 Overview
+## 1. Purpose
 
-The Enhanced DOCX RTM Automation System is a comprehensive enterprise-grade solution for document processing, requirements traceability matrix (RTM) management, operational test case (OTC) handling, and deliverable (DEL) tracking. This system provides full lifecycle automation with DMAIC compliance, professional visualizations, and CMB-ready TypeScript orchestration.
+`DOCX_RTM_Automation` provides repository-local tooling for DOCX/RTM processing, canonical source extraction, traceability, QPS/ADR/OCD federation projections, validation and outward document/rendering workflows.
 
-## ✨ Key Features
+The repository currently acts as an **OUTPUT/rendering** member of the `RTM_Documents` mini-federation. `federation.yaml` identifies `GBOGEB/GEMINI` as its SSOT source. Tooling in this repository may validate, transform, trace and render evidence; it shall not silently promote upstream engineering or procurement authority.
 
-### 🔍 Advanced Document Processing
-- **Comprehensive Parsing**: Extract RTM, OTC, and DEL elements with high accuracy
-- **Recursive Mapping**: Bidirectional relationship tracking and updates
-- **Confidence Scoring**: AI-powered quality assessment of extracted elements
-- **Multi-format Support**: DOCX, DOC, PDF, and TXT input formats
+## 2. Current implemented surfaces
 
-### 📊 Professional Visualizations
-- **Interactive Dashboards**: Executive summary, requirements analysis, compliance tracking
-- **Publication-Ready Graphics**: High-quality charts and graphs with professional styling
-- **Real-time Updates**: Live dashboard updates with WebSocket integration
-- **Multiple Export Formats**: HTML, PNG, SVG, and PDF outputs
+- Standard DOCX processing through `python main.py`.
+- Canonical extraction through `python main.py --extract-canonical`, currently routing DOCX, RTM XLSX, OFFER XLSX and OFFER PDF-table source patterns to versioned canonical artefacts.
+- SHA-256/manifest/cross-reference verification through `scripts/verify_canonical.py`.
+- QPS triage / ADR-OCD federation contracts, validators, parser bridge and traceability export.
+- Reliability-analysis consumer surfaces with fail-closed evidence/disposition boundaries.
+- TypeScript orchestration package under `orchestration_ts/` with build, test, lint and type-check scripts.
+- GitHub Actions lanes for Python CI, repository integrity, canonical rendering, ADR/OCD validation, RTM reconciliation, source-byte proof and focused QPS/runtime proofs.
+- Repository-integrity controls added after the September 2026 Pages/gitlink repair.
 
-### 🔄 DMAIC Pipeline Integration
-- **Full DMAIC Lifecycle**: Define, Measure, Analyze, Improve, Control phases
-- **Compliance Tracking**: Automated compliance monitoring and reporting
-- **Phase Gate Reviews**: Automated quality gates and transition criteria
-- **Continuous Improvement**: Built-in feedback loops and optimization
+## 3. Quick start
 
-### 🌐 Enterprise Integration
-- **TypeScript Orchestration**: CMB-ready API endpoints and webhook handlers
-- **GitHub Integration**: Automated PR creation, branch management, and CI/CD
-- **Multi-channel Notifications**: Email, Slack, and webhook notifications
-- **Scalable Architecture**: Microservices-based design for enterprise deployment
+### Python
 
-### 📑 Section 9 Output Generation
-- **Template-based Generation**: Jinja2-powered report templates
-- **Multiple Formats**: Markdown, HTML, and PDF outputs
-- **Professional Styling**: Publication-ready formatting and layout
-- **Automated Content**: Dynamic content generation from analysis results
-
-## 🏗️ System Architecture
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Document      │    │   TypeScript    │    │   Visualization │
-│   Parser        │────│   Orchestration │────│   Engine        │
-│   Engine        │    │   Server        │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         │                       │                       │
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   DMAIC         │    │   GitHub        │    │   Section 9     │
-│   Pipeline      │────│   Integration   │────│   Generator     │
-│                 │    │                 │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Python 3.11+
-- Node.js 16+
-- Git
-- Pandoc (for PDF generation)
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/GBOGEB/DOCX_RTM_Automation.git
-   cd DOCX_RTM_Automation
-   ```
-
-2. **Install Python dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Install TypeScript dependencies**
-   ```bash
-   cd orchestration_ts
-   npm install
-   npm run build
-   ```
-
-4. **Configure the system**
-   ```bash
-   cp configs/workflow_config.yaml.example configs/workflow_config.yaml
-   # Edit configuration as needed
-   ```
-
-### Basic Usage
-
-1. **Process a document**
-   ```bash
-   python parser/engine.py --input document.docx --output results/
-   ```
-
-2. **Generate visualizations**
-   ```bash
-   python visualization/enhanced_visualization_system.py --input results/analysis.json
-   ```
-
-3. **Start the orchestration server**
-   ```bash
-   cd orchestration_ts
-   npm start
-   ```
-
-4. **Generate Section 9 report**
-   ```bash
-   python docs/section9/section9_generator.py --input results/analysis.json --output section9/
-   ```
-
-## 📖 Documentation
-
-### Core Components
-
-#### 🔧 Parser Engine (`parser/engine.py`)
-Advanced document parsing with recursive mapping and bidirectional updates.
-
-**Key Features:**
-- RTM, OTC, and DEL element extraction
-- Confidence scoring and quality assessment
-- Relationship mapping and dependency tracking
-- Configurable parsing patterns and thresholds
-
-**Usage:**
-```python
-from parser.engine import EnhancedParserEngine
-
-parser = EnhancedParserEngine(config_path="configs/parser_config.yaml")
-results = parser.parse_document("document.docx", analysis_data)
-parser.export_enhanced_analysis("output/")
-```
-
-#### 📊 Visualization System (`visualization/enhanced_visualization_system.py`)
-Professional-quality dashboards and interactive visualizations.
-
-**Key Features:**
-- Executive summary dashboards
-- Requirements analysis charts
-- Compliance tracking visualizations
-- Interactive section explorer
-
-**Usage:**
-```python
-from visualization.enhanced_visualization_system import EnhancedVisualizationSystem
-
-viz_system = EnhancedVisualizationSystem("analysis.json")
-viz_system.export_all_visualizations("visualizations/")
-```
-
-#### 🔄 DMAIC Pipeline (`pipeline/main.py`)
-Full lifecycle DMAIC implementation with compliance tracking.
-
-**Key Features:**
-- Automated phase transitions
-- Compliance monitoring and alerting
-- Performance metrics and KPIs
-- Risk assessment and mitigation
-
-**Usage:**
-```python
-from pipeline.main import DMAICPipelineController
-
-controller = DMAICPipelineController("configs/dmaic_config.yaml")
-iteration_id = controller.initialize_dmaic_cycle("Project Name", objectives)
-phase_report = controller.execute_phase(DMAICPhase.DEFINE, deliverables, results)
-```
-
-#### 🌐 TypeScript Orchestration (`orchestration_ts/server.ts`)
-Enterprise-grade API server with webhook handling and real-time communication.
-
-**Key Features:**
-- RESTful API endpoints
-- WebSocket real-time updates
-- Webhook processing
-- Authentication and authorization
-- Rate limiting and security
-
-**API Endpoints:**
-- `POST /api/documents/process` - Process documents
-- `GET /api/jobs/:jobId` - Get job status
-- `POST /api/dmaic/iterations` - Create DMAIC iteration
-- `POST /api/webhooks/:source` - Handle webhooks
-- `GET /api/analytics/dashboard` - Get analytics data
-
-#### 📑 Section 9 Generator (`docs/section9/section9_generator.py`)
-Template-based report generation with professional formatting.
-
-**Key Features:**
-- Jinja2 template engine
-- Multiple output formats (Markdown, HTML, PDF)
-- Dynamic content generation
-- Professional styling and layout
-
-### Configuration
-
-#### Workflow Configuration (`configs/workflow_config.yaml`)
-Comprehensive system configuration including:
-- Document processing settings
-- Visualization preferences
-- DMAIC pipeline parameters
-- Compliance thresholds
-- Integration settings
-- Security configurations
-
-#### Environment Variables
 ```bash
-# GitHub Integration
-GITHUB_TOKEN=your_github_token
-GITHUB_REPO=your_repo_name
-
-# Notification Settings
-SLACK_WEBHOOK_URL=your_slack_webhook
-EMAIL_SMTP_SERVER=your_smtp_server
-
-# Database Configuration
-DATABASE_URL=your_database_url
-REDIS_URL=your_redis_url
+python -m pip install -r requirements/requirements.txt
+python main.py
 ```
 
-## 🔧 Advanced Features
+Canonical extraction and verification:
 
-### GitHub Integration
-- Automated PR creation and management
-- Branch protection and review requirements
-- CI/CD pipeline integration
-- Automated testing and deployment
-
-### Compliance Tracking
-- ISO 9001, CMMI, Six Sigma compliance
-- Automated metric collection and analysis
-- Real-time compliance monitoring
-- Violation alerts and corrective actions
-
-### Machine Learning Integration
-- Natural language processing for requirement analysis
-- Pattern recognition for element extraction
-- Predictive analytics for project outcomes
-- Automated quality assessment
-
-### Enterprise Security
-- JWT-based authentication
-- Role-based access control (RBAC)
-- Data encryption at rest and in transit
-- Comprehensive audit logging
-
-## 📈 Performance and Scalability
-
-### Performance Metrics
-- Document processing: 100+ pages/minute
-- Concurrent job handling: 10+ simultaneous processes
-- API response time: <200ms average
-- Dashboard load time: <2 seconds
-
-### Scalability Features
-- Horizontal scaling support
-- Load balancing and clustering
-- Caching and optimization
-- Database sharding capabilities
-
-## 🧪 Testing
-
-### Running Tests
 ```bash
-# Python tests
-pytest tests/ -v --cov=parser --cov=pipeline --cov=visualization
+python main.py --extract-canonical
+python scripts/verify_canonical.py
+```
 
-# TypeScript tests
+### TypeScript orchestration
+
+```bash
 cd orchestration_ts
+npm install
+npm run build
 npm test
-
-# Integration tests
-python tests/integration/test_full_pipeline.py
 ```
 
-### Test Coverage
-- Unit tests: 90%+ coverage
-- Integration tests: 85%+ coverage
-- End-to-end tests: 80%+ coverage
+Do not infer production readiness from a successful local command alone. Current readiness is determined by exact-head CI, repository controls and source/provenance evidence.
 
-## 🚀 Deployment
+## 4. Current status
 
-### Docker Deployment
-```bash
-# Build containers
-docker-compose build
+| Area | Current evidence | Status |
+| --- | --- | --- |
+| Canonical extraction / provenance | Extraction manifest, versioned artefacts, SHA verification and cross-reference checks exist | ACTIVE / HARDENING |
+| QPS / ADR-OCD federation | Applicability contract v0.3.1, validator, parser bridge and traceability export exist | ACTIVE / HARDENING |
+| Repository integrity | Dedicated workflow plus repaired orphan-gitlink failure mode | CONTROL PRESENT |
+| Python quality gate | Focused pytest/coverage configuration exists; the configured 80% threshold applies to selected modules, not the whole repository | PARTIAL |
+| TypeScript orchestration | Express/WS orchestration package and test/lint/typecheck scripts exist | IMPLEMENTED, PROOF TO BE RE-CENSUSED |
+| GitHub branch protection | `main` is currently not protected in repository metadata, despite `configs/workflow_config.yaml` declaring branch protection | GAP |
+| Version identity | `pyproject.toml` = 1.0.4, workflow config = 2.0.0, TypeScript package = 1.0.0 | DRIFT |
+| Handover identity | `handover/CURRENT.json` still points to Wave-0 / PR 16 while repository history has progressed beyond that state | STALE |
+| Security claims | JWT/RBAC/encryption are declared in configuration/docs, but current code search does not establish executable implementation/proof | DECLARED / UNPROVEN |
+| Cloud/Kubernetes deployment | No root `k8s/` deployment surface is present; previous README commands were documentation-only | NOT CLAIMED |
+| Performance/SLA | No current governed benchmark receipt supports the former fixed throughput/latency figures | NOT CLAIMED |
 
-# Start services
-docker-compose up -d
+## 5. Enterprise-readiness values and missing edges
 
-# Scale services
-docker-compose up --scale api=3 --scale worker=5
-```
+The word **enterprise** is treated here as a set of verifiable controls, not a marketing label.
 
-### Kubernetes Deployment
-```bash
-# Apply configurations
-kubectl apply -f k8s/
+| Enterprise value | Required evidence | Current edge |
+| --- | --- | --- |
+| Authority separation | Machine-readable ownership/SSOT boundaries and fail-closed promotion rules | Present in federation/QPS surfaces; keep enforced across new consumers |
+| Provenance and reproducibility | Exact source identity, hashes, manifests, deterministic transforms and exact-head receipts | Strong partial implementation; expand to every outward release product |
+| Change control | Protected default branch, required checks, review policy and non-bypassable merge gates | **TODO P0:** repository enforcement is missing |
+| Version/release governance | One authoritative version, changelog/release manifest and binary/source receipt | **TODO P0:** current version sources disagree |
+| Test assurance | Complete test inventory, >0-step CI, regression gates and explicit coverage scope | **TODO P0/P1:** recensus whole repo and remove misleading global coverage claims |
+| Security | Implemented authN/authZ, secrets handling, dependency controls, audit evidence and security tests | **TODO P1:** configuration is not proof |
+| Observability | Structured logs, health signals, failure classification and retained run evidence | Partial; define supported production signals and retention |
+| Performance | Repeatable benchmark harness, datasets, limits and SLOs | **TODO P1:** no governed benchmark baseline |
+| Deployment | Supported packaging/runtime target with reproducible deploy and rollback proof | **TODO P1:** do not advertise Docker/Kubernetes/cloud targets until artefacts exist |
+| Supportability | Named support channel, ownership, severity model and response expectations | GitHub Issues only; no SLA/commercial support contract is declared |
+| Documentation truth | Root docs generated or checked against executable/configured state | **TODO P0/P1:** stale certification/achievement material remains elsewhere in repo |
 
-# Check deployment status
-kubectl get pods -n docx-rtm-automation
-```
+## 6. TODO
 
-### Cloud Deployment
-- AWS ECS/EKS support
-- Azure Container Instances
-- Google Cloud Run
-- Heroku deployment ready
+### P0 - restore repository truth and admission controls
 
-## 🤝 Contributing
+- [ ] Reconcile the authoritative version across `pyproject.toml`, `configs/workflow_config.yaml`, `orchestration_ts/package.json`, changelog/release metadata and README.
+- [ ] Refresh `handover/CURRENT.json` from the live repository state; remove the obsolete Wave-0 / PR-16 pointer.
+- [ ] Enable/enforce `main` branch protection with required exact-head checks and review rules, or change configuration so it does not claim enforcement that is absent.
+- [ ] Generate a current test/workflow census: executable trigger, >0 steps, test collection, coverage scope, false-green risks and protected-family regressions.
+- [ ] Audit root/current docs for unsupported `PRODUCTION READY`, `ENTERPRISE EXCELLENCE`, fixed coverage, throughput, latency and deployment claims; archive or rewrite them as historical evidence.
 
-### Development Setup
-1. Fork the repository
-2. Create a feature branch
-3. Install development dependencies
-4. Make changes and add tests
-5. Submit a pull request
+### P1 - prove enterprise controls
 
-### Code Standards
-- Python: PEP 8, Black formatting, Type hints
-- TypeScript: ESLint, Prettier formatting, Strict mode
-- Documentation: Comprehensive docstrings and comments
-- Testing: Minimum 80% test coverage
+- [ ] Convert security configuration into executable implementation and tests, or mark each control disabled/not implemented.
+- [ ] Define release identity: source SHA, generated artefact hashes, provenance manifest, changelog/version binding and reproducible release receipt.
+- [ ] Add governed performance benchmarks before publishing throughput, concurrency or API-latency numbers.
+- [ ] Define supported deployment target(s) and add reproducible packaging/deploy/rollback evidence before advertising cloud/Kubernetes readiness.
+- [ ] Bind logging/health/notification behaviour to tested runtime paths and document retention/operational ownership.
+- [ ] Reconcile the TypeScript orchestration API surface with the actual server routes and current federation contract.
 
-## 📄 License
+### P2 - product evolution
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- [ ] Re-baseline traceability, visualization, document-format and collaboration backlog against what is already implemented today.
+- [ ] Promote only roadmap items with an owner, acceptance criteria, test/evidence path and dependency chain.
+- [ ] Keep AI/ML/predictive features as development candidates until datasets, evaluation criteria and failure controls are defined.
 
-## 🆘 Support
+## 7. Next execution order
 
-### Getting Help
-- 📧 Email: support@enhanced-docx-rtm.com
-- 💬 Slack: #docx-rtm-automation
-- 📖 Documentation: [docs.enhanced-docx-rtm.com](https://docs.enhanced-docx-rtm.com)
-- 🐛 Issues: [GitHub Issues](https://github.com/GBOGEB/DOCX_RTM_Automation/issues)
+1. **Root truth cleanup** - merge this README refresh and remove unsupported support/performance/cloud claims from the root surface.
+2. **Version + handover reconciliation** - establish one release identity and refresh `handover/CURRENT.json` from current `main`.
+3. **Admission hardening** - enable branch protection and bind required checks to exact-head, >0-step workflows.
+4. **CI/test census** - measure actual test collection, coverage scope and false-green gaps; repair infrastructure/check defects before adding feature work.
+5. **Security proof lane** - map each configured security control to code, tests and runtime evidence; disable or relabel configuration-only controls.
+6. **Release/provenance lane** - produce a reproducible source-to-artefact manifest with SHA-256 receipts for outward products.
+7. **Operational proof lane** - add benchmark, health, logging and supported deployment evidence.
+8. **Roadmap recensus** - replace date-based legacy roadmap promises with measured, issue/PR-bound development edges.
 
-### Enterprise Support
-For enterprise support, custom development, and consulting services, please contact our professional services team.
+## 8. Definition of done for an enterprise-ready claim
 
-## 🎯 Roadmap
+An `enterprise-ready` or `production-ready` statement shall not be restored until all of the following are evidenced on the same current release line:
 
-### Version 2.1 (Q1 2024)
-- [ ] Advanced ML models for requirement classification
-- [ ] Real-time collaboration features
-- [ ] Enhanced mobile dashboard support
-- [ ] Advanced analytics and reporting
+- one authoritative version/release identity;
+- protected default branch with required non-bypassable checks;
+- exact-head CI with >0-step execution and explicit test/coverage scope;
+- source/provenance hashes for governed inputs and generated release artefacts;
+- executable security controls with tests and secrets/dependency handling;
+- documented supported runtime/deployment target with rollback/recovery evidence;
+- governed performance/SLO measurements rather than hard-coded marketing numbers;
+- current operational ownership/support path;
+- no known stale root status, handover or certification surface contradicting the release state.
 
-### Version 2.2 (Q2 2024)
-- [ ] Multi-language document support
-- [ ] Advanced workflow automation
-- [ ] Integration with more enterprise tools
-- [ ] Performance optimizations
+## 9. Support
 
-### Version 3.0 (Q3 2024)
-- [ ] AI-powered requirement generation
-- [ ] Advanced predictive analytics
-- [ ] Cloud-native architecture
-- [ ] Enhanced security features
+Use the repository's GitHub Issues for defects, feature requests and support discussions.
+
+No separate commercial support address, Slack channel, external documentation domain, LinkedIn page, professional-services offer or SLA is currently asserted by this README. Those details shall only be published when an owner and valid service/contact information are explicitly maintained.
+
+## 10. Roadmap policy
+
+The former Q1/Q2/Q3 2024 v2.1-v3.0 roadmap has been retired from the root README because the dates and feature claims no longer describe the live repository.
+
+Future roadmap entries should be evidence-driven and use:
+
+`current main -> measured gap -> bounded work item -> exact-head proof -> merge/readback -> next measured residual`
+
+Date/version targets may be added when they are tied to maintained issues/milestones and a release owner.
 
 ---
 
-**Built with ❤️ by the Enhanced Document Management System Team**
-
-*For the latest updates and announcements, follow us on [GitHub](https://github.com/GBOGEB/DOCX_RTM_Automation) and [LinkedIn](https://linkedin.com/company/enhanced-docx-rtm).*
+Repository: https://github.com/GBOGEB/DOCX_RTM_Automation
