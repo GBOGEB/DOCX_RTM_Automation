@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "status": "active",
   "repository": "GBOGEB/DOCX_RTM_Automation",
   "refreshed_at": "2026-10-02",
@@ -9,9 +9,9 @@
     "lifecycle": "HARDENING"
   },
   "basis": {
-    "last_completed_pr": 83,
-    "last_completed_main_sha": "33e02e26aa99b1c21dbf3bcf5c947800075e0d68",
-    "description": "P0-A release identity and handover reconciliation merged. P0-B repository-side admission policy and CI/test census are prepared on the current working branch."
+    "last_completed_pr": 87,
+    "last_completed_main_sha": "6635ed6c44f385aca402b56144651b2c2308fe64",
+    "description": "PR #87 merged the TypeScript admission workflow before P0-B live protection was enabled. This merge is retained as non-admitted sequencing history; P0-B remains open."
   },
   "completed_control_edges": [
     "P0_ROOT_TRUTH_CLEANUP",
@@ -22,31 +22,45 @@
       "id": "P0-B_ADMISSION_HARDENING",
       "state": "OWNER_GATE",
       "evidence": "configs/repository_admission_policy.json",
-      "blocker": "Connected GitHub integration lacks branch-protection/ruleset administration write scope."
+      "blocker": "Live main protection/ruleset is still absent; admission-policy fails closed on current main."
     },
     {
       "id": "P0-C_CI_TEST_CENSUS",
-      "state": "IMPLEMENTED_ON_BRANCH",
+      "state": "MERGED",
       "evidence": "triage/ci/CI_TEST_CENSUS_2026-10-02.json"
     },
     {
       "id": "P0-C_FIRST_FALSE_GREEN_REPAIR",
-      "state": "IMPLEMENTED_ON_BRANCH",
+      "state": "MERGED",
       "evidence": ".github/workflows/render_canonical.yml"
+    },
+    {
+      "id": "P0-D_TYPESCRIPT_TEST_ADMISSION",
+      "state": "EXECUTED_RED",
+      "evidence": "GitHub Actions run 36995126166",
+      "first_red": "npm install ERESOLVE: eslint 9 is incompatible with @typescript-eslint/parser 7.x peer eslint ^8.56.0"
+    }
+  ],
+  "control_breaches": [
+    {
+      "id": "PR87_PREMATURE_MERGE",
+      "main_sha": "6635ed6c44f385aca402b56144651b2c2308fe64",
+      "disposition": "NON_ADMITTED_HISTORY",
+      "reason": "PR #87 merged while main.protected=false and before P0-B closure."
     }
   ],
   "next_control_edge": "P0-B_EXTERNAL_OWNER_GATE",
   "next_actions": [
     "Enable live main protection/ruleset using configs/repository_admission_policy.json as the settings contract.",
-    "Require release-identity, test-coverage-lineage, gitlink-integrity and admission-policy checks; require two approvals and non-bypassable review controls.",
-    "Re-read live main.protected and ruleset state; close P0-B only on executed evidence.",
-    "Then consume the next measured P0 residual: TypeScript orchestration TEST_ADMISSION."
+    "Require release-identity, test-coverage-lineage, gitlink-integrity and admission-policy; require two approvals and no bypass.",
+    "Re-read live main.protected and active ruleset; close P0-B only when admission-policy passes on protected main.",
+    "Independently repair the first executed TypeScript admission red: align ESLint with @typescript-eslint 7.x, then rerun build/test/lint/typecheck."
   ],
   "census": {
     "baseline_main_sha": "33e02e26aa99b1c21dbf3bcf5c947800075e0d68",
     "json": "triage/ci/CI_TEST_CENSUS_2026-10-02.json",
     "markdown": "triage/ci/CI_TEST_CENSUS_2026-10-02.md",
-    "ranked_next_p0": "TypeScript orchestration build/test/lint/typecheck CI"
+    "ranked_next_p0": "TypeScript orchestration executed-red repair"
   },
   "authority_transfer": false,
   "formal_credit_delta": 0,
