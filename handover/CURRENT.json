@@ -9,9 +9,9 @@
     "lifecycle": "HARDENING"
   },
   "basis": {
-    "last_completed_pr": 82,
-    "last_completed_main_sha": "f2527735fb57f242bcaf93e7bb7270a70a3b57be",
-    "description": "Root README truth cleanup merged; release identity and handover reconciliation follows from this baseline."
+    "last_completed_pr": 83,
+    "last_completed_main_sha": "33e02e26aa99b1c21dbf3bcf5c947800075e0d68",
+    "description": "P0-A release identity and handover reconciliation merged. Post-merge readback proved main remained unprotected and PR #83 could merge while intended admission checks were queued."
   },
   "completed_control_edges": [
     "P0_ROOT_TRUTH_CLEANUP",
@@ -19,11 +19,20 @@
   ],
   "next_control_edge": "P0-B_ADMISSION_HARDENING",
   "next_actions": [
-    "Enforce main branch protection with exact-head required checks and review rules.",
-    "Generate the full CI/test census: triggers, >0-step execution, test collection, coverage scope and false-green risks.",
-    "Repair infrastructure/check defects before feature or security expansion."
+    "Activate repository ruleset `P0-B main admission` with no bypass actors.",
+    "Require exact checks release-identity, gitlink-integrity, test-coverage-lineage, and admission-policy.",
+    "Require pull-request review, stale-review dismissal, last-push approval and review-thread resolution.",
+    "Re-run admission-policy until live branch/ruleset proof passes with >0 executed steps.",
+    "Only after P0-B closure, generate the full CI/test census."
   ],
   "authority_transfer": false,
   "formal_credit_delta": 0,
-  "engineering_credit_delta": 0
+  "engineering_credit_delta": 0,
+  "p0b": {
+    "policy": "control/P0B_ADMISSION_POLICY.json",
+    "runbook": "docs/control/P0B_ADMISSION_HARDENING.md",
+    "proof_workflow": ".github/workflows/admission-control.yml",
+    "state": "PREPARED_NOT_ENFORCED",
+    "external_admin_write_required": true
+  }
 }
