@@ -34,7 +34,7 @@
     "vitest": "^1.6.0",
     "supertest": "^7.0.0",
     "@types/supertest": "^6.0.2",
-    "eslint": "^9.6.0",
+    "eslint": "^8.57.1",
     "@typescript-eslint/eslint-plugin": "^7.16.0"
   }
 }
