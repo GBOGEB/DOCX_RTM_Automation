@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0",
+  "repository": "GBOGEB/DOCX_RTM_Automation",
+  "target_branch": "main",
+  "control_id": "P0-B_ADMISSION_HARDENING",
+  "status": "PREPARED_NOT_ENFORCED",
+  "evidence_basis": {
+    "main_sha": "33e02e26aa99b1c21dbf3bcf5c947800075e0d68",
+    "pr_83_head_sha": "cc3fbdc968479070ffe2d4dcf3142f661631a0a3",
+    "pr_83_merge_sha": "33e02e26aa99b1c21dbf3bcf5c947800075e0d68",
+    "observation": "PR #83 merged while its three intended admission checks were still queued; main was reported protected=false and repository rulesets=[] at readback."
+  },
+  "required_checks": [
+    {
+      "context": "release-identity",
+      "workflow": "Release identity guard",
+      "job": "release-identity",
+      "source": ".github/workflows/release-identity.yml"
+    },
+    {
+      "context": "gitlink-integrity",
+      "workflow": "Repository integrity",
+      "job": "gitlink-integrity",
+      "source": ".github/workflows/repository-integrity.yml"
+    },
+    {
+      "context": "test-coverage-lineage",
+      "workflow": "Python CI",
+      "job": "test-coverage-lineage",
+      "source": ".github/workflows/python-ci.yml"
+    },
+    {
+      "context": "admission-policy",
+      "workflow": "P0-B admission control proof",
+      "job": "admission-policy",
+      "source": ".github/workflows/admission-control.yml"
+    }
+  ],
+  "ruleset_contract": {
+    "ruleset_name": "P0-B main admission",
+    "target": "branch",
+    "enforcement": "active",
+    "include_refs": [
+      "~DEFAULT_BRANCH"
+    ],
+    "bypass_actors": [],
+    "require_pull_request": true,
+    "minimum_approving_reviews": 1,
+    "dismiss_stale_reviews_on_push": true,
+    "require_review_thread_resolution": true,
+    "require_last_push_approval": true,
+    "strict_required_status_checks": true,
+    "block_force_pushes": true,
+    "block_deletions": true
+  },
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "engineering_credit_delta": 0
+}
