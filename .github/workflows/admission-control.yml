@@ -1,0 +1,35 @@
+name: P0-B admission control proof
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  admission-policy:
+    name: admission-policy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact evaluated head
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate repository admission policy
+        run: python scripts/validate_admission_control.py
+
+      - name: Run admission policy regression tests
+        run: python tests/test_admission_control.py
+
+      - name: Prove live branch/ruleset enforcement
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/validate_admission_control.py --live
