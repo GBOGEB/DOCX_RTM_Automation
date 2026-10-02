@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "repository": "GBOGEB/DOCX_RTM_Automation",
+  "target_branch": "main",
+  "baseline": {
+    "main_sha": "33e02e26aa99b1c21dbf3bcf5c947800075e0d68",
+    "observed_at": "2026-10-02",
+    "protected": false,
+    "repository_rulesets": 0
+  },
+  "desired_enforcement": {
+    "protected": true,
+    "require_pull_request": true,
+    "required_approving_reviews": 2,
+    "dismiss_stale_reviews": true,
+    "require_last_push_approval": true,
+    "required_conversation_resolution": true,
+    "enforce_admins": true,
+    "allow_force_pushes": false,
+    "allow_deletions": false,
+    "strict_required_status_checks": true,
+    "required_checks": [
+      {
+        "workflow": ".github/workflows/release-identity.yml",
+        "job": "release-identity"
+      },
+      {
+        "workflow": ".github/workflows/python-ci.yml",
+        "job": "test-coverage-lineage"
+      },
+      {
+        "workflow": ".github/workflows/repository-integrity.yml",
+        "job": "gitlink-integrity"
+      },
+      {
+        "workflow": ".github/workflows/admission-policy.yml",
+        "job": "admission-policy"
+      }
+    ]
+  },
+  "owner_gate": {
+    "state": "OPEN_CONNECTOR_ADMIN_SCOPE",
+    "reason": "The connected GitHub integration can read branch/ruleset state but does not expose branch-protection or repository-ruleset administration writes.",
+    "closure_evidence": "GitHub branch metadata reports main.protected=true and the required checks/review rules are configured."
+  },
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "engineering_credit_delta": 0
+}
