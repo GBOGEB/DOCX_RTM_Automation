@@ -64,7 +64,7 @@ Do not infer production readiness from a successful local command alone. Current
 | Repository integrity | Dedicated workflow plus repaired orphan-gitlink failure mode | CONTROL PRESENT |
 | Python quality gate | Focused pytest/coverage configuration exists; the configured 80% threshold applies to selected modules, not the whole repository | PARTIAL |
 | TypeScript orchestration | Express/WS orchestration package and test/lint/typecheck scripts exist | IMPLEMENTED, PROOF TO BE RE-CENSUSED |
-| GitHub branch protection | `main` is currently not protected in repository metadata, despite `configs/workflow_config.yaml` declaring branch protection | GAP |
+| GitHub branch protection | `main@33e02e26...` is measured unprotected with zero rulesets; `configs/repository_admission_policy.json` defines the desired fail-closed policy and owner gate | OWNER GATE OPEN |
 | Version identity | `release/RELEASE_IDENTITY.json` is the repository release SSOT (`1.0.4`) and maps the independently versioned workflow contract (`2.0.0`) and TypeScript package (`1.0.0`) | CONTROL PRESENT |
 | Handover identity | `handover/CURRENT.json` is refreshed from the PR #82 / `f2527735...` baseline and points to P0-B admission hardening | CURRENT CONTROL POINTER |
 | Security claims | JWT/RBAC/encryption are declared in configuration/docs, but current code search does not establish executable implementation/proof | DECLARED / UNPROVEN |
@@ -81,7 +81,7 @@ The word **enterprise** is treated here as a set of verifiable controls, not a m
 | Provenance and reproducibility | Exact source identity, hashes, manifests, deterministic transforms and exact-head receipts | Strong partial implementation; expand to every outward release product |
 | Change control | Protected default branch, required checks, review policy and non-bypassable merge gates | **TODO P0:** repository enforcement is missing |
 | Version/release governance | One authoritative repository release plus explicit component-version map, changelog binding and later binary/source receipt | Release SSOT + drift guard present; binary/source release receipt remains P1 |
-| Test assurance | Complete test inventory, >0-step CI, regression gates and explicit coverage scope | **TODO P0/P1:** recensus whole repo and remove misleading global coverage claims |
+| Test assurance | Current workflow/test inventory, >0-step census, regression gates and explicit coverage scope | Census recorded in `triage/ci/CI_TEST_CENSUS_2026-10-02.*`; TypeScript CI admission remains P0 |
 | Security | Implemented authN/authZ, secrets handling, dependency controls, audit evidence and security tests | **TODO P1:** configuration is not proof |
 | Observability | Structured logs, health signals, failure classification and retained run evidence | Partial; define supported production signals and retention |
 | Performance | Repeatable benchmark harness, datasets, limits and SLOs | **TODO P1:** no governed benchmark baseline |
@@ -95,8 +95,8 @@ The word **enterprise** is treated here as a set of verifiable controls, not a m
 
 - [x] Reconcile version identity with `release/RELEASE_IDENTITY.json`: repository release `1.0.4` is authoritative; workflow-contract `2.0.0` and TypeScript `1.0.0` remain explicitly independent component versions and are drift-checked.
 - [x] Refresh `handover/CURRENT.json` from the PR #82 / `f2527735...` baseline and advance the next control edge to P0-B admission hardening.
-- [ ] Enable/enforce `main` branch protection with required exact-head checks and review rules, or change configuration so it does not claim enforcement that is absent.
-- [ ] Generate a current test/workflow census: executable trigger, >0 steps, test collection, coverage scope, false-green risks and protected-family regressions.
+- [ ] Enable/enforce `main` branch protection with required exact-head checks and review rules. Repository-side policy/validation is implemented; live GitHub enforcement remains an explicit owner gate because the connected integration lacks administration write scope.
+- [x] Generate the current test/workflow census at `main@33e02e26...`, including triggers, >0-step execution structure, focused coverage scope, TypeScript TEST_ADMISSION debt and false-green search.
 - [ ] Audit root/current docs for unsupported `PRODUCTION READY`, `ENTERPRISE EXCELLENCE`, fixed coverage, throughput, latency and deployment claims; archive or rewrite them as historical evidence.
 
 ### P1 - prove enterprise controls
@@ -118,8 +118,8 @@ The word **enterprise** is treated here as a set of verifiable controls, not a m
 
 1. **Root truth cleanup - DONE** - PR #82 removed unsupported support/performance/cloud claims from the root surface.
 2. **Version + handover reconciliation - DONE** - repository release SSOT, component-version map, handover refresh and drift guard are present.
-3. **Admission hardening - NEXT** - enable branch protection and bind required checks to exact-head, >0-step workflows.
-4. **CI/test census** - measure actual test collection, coverage scope and false-green gaps; repair infrastructure/check defects before adding feature work.
+3. **Admission hardening - OWNER GATE** - repository policy and admission check are defined; enable live GitHub protection/ruleset and bind the required checks/review rules.
+4. **CI/test census - DONE ON CURRENT BASELINE** - census is recorded; the first false-green `render_canonical.yml` suppression is repaired on this branch. Next measured P0 residual is TypeScript TEST_ADMISSION.
 5. **Security proof lane** - map each configured security control to code, tests and runtime evidence; disable or relabel configuration-only controls.
 6. **Release/provenance lane** - produce a reproducible source-to-artefact manifest with SHA-256 receipts for outward products.
 7. **Operational proof lane** - add benchmark, health, logging and supported deployment evidence.
