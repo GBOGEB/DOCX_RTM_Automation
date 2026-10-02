@@ -1,0 +1,50 @@
+name: TypeScript orchestration CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  typescript-orchestration:
+    name: typescript-orchestration
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: orchestration_ts
+    steps:
+      - name: Checkout exact evaluated head
+        uses: actions/checkout@v4
+
+      - name: Bind exact head
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "github.sha=$GITHUB_SHA"
+          echo "git.head=$(git rev-parse HEAD)"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
