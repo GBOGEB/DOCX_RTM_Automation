@@ -158,7 +158,10 @@ compliance:
 github_integration:
   enabled: true
   auto_pr_creation: true
-  branch_protection: true
+  # Observed live state. Desired enforcement is governed by the admission policy below.
+  branch_protection: false
+  branch_protection_desired: true
+  admission_policy: "configs/repository_admission_policy.json"
   
   workflows:
     - name: "document_processing"
@@ -172,6 +175,7 @@ github_integration:
       cron: "0 6 * * *"
   
   pr_settings:
+    enforcement_state: "owner_gate"
     auto_merge: false
     require_reviews: 2
     dismiss_stale_reviews: true

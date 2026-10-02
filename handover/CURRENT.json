@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "status": "active",
   "repository": "GBOGEB/DOCX_RTM_Automation",
   "refreshed_at": "2026-10-02",
@@ -9,20 +9,45 @@
     "lifecycle": "HARDENING"
   },
   "basis": {
-    "last_completed_pr": 82,
-    "last_completed_main_sha": "f2527735fb57f242bcaf93e7bb7270a70a3b57be",
-    "description": "Root README truth cleanup merged; release identity and handover reconciliation follows from this baseline."
+    "last_completed_pr": 83,
+    "last_completed_main_sha": "33e02e26aa99b1c21dbf3bcf5c947800075e0d68",
+    "description": "P0-A release identity and handover reconciliation merged. P0-B repository-side admission policy and CI/test census are prepared on the current working branch."
   },
   "completed_control_edges": [
     "P0_ROOT_TRUTH_CLEANUP",
     "P0-A_RELEASE_IDENTITY_AND_HANDOVER"
   ],
-  "next_control_edge": "P0-B_ADMISSION_HARDENING",
-  "next_actions": [
-    "Enforce main branch protection with exact-head required checks and review rules.",
-    "Generate the full CI/test census: triggers, >0-step execution, test collection, coverage scope and false-green risks.",
-    "Repair infrastructure/check defects before feature or security expansion."
+  "working_control_edges": [
+    {
+      "id": "P0-B_ADMISSION_HARDENING",
+      "state": "OWNER_GATE",
+      "evidence": "configs/repository_admission_policy.json",
+      "blocker": "Connected GitHub integration lacks branch-protection/ruleset administration write scope."
+    },
+    {
+      "id": "P0-C_CI_TEST_CENSUS",
+      "state": "IMPLEMENTED_ON_BRANCH",
+      "evidence": "triage/ci/CI_TEST_CENSUS_2026-10-02.json"
+    },
+    {
+      "id": "P0-C_FIRST_FALSE_GREEN_REPAIR",
+      "state": "IMPLEMENTED_ON_BRANCH",
+      "evidence": ".github/workflows/render_canonical.yml"
+    }
   ],
+  "next_control_edge": "P0-B_EXTERNAL_OWNER_GATE",
+  "next_actions": [
+    "Enable live main protection/ruleset using configs/repository_admission_policy.json as the settings contract.",
+    "Require release-identity, test-coverage-lineage, gitlink-integrity and admission-policy checks; require two approvals and non-bypassable review controls.",
+    "Re-read live main.protected and ruleset state; close P0-B only on executed evidence.",
+    "Then consume the next measured P0 residual: TypeScript orchestration TEST_ADMISSION."
+  ],
+  "census": {
+    "baseline_main_sha": "33e02e26aa99b1c21dbf3bcf5c947800075e0d68",
+    "json": "triage/ci/CI_TEST_CENSUS_2026-10-02.json",
+    "markdown": "triage/ci/CI_TEST_CENSUS_2026-10-02.md",
+    "ranked_next_p0": "TypeScript orchestration build/test/lint/typecheck CI"
+  },
   "authority_transfer": false,
   "formal_credit_delta": 0,
   "engineering_credit_delta": 0

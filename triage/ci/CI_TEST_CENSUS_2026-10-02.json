@@ -1,0 +1,147 @@
+{
+  "schema_version": "1.0",
+  "repository": "GBOGEB/DOCX_RTM_Automation",
+  "baseline_main_sha": "33e02e26aa99b1c21dbf3bcf5c947800075e0d68",
+  "measured_at": "2026-10-02",
+  "repository_tree": {
+    "blob_files": 932,
+    "workflow_files": 20,
+    "python_files_under_tests": 43,
+    "files_matching_def_test_search": 33,
+    "implementation_python_files_in_parser_pipeline_src_visualization": 109
+  },
+  "workflow_census": {
+    "pull_request_triggered": 18,
+    "push_triggered": 8,
+    "workflow_dispatch_triggered": 17,
+    "scheduled": 0,
+    "zero_executable_step_workflows": 0,
+    "universal_pr_gates": [
+      ".github/workflows/release-identity.yml",
+      ".github/workflows/python-ci.yml",
+      ".github/workflows/repository-integrity.yml"
+    ],
+    "pytest_invoking_workflows": [
+      ".github/workflows/python-ci.yml",
+      ".github/workflows/rtm-reconciliation-contract.yml",
+      ".github/workflows/w275-gmi-document-core-reentry.yml",
+      ".github/workflows/adr_ocd_bridge_validation.yml",
+      ".github/workflows/w276-gmi-requirement-local-validation.yml"
+    ],
+    "typescript_ci": {
+      "package_path": "orchestration_ts/package.json",
+      "scripts": [
+        "build",
+        "test",
+        "lint",
+        "typecheck"
+      ],
+      "workflow_references_to_orchestration_ts": 0,
+      "npm_test_workflow_matches": 0,
+      "npm_build_workflow_matches": 0,
+      "classification": "TEST_ADMISSION"
+    }
+  },
+  "python_ci": {
+    "selected_targets": [
+      "tests/test_basic.py",
+      "tests/test_all.py",
+      "tests/core",
+      "tests/test_source_extractor.py",
+      "tests/test_qplant_auto_engine.py"
+    ],
+    "selected_test_files_by_path": 6,
+    "configured_coverage_threshold_percent": 80,
+    "coverage_modules": [
+      "src.core.idempotency_contract",
+      "src.core.lineage_metadata",
+      "src.core.artifact_alignment"
+    ],
+    "scope_classification": "FOCUSED_NOT_GLOBAL",
+    "note": "The 80% threshold applies only to the three configured modules. Specialized workflows frequently override pytest addopts for targeted proof and do not imply whole-repository coverage."
+  },
+  "exact_head_proof_state": {
+    "pr_83_head": "cc3fbdc968479070ffe2d4dcf3142f661631a0a3",
+    "pr_83_merged": true,
+    "merge_sha": "33e02e26aa99b1c21dbf3bcf5c947800075e0d68",
+    "merge_time": "2026-10-02T10:05:50Z",
+    "post_merge_runs": [
+      {
+        "name": "Release identity guard",
+        "run_id": 36993566867,
+        "state": "queued_zero_steps_observed"
+      },
+      {
+        "name": "Python CI",
+        "run_id": 36993566908,
+        "state": "queued_zero_steps_observed"
+      },
+      {
+        "name": "Repository integrity",
+        "run_id": 36993566934,
+        "state": "queued_zero_steps_observed"
+      },
+      {
+        "name": "pages build and deployment",
+        "run_id": 36993566563,
+        "state": "queued_zero_steps_observed"
+      }
+    ],
+    "interpretation": "Runner queue is not execution proof and is not classified as an engineering red."
+  },
+  "false_green_census": {
+    "workflow_continue_on_error_true": 0,
+    "workflow_set_plus_e": 0,
+    "workflow_exit_zero": 0,
+    "workflow_pipe_true_matches": 1,
+    "pipe_true_path": ".github/workflows/render_canonical.yml",
+    "disposition": "REPAIRED_ON_P0B_BRANCH",
+    "repair": "Require both generated canonical output files, remove git-add suppression, and use explicit commit conditional."
+  },
+  "admission_policy": {
+    "live_main_protected": false,
+    "repository_rulesets": 0,
+    "required_checks_proposed": [
+      "release-identity",
+      "test-coverage-lineage",
+      "gitlink-integrity",
+      "admission-policy"
+    ],
+    "approvals_proposed": 2,
+    "connector_admin_write_available": false,
+    "owner_gate": "OPEN_CONNECTOR_ADMIN_SCOPE"
+  },
+  "ranked_residual": [
+    {
+      "rank": 1,
+      "class": "INFRA_ADMISSION",
+      "severity": "P0",
+      "item": "Enable actual GitHub protection/ruleset for main and make required checks/reviews non-bypassable.",
+      "state": "OWNER_GATE"
+    },
+    {
+      "rank": 2,
+      "class": "TEST_ADMISSION",
+      "severity": "P0",
+      "item": "Add exact-head TypeScript orchestration build/test/lint/typecheck CI.",
+      "state": "OPEN"
+    },
+    {
+      "rank": 3,
+      "class": "COVERAGE_SCOPE",
+      "severity": "P1",
+      "item": "Measure whole-repository Python collection and coverage separately from the focused 80% three-module gate.",
+      "state": "OPEN"
+    },
+    {
+      "rank": 4,
+      "class": "DOC_TRUTH",
+      "severity": "P1",
+      "item": "Continue audit of non-root historical readiness/certification claims.",
+      "state": "OPEN"
+    }
+  ],
+  "authority_transfer": false,
+  "formal_credit_delta": 0,
+  "engineering_credit_delta": 0
+}
