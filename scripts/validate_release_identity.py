@@ -107,11 +107,19 @@ def validate(root: Path) -> None:
     sha = basis.get("last_completed_main_sha", "")
     if not re.fullmatch(r"[0-9a-f]{40}", sha):
         raise ValidationError("handover last_completed_main_sha is not a full SHA")
-    if basis.get("last_completed_pr") != 82:
-        raise ValidationError("handover must retain PR #82 as the completed root-truth baseline")
+    last_completed_pr = basis.get("last_completed_pr")
+    if not isinstance(last_completed_pr, int) or last_completed_pr < 82:
+        raise ValidationError(
+            "handover last_completed_pr must retain or advance beyond the PR #82 root-truth baseline"
+        )
 
-    if current.get("next_control_edge") != "P0-B_ADMISSION_HARDENING":
-        raise ValidationError("handover next control edge is not P0-B admission hardening")
+    completed_edges = current.get("completed_control_edges", [])
+    if "P0-A_RELEASE_IDENTITY_AND_HANDOVER" not in completed_edges:
+        raise ValidationError("handover must retain completed P0-A release-identity control")
+
+    next_edge = current.get("next_control_edge", "")
+    if not isinstance(next_edge, str) or not next_edge.startswith("P0-B_"):
+        raise ValidationError("handover next control edge must remain within P0-B until admission hardening closes")
 
 
 def main() -> int:
