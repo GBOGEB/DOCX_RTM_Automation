@@ -1,0 +1,4 @@
+# W1_DELETE_MERGED (2 branches, mode delete). Census 2026-10-11 against main.
+# Every commit is on main, or a merged PR has this exact head (kept under refs/pull/N/head).
+docs/qps-method-slide-alignment-v1-20260914	a70d56dc6c0acb5bdf7fb10a98173707af0d9dee	delete
+w111/gloob-projection-adapter	657adcf42f0358d744a882f6cecc75770222f01a	delete
