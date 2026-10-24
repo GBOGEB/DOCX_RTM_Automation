@@ -130,4 +130,4 @@ For additional help or to report bugs:
 
 ## License
 
-This tool is licensed under MIT License. See LICENSE.md for details.
+This tool is licensed under the Apache License 2.0. See LICENSE for details.

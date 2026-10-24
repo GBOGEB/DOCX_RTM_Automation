@@ -547,7 +547,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
 
 ## 📞 Support
 
@@ -662,35 +662,13 @@ htmlcov/
 
         self.print_status("SUCCESS", "Created .gitignore")
 
-        # Create LICENSE
-        license_content = """MIT License
-
-Copyright (c) 2024 DOCX RTM Automation Project
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
-
+        # LICENSE is the canonical Apache-2.0 text; never regenerate or overwrite it here
         license_path = self.project_root / "LICENSE"
-        with open(license_path, "w", encoding="utf-8") as f:
-            f.write(license_content)
-
-        self.print_status("SUCCESS", "Created LICENSE file")
+        if not license_path.exists():
+            self.print_status(
+                "WARNING",
+                "LICENSE missing: restore it with `gh api licenses/apache-2.0 --jq .body > LICENSE`",
+            )
 
     def run_comprehensive_tests(self):
         """Run comprehensive system tests"""
