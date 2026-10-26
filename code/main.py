@@ -12,19 +12,21 @@ import yaml  # Added for YAML processing
 # Determine Project Root assuming main.py is in a subdirectory like 'code/'
 PROJECT_ROOT_DIR = Path(__file__).parent.parent.resolve()
 
+
 def setup_logging():
     """Setup logging with automatic directory creation"""
     logs_dir = PROJECT_ROOT_DIR / "logs"  # Use project root for logs
     logs_dir.mkdir(exist_ok=True)
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         handlers=[
             logging.FileHandler(logs_dir / "process.log", mode="a"),
-            logging.StreamHandler(sys.stdout)
-        ]
+            logging.StreamHandler(sys.stdout),
+        ],
     )
     return logging.getLogger(__name__)
+
 
 def load_openai_key():
     """Load the OpenAI API key from the path specified in config/paths.yaml."""
@@ -36,17 +38,19 @@ def load_openai_key():
         raise FileNotFoundError(f"Configuration file not found: {config_file_path}")
 
     try:
-        with open(config_file_path, 'r', encoding='utf-8') as f:
+        with open(config_file_path, "r", encoding="utf-8") as f:
             config_data = yaml.safe_load(f)
     except yaml.YAMLError as e:
         logger.error(f"Error parsing YAML configuration file {config_file_path}: {e}")
         raise ValueError(f"Error parsing YAML configuration file: {e}")
     except Exception as e:
-        logger.error(f"Unexpected error reading configuration file {config_file_path}: {e}")
+        logger.error(
+            f"Unexpected error reading configuration file {config_file_path}: {e}"
+        )
         raise
 
     try:
-        openai_key_file_path_str = config_data['secrets']['openai_key_path']
+        openai_key_file_path_str = config_data["secrets"]["openai_key_path"]
         openai_key_file_path = Path(os.path.expandvars(openai_key_file_path_str))
 
         if not openai_key_file_path.is_absolute():
@@ -54,25 +58,32 @@ def load_openai_key():
 
         if not openai_key_file_path.exists():
             logger.error(f"OpenAI API key file not found: {openai_key_file_path}")
-            raise FileNotFoundError(f"OpenAI API key file not found: {openai_key_file_path}")
+            raise FileNotFoundError(
+                f"OpenAI API key file not found: {openai_key_file_path}"
+            )
 
-        with open(openai_key_file_path, 'r', encoding='utf-8') as key_file:
+        with open(openai_key_file_path, "r", encoding="utf-8") as key_file:
             openai_key = key_file.read().strip()
-        
+
         if not openai_key:
             logger.error(f"OpenAI API key file is empty: {openai_key_file_path}")
             raise ValueError(f"OpenAI API key file is empty: {openai_key_file_path}")
-            
+
         return openai_key
 
     except KeyError:
-        logger.error("'openai_key_path' not found in secrets section of config/paths.yaml")
-        raise KeyError("'openai_key_path' not found in secrets section of config/paths.yaml")
+        logger.error(
+            "'openai_key_path' not found in secrets section of config/paths.yaml"
+        )
+        raise KeyError(
+            "'openai_key_path' not found in secrets section of config/paths.yaml"
+        )
     except FileNotFoundError:
         raise
     except Exception as e:
         logger.error(f"An unexpected error occurred while loading the OpenAI key: {e}")
         raise
+
 
 def commit_outputs_to_git(files_to_commit, config_data):
     """Commit output files to git"""
@@ -92,6 +103,7 @@ def commit_outputs_to_git(files_to_commit, config_data):
         os.chdir(original_cwd)
         return
     # Add your git add/commit logic here
+
 
 def main():
     """Main function"""
@@ -117,6 +129,7 @@ def main():
     print("Hello")
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

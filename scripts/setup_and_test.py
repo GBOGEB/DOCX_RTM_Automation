@@ -9,10 +9,8 @@ This script:
 4. Runs tests to ensure the pipeline functions correctly
 """
 
-import os
 import sys
 import subprocess
-import shutil
 import logging
 from pathlib import Path
 import argparse
@@ -83,8 +81,7 @@ def install_dependencies():
     logger.info("Installing dependencies...")
 
     try:
-        subprocess.check_call(
-            [sys.executable, "-m", "pip", "install"] + requirements)
+        subprocess.check_call([sys.executable, "-m", "pip", "install"] + requirements)
         logger.info("Dependencies installed successfully.")
     except subprocess.CalledProcessError:
         logger.error("Failed to install dependencies.")
@@ -105,7 +102,9 @@ def create_directory_structure():
         else:
             logger.info(f"Directory already exists: {directory}")
 
-    sub_repo_paths_str = global_config.get("repository_settings", {}).get("sub_repositories", [])
+    sub_repo_paths_str = global_config.get("repository_settings", {}).get(
+        "sub_repositories", []
+    )
     if sub_repo_paths_str:
         logger.info("Checking configured sub-repositories:")
         for rel_path_str in sub_repo_paths_str:
@@ -113,7 +112,9 @@ def create_directory_structure():
             if abs_path.exists() and abs_path.is_dir():
                 logger.info(f"  Found sub-repository: {abs_path}")
             else:
-                logger.warning(f"  Sub-repository path not found or not a directory: {abs_path}")
+                logger.warning(
+                    f"  Sub-repository path not found or not a directory: {abs_path}"
+                )
 
 
 def create_sample_files():
@@ -154,14 +155,20 @@ def test_pipeline():
 
         sample_file_path = SAMPLE_DIR / "sample_requirements.docx"
         if not sample_file_path.exists():
-            logger.warning(f"Sample file not found: {sample_file_path}. Cannot run default pipeline test.")
+            logger.warning(
+                f"Sample file not found: {sample_file_path}. Cannot run default pipeline test."
+            )
             return False
 
         logger.info(f"Simulating test with: {sample_file_path}")
         if sample_file_path.exists():
-            logger.info(f"Placeholder test: Found sample file {sample_file_path}. Assuming pipeline would work.")
+            logger.info(
+                f"Placeholder test: Found sample file {sample_file_path}. Assuming pipeline would work."
+            )
             (OUTPUT_DIR / "test_rtm.xlsx").touch()
-            logger.info(f"Placeholder: RTM file generated successfully at {OUTPUT_DIR / 'test_rtm.xlsx'}")
+            logger.info(
+                f"Placeholder: RTM file generated successfully at {OUTPUT_DIR / 'test_rtm.xlsx'}"
+            )
             return True
         return False
 
@@ -181,8 +188,7 @@ def parse_args():
     parser.add_argument(
         "--skip-install", action="store_true", help="Skip dependency installation"
     )
-    parser.add_argument("--skip-tests", action="store_true",
-                        help="Skip running tests")
+    parser.add_argument("--skip-tests", action="store_true", help="Skip running tests")
     return parser.parse_args()
 
 
@@ -204,15 +210,13 @@ def main():
 
     if not args.skip_tests:
         if not created_samples:
-            logger.warning(
-                "Skipping tests because sample files couldn't be created")
+            logger.warning("Skipping tests because sample files couldn't be created")
         else:
             test_result = test_pipeline()
             if test_result:
                 logger.info("All tests completed successfully!")
             else:
-                logger.warning(
-                    "Some tests failed. See the log above for details.")
+                logger.warning("Some tests failed. See the log above for details.")
     else:
         logger.info("Skipping tests")
 

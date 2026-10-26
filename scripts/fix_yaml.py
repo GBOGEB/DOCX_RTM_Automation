@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 import re
 
+
 def fix_yaml_file(file_path):
     """Fix common YAML syntax issues in a file"""
     path = Path(file_path)
@@ -15,7 +16,7 @@ def fix_yaml_file(file_path):
     print(f"Fixing YAML file: {file_path}")
 
     # Read the file
-    with open(path, 'r', encoding='utf-8', errors='replace') as f:
+    with open(path, "r", encoding="utf-8", errors="replace") as f:
         lines = f.readlines()
 
     # Fix common issues
@@ -25,22 +26,22 @@ def fix_yaml_file(file_path):
 
     for i, line in enumerate(lines):
         # Remove trailing whitespace
-        line = line.rstrip() + '\n'
+        line = line.rstrip() + "\n"
 
         # Fix tabs to spaces
-        if '\t' in line:
-            line = line.replace('\t', '  ')
+        if "\t" in line:
+            line = line.replace("\t", "  ")
 
         # Check for unclosed quotes
         single_quotes = line.count("'") % 2
         double_quotes = line.count('"') % 2
 
         if single_quotes:
-            print(f"Line {i+1}: Unclosed single quote - {line.strip()}")
+            print(f"Line {i + 1}: Unclosed single quote - {line.strip()}")
             line = line.rstrip() + "'\n"
 
         if double_quotes:
-            print(f"Line {i+1}: Unclosed double quote - {line.strip()}")
+            print(f"Line {i + 1}: Unclosed double quote - {line.strip()}")
             line = line.rstrip() + '"\n'
 
         # New: Check for key without colon (likely key missing colon)
@@ -49,38 +50,45 @@ def fix_yaml_file(file_path):
 
         # If line has content, isn't a comment, isn't a list item, doesn't have a colon
         # and doesn't appear to be a continuation of a multi-line value:
-        if (stripped and
-            not stripped.startswith('#') and
-            not stripped.startswith('-') and
-            ':' not in stripped and
-            not stripped.startswith('>') and
-            not stripped.startswith('|') and
-            not in_multiline):
-            print(f"Line {i+1}: Potential missing colon - {stripped}")
+        if (
+            stripped
+            and not stripped.startswith("#")
+            and not stripped.startswith("-")
+            and ":" not in stripped
+            and not stripped.startswith(">")
+            and not stripped.startswith("|")
+            and not in_multiline
+        ):
+            print(f"Line {i + 1}: Potential missing colon - {stripped}")
             # Only add colon if this looks like a key (no spaces, all printable chars)
-            if re.match(r'^[\w\-_]+$', stripped):
+            if re.match(r"^[\w\-_]+$", stripped):
                 line = line.rstrip() + ":\n"
                 print(f"  Fixed: Added missing colon -> {line.strip()}")
 
         # Detect multi-line strings
-        if ' >' in line or ' |' in line:
+        if " >" in line or " |" in line:
             in_multiline = True
             multiline_indent = len(line) - len(line.lstrip())
 
         # Ensure proper indentation in multi-line strings
-        if in_multiline and line.strip() and not line.strip().startswith('#'):
+        if in_multiline and line.strip() and not line.strip().startswith("#"):
             if len(line) - len(line.lstrip()) <= multiline_indent:
-                if i > 0 and lines[i-1].strip() and not lines[i-1].strip().startswith('#'):
+                if (
+                    i > 0
+                    and lines[i - 1].strip()
+                    and not lines[i - 1].strip().startswith("#")
+                ):
                     in_multiline = False
 
         fixed_lines.append(line)
 
     # Write the fixed file
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, "w", encoding="utf-8") as f:
         f.writelines(fixed_lines)
 
     print(f"Fixed file written to: {file_path}")
     return True
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

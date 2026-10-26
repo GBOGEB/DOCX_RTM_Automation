@@ -1,16 +1,24 @@
-import os
 import json
 import time
-from typing import Dict, Any, List, Optional, Tuple, Union
+from typing import Dict, Any, List
 from enum import Enum
 
-from dmaic import DMAICHandler, DMAICPhase, DMAICFactorizer
-from utils.ci_cd_integration import CICDStage, DMAICCICDIntegration
+from dmaic import DMAICHandler, DMAICPhase
+from utils.ci_cd_integration import DMAICCICDIntegration
 from utils.output_handler import OutputHandler
-from agents.agent_common import BaseAgent, AgentRole, AgentMessage, AgentPriority, StandardAgentResponse, AgentCapability, validate_input
+from agents.agent_common import (
+    BaseAgent,
+    AgentRole,
+    AgentMessage,
+    StandardAgentResponse,
+    AgentCapability,
+    validate_input,
+)
+
 
 class PipelineMetrics(Enum):
     """Critical metrics for CI/CD pipeline analysis"""
+
     BUILD_TIME = "build_time"
     TEST_COVERAGE = "test_coverage"
     TEST_SUCCESS_RATE = "test_success_rate"
@@ -26,8 +34,9 @@ class PipelineMetrics(Enum):
             PipelineMetrics.BUILD_TIME.value,
             PipelineMetrics.CHANGE_FAILURE_RATE.value,
             PipelineMetrics.MTTR.value,
-            PipelineMetrics.LEAD_TIME.value  # Assuming lower lead time is better
+            PipelineMetrics.LEAD_TIME.value,  # Assuming lower lead time is better
         ]
+
 
 class DMAICCICDAgent(BaseAgent):
     """
@@ -38,7 +47,9 @@ class DMAICCICDAgent(BaseAgent):
 
     def __init__(self, dmaic_handler: DMAICHandler, output_handler: OutputHandler):
         """Initialize the DMAIC CI/CD agent"""
-        super().__init__("cicd_agent", AgentRole.ANALYST, output_handler)  # Pass output_handler
+        super().__init__(
+            "cicd_agent", AgentRole.ANALYST, output_handler
+        )  # Pass output_handler
         self.dmaic_handler = dmaic_handler
         self.integration = DMAICCICDIntegration(dmaic_handler, output_handler)
         self.pipeline_metrics: Dict[str, Any] = {}
@@ -51,28 +62,62 @@ class DMAICCICDAgent(BaseAgent):
         self.register_capability(AgentCapability.CICD_BUILD_FAILURE_ANALYSIS)
 
         # Register message handlers if this agent is to be called by others
-        self.register_message_handler("initialize_cicd_project", self.handle_initialize_project)
-        self.register_message_handler("collect_cicd_baseline", self.handle_collect_baseline_metrics)
-        self.register_message_handler("analyze_cicd_performance", self.handle_analyze_pipeline_performance)
-        self.register_message_handler("generate_cicd_improvement_plan", self.handle_generate_improvement_plan)
-        self.register_message_handler("establish_cicd_control_plan", self.handle_establish_control_plan)
-        self.register_message_handler("analyze_cicd_build_failure", self.handle_analyze_build_failure)
-        self.register_message_handler("compare_cicd_metrics", self.handle_compare_metrics)
+        self.register_message_handler(
+            "initialize_cicd_project", self.handle_initialize_project
+        )
+        self.register_message_handler(
+            "collect_cicd_baseline", self.handle_collect_baseline_metrics
+        )
+        self.register_message_handler(
+            "analyze_cicd_performance", self.handle_analyze_pipeline_performance
+        )
+        self.register_message_handler(
+            "generate_cicd_improvement_plan", self.handle_generate_improvement_plan
+        )
+        self.register_message_handler(
+            "establish_cicd_control_plan", self.handle_establish_control_plan
+        )
+        self.register_message_handler(
+            "analyze_cicd_build_failure", self.handle_analyze_build_failure
+        )
+        self.register_message_handler(
+            "compare_cicd_metrics", self.handle_compare_metrics
+        )
 
     def handle_initialize_project(self, message: AgentMessage) -> StandardAgentResponse:
         content = message.content
         if not validate_input(content, ["pipeline_name", "config"]):
-            return {"status": "error", "message": "Missing pipeline_name or config.", "data": None, "error_details": "Invalid input", "markdown_content": None}
+            return {
+                "status": "error",
+                "message": "Missing pipeline_name or config.",
+                "data": None,
+                "error_details": "Invalid input",
+                "markdown_content": None,
+            }
 
         pipeline_name = content["pipeline_name"]
         config = content["config"]
         try:
             define_outputs = self.initialize_project(pipeline_name, config)
-            return {"status": "success", "message": "Project initialized.", "data": define_outputs, "error_details": None, "markdown_content": None}
+            return {
+                "status": "success",
+                "message": "Project initialized.",
+                "data": define_outputs,
+                "error_details": None,
+                "markdown_content": None,
+            }
         except Exception as e:
-            return {"status": "error", "message": "Failed to initialize project.", "data": None, "error_details": str(e), "markdown_content": None}
+            return {
+                "status": "error",
+                "message": "Failed to initialize project.",
+                "data": None,
+                "error_details": str(e),
+                "markdown_content": None,
+            }
 
-    def initialize_project(self, pipeline_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
+    def initialize_project(
+        self, pipeline_name: str, config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Initialize a CI/CD improvement project using DMAIC"""
         # Start with Define phase
         self.dmaic_handler.start_phase(DMAICPhase.DEFINE)
@@ -94,25 +139,47 @@ class DMAICCICDAgent(BaseAgent):
             "pipeline_name": pipeline_name,
             "problem_statement": problem_definition,
             "scope_and_goals": scope_goals,
-            "config": config
+            "config": config,
         }
 
         self.dmaic_handler.complete_phase(define_outputs)
-        self.output_handler.log_info(f"DMAIC CI/CD project initialized for pipeline: {pipeline_name}")
+        self.output_handler.log_info(
+            f"DMAIC CI/CD project initialized for pipeline: {pipeline_name}"
+        )
 
         return define_outputs
 
-    def handle_collect_baseline_metrics(self, message: AgentMessage) -> StandardAgentResponse:
+    def handle_collect_baseline_metrics(
+        self, message: AgentMessage
+    ) -> StandardAgentResponse:
         content = message.content
         if not validate_input(content, ["pipeline_data"]):
-            return {"status": "error", "message": "Missing pipeline_data.", "data": None, "error_details": "Invalid input", "markdown_content": None}
+            return {
+                "status": "error",
+                "message": "Missing pipeline_data.",
+                "data": None,
+                "error_details": "Invalid input",
+                "markdown_content": None,
+            }
 
         pipeline_data = content["pipeline_data"]
         try:
             measure_outputs = self.collect_baseline_metrics(pipeline_data)
-            return {"status": "success", "message": "Baseline metrics collected.", "data": measure_outputs, "error_details": None, "markdown_content": None}
+            return {
+                "status": "success",
+                "message": "Baseline metrics collected.",
+                "data": measure_outputs,
+                "error_details": None,
+                "markdown_content": None,
+            }
         except Exception as e:
-            return {"status": "error", "message": "Failed to collect baseline metrics.", "data": None, "error_details": str(e), "markdown_content": None}
+            return {
+                "status": "error",
+                "message": "Failed to collect baseline metrics.",
+                "data": None,
+                "error_details": str(e),
+                "markdown_content": None,
+            }
 
     def collect_baseline_metrics(self, pipeline_data: Dict[str, Any]) -> Dict[str, Any]:
         """Collect baseline metrics for the CI/CD pipeline (Measure phase)"""
@@ -130,28 +197,56 @@ class DMAICCICDAgent(BaseAgent):
 
         measure_outputs = {
             "baseline_metrics": extracted_metrics,
-            "metrics_analysis": metrics_analysis
+            "metrics_analysis": metrics_analysis,
         }
 
         self.dmaic_handler.complete_phase(measure_outputs)
         return measure_outputs
 
-    def handle_analyze_pipeline_performance(self, message: AgentMessage) -> StandardAgentResponse:
+    def handle_analyze_pipeline_performance(
+        self, message: AgentMessage
+    ) -> StandardAgentResponse:
         content = message.content
         if not validate_input(content, ["pipeline_runs"]):
-            return {"status": "error", "message": "Missing pipeline_runs.", "data": None, "error_details": "Invalid input", "markdown_content": None}
+            return {
+                "status": "error",
+                "message": "Missing pipeline_runs.",
+                "data": None,
+                "error_details": "Invalid input",
+                "markdown_content": None,
+            }
 
         pipeline_runs = content["pipeline_runs"]
         if not isinstance(pipeline_runs, list):
-            return {"status": "error", "message": "pipeline_runs must be a list.", "data": None, "error_details": "Invalid input type", "markdown_content": None}
+            return {
+                "status": "error",
+                "message": "pipeline_runs must be a list.",
+                "data": None,
+                "error_details": "Invalid input type",
+                "markdown_content": None,
+            }
 
         try:
             analyze_outputs = self.analyze_pipeline_performance(pipeline_runs)
-            return {"status": "success", "message": "Pipeline performance analyzed.", "data": analyze_outputs, "error_details": None, "markdown_content": None}
+            return {
+                "status": "success",
+                "message": "Pipeline performance analyzed.",
+                "data": analyze_outputs,
+                "error_details": None,
+                "markdown_content": None,
+            }
         except Exception as e:
-            return {"status": "error", "message": "Failed to analyze pipeline performance.", "data": None, "error_details": str(e), "markdown_content": None}
+            return {
+                "status": "error",
+                "message": "Failed to analyze pipeline performance.",
+                "data": None,
+                "error_details": str(e),
+                "markdown_content": None,
+            }
 
-    def analyze_pipeline_performance(self, pipeline_runs: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def analyze_pipeline_performance(
+        self, pipeline_runs: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """Analyze CI/CD pipeline performance data (Analyze phase)"""
         self.dmaic_handler.start_phase(DMAICPhase.ANALYZE)
 
@@ -168,22 +263,22 @@ class DMAICCICDAgent(BaseAgent):
         root_cause_analysis = self.dmaic_handler.interact(root_cause_prompt)
 
         # Identify improvement opportunities
-        opportunity_prompt = (
-            f"Based on the root cause analysis, identify specific improvement opportunities for this CI/CD pipeline."
-        )
+        opportunity_prompt = "Based on the root cause analysis, identify specific improvement opportunities for this CI/CD pipeline."
 
         improvement_opportunities = self.dmaic_handler.interact(opportunity_prompt)
 
         analyze_outputs = {
             "pipeline_summary": pipeline_summary,
             "root_cause_analysis": root_cause_analysis,
-            "improvement_opportunities": improvement_opportunities
+            "improvement_opportunities": improvement_opportunities,
         }
 
         self.dmaic_handler.complete_phase(analyze_outputs)
         return analyze_outputs
 
-    def generate_improvement_plan(self, analyze_results: Dict[str, Any]) -> Dict[str, Any]:
+    def generate_improvement_plan(
+        self, analyze_results: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Generate improvement plan for CI/CD pipeline (Improve phase)"""
         self.dmaic_handler.start_phase(DMAICPhase.IMPROVE)
 
@@ -200,16 +295,16 @@ class DMAICCICDAgent(BaseAgent):
 
         # Prioritize improvements
         prioritization_prompt = (
-            f"Prioritize the proposed solutions based on expected impact and implementation effort. "
-            f"Create a prioritized implementation roadmap."
+            "Prioritize the proposed solutions based on expected impact and implementation effort. "
+            "Create a prioritized implementation roadmap."
         )
 
         prioritized_roadmap = self.dmaic_handler.interact(prioritization_prompt)
 
         # Implementation plan
         implementation_prompt = (
-            f"Create a detailed implementation plan for the top 3 prioritized improvements. "
-            f"Include specific steps, resources needed, and expected outcomes."
+            "Create a detailed implementation plan for the top 3 prioritized improvements. "
+            "Include specific steps, resources needed, and expected outcomes."
         )
 
         implementation_plan = self.dmaic_handler.interact(implementation_prompt)
@@ -218,7 +313,7 @@ class DMAICCICDAgent(BaseAgent):
             "proposed_solutions": solutions,
             "prioritized_roadmap": prioritized_roadmap,
             "implementation_plan": implementation_plan,
-            "improvement_iteration": self.improvement_iterations + 1
+            "improvement_iteration": self.improvement_iterations + 1,
         }
 
         self.improvement_iterations += 1
@@ -240,16 +335,16 @@ class DMAICCICDAgent(BaseAgent):
 
         # Monitoring plan
         monitoring_prompt = (
-            f"Create a monitoring plan that defines how frequently metrics should be checked, "
-            f"who should review them, and what actions should be taken if metrics drift outside acceptable ranges."
+            "Create a monitoring plan that defines how frequently metrics should be checked, "
+            "who should review them, and what actions should be taken if metrics drift outside acceptable ranges."
         )
 
         monitoring_plan = self.dmaic_handler.interact(monitoring_prompt)
 
         # Standardization plan
         standardization_prompt = (
-            f"How should these CI/CD improvements be standardized across other pipelines in the organization? "
-            f"Provide a standardization approach and documentation requirements."
+            "How should these CI/CD improvements be standardized across other pipelines in the organization? "
+            "Provide a standardization approach and documentation requirements."
         )
 
         standardization_plan = self.dmaic_handler.interact(standardization_prompt)
@@ -257,7 +352,7 @@ class DMAICCICDAgent(BaseAgent):
         control_outputs = {
             "control_metrics": control_metrics,
             "monitoring_plan": monitoring_plan,
-            "standardization_plan": standardization_plan
+            "standardization_plan": standardization_plan,
         }
 
         self.dmaic_handler.complete_phase(control_outputs)
@@ -277,15 +372,24 @@ class DMAICCICDAgent(BaseAgent):
 
         # Extract structured data from the analysis
         return {
-            "build_logs_summary": build_logs[:500] + "..." if len(build_logs) > 500 else build_logs,
+            "build_logs_summary": (
+                build_logs[:500] + "..." if len(build_logs) > 500 else build_logs
+            ),
             "analysis": analysis,
-            "recommendations": self._extract_recommendations(analysis)
+            "recommendations": self._extract_recommendations(analysis),
         }
 
     def compare_with_baseline(self, current_metrics: Dict[str, Any]) -> Dict[str, Any]:
         """Compare current metrics with baseline to measure improvement"""
         if not self.baseline_metrics:
-            return {"status": "error", "message": "No baseline metrics established", "comparison": {}, "improvements": {}, "overall_improvement_score": 0, "summary": "No baseline metrics available for comparison."}
+            return {
+                "status": "error",
+                "message": "No baseline metrics established",
+                "comparison": {},
+                "improvements": {},
+                "overall_improvement_score": 0,
+                "summary": "No baseline metrics available for comparison.",
+            }
 
         comparison = {}
         improvements = {}
@@ -303,12 +407,18 @@ class DMAICCICDAgent(BaseAgent):
                 pct_change = 0
                 is_improvement = None
 
-                if isinstance(current_value, (int, float)) and isinstance(baseline_value, (int, float)):
+                if isinstance(current_value, (int, float)) and isinstance(
+                    baseline_value, (int, float)
+                ):
                     diff = current_value - baseline_value
                     if baseline_value != 0:
                         pct_change = (diff / baseline_value) * 100
                     else:
-                        pct_change = float('inf') if diff > 0 else (float('-inf') if diff < 0 else 0)
+                        pct_change = (
+                            float("inf")
+                            if diff > 0
+                            else (float("-inf") if diff < 0 else 0)
+                        )
 
                     if metric_enum:
                         if metric_enum.lower_is_better:
@@ -321,8 +431,14 @@ class DMAICCICDAgent(BaseAgent):
                 comparison[metric_name] = {
                     "baseline": baseline_value,
                     "current": current_value,
-                    "difference": diff if isinstance(current_value, (int, float)) else "N/A",
-                    "percent_change": f"{pct_change:.2f}%" if isinstance(current_value, (int, float)) else "N/A"
+                    "difference": (
+                        diff if isinstance(current_value, (int, float)) else "N/A"
+                    ),
+                    "percent_change": (
+                        f"{pct_change:.2f}%"
+                        if isinstance(current_value, (int, float))
+                        else "N/A"
+                    ),
                 }
 
                 if is_improvement is not None:
@@ -330,9 +446,17 @@ class DMAICCICDAgent(BaseAgent):
 
         overall_score = 0
         if improvements:
-            num_comparable_metrics = len([imp for imp in improvements.values() if imp is not None])
+            num_comparable_metrics = len(
+                [imp for imp in improvements.values() if imp is not None]
+            )
             if num_comparable_metrics > 0:
-                overall_score = sum(1 if improved else (-1 if improved is False else 0) for improved in improvements.values()) / num_comparable_metrics
+                overall_score = (
+                    sum(
+                        1 if improved else (-1 if improved is False else 0)
+                        for improved in improvements.values()
+                    )
+                    / num_comparable_metrics
+                )
 
         return {
             "status": "success",
@@ -340,10 +464,12 @@ class DMAICCICDAgent(BaseAgent):
             "comparison": comparison,
             "improvements": improvements,
             "overall_improvement_score": overall_score,
-            "summary": self._generate_improvement_summary(comparison, improvements)
+            "summary": self._generate_improvement_summary(comparison, improvements),
         }
 
-    def generate_report(self, project_data: Dict[str, Any], report_type: str = "full") -> str:
+    def generate_report(
+        self, project_data: Dict[str, Any], report_type: str = "full"
+    ) -> str:
         """Generate a comprehensive DMAIC CI/CD improvement report"""
         report_prompt = (
             f"Generate a {report_type} DMAIC report for a CI/CD pipeline improvement project.\n"
@@ -356,13 +482,14 @@ class DMAICCICDAgent(BaseAgent):
         # Save report to output
         report_filename = f"dmaic_cicd_report_{time.strftime('%Y%m%d_%H%M%S')}.md"
         report_path = self.output_handler.save_results(
-            {"report_content": report, "project_data": project_data},
-            report_filename
+            {"report_content": report, "project_data": project_data}, report_filename
         )
 
         return report_path
 
-    def _extract_metrics_from_pipeline(self, pipeline_data: Dict[str, Any]) -> Dict[str, Any]:
+    def _extract_metrics_from_pipeline(
+        self, pipeline_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Extract relevant metrics from pipeline data"""
         metrics = {}
 
@@ -390,7 +517,9 @@ class DMAICCICDAgent(BaseAgent):
                     total = test_data["total"]
                     passed = test_data["passed"]
                     if total > 0:
-                        metrics[PipelineMetrics.TEST_SUCCESS_RATE.value] = (passed / total) * 100
+                        metrics[PipelineMetrics.TEST_SUCCESS_RATE.value] = (
+                            passed / total
+                        ) * 100
 
         # Extract deployment metrics if available
         if "deployments" in pipeline_data:
@@ -404,11 +533,15 @@ class DMAICCICDAgent(BaseAgent):
                 total = pipeline_data["total"]
                 failures = pipeline_data["failures"]
                 if total > 0:
-                    metrics[PipelineMetrics.CHANGE_FAILURE_RATE.value] = (failures / total) * 100
+                    metrics[PipelineMetrics.CHANGE_FAILURE_RATE.value] = (
+                        failures / total
+                    ) * 100
 
         return metrics
 
-    def _summarize_pipeline_runs(self, pipeline_runs: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _summarize_pipeline_runs(
+        self, pipeline_runs: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """Generate summary statistics from multiple pipeline runs"""
         if not pipeline_runs:
             return {}
@@ -420,7 +553,7 @@ class DMAICCICDAgent(BaseAgent):
             "avg_build_time": 0,
             "avg_test_success_rate": 0,
             "trends": {},
-            "common_failures": {}
+            "common_failures": {},
         }
 
         build_times = []
@@ -451,24 +584,30 @@ class DMAICCICDAgent(BaseAgent):
             summary["avg_build_time"] = sum(build_times) / len(build_times)
 
         if test_success_rates:
-            summary["avg_test_success_rate"] = sum(test_success_rates) / len(test_success_rates)
+            summary["avg_test_success_rate"] = sum(test_success_rates) / len(
+                test_success_rates
+            )
 
         # Find common failures
         summary["common_failures"] = sorted(
             [{reason: count} for reason, count in failure_reasons.items()],
             key=lambda x: list(x.values())[0],
-            reverse=True
-        )[:5]  # Top 5 failure reasons
+            reverse=True,
+        )[
+            :5
+        ]  # Top 5 failure reasons
 
         # Identify trends if enough data
         if len(pipeline_runs) >= 5:
             # Simple trend analysis for build time
             if len(build_times) >= 5:
-                first_half = build_times[:len(build_times)//2]
-                second_half = build_times[len(build_times)//2:]
+                first_half = build_times[: len(build_times) // 2]
+                second_half = build_times[len(build_times) // 2 :]
                 avg_first = sum(first_half) / len(first_half)
                 avg_second = sum(second_half) / len(second_half)
-                summary["trends"]["build_time"] = "increasing" if avg_second > avg_first else "decreasing"
+                summary["trends"]["build_time"] = (
+                    "increasing" if avg_second > avg_first else "decreasing"
+                )
 
             # Success rate trend
             success_rate = summary["successful_runs"] / summary["total_runs"] * 100
@@ -481,26 +620,31 @@ class DMAICCICDAgent(BaseAgent):
         recommendations = []
 
         # Look for recommendation patterns in text
-        lines = analysis.split('\n')
+        lines = analysis.split("\n")
         in_recommendations_section = False
 
         for line in lines:
             line = line.strip()
 
             # Check if we're entering a recommendations section
-            if any(header in line.lower() for header in ["recommendation", "suggest", "solution"]):
+            if any(
+                header in line.lower()
+                for header in ["recommendation", "suggest", "solution"]
+            ):
                 if any(header_marker in line for header_marker in [":", "#", "-"]):
                     in_recommendations_section = True
                     continue
 
             # Extract numbered or bulleted recommendations
-            if in_recommendations_section or any(marker in line[:2] for marker in ["- ", "• ", "* ", "1.", "2.", "3."]):
+            if in_recommendations_section or any(
+                marker in line[:2] for marker in ["- ", "• ", "* ", "1.", "2.", "3."]
+            ):
                 if line and not line.startswith("#") and len(line) > 5:
                     # Clean up the recommendation
                     recommendation = line
                     for prefix in ["- ", "• ", "* ", "1. ", "2. ", "3. ", "4. ", "5. "]:
                         if recommendation.startswith(prefix):
-                            recommendation = recommendation[len(prefix):]
+                            recommendation = recommendation[len(prefix) :]
                             break
 
                     if recommendation and recommendation not in recommendations:
@@ -509,13 +653,25 @@ class DMAICCICDAgent(BaseAgent):
         # If no structured recommendations found, try to extract sentences with recommendation keywords
         if not recommendations:
             for line in lines:
-                if any(keyword in line.lower() for keyword in ["recommend", "should", "could", "improve", "fix", "solve"]):
+                if any(
+                    keyword in line.lower()
+                    for keyword in [
+                        "recommend",
+                        "should",
+                        "could",
+                        "improve",
+                        "fix",
+                        "solve",
+                    ]
+                ):
                     recommendations.append(line.strip())
 
         # Limit to top 5 recommendations
         return recommendations[:5]
 
-    def _generate_improvement_summary(self, comparison: Dict[str, Any], improvements: Dict[str, bool]) -> str:
+    def _generate_improvement_summary(
+        self, comparison: Dict[str, Any], improvements: Dict[str, bool]
+    ) -> str:
         """Generate a human-readable summary of improvements"""
         improved_metrics = [k for k, v in improvements.items() if v]
         degraded_metrics = [k for k, v in improvements.items() if not v]
@@ -527,81 +683,179 @@ class DMAICCICDAgent(BaseAgent):
 
         # Add overall statement
         if len(improved_metrics) > len(degraded_metrics):
-            summary.append("Overall, the CI/CD pipeline has improved since the baseline measurement.")
+            summary.append(
+                "Overall, the CI/CD pipeline has improved since the baseline measurement."
+            )
         elif len(improved_metrics) < len(degraded_metrics):
-            summary.append("Overall, the CI/CD pipeline has degraded since the baseline measurement.")
+            summary.append(
+                "Overall, the CI/CD pipeline has degraded since the baseline measurement."
+            )
         else:
-            summary.append("The CI/CD pipeline shows mixed results compared to the baseline.")
+            summary.append(
+                "The CI/CD pipeline shows mixed results compared to the baseline."
+            )
 
         # Add details for improved metrics
         if improved_metrics:
             summary.append("\nImprovements:")
             for metric in improved_metrics:
                 data = comparison[metric]
-                summary.append(f"- {metric}: {data['baseline']} → {data['current']} ({data['percent_change']} change)")
+                summary.append(
+                    f"- {metric}: {data['baseline']} → {data['current']} ({data['percent_change']} change)"
+                )
 
         # Add details for degraded metrics
         if degraded_metrics:
             summary.append("\nAreas for further improvement:")
             for metric in degraded_metrics:
                 data = comparison[metric]
-                summary.append(f"- {metric}: {data['baseline']} → {data['current']} ({data['percent_change']} change)")
+                summary.append(
+                    f"- {metric}: {data['baseline']} → {data['current']} ({data['percent_change']} change)"
+                )
 
         return "\n".join(summary)
 
     # New Message Handlers
-    def handle_generate_improvement_plan(self, message: AgentMessage) -> StandardAgentResponse:
+    def handle_generate_improvement_plan(
+        self, message: AgentMessage
+    ) -> StandardAgentResponse:
         content = message.content
         if not validate_input(content, ["analysis_results"]):
-            return {"status": "error", "message": "Missing analysis_results.", "data": None, "error_details": "Invalid input", "markdown_content": None}
+            return {
+                "status": "error",
+                "message": "Missing analysis_results.",
+                "data": None,
+                "error_details": "Invalid input",
+                "markdown_content": None,
+            }
 
         analysis_results = content["analysis_results"]
         try:
             improve_outputs = self.generate_improvement_plan(analysis_results)
             md_content = f"### CI/CD Improvement Plan Generated\n\n**Proposed Solutions:**\n{improve_outputs.get('proposed_solutions', 'N/A')}\n\n**Roadmap:**\n{improve_outputs.get('prioritized_roadmap', 'N/A')}"
-            return {"status": "success", "message": "Improvement plan generated.", "data": improve_outputs, "error_details": None, "markdown_content": md_content}
+            return {
+                "status": "success",
+                "message": "Improvement plan generated.",
+                "data": improve_outputs,
+                "error_details": None,
+                "markdown_content": md_content,
+            }
         except Exception as e:
-            return {"status": "error", "message": "Failed to generate improvement plan.", "data": None, "error_details": str(e), "markdown_content": None}
+            return {
+                "status": "error",
+                "message": "Failed to generate improvement plan.",
+                "data": None,
+                "error_details": str(e),
+                "markdown_content": None,
+            }
 
-    def handle_establish_control_plan(self, message: AgentMessage) -> StandardAgentResponse:
+    def handle_establish_control_plan(
+        self, message: AgentMessage
+    ) -> StandardAgentResponse:
         content = message.content
         if not validate_input(content, ["improvement_results"]):
-            return {"status": "error", "message": "Missing improvement_results.", "data": None, "error_details": "Invalid input", "markdown_content": None}
+            return {
+                "status": "error",
+                "message": "Missing improvement_results.",
+                "data": None,
+                "error_details": "Invalid input",
+                "markdown_content": None,
+            }
 
         improvement_results = content["improvement_results"]
         try:
             control_outputs = self.establish_control_plan(improvement_results)
             md_content = f"### CI/CD Control Plan Established\n\n**Control Metrics:**\n{control_outputs.get('control_metrics', 'N/A')}\n\n**Monitoring Plan:**\n{control_outputs.get('monitoring_plan', 'N/A')}"
-            return {"status": "success", "message": "Control plan established.", "data": control_outputs, "error_details": None, "markdown_content": md_content}
+            return {
+                "status": "success",
+                "message": "Control plan established.",
+                "data": control_outputs,
+                "error_details": None,
+                "markdown_content": md_content,
+            }
         except Exception as e:
-            return {"status": "error", "message": "Failed to establish control plan.", "data": None, "error_details": str(e), "markdown_content": None}
+            return {
+                "status": "error",
+                "message": "Failed to establish control plan.",
+                "data": None,
+                "error_details": str(e),
+                "markdown_content": None,
+            }
 
-    def handle_analyze_build_failure(self, message: AgentMessage) -> StandardAgentResponse:
+    def handle_analyze_build_failure(
+        self, message: AgentMessage
+    ) -> StandardAgentResponse:
         content = message.content
         if not validate_input(content, ["build_logs"]):
-            return {"status": "error", "message": "Missing build_logs.", "data": None, "error_details": "Invalid input", "markdown_content": None}
+            return {
+                "status": "error",
+                "message": "Missing build_logs.",
+                "data": None,
+                "error_details": "Invalid input",
+                "markdown_content": None,
+            }
 
         build_logs = content["build_logs"]
         try:
             analysis_outputs = self.analyze_build_failure(build_logs)
             md_content = f"### Build Failure Analysis\n\n**Analysis:**\n{analysis_outputs.get('analysis', 'N/A')}\n\n**Recommendations:**\n"
-            md_content += "\n".join([f"- {rec}" for rec in analysis_outputs.get('recommendations', [])])
-            return {"status": "success", "message": "Build failure analyzed.", "data": analysis_outputs, "error_details": None, "markdown_content": md_content}
+            md_content += "\n".join(
+                [f"- {rec}" for rec in analysis_outputs.get("recommendations", [])]
+            )
+            return {
+                "status": "success",
+                "message": "Build failure analyzed.",
+                "data": analysis_outputs,
+                "error_details": None,
+                "markdown_content": md_content,
+            }
         except Exception as e:
-            return {"status": "error", "message": "Failed to analyze build failure.", "data": None, "error_details": str(e), "markdown_content": None}
+            return {
+                "status": "error",
+                "message": "Failed to analyze build failure.",
+                "data": None,
+                "error_details": str(e),
+                "markdown_content": None,
+            }
 
     def handle_compare_metrics(self, message: AgentMessage) -> StandardAgentResponse:
         content = message.content
         if not validate_input(content, ["current_metrics"]):
-            return {"status": "error", "message": "Missing current_metrics.", "data": None, "error_details": "Invalid input", "markdown_content": None}
+            return {
+                "status": "error",
+                "message": "Missing current_metrics.",
+                "data": None,
+                "error_details": "Invalid input",
+                "markdown_content": None,
+            }
 
         current_metrics = content["current_metrics"]
         try:
             comparison_outputs = self.compare_with_baseline(current_metrics)
-            if comparison_outputs.get("status") == "error":  # Pass through error from compare_with_baseline
-                return {"status": "error", "message": comparison_outputs["message"], "data": None, "error_details": comparison_outputs.get("message"), "markdown_content": None}
+            if (
+                comparison_outputs.get("status") == "error"
+            ):  # Pass through error from compare_with_baseline
+                return {
+                    "status": "error",
+                    "message": comparison_outputs["message"],
+                    "data": None,
+                    "error_details": comparison_outputs.get("message"),
+                    "markdown_content": None,
+                }
 
             md_content = f"### CI/CD Metrics Comparison\n\n{comparison_outputs.get('summary', 'No summary available.')}"
-            return {"status": "success", "message": "Metrics comparison complete.", "data": comparison_outputs, "error_details": None, "markdown_content": md_content}
+            return {
+                "status": "success",
+                "message": "Metrics comparison complete.",
+                "data": comparison_outputs,
+                "error_details": None,
+                "markdown_content": md_content,
+            }
         except Exception as e:
-            return {"status": "error", "message": "Failed to compare metrics.", "data": None, "error_details": str(e), "markdown_content": None}
+            return {
+                "status": "error",
+                "message": "Failed to compare metrics.",
+                "data": None,
+                "error_details": str(e),
+                "markdown_content": None,
+            }

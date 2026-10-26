@@ -6,7 +6,6 @@ This script converts Word documents to Markdown and extracts
 document structure information for visualization.
 """
 
-import os
 import sys
 import subprocess
 import argparse
@@ -35,7 +34,12 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def convert_docx_to_md(input_file: Path, output_file: Path, structure_output: Path = None, lua_filter: Path = None):
+def convert_docx_to_md(
+    input_file: Path,
+    output_file: Path,
+    structure_output: Path = None,
+    lua_filter: Path = None,
+):
     """
     Convert DOCX to Markdown with structure extraction
 
@@ -66,53 +70,50 @@ def convert_docx_to_md(input_file: Path, output_file: Path, structure_output: Pa
             cmd.extend(["--lua-filter", str(lua_filter)])
             logger.info(f"Using structure extraction filter: {lua_filter}")
         elif lua_filter:
-            logger.warning(f"Lua filter not found: {lua_filter}, proceeding without it.")
+            logger.warning(
+                f"Lua filter not found: {lua_filter}, proceeding without it."
+            )
 
         # Add common options
         media_dir = output_dir / "media"
         cmd.extend(["--extract-media", str(media_dir)])
-        cmd.extend(["--standalone", "--toc",
-                   "--toc-depth=6", "--number-sections"])
+        cmd.extend(["--standalone", "--toc", "--toc-depth=6", "--number-sections"])
 
         # Run Pandoc
         logger.info(f"Converting {input_file} to {output_file}")
-        result = subprocess.run(
-            cmd, check=False, capture_output=True, text=True)
+        result = subprocess.run(cmd, check=False, capture_output=True, text=True)
 
         if result.returncode != 0:
             logger.error(f"Pandoc conversion failed: {result.stderr}")
             return False
 
-        logger.info(f"Conversion completed successfully")
+        logger.info("Conversion completed successfully")
 
         # Generate structure visualization
         if structure_output:
             # If we have the structure_generator module, use it directly
             if extract_structure_from_md:
-                logger.info(
-                    f"Generating document structure to {structure_output}")
+                logger.info(f"Generating document structure to {structure_output}")
                 # Ensure structure_output directory exists
                 structure_output.parent.mkdir(parents=True, exist_ok=True)
-                if not extract_structure_from_md(str(output_file), str(structure_output)):
-                    logger.warning(
-                        "Failed to generate document structure directly")
+                if not extract_structure_from_md(
+                    str(output_file), str(structure_output)
+                ):
+                    logger.warning("Failed to generate document structure directly")
             # Alternatively, if we have raw structure from Lua filter, process it
             else:
                 # Assuming raw_structure_file is relative to project output or a defined path
                 raw_structure_file = PROJECT_ROOT / "output/document_structure_raw.json"
                 if raw_structure_file.exists():
-                    logger.info(
-                        f"Processing raw structure from {raw_structure_file}")
+                    logger.info(f"Processing raw structure from {raw_structure_file}")
                     with open(raw_structure_file, "r", encoding="utf-8") as f:
                         try:
                             structure_data = json.load(f)
                             # Ensure structure_output directory exists
                             structure_output.parent.mkdir(parents=True, exist_ok=True)
-                            generate_structure_txt(
-                                structure_data, structure_output)
+                            generate_structure_txt(structure_data, structure_output)
                         except json.JSONDecodeError:
-                            logger.error(
-                                f"Invalid JSON in {raw_structure_file}")
+                            logger.error(f"Invalid JSON in {raw_structure_file}")
                 else:
                     logger.warning(
                         f"Raw structure file not found: {raw_structure_file}"
@@ -325,14 +326,17 @@ def main():
     # Check if lua filter exists
     lua_filter_path = args.lua_filter
     if not lua_filter_path.exists():
-        logger.warning(f"Lua filter not found: {lua_filter_path}. Structure extraction might be limited.")
+        logger.warning(
+            f"Lua filter not found: {lua_filter_path}. Structure extraction might be limited."
+        )
         lua_filter_to_pass = None
     else:
         lua_filter_to_pass = lua_filter_path
 
     # Perform conversion
     success = convert_docx_to_md(
-        args.input, args.output, structure_output, lua_filter_to_pass)
+        args.input, args.output, structure_output, lua_filter_to_pass
+    )
 
     return 0 if success else 1
 

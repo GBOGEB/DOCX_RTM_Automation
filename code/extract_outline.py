@@ -12,6 +12,7 @@ import sys
 # Determine project root (assuming this script is in code/ subdirectory)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
+
 def extract_outline_from_md(md_file_path_str: str, output_file_str: str = None):
     """Extract document outline from markdown file"""
     md_file_path = Path(md_file_path_str)
@@ -68,7 +69,9 @@ def extract_outline_from_md(md_file_path_str: str, output_file_str: str = None):
                 allow_unicode=True,
             )
 
-        print(f"Outline extracted from {md_file_path.name} and saved to {output_file_path}")
+        print(
+            f"Outline extracted from {md_file_path.name} and saved to {output_file_path}"
+        )
         return True
 
     except Exception as e:
@@ -80,15 +83,19 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         input_md_file = Path(sys.argv[1])
         if not input_md_file.is_absolute():
-             # Assume relative to project root if not absolute
+            # Assume relative to project root if not absolute
             input_md_file = PROJECT_ROOT / input_md_file
 
         custom_output_file = Path(sys.argv[2]) if len(sys.argv) > 2 else None
         if custom_output_file and not custom_output_file.is_absolute():
             custom_output_file = PROJECT_ROOT / custom_output_file
 
-        extract_outline_from_md(str(input_md_file), str(custom_output_file) if custom_output_file else None)
+        extract_outline_from_md(
+            str(input_md_file), str(custom_output_file) if custom_output_file else None
+        )
     else:
-        default_input_md = PROJECT_ROOT / "output" / "MASTER_1805_1144.md" # Example path
+        default_input_md = (
+            PROJECT_ROOT / "output" / "MASTER_1805_1144.md"
+        )  # Example path
         print(f"No input file provided. Trying default: {default_input_md}")
         extract_outline_from_md(str(default_input_md))

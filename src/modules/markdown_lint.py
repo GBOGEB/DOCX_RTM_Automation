@@ -5,7 +5,7 @@ Markdown Linter for DOCX RTM Automation
 
 import re
 import sys
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any
 
 
 class MarkdownLinter:
@@ -50,7 +50,7 @@ class MarkdownLinter:
                     issues.append(
                         {
                             "rule": "heading_format",
-                            "message": f"Missing space after # in heading",
+                            "message": "Missing space after # in heading",
                             "line": i + 1,
                             "content": line,
                         }
@@ -65,7 +65,7 @@ class MarkdownLinter:
                         issues.append(
                             {
                                 "rule": "heading_format",
-                                "message": f"Inconsistent heading closing #s",
+                                "message": "Inconsistent heading closing #s",
                                 "line": i + 1,
                                 "content": line,
                             }
@@ -86,7 +86,7 @@ class MarkdownLinter:
                     issues.append(
                         {
                             "rule": "consecutive_blank_lines",
-                            "message": f"Too many consecutive blank lines",
+                            "message": "Too many consecutive blank lines",
                             "line": i + 1,
                             "content": "",
                         }
@@ -106,7 +106,7 @@ class MarkdownLinter:
                 issues.append(
                     {
                         "rule": "trailing_whitespace",
-                        "message": f"Line has trailing whitespace",
+                        "message": "Line has trailing whitespace",
                         "line": i + 1,
                         "content": line,
                     }
@@ -139,7 +139,7 @@ class MarkdownLinter:
                         issues.append(
                             {
                                 "rule": "code_block_format",
-                                "message": f"Code block fence mismatch (started with {fence_char*3}, ended with {current_fence})",
+                                "message": f"Code block fence mismatch (started with {fence_char * 3}, ended with {current_fence})",
                                 "line": i + 1,
                                 "content": line,
                             }
@@ -193,8 +193,7 @@ def main():
         description="Lint Markdown files for documentation quality"
     )
     parser.add_argument("files", nargs="+", help="Markdown files to lint")
-    parser.add_argument("--json", action="store_true",
-                        help="Output in JSON format")
+    parser.add_argument("--json", action="store_true", help="Output in JSON format")
     parser.add_argument(
         "--fix",
         action="store_true",

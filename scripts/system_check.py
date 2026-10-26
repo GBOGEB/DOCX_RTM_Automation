@@ -3,7 +3,6 @@ import sys
 import platform
 import socket
 import datetime
-import shutil
 import subprocess
 import yaml  # Added for YAML parsing
 from pathlib import Path
@@ -26,7 +25,9 @@ def print_section(title):
 
 def load_global_config():
     """Load global_config.yaml if it exists."""
-    config_path = Path(os.getcwd()) / "global_config.yaml"  # Assume script is run from project root
+    config_path = (
+        Path(os.getcwd()) / "global_config.yaml"
+    )  # Assume script is run from project root
     if config_path.exists():
         try:
             with open(config_path, "r", encoding="utf-8") as f:
@@ -42,24 +43,32 @@ def check_project_config():
     config = load_global_config()
     if config:
         print(f"  Project Name: {config.get('project', {}).get('name', 'Not set')}")
-        print(f"  Project Version: {config.get('project', {}).get('version', 'Not set')}")
+        print(
+            f"  Project Version: {config.get('project', {}).get('version', 'Not set')}"
+        )
 
-        paths_config = config.get('paths', {})
+        paths_config = config.get("paths", {})
         print("\n  Configured Paths:")
         print(f"    Python: {paths_config.get('python', 'Not set')}")
         print(f"    Pandoc: {paths_config.get('pandoc', 'Not set')}")
         print(f"    Input Dir: {paths_config.get('input_dir', 'input')}")
         print(f"    Output Dir: {paths_config.get('output_dir', 'output')}")
 
-        repo_settings = config.get('repository_settings', {})
+        repo_settings = config.get("repository_settings", {})
         print("\n  Repository Settings:")
-        print(f"    Main Repository Path: {repo_settings.get('main_repository_path', '.')}")
-        sub_repos = repo_settings.get('sub_repositories', [])
+        print(
+            f"    Main Repository Path: {repo_settings.get('main_repository_path', '.')}"
+        )
+        sub_repos = repo_settings.get("sub_repositories", [])
         if sub_repos:
             print("    Sub-repositories:")
             for sub_repo_path_str in sub_repos:
                 sub_repo_abs_path = (Path(os.getcwd()) / sub_repo_path_str).resolve()
-                status = "Found" if sub_repo_abs_path.exists() and sub_repo_abs_path.is_dir() else "Not Found"
+                status = (
+                    "Found"
+                    if sub_repo_abs_path.exists() and sub_repo_abs_path.is_dir()
+                    else "Not Found"
+                )
                 print(f"      - {sub_repo_path_str} ({sub_repo_abs_path}): {status}")
         else:
             print("    No sub-repositories configured.")
@@ -184,8 +193,7 @@ def check_current_directory():
         for item in sorted(items):
             item_path = os.path.join(current_dir, item)
             item_type = "Directory" if os.path.isdir(item_path) else "File"
-            size = os.path.getsize(
-                item_path) if os.path.isfile(item_path) else "-"
+            size = os.path.getsize(item_path) if os.path.isfile(item_path) else "-"
             print(
                 f"  {item} ({item_type}, {format_bytes(size) if size != '-' else size})"
             )
@@ -221,8 +229,7 @@ def check_current_directory():
 def main():
     """Main function to run all system checks."""
     print_section("SYSTEM CHECK REPORT")
-    print(
-        f"Date and Time: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Date and Time: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     check_os_info()
     check_python_info()

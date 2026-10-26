@@ -9,6 +9,7 @@ with enhanced support for RTM extraction using the Pandoc integration.
 from src.modules.pandoc_integration import PandocConverter, PandocError
 import os
 import sys
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -53,8 +54,7 @@ def load_config(config_path="config/paths.yaml"):
 
 def parse_arguments():
     """Parse command-line arguments."""
-    parser = argparse.ArgumentParser(
-        description="Convert Word documents to Markdown")
+    parser = argparse.ArgumentParser(description="Convert Word documents to Markdown")
     parser.add_argument("input", help="Input Word document path")
     parser.add_argument("-o", "--output", help="Output Markdown file path")
     parser.add_argument("-c", "--config", help="Configuration file path")
@@ -198,8 +198,7 @@ def main():
         conversion_params["rtm_output"] = args.rtm_output
 
     # Perform conversion
-    success = convert_word_to_md(
-        args.input, output_file, config, **conversion_params)
+    success = convert_word_to_md(args.input, output_file, config, **conversion_params)
 
     if success:
         print("Conversion completed successfully.")

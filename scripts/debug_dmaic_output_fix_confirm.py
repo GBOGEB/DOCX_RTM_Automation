@@ -1,5 +1,5 @@
-import os
 from pathlib import Path
+
 
 def debug_dmaic_output(file_path_str: str):
     """
@@ -12,7 +12,7 @@ def debug_dmaic_output(file_path_str: str):
         return
 
     try:
-        with open(file_path, 'r', encoding='utf-8') as file:
+        with open(file_path, "r", encoding="utf-8") as file:
             content = file.readlines()
 
         print("File content successfully read. Debugging output...")
@@ -22,6 +22,7 @@ def debug_dmaic_output(file_path_str: str):
         print("Debugging complete. Output confirmed.")
     except Exception as e:
         print(f"An error occurred while processing the file: {e}")
+
 
 if __name__ == "__main__":
     # Example usage

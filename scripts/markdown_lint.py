@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 
+
 def check_markdown_files(root="."):
     md_files = list(Path(root).rglob("*.md"))
     if not md_files:
@@ -22,6 +23,7 @@ def check_markdown_files(root="."):
     else:
         print(f"Found {issues} issues.")
     return issues
+
 
 if __name__ == "__main__":
     sys.exit(check_markdown_files())

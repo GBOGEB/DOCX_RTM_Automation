@@ -6,7 +6,6 @@ The script outputs to 'output/MASTER_outline.yaml' and 'output/MASTER_outline.js
 If these files already exist, they will be overwritten.
 """
 
-import os
 import yaml
 import json
 import sys

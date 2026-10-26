@@ -3,7 +3,6 @@ import shutil
 import yaml
 import sys
 import time
-from pathlib import Path
 import gc  # Import garbage collector
 
 
@@ -91,7 +90,9 @@ def move_files():
                     success_count += 1
                     break  # Success, exit retry loop
                 except PermissionError as e:
-                    print(f"  PermissionError while trying to copy '{src}' to '{dest}': {e}")
+                    print(
+                        f"  PermissionError while trying to copy '{src}' to '{dest}': {e}"
+                    )
                     if attempt < 3:  # Retry if not the last attempt
                         gc.collect()
                         print(f"  Retrying in 3 seconds (attempt {attempt + 2}/4)...")
@@ -99,11 +100,15 @@ def move_files():
                     else:
                         error_message = f"Failed to move '{src}' to '{dest}' after 4 attempts due to PermissionError: {e}"
                         print(f"  [SKIPPING FILE] {error_message}")
-                        skipped_files.append({"src": src, "dest": dest, "error": error_message})
+                        skipped_files.append(
+                            {"src": src, "dest": dest, "error": error_message}
+                        )
                 except Exception as e_other:
                     error_message = f"An unexpected error occurred while trying to copy '{src}' to '{dest}': {e_other}"
                     print(f"  [SKIPPING FILE] {error_message}")
-                    skipped_files.append({"src": src, "dest": dest, "error": error_message})
+                    skipped_files.append(
+                        {"src": src, "dest": dest, "error": error_message}
+                    )
                     break  # Don't retry for other errors, move to next file
         else:
             print(f"  Warning: Source file not found: {src}")
@@ -127,7 +132,13 @@ def move_files():
             success_count += 1
         except Exception as e:
             print(f"  Error creating __init__ file {init_file}: {e}")
-            skipped_files.append({"src": "N/A", "dest": init_file, "error": f"Failed to create __init__ file: {e}"})
+            skipped_files.append(
+                {
+                    "src": "N/A",
+                    "dest": init_file,
+                    "error": f"Failed to create __init__ file: {e}",
+                }
+            )
 
     # Print summary
     print("\n=== File Operation Summary ===")
@@ -151,7 +162,9 @@ def move_files():
     if skipped_files:
         print("\n⚠️ WARNING: Some files were skipped due to errors.")
         print("   The refactoring process will continue, but may be incomplete.")
-        print("   You may need to manually copy these files or restart the process after closing any programs that might be using them.")
+        print(
+            "   You may need to manually copy these files or restart the process after closing any programs that might be using them."
+        )
 
     return True  # Always return True to let the rest of the process continue
 
@@ -223,8 +236,7 @@ def update_paths_config():
 
         # Save updated config
         with open(new_config_path, "w") as file:
-            yaml.dump(updated_config, file,
-                      default_flow_style=False, sort_keys=False)
+            yaml.dump(updated_config, file, default_flow_style=False, sort_keys=False)
 
         print(f"Updated configuration file: {new_config_path}")
         return True
@@ -374,7 +386,7 @@ Tests cover:
             return True
         except Exception as e:
             print(f"Error creating README.md: {e}")
-            
+
             # As a last resort, try writing with ASCII-only content
             try:
                 ascii_content = """# DOCX RTM Automation
@@ -507,7 +519,9 @@ jsonschema>=4.0
 pytest>=7.0
 """
 
-    with open("requirements.txt", "w", encoding="utf-8") as file:  # Added encoding="utf-8"
+    with open(
+        "requirements.txt", "w", encoding="utf-8"
+    ) as file:  # Added encoding="utf-8"
         file.write(content)
 
     print("\nCreated requirements.txt file")
@@ -522,17 +536,25 @@ def main():
 
     overall_success = True
 
-    if not create_directory_structure(): overall_success = False
+    if not create_directory_structure():
+        overall_success = False
     # Call move_files but don't set overall_success = False if it returns False
     # We want the script to continue even if some files couldn't be moved
     move_files()  # Ignore return value
-    if overall_success and not update_paths_config(): overall_success = False
-    if overall_success and not update_script_imports(): overall_success = False
-    if overall_success and not update_run_pipeline(): overall_success = False
-    if overall_success and not create_readme(): overall_success = False
-    if overall_success and not create_project_runner(): overall_success = False
-    if overall_success and not create_test_runner(): overall_success = False
-    if overall_success and not create_requirements_file(): overall_success = False
+    if overall_success and not update_paths_config():
+        overall_success = False
+    if overall_success and not update_script_imports():
+        overall_success = False
+    if overall_success and not update_run_pipeline():
+        overall_success = False
+    if overall_success and not create_readme():
+        overall_success = False
+    if overall_success and not create_project_runner():
+        overall_success = False
+    if overall_success and not create_test_runner():
+        overall_success = False
+    if overall_success and not create_requirements_file():
+        overall_success = False
 
     if overall_success:
         print("\n" + "=" * 50)

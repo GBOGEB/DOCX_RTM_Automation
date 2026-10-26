@@ -1,7 +1,7 @@
 import os
 import sys
-from typing import Dict, Any, Optional
 from datetime import datetime
+
 
 class PathsManager:
     """Utility for managing file paths across the application"""
@@ -12,10 +12,10 @@ class PathsManager:
         self.ensure_project_on_path()
 
         # Define standard directories
-        self.config_dir = os.path.join(self.project_root, 'config')
-        self.output_dir = os.path.join(self.project_root, 'outputs')
-        self.data_dir = os.path.join(self.project_root, 'data')
-        self.templates_dir = os.path.join(self.project_root, 'templates')
+        self.config_dir = os.path.join(self.project_root, "config")
+        self.output_dir = os.path.join(self.project_root, "outputs")
+        self.data_dir = os.path.join(self.project_root, "data")
+        self.templates_dir = os.path.join(self.project_root, "templates")
 
         # Ensure directories exist
         for directory in [self.output_dir, self.data_dir]:

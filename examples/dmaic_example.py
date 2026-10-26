@@ -9,6 +9,7 @@ if project_root not in sys.path:
 from dmaic import DMAICHandler, DMAICPhase
 from config.openai_integration import initialize_openai
 
+
 def run_example_dmaic_session():
     """Run an example DMAIC session with OpenAI integration"""
     print("Starting DMAIC Process Example...")
@@ -21,7 +22,9 @@ def run_example_dmaic_session():
     print(f"Project root: {project_root} (Exists)")
 
     if not os.getenv("OPENAI_API_KEY"):
-        print("Warning: OPENAI_API_KEY environment variable not set. OpenAI calls will likely fail.")
+        print(
+            "Warning: OPENAI_API_KEY environment variable not set. OpenAI calls will likely fail."
+        )
     else:
         print("OPENAI_API_KEY: Set")
     # --- End Sanity Checks ---
@@ -29,7 +32,9 @@ def run_example_dmaic_session():
     print("\nInitializing OpenAI client...")
     client = initialize_openai()
     if not client:
-        print("Error: Failed to initialize OpenAI client. Check API key and connectivity. Exiting example.")
+        print(
+            "Error: Failed to initialize OpenAI client. Check API key and connectivity. Exiting example."
+        )
         return
     print("OpenAI client: Initialized successfully.")
 
@@ -37,8 +42,10 @@ def run_example_dmaic_session():
     # Create a new DMAIC project
     dmaic_project_name = "Document RTM Automation Improvement"
     dmaic = DMAICHandler(dmaic_project_name, client)
-    if not dmaic: # Basic check, constructor might not return None but good practice
-        print(f"Error: Failed to initialize DMAICHandler for project '{dmaic_project_name}'.")
+    if not dmaic:  # Basic check, constructor might not return None but good practice
+        print(
+            f"Error: Failed to initialize DMAICHandler for project '{dmaic_project_name}'."
+        )
         return
     print(f"DMAIC Handler for '{dmaic_project_name}': Initialized successfully.")
 
@@ -51,7 +58,7 @@ def run_example_dmaic_session():
     define_questions = [
         "Our problem is that requirements traceability in our documents is manual and error-prone. Can you help me define this problem more precisely?",
         "Who are the key stakeholders we should consider for this project?",
-        "What would be good success metrics for our RTM automation project?"
+        "What would be good success metrics for our RTM automation project?",
     ]
 
     for question in define_questions:
@@ -63,7 +70,7 @@ def run_example_dmaic_session():
     define_outputs = {
         "problem_statement": "Manual requirements traceability in documentation is time-consuming, error-prone, and difficult to maintain, leading to reduced productivity and potential compliance issues.",
         "goal": "Automate 90% of the requirements traceability process within 3 months, reducing manual effort by 70% and documentation errors by 80%.",
-        "scope": "The DOCX RTM Automation project will focus on automating requirements traceability in technical documentation across all product lines."
+        "scope": "The DOCX RTM Automation project will focus on automating requirements traceability in technical documentation across all product lines.",
     }
 
     print("\n" + dmaic.complete_phase(define_outputs))
@@ -84,12 +91,19 @@ def run_example_dmaic_session():
     if saved_path:
         print(f"\nProject data saved to: {saved_path}")
         if not os.path.exists(saved_path):
-            print(f"Warning: DMAIC project save reported success, but file not found at {saved_path}")
+            print(
+                f"Warning: DMAIC project save reported success, but file not found at {saved_path}"
+            )
     else:
-        print("\nWarning: DMAIC project data not saved (save_project returned None or empty).")
+        print(
+            "\nWarning: DMAIC project data not saved (save_project returned None or empty)."
+        )
 
-    print("\nThis example demonstrates integration of the DMAIC methodology with OpenAI.")
+    print(
+        "\nThis example demonstrates integration of the DMAIC methodology with OpenAI."
+    )
     print("In a real implementation, you would proceed through all DMAIC phases.")
+
 
 if __name__ == "__main__":
     run_example_dmaic_session()

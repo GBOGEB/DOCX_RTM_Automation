@@ -1,4 +1,3 @@
-import os
 import sys
 import logging
 from pathlib import Path
@@ -13,8 +12,7 @@ sys.path.append(str(PROJECT_ROOT))
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 logging.info("Setup imports completed successfully.")
