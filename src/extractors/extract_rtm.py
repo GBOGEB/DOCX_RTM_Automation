@@ -95,3 +95,4 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         extract_requirements_from_md(sys.argv[1])
     else:
         extract_requirements_from_md("output/MASTER_1805_1144.md")
+")""

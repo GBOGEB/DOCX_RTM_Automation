@@ -1,15 +1,13 @@
 import os
 import sys
-import argparse
-import shutil
-import json
-import concurrent.futures
 import time
 from pathlib import Path
-from typing import Dict, List, Set, Tuple, Optional, Any
+from typing import Dict, List, Tuple, Optional, Any
 
 # Add the project root to path if needed
-project_root_path = Path(__file__).resolve().parent  # Assuming optimize_project.py is in the root
+project_root_path = (
+    Path(__file__).resolve().parent
+)  # Assuming optimize_project.py is in the root
 if str(project_root_path) not in sys.path:
     sys.path.append(str(project_root_path))
 
@@ -19,6 +17,7 @@ from utils.paths_manager import PathsManager
 from utils.output_handler import OutputHandler
 from agents.copilot_agent import CopilotAgent
 from utils.markdown_fixer import MarkdownFixer  # Added import
+
 
 class ProjectOptimizer:
     """Tool for optimizing project structure, documentation and code quality"""
@@ -46,7 +45,7 @@ class ProjectOptimizer:
             "files_processed": 0,
             "errors": 0,
             "directories_created": 0,
-            "optimizations_applied": 0
+            "optimizations_applied": 0,
         }
 
         # Initialize DMAIC handler and Copilot if OpenAI client is available
@@ -56,9 +55,13 @@ class ProjectOptimizer:
         else:
             self.dmaic = None
             self.copilot = None
-            self.log("Warning: OpenAI client not available. AI-assisted features will be disabled.")
+            self.log(
+                "Warning: OpenAI client not available. AI-assisted features will be disabled."
+            )
 
-        self.markdown_fixer = MarkdownFixer(project_root=str(project_root_path), output_handler=self.output_handler)  # Initialize fixer
+        self.markdown_fixer = MarkdownFixer(
+            project_root=str(project_root_path), output_handler=self.output_handler
+        )  # Initialize fixer
 
     def log(self, message: str):
         """Log a message to the console and log file"""
@@ -85,14 +88,14 @@ class ProjectOptimizer:
                 "core": {"models": {}, "services": {}},
                 "modules": {"extractors": {}, "converters": {}},
                 "extractors": {"docx": {}, "markdown": {}, "code": {}},
-                "utils": {"formatting": {}, "validation": {}}
+                "utils": {"formatting": {}, "validation": {}},
             },
             "config": {"templates": {}},
             "scripts": {"setup": {}, "maintenance": {}},
             "input": {"documents": {}, "code_samples": {}},
             "output": {"reports": {}, "converted": {}, "analyzed": {}},
             "docs": {"api": {}, "guides": {}, "examples": {}},
-            "tests": {"unit": {}, "integration": {}, "fixtures": {}}
+            "tests": {"unit": {}, "integration": {}, "fixtures": {}},
         }
 
         dirs_created = 0
@@ -107,11 +110,15 @@ class ProjectOptimizer:
                 self._create_subdirectories(dir_path, subdirs)
 
             except Exception as e:
-                self.output_handler.log_error(f"Error creating directory {dir_path}: {e}")
+                self.output_handler.log_error(
+                    f"Error creating directory {dir_path}: {e}"
+                )
                 self.stats["errors"] += 1
 
         self.stats["directories_created"] = dirs_created
-        self.log(f"Project structure created in '{base_dir}' ({dirs_created} directories)")
+        self.log(
+            f"Project structure created in '{base_dir}' ({dirs_created} directories)"
+        )
         return True
 
     def _create_subdirectories(self, parent_dir: str, structure: Dict[str, Any]) -> int:
@@ -139,7 +146,9 @@ class ProjectOptimizer:
                 if children:
                     dirs_created += self._create_subdirectories(subdir_path, children)
             except Exception as e:
-                self.output_handler.log_error(f"Error creating subdirectory {subdir_path}: {e}")
+                self.output_handler.log_error(
+                    f"Error creating subdirectory {subdir_path}: {e}"
+                )
                 self.stats["errors"] += 1
 
         return dirs_created
@@ -174,13 +183,13 @@ class ProjectOptimizer:
             "fixtures": "Test fixtures and sample data",
             "api": "API documentation",
             "guides": "User guides and tutorials",
-            "examples": "Example usage scenarios"
+            "examples": "Example usage scenarios",
         }
 
         description = descriptions.get(dir_name, f"Directory for {dir_name} components")
 
         try:
-            with open(readme_path, 'w') as f:
+            with open(readme_path, "w") as f:
                 f.write(f"# {dir_name.capitalize()}\n\n")
                 f.write(f"{description}\n")
         except Exception as e:
@@ -204,10 +213,14 @@ class ProjectOptimizer:
 
         # Create document sample files
         document_files = {
-            "requirements_specification.docx": self._generate_requirements_content(content_type),
+            "requirements_specification.docx": self._generate_requirements_content(
+                content_type
+            ),
             # Example: "downloaded_spec.md": self._fetch_from_github("owner/repo/specs/main_spec.md")
-            "system_architecture.docx": self._generate_architecture_content(content_type),
-            "test_plan.docx": self._generate_test_plan_content(content_type)
+            "system_architecture.docx": self._generate_architecture_content(
+                content_type
+            ),
+            "test_plan.docx": self._generate_test_plan_content(content_type),
             # Example: "ai_generated_test_plan.txt": self._generate_with_openai("test_plan_prompt")
         }
 
@@ -215,7 +228,7 @@ class ProjectOptimizer:
         code_files = {
             "sample_module.py": self._generate_python_sample(content_type),
             "sample_component.js": self._generate_js_sample(content_type),
-            "sample_config.yaml": self._generate_yaml_sample(content_type)
+            "sample_config.yaml": self._generate_yaml_sample(content_type),
         }
 
         files_created = 0
@@ -223,7 +236,7 @@ class ProjectOptimizer:
         for file_name, content in document_files.items():
             file_path = input_dir / "documents" / file_name
             try:
-                with open(file_path, "w", encoding='utf-8') as f:
+                with open(file_path, "w", encoding="utf-8") as f:
                     f.write(content)
                 files_created += 1
             except Exception as e:
@@ -234,7 +247,7 @@ class ProjectOptimizer:
         for file_name, content in code_files.items():
             file_path = input_dir / "code_samples" / file_name
             try:
-                with open(file_path, "w", encoding='utf-8') as f:
+                with open(file_path, "w", encoding="utf-8") as f:
                     f.write(content)
                 files_created += 1
             except Exception as e:
@@ -308,7 +321,7 @@ class ProjectOptimizer:
 
         for i, file_path in enumerate(python_files):
             rel_path = os.path.relpath(file_path, str(project_root_path))
-            self.log(f"Optimizing docstrings for: {rel_path} ({i+1}/{total_files})")
+            self.log(f"Optimizing docstrings for: {rel_path} ({i + 1}/{total_files})")
 
             try:
                 if self._optimize_file_docstrings(file_path):
@@ -316,14 +329,18 @@ class ProjectOptimizer:
                 else:
                     errors += 1
             except Exception as e:
-                self.output_handler.log_error(f"Error optimizing docstrings for {rel_path}: {e}")
+                self.output_handler.log_error(
+                    f"Error optimizing docstrings for {rel_path}: {e}"
+                )
                 errors += 1
 
         self.stats["files_processed"] += processed
         self.stats["errors"] += errors
         self.stats["optimizations_applied"] += processed
 
-        self.log(f"Docstring optimization completed: {processed} files processed, {errors} errors")
+        self.log(
+            f"Docstring optimization completed: {processed} files processed, {errors} errors"
+        )
         return errors == 0
 
     def generate_documentation(self, output_formats: List[str] = ["markdown"]) -> bool:
@@ -367,10 +384,7 @@ class ProjectOptimizer:
     def _scan_project_structure(self) -> Tuple[Dict[str, str], Dict[str, Any]]:
         """Scan project structure and collect module information"""
         modules = {}
-        structure = {
-            "directories": {},
-            "files": {}
-        }
+        structure = {"directories": {}, "files": {}}
 
         # Count files by type
         file_counts = {}
@@ -379,7 +393,20 @@ class ProjectOptimizer:
             root_path = Path(root_str)
             # Skip certain directories, including common ones for submodules or build outputs
             # .git is crucial to skip if scanning a directory that might be a submodule's root
-            dirs[:] = [d for d in dirs if d not in ["venv", ".git", "__pycache__", "outputs", "node_modules", "build", "dist"]]
+            dirs[:] = [
+                d
+                for d in dirs
+                if d
+                not in [
+                    "venv",
+                    ".git",
+                    "__pycache__",
+                    "outputs",
+                    "node_modules",
+                    "build",
+                    "dist",
+                ]
+            ]
 
             rel_path_str = os.path.relpath(root_str, str(project_root_path))
             if rel_path_str == ".":
@@ -397,7 +424,9 @@ class ProjectOptimizer:
             # Process files
             for file in files:
                 file_path_obj = root_path / file
-                rel_file_path_str = os.path.relpath(str(file_path_obj), str(project_root_path))
+                rel_file_path_str = os.path.relpath(
+                    str(file_path_obj), str(project_root_path)
+                )
 
                 # Count by extension
                 ext = file_path_obj.suffix.lower()
@@ -409,9 +438,11 @@ class ProjectOptimizer:
                 # Store Python modules for API docs
                 if file.endswith(".py") and not file.startswith("__"):
                     try:
-                        with open(file_path_obj, 'r', encoding='utf-8') as f:
+                        with open(file_path_obj, "r", encoding="utf-8") as f:
                             content = f.read()
-                        modules[rel_file_path_str] = content[:1000]  # Just store the beginning
+                        modules[rel_file_path_str] = content[
+                            :1000
+                        ]  # Just store the beginning
 
                         # Add to structure
                         if rel_path_str:
@@ -423,7 +454,9 @@ class ProjectOptimizer:
                         else:
                             structure["files"][file] = {"type": "python"}
                     except Exception as e:
-                        self.output_handler.log_error(f"Error reading {file_path_obj}: {e}")
+                        self.output_handler.log_error(
+                            f"Error reading {file_path_obj}: {e}"
+                        )
 
         structure["file_counts"] = file_counts
         return modules, structure

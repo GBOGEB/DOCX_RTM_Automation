@@ -1,7 +1,8 @@
 import sys
 import os
 import re
-import yaml # Ensure PyYAML is installed: pip install pyyaml
+import yaml  # Ensure PyYAML is installed: pip install pyyaml
+
 
 def pre_fix_secrets_block(file_content):
     """
@@ -10,13 +11,15 @@ def pre_fix_secrets_block(file_content):
     """
     print("  Attempting pre-fix for 'secrets.openai_key_path' block...")
 
-    correct_path_value = 'C:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GPT_Automation/openai_key.txt'
+    correct_path_value = "C:/Users/gbonthuy/OneDrive - Studiecentrum voor Kernenergie/Documents/GPT_Automation/openai_key.txt"
     # Correct block, ends with a newline to ensure separation
-    correct_secrets_block_text_with_newline = f"secrets:\n  openai_key_path: '{correct_path_value}'\n"
+    correct_secrets_block_text_with_newline = (
+        f"secrets:\n  openai_key_path: '{correct_path_value}'\n"
+    )
 
     # Normalize line endings for consistent processing
-    content_normalized = file_content.replace('\r\n', '\n')
-    original_normalized_content = content_normalized # For comparison
+    content_normalized = file_content.replace("\r\n", "\n")
+    original_normalized_content = content_normalized  # For comparison
 
     # Regex to find the 'secrets:' block from its start to the start of the next top-level key or EOF
     # A top-level key starts at the beginning of a line (no indentation) and is followed by a colon.
@@ -39,30 +42,43 @@ def pre_fix_secrets_block(file_content):
         # Check if current block is already correct
         try:
             current_yaml = yaml.safe_load(current_block_text)
-            if isinstance(current_yaml, dict) and \
-               current_yaml.get('secrets', {}).get('openai_key_path') == correct_path_value:
-                print("    'secrets.openai_key_path' is already correct. No change to this block.")
+            if (
+                isinstance(current_yaml, dict)
+                and current_yaml.get("secrets", {}).get("openai_key_path")
+                == correct_path_value
+            ):
+                print(
+                    "    'secrets.openai_key_path' is already correct. No change to this block."
+                )
             else:
-                raise yaml.YAMLError("Needs replacement") # Force replacement
+                raise yaml.YAMLError("Needs replacement")  # Force replacement
         except yaml.YAMLError:
             print("    Replacing existing 'secrets:' block with correct version.")
-            pre_block = content_normalized[:match.start()]
-            post_block = content_normalized[match.end():] # Content after the matched secrets block
+            pre_block = content_normalized[: match.start()]
+            post_block = content_normalized[
+                match.end() :
+            ]  # Content after the matched secrets block
 
             # Ensure the new block is properly separated
             # correct_secrets_block_text_with_newline already ends with \n
-            fixed_content = pre_block + correct_secrets_block_text_with_newline + post_block.lstrip('\r\n')
+            fixed_content = (
+                pre_block
+                + correct_secrets_block_text_with_newline
+                + post_block.lstrip("\r\n")
+            )
             # lstrip on post_block to prevent double newlines if it already started with one
             # that was part of the lookahead's newline.
             made_change = True
     else:
         print("    'secrets:' block not found. Appending a correct 'secrets' block.")
         # Append, ensuring it's on a new line if original content exists and doesn't end with newline
-        if content_normalized.strip() and not content_normalized.endswith('\n'):
-            fixed_content = content_normalized + '\n' + correct_secrets_block_text_with_newline
-        elif not content_normalized.strip(): # File is empty or only whitespace
+        if content_normalized.strip() and not content_normalized.endswith("\n"):
+            fixed_content = (
+                content_normalized + "\n" + correct_secrets_block_text_with_newline
+            )
+        elif not content_normalized.strip():  # File is empty or only whitespace
             fixed_content = correct_secrets_block_text_with_newline
-        else: # File ends with a newline
+        else:  # File ends with a newline
             fixed_content = content_normalized + correct_secrets_block_text_with_newline
         made_change = True
 
@@ -70,7 +86,9 @@ def pre_fix_secrets_block(file_content):
         # Final check: if fixed_content is just the secrets block, ensure it ends with one newline.
         # If it has content before/after, the logic above should handle newlines.
         if fixed_content.strip() == correct_secrets_block_text_with_newline.strip():
-             fixed_content = correct_secrets_block_text_with_newline.rstrip() + '\n' # Ensure single trailing newline
+            fixed_content = (
+                correct_secrets_block_text_with_newline.rstrip() + "\n"
+            )  # Ensure single trailing newline
 
         print("    Pre-fix applied, content modified.")
     else:
@@ -94,7 +112,7 @@ def resolve_paths(yaml_file, base_dir):
         return
 
     try:
-        with open(yaml_file, 'r', encoding='utf-8') as f:
+        with open(yaml_file, "r", encoding="utf-8") as f:
             original_content = f.read()
     except IOError as e:
         print(f"Error reading YAML file '{yaml_file}': {e}")
@@ -104,37 +122,68 @@ def resolve_paths(yaml_file, base_dir):
 
     try:
         if not content_to_parse.strip():
-            print(f"Warning: Content of '{yaml_file}' became empty after pre-fix. No paths to resolve.")
+            print(
+                f"Warning: Content of '{yaml_file}' became empty after pre-fix. No paths to resolve."
+            )
             if pre_fix_made_change:
-                 try:
-                    with open(yaml_file, 'w', encoding='utf-8', newline='\n') as f:
+                try:
+                    with open(yaml_file, "w", encoding="utf-8", newline="\n") as f:
                         f.write(content_to_parse)
-                    print(f"Wrote empty/whitespace content back to '{yaml_file}' after pre-fix.")
-                 except IOError as e:
-                    print(f"Error writing empty/whitespace content to '{yaml_file}': {e}")
+                    print(
+                        f"Wrote empty/whitespace content back to '{yaml_file}' after pre-fix."
+                    )
+                except IOError as e:
+                    print(
+                        f"Error writing empty/whitespace content to '{yaml_file}': {e}"
+                    )
             return
 
         data = yaml.safe_load(content_to_parse)
     except yaml.YAMLError as e:
         print(f"Error parsing YAML file '{yaml_file}' even after pre-fix attempt: {e}")
-        print("Please check the YAML syntax, especially around the line numbers indicated in the error.")
+        print(
+            "Please check the YAML syntax, especially around the line numbers indicated in the error."
+        )
         return
 
     if data is None:
-        print(f"Warning: YAML file '{yaml_file}' parsed to None (empty or comments only) after pre-fix. No paths to resolve.")
+        print(
+            f"Warning: YAML file '{yaml_file}' parsed to None (empty or comments only) after pre-fix. No paths to resolve."
+        )
         if pre_fix_made_change:
             try:
-                with open(yaml_file, 'w', encoding='utf-8', newline='\n') as f:
+                with open(yaml_file, "w", encoding="utf-8", newline="\n") as f:
                     f.write(content_to_parse)
-                print(f"Wrote pre-fixed (but effectively empty for data) content back to '{yaml_file}'.")
+                print(
+                    f"Wrote pre-fixed (but effectively empty for data) content back to '{yaml_file}'."
+                )
             except IOError as e:
                 print(f"Error writing pre-fixed content to '{yaml_file}': {e}")
         return
 
     def fix_path_value(path_str, current_base_dir):
-        if isinstance(path_str, str) and (os.sep in path_str or ('/' in path_str and os.altsep == '/') or \
-           any(path_str.lower().endswith(ext) for ext in ['.txt', '.yaml', '.yml', '.json', '.md', '.docx', '.pdf', '.csv', '.log', '.template'])):
-            if path_str.startswith(("http://", "https://", "<", "ENV_")) or os.path.isabs(path_str):
+        if isinstance(path_str, str) and (
+            os.sep in path_str
+            or ("/" in path_str and os.altsep == "/")
+            or any(
+                path_str.lower().endswith(ext)
+                for ext in [
+                    ".txt",
+                    ".yaml",
+                    ".yml",
+                    ".json",
+                    ".md",
+                    ".docx",
+                    ".pdf",
+                    ".csv",
+                    ".log",
+                    ".template",
+                ]
+            )
+        ):
+            if path_str.startswith(
+                ("http://", "https://", "<", "ENV_")
+            ) or os.path.isabs(path_str):
                 return path_str
 
             if re.match(r"^\$\{.*\}$", path_str) or re.match(r"^%.*%$", path_str):
@@ -157,40 +206,58 @@ def resolve_paths(yaml_file, base_dir):
             return fix_path_value(item, current_base_dir)
         return item
 
-    print(f"Resolving paths in '{yaml_file}' relative to base directory '{base_dir}'...")
+    print(
+        f"Resolving paths in '{yaml_file}' relative to base directory '{base_dir}'..."
+    )
     updated_data = recursive_fix_paths(data, base_dir)
 
-    updated_yaml_string = yaml.safe_dump(updated_data, default_flow_style=False, sort_keys=False)
+    updated_yaml_string = yaml.safe_dump(
+        updated_data, default_flow_style=False, sort_keys=False
+    )
 
-    original_content_normalized = original_content.replace('\r\n', '\n')
-    content_to_parse_normalized = content_to_parse.replace('\r\n', '\n')
+    original_content_normalized = original_content.replace("\r\n", "\n")
+    content_to_parse_normalized = content_to_parse.replace("\r\n", "\n")
 
     path_resolution_made_change = False
     if data is not None:
-        initial_data_yaml_string = yaml.safe_dump(data, default_flow_style=False, sort_keys=False)
-        resolved_yaml_string = yaml.safe_dump(updated_data, default_flow_style=False, sort_keys=False)
-        path_resolution_made_change = resolved_yaml_string.strip() != initial_data_yaml_string.strip()
+        initial_data_yaml_string = yaml.safe_dump(
+            data, default_flow_style=False, sort_keys=False
+        )
+        resolved_yaml_string = yaml.safe_dump(
+            updated_data, default_flow_style=False, sort_keys=False
+        )
+        path_resolution_made_change = (
+            resolved_yaml_string.strip() != initial_data_yaml_string.strip()
+        )
 
     if pre_fix_made_change or path_resolution_made_change:
         try:
-            with open(yaml_file, 'w', encoding='utf-8', newline='\n') as f:
+            with open(yaml_file, "w", encoding="utf-8", newline="\n") as f:
                 if data is not None:
-                    yaml.safe_dump(updated_data, f, default_flow_style=False, sort_keys=False)
+                    yaml.safe_dump(
+                        updated_data, f, default_flow_style=False, sort_keys=False
+                    )
                 else:
-                    f.write(content_to_parse) # Write the raw string if data was None
-            print(f"File '{yaml_file}' updated (pre-fix applied: {pre_fix_made_change}, path resolution change: {path_resolution_made_change}).")
+                    f.write(content_to_parse)  # Write the raw string if data was None
+            print(
+                f"File '{yaml_file}' updated (pre-fix applied: {pre_fix_made_change}, path resolution change: {path_resolution_made_change})."
+            )
         except IOError as e:
             print(f"Error writing updated YAML file '{yaml_file}': {e}")
         except yaml.YAMLError as e:
             print(f"Error dumping YAML to file '{yaml_file}': {e}")
     else:
-        print(f"No effective changes made to '{yaml_file}' by pre-fixing or path resolution.")
+        print(
+            f"No effective changes made to '{yaml_file}' by pre-fixing or path resolution."
+        )
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python fix_paths_yaml.py <path_to_yaml_file> [base_directory]")
-        print("If base_directory is not provided, the directory of the YAML file will be used.")
+        print(
+            "If base_directory is not provided, the directory of the YAML file will be used."
+        )
         sys.exit(1)
 
     yaml_file_path = sys.argv[1]
@@ -201,6 +268,8 @@ if __name__ == "__main__":
         base_directory = os.path.dirname(os.path.abspath(yaml_file_path))
         if not base_directory:
             base_directory = "."
-        print(f"No base directory provided, using directory of YAML file (or CWD if YAML is in CWD): '{os.path.abspath(base_directory)}'")
+        print(
+            f"No base directory provided, using directory of YAML file (or CWD if YAML is in CWD): '{os.path.abspath(base_directory)}'"
+        )
 
     resolve_paths(yaml_file_path, base_directory)

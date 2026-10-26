@@ -11,6 +11,7 @@ import sys
 # Determine project root (assuming this script is in code/ subdirectory)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
+
 def generate_structure_diagram(md_file_path_str: str, output_file_str: str = None):
     """Generate ASCII structure diagram from markdown file"""
     md_file_path = Path(md_file_path_str)
@@ -89,8 +90,12 @@ if __name__ == "__main__":
         if custom_output_file and not custom_output_file.is_absolute():
             custom_output_file = PROJECT_ROOT / custom_output_file
 
-        generate_structure_diagram(str(input_md_file), str(custom_output_file) if custom_output_file else None)
+        generate_structure_diagram(
+            str(input_md_file), str(custom_output_file) if custom_output_file else None
+        )
     else:
-        default_input_md = PROJECT_ROOT / "output" / "MASTER_1805_1144.md" # Example path
+        default_input_md = (
+            PROJECT_ROOT / "output" / "MASTER_1805_1144.md"
+        )  # Example path
         print(f"No input file provided. Trying default: {default_input_md}")
         generate_structure_diagram(str(default_input_md))

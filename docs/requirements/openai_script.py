@@ -1,5 +1,3 @@
-import os
-
 from config.openai_integration import initialize_openai, test_openai_connection
 
 # Gebruik de gedeelde integratie module

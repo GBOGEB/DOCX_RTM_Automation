@@ -1,9 +1,5 @@
 #!/usr/bin/env python
-import unittest
 import sys
-import tempfile
-import os
-import json
 import importlib.util
 from pathlib import Path
 

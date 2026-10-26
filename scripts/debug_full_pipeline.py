@@ -19,4 +19,4 @@ def main():
         logging.info("Step 3: Finalizing and cleaning up.")
         # Finalization logic here
 
-        logging.debug("Pipeline execution
+        logging.debug("Pipeline execution")")

@@ -1,8 +1,10 @@
 import sys
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import os
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import yaml
@@ -124,8 +126,7 @@ def sync_outline_files():
             file_contents.items(), key=lambda x: len("".join(x[1]).strip())
         )[0]
 
-        logger.info(
-            f"Using {reference_file.name} as reference for synchronization")
+        logger.info(f"Using {reference_file.name} as reference for synchronization")
 
         # Compare and synchronize files
         reference_content = file_contents[reference_file]
@@ -148,8 +149,7 @@ def sync_outline_files():
             )
 
             if diff:
-                logger.info(
-                    f"Found {len(diff)} differences in {file_path.name}")
+                logger.info(f"Found {len(diff)} differences in {file_path.name}")
                 # Implement your synchronization logic here
                 # For example:
                 # write_outline_file(file_path, reference_content)
