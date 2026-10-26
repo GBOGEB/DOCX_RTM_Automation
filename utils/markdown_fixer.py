@@ -1,16 +1,15 @@
-import re
 import os
-
+import re
 
 def fix_markdown_headers(file_path):
     """
-    Fixes markdown headers in a file by ensuring there is a space after the '#' characters.
+    Fixes markdown headers in a file by ensuring there is a space after the "#" characters.
 
     Args:
         file_path (str): Path to the markdown file to be fixed.
     """
     try:
-        with open(file_path, "r", encoding="utf-8") as file:
+        with open(file_path, "r", encoding="utf-8", encoding="utf-8") as file:
             lines = file.readlines()
 
         fixed_lines = []
@@ -18,13 +17,12 @@ def fix_markdown_headers(file_path):
             fixed_line = re.sub(r"^(#+)([^\s#])", r"\1 \2", line)
             fixed_lines.append(fixed_line)
 
-        with open(file_path, "w", encoding="utf-8") as file:
+        with open(file_path, "w", encoding="utf-8", encoding="utf-8") as file:
             file.writelines(fixed_lines)
 
-        print(f"Markdown headers fixed in file: {file_path}")
+        print("Markdown headers fixed in file: {file_path}")
     except Exception as e:
-        print(f"An error occurred: {e}")
-
+        print("An error occurred: {e}")
 
 if __name__ == "__main__":
     # Example usage:
@@ -33,7 +31,7 @@ if __name__ == "__main__":
     # if os.path.isfile(file_to_fix_input):
     #     fix_markdown_headers(file_to_fix_input)
     # else:
-    #     print(f"File not found: {file_to_fix_input")
+    #     print("File not found: {file_to_fix_input")
 
     # Test Markdown Fixer
     print("Running test for fix_markdown_headers...")
@@ -42,22 +40,22 @@ if __name__ == "__main__":
     expected_fixed_content = (
         "## Header1\n# Header2\n### NoSpace\nText\n#### Valid Header\n"
     )
-
-    with open(dummy_md_filename, "w", encoding="utf-8") as f:
+:
+    with open(dummy_md_filename, "w", encoding="utf-8", encoding="utf-8") as f:
         f.write(original_content)
 
     fix_markdown_headers(dummy_md_filename)
 
-    with open(dummy_md_filename, "r", encoding="utf-8") as f:
+    with open(dummy_md_filename, "r", encoding="utf-8", encoding="utf-8") as f:
         fixed_content = f.read()
 
     if fixed_content == expected_fixed_content:
         print(
-            f"✓ Test passed: Markdown headers in '{dummy_md_filename}' fixed correctly."
+            f"✓ Test passed: Markdown headers in "{dummy_md_filename}" fixed correctly."
         )
     else:
         print(
-            f"✗ Test failed: Markdown headers in '{dummy_md_filename}' not fixed as expected."
+            f"✗ Test failed: Markdown headers in "{dummy_md_filename}" not fixed as expected."
         )
         print("Expected:")
         print(expected_fixed_content)

@@ -6,13 +6,12 @@ This script converts Word documents to Markdown and extracts
 document structure information for visualization.
 """
 
-import os
-import sys
-import subprocess
 import argparse
 import json
 import logging
-from pathlib import Path
+import os
+import subprocess
+import sys
 
 # Add parent directory to path for imports
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -67,7 +66,7 @@ def convert_docx_to_md(input_file, output_file, structure_output=None, lua_filte
         # Add common options
         cmd.extend(["--extract-media", f"{output_dir}/media"])
         cmd.extend(["--standalone", "--toc",
-                   "--toc-depth=6", "--number-sections"])
+                    "--toc-depth=6", "--number-sections"])
 
         # Run Pandoc
         logger.info(f"Converting {input_file} to {output_file}")
@@ -352,7 +351,7 @@ REQ-053 The system depends on the python-docx package. [priority:high] [status:i
 
 requirements_trace = [
     {"ID": "REQ-005", "Depends On": "REQ-001",
-        "Refines": "", "Related To": "REQ-045"},
+     "Refines": "", "Related To": "REQ-045"},
     {"ID": "REQ-007", "Depends On": "", "Refines": "REQ-022", "Related To": ""},
     {"ID": "REQ-008", "Depends On": "REQ-007", "Refines": "", "Related To": ""},
     {

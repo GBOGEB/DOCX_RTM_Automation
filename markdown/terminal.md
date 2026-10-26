@@ -1,6 +1,7 @@
 # DOCX RTM Automation Terminal Interface
 
 ```python
+
 #!/usr/bin/env python3
 
 import os
@@ -13,22 +14,28 @@ import shutil
 from pathlib import Path
 
 # Global configurations
+
 BASE_DIR = Path(__file__).parent.absolute()
 CONFIG_FILE = BASE_DIR / "global_config.yaml"
 
 # Initialize PYTHON_PATH and VENV_PATH, will be refined after loading config
+
 _initial_python_path = sys.executable
 VENV_PATH = BASE_DIR / ".venv" # Default, can be overridden by config if needed
 
 # Function to get the Python executable path
+
 def get_python_executable():
     config = load_config()
+
     # 1. From config's specific python_path for the project
+
     configured_python = config.get("paths", {}).get("python")
     if configured_python and Path(configured_python).exists():
         return str(Path(configured_python).resolve())
 
     # 2. Default to system Python (current interpreter)
+
     return sys.executable
 
 PYTHON_PATH = get_python_executable() # Set initial global PYTHON_PATH
@@ -43,7 +50,9 @@ VENV_PYTHON = (
 def load_config():
     """Load global configuration from YAML file"""
     if not CONFIG_FILE.exists():
+
         # print(f"Warning: Config file {CONFIG_FILE} not found. Returning empty config.") # Less verbose
+
         return {}
 
     try:
@@ -69,7 +78,9 @@ def save_config(config):
 
 def run_command(command, use_venv=True, show_output=True, cwd=None):
     """Run a command with appropriate Python interpreter"""
+
     # Determine Python executable: venv if exists and use_venv, else global PYTHON_PATH
+
     python_exe_to_use = str(VENV_PYTHON) if use_venv and VENV_PYTHON.exists() else PYTHON_PATH
 
     if isinstance(command, list):
@@ -127,10 +138,13 @@ def setup_environment(force_new=False):
     print("Setting up environment...")
 
     # Check if venv already exists
+
     if VENV_PATH.exists() and not force_new:
         print(f"Virtual environment already exists at {VENV_PATH}")
         print("Using existing environment. Use --force-new to recreate it.")
+
         # return True # Original logic, but let's ensure deps and config are checked
+
     elif VENV_PATH.exists() and force_new:
         print(f"Removing existing virtual environment at {VENV_PATH}...")
         try:
@@ -141,7 +155,9 @@ def setup_environment(force_new=False):
             return False
 
     print("Creating virtual environment...")
+
     # Use the resolved PYTHON_PATH for creating the venv
+
     return_code = run_command(f'"{PYTHON_PATH}" -m venv "{VENV_PATH}"', use_venv=False)
     if return_code != 0:
         print(f"Error: Failed to create virtual environment using {PYTHON_PATH}.")
@@ -153,14 +169,17 @@ def setup_environment(force_new=False):
 
     if run_command(pip_upgrade_cmd) != 0:
         print("Error: Failed to upgrade pip.")
+
         # Continue with requirements installation
 
     if run_command(requirements_cmd) != 0:
         print("Error: Failed to install requirements from requirements.txt.")
         print("Please ensure requirements.txt exists and is valid.")
+
         # Optionally, you could return False here if requirements are critical
 
     # Add Project LCP phase information to configuration
+
     config = load_config() or {}
     if "lcp_phases" not in config:
         config["lcp_phases"] = {
@@ -178,9 +197,11 @@ def setup_environment(force_new=False):
         print("Added LCP phase information to configuration")
 
     # Check for Pandoc installation
+
     detect_pandoc() # This will save to config
 
     # Create necessary directories from config or defaults
+
     config = load_config()
     input_dir_name = config.get("paths", {}).get("input_dir", "input")
     output_dir_name = config.get("paths", {}).get("output_dir", "output")
@@ -206,14 +227,17 @@ def detect_pandoc():
             return True
 
     # Check in common installation paths
+
     pandoc_paths = []
 
     # System PATH
+
     system_pandoc = shutil.which("pandoc.exe" if os.name == "nt" else "pandoc")
     if system_pandoc:
         pandoc_paths.append(system_pandoc)
 
     # Common installation directories on Windows
+
     if os.name == "nt":
         program_files = [
             os.environ.get("ProgramFiles", "C:\\Program Files"),
@@ -229,6 +253,7 @@ def detect_pandoc():
                             pandoc_paths.append(os.path.join(root, file_item))
 
     # Ask user to select or enter path
+
     if pandoc_paths:
         print("\nFound Pandoc installations:")
         for i, path in enumerate(pandoc_paths, 1):
@@ -251,7 +276,9 @@ def detect_pandoc():
         )
 
     if selected_path and Path(selected_path).exists(): # Check if path exists before verifying
+
         # Verify the path works
+
         try:
             result = subprocess.run(
                 [selected_path, "--version"],
@@ -261,7 +288,9 @@ def detect_pandoc():
             )
             if result.returncode == 0:
                 print(f"Verified Pandoc at: {selected_path}")
+
                 # Update config under paths.pandoc
+
                 if "paths" not in config:
                     config["paths"] = {}
                 config["paths"]["pandoc"] = str(Path(selected_path).resolve()) # Store resolved absolute path
@@ -291,12 +320,15 @@ def extract_rtm(input_mode="auto"):
     md_files = []
 
     if input_mode == "auto":
+
         # Scan main output directory
+
         if output_dir.exists():
             md_files.extend(list(output_dir.glob("*.md")))
             md_files.extend(list(output_dir.glob("**/*.md"))) # Recursive
 
         # Scan sub-repository output directories
+
         sub_repos = config.get("repository_settings", {}).get("sub_repositories", [])
         for sub_repo_rel_path in sub_repos:
             sub_repo_abs_path = (BASE_DIR / sub_repo_rel_path).resolve()
@@ -316,41 +348,65 @@ def extract_rtm(input_mode="auto"):
             generate_rtm_script = BASE_DIR / "generate_rtm.py"
             if generate_rtm_script.exists():
                 md_paths_str = " ".join(f'"{str(f_path)}"' for f_path in md_files)
+
                 # The generate_rtm.py script itself should handle multiple --input flags or a list of files
+
                 run_command(f'"{python_exe}" "{generate_rtm_script}" --input {md_paths_str} --output-dir "{output_dir}"')
             else:
                 print(f"Error: {generate_rtm_script} not found.")
         else:
             print("No markdown files found in main or sub-repository output directories.")
+
             # Conceptual: Offer to generate sample Markdown from OpenAI
-            # if user_confirm("No Markdown files. Generate sample from OpenAI?", default=False):
+
+
+            # if user_confirm("No Markdown files. Generate sample from OpenAI?", default=False)
+
+
             #    run_command(f'"{python_exe}" some_openai_script.py --action generate_sample_md --output "{output_dir / "sample_from_ai.md"}"')
 
 
             # Offer to process DOCX files directly
+
             if user_confirm("Would you like to try converting DOCX files first?"):
                 convert_docx_to_markdown()
+
                 # Try RTM extraction again
+
                 extract_rtm(input_mode="auto")
 
     elif input_mode == "manual_github_url":
         github_url = input("Enter GitHub URL of the Markdown file: ")
         if github_url:
             print(f"Conceptual: Downloading {github_url}...")
+
             # downloaded_file = download_from_github(github_url, output_dir) # Placeholder
-            # if downloaded_file and Path(downloaded_file).exists():
+
+
+            # if downloaded_file and Path(downloaded_file).exists()
+
+
             #    run_command(f'"{python_exe}" generate_rtm.py --input "{downloaded_file}" --output-dir "{output_dir}"')
-            # else:
+
+
+            # else
+
+
             #    print("Failed to download or invalid file.")
+
             print("GitHub URL processing not yet implemented.")
         else:
             print("No URL provided.")
     elif input_mode == "manual_local":
+
         # Let user select files
+
         print("Please select input files for RTM extraction (manual local selection not fully implemented).")
-        # Implementation for manual selection...
+
+        # Implementation for manual selection
 
     # Update the configuration with LCP phase information
+
     update_lcp_phases()
 
 
@@ -374,6 +430,7 @@ def update_lcp_phases():
         save_config(config)
 
     # Display the phases
+
     print("\nLCP Phase definitions:")
     for phase, description in config.get("lcp_phases", {}).items(): # Use .get for safety
         print(f"  LH2: {phase} = {description}")
@@ -401,12 +458,15 @@ def convert_docx_to_markdown():
     main_input_dir = BASE_DIR / input_dir_name
 
     word_files = []
+
     # Scan main input directory
+
     if main_input_dir.exists():
         word_files.extend(list(main_input_dir.glob("*.docx")))
         word_files.extend(list(main_input_dir.glob("*.doc")))
 
     # Scan sub-repository input directories
+
     sub_repos = config.get("repository_settings", {}).get("sub_repositories", [])
     for sub_repo_rel_path in sub_repos:
         sub_repo_abs_path = (BASE_DIR / sub_repo_rel_path).resolve()
@@ -420,34 +480,62 @@ def convert_docx_to_markdown():
 
     if not word_files:
         print(f"No Word documents found in '{main_input_dir}' or configured sub-repository input directories.")
+
         # Conceptual: Offer to download from GitHub
-        # if user_confirm("Download DOCX from GitHub URL instead?", default=False):
+
+
+        # if user_confirm("Download DOCX from GitHub URL instead?", default=False)
+
+
         #    github_url = input("Enter GitHub URL of the DOCX file: ")
-        #    if github_url:
+
+
+        #    if github_url
+
+
         #        print(f"Conceptual: Downloading {github_url}...")
+
+
         #        # downloaded_file = download_from_github(github_url, main_input_dir) # Placeholder
+
+
         #        # if downloaded_file: word_files.append(Path(downloaded_file))
-        #    else:
+
+
+        #    else
+
+
         #        print("No URL provided.")
-        # else:
+
+
+        # else
+
+
         # (original logic for adding files manually)
+
         add_file_q = input(f"Do you want to add a Word document to '{main_input_dir}'? (y/n): ") # Renamed variable
         if add_file_q.lower() == "y":
             print(f"Please copy your Word documents to the '{main_input_dir}' directory.")
             input("Press Enter when ready...")
+
             # Refresh file list
+
             word_files = [] # Reset and re-scan
             if main_input_dir.exists():
                  word_files.extend(list(main_input_dir.glob("*.docx")))
                  word_files.extend(list(main_input_dir.glob("*.doc")))
+
             # Re-scan sub-repos as well if needed, or assume user added to main_input_dir
+
             word_files = sorted(list(set(word_files)))
 
 
     if word_files:
         print("\nFound Word documents:")
         for i, file_path_obj in enumerate(word_files, 1):
+
             # Display relative path if it's within BASE_DIR for brevity
+
             try:
                 display_path = file_path_obj.relative_to(BASE_DIR)
             except ValueError:
@@ -462,6 +550,8 @@ def convert_docx_to_markdown():
             return
 
         # Fix the word_to_md script first if needed (conceptual, or call a helper)
+
+
         # fix_word_to_md_script_if_needed()
 
         if idx.lower() == "a":
@@ -486,7 +576,9 @@ def display_menu():
     print("\n=== DOCX RTM Automation Terminal ===")
     print(
         "Current Date and Time (UTC): "
+
         + time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+
     )
     print(
         "Current User: " +
@@ -513,11 +605,14 @@ def display_menu():
 
 def main():
     """Main function to run the terminal interface"""
+
     # Ensure PYTHON_PATH is set correctly at start
+
     global PYTHON_PATH
     PYTHON_PATH = get_python_executable()
 
-    # Check if global_config.yaml exists, if not, prompt for setup.
+    # Check if global_config.yaml exists, if not, prompt for setup
+
     if not CONFIG_FILE.exists():
         print(f"{CONFIG_FILE} not found.")
         if user_confirm("Would you like to run initial setup to create config and environment?", default=True):
@@ -556,6 +651,8 @@ def main():
             python_exe = activate_venv()
 
             # First, make sure common issues are fixed (conceptual)
+
+
             # fix_word_to_md() # Example if this was a common fix needed
 
             print("Running full pipeline...")
@@ -574,6 +671,7 @@ def main():
             python_exe = activate_venv()
 
             # Check if tests directory exists
+
             tests_dir = BASE_DIR / "tests"
             if not tests_dir.exists() or not any(tests_dir.glob("test_*.py")): # Check for actual test files
                 print("No tests found in 'tests' directory or no files matching 'test_*.py' pattern!")
@@ -586,9 +684,13 @@ def main():
                     run_command(f'"{python_exe}" -m pytest')
 
         elif choice == "G":
+
             # git_operations() # Call the git operations handler
+
             print("\n=== Git Operations ===")
+
             # Menu for Git operations
+
             print("[1] Status (Main Repo)")
             print("[2] Status (All Repos including Submodules)")
             print("[3] Pull (Main Repo)")
@@ -607,7 +709,9 @@ def main():
             elif git_choice == "2":
                 run_command("git status", cwd=main_repo_path) # Main repo
                 run_command("git submodule status --recursive", cwd=main_repo_path) # Submodules status
+
                 # Optionally iterate and run status in each sub_repo_paths
+
                 sub_repos = config.get("repository_settings", {}).get("sub_repositories", [])
                 for sub_repo_rel_path in sub_repos:
                     sub_repo_abs_path = (BASE_DIR / sub_repo_rel_path).resolve()
@@ -627,7 +731,9 @@ def main():
                 print("Git user configured for the main repository.")
             elif git_choice == "6":
                 remote_url = input("Enter new remote URL for main repo (e.g., https://github.com/user/repo.git): ")
+
                 # Check if remote 'origin' exists
+
                 ret_code, stdout_val, _ = run_command("git remote", use_venv=False, show_output=False, cwd=main_repo_path) # Renamed
                 if ret_code == 0 and 'origin' in stdout_val:
                     run_command(f'git remote set-url origin "{remote_url}"', cwd=main_repo_path)
@@ -641,11 +747,16 @@ def main():
 
         elif choice == "H":
             print("\n=== Configure Settings ===")
+
             # Load current config
+
+
             # config = load_config() # Already loaded for menu display
 
             while True: # Inner loop for settings menu
+
                 # Display current config again or relevant parts
+
                 print("\nCurrent Configuration Snippet:")
                 print(f"  Python Path: {config.get('paths', {}).get('python', PYTHON_PATH)}")
                 print(f"  Pandoc Path: {config.get('paths', {}).get('pandoc', 'Not configured')}")
@@ -690,7 +801,9 @@ def main():
                 elif config_choice == "4":
                     key_name = input("Enter setting name (e.g., 'feature_flags.new_parser'): ") # Renamed
                     value_data = input("Enter setting value: ") # Renamed
+
                     # Basic support for nested keys, e.g. "paths.temp_dir"
+
                     keys = key_name.split('.')
                     temp_config = config
                     for k_idx, k_val in enumerate(keys[:-1]): # Iterate up to the second to last key
@@ -711,7 +824,9 @@ def main():
                                 "sub_repositories": []
                             }
                         }
+
                         # Try to find pandoc and add it
+
                         pandoc_exe_name = "pandoc.exe" if os.name == "nt" else "pandoc"
                         found_pandoc = shutil.which(pandoc_exe_name)
                         if found_pandoc:
@@ -719,7 +834,9 @@ def main():
 
                         config = default_config # Update local copy
                         save_config(config) # Save to file
+
                         # Reload global PYTHON_PATH after reset
+
                         global PYTHON_PATH
                         PYTHON_PATH = get_python_executable()
                 elif config_choice == "0":
@@ -734,7 +851,9 @@ def main():
             readme_file = BASE_DIR / "README.md"
 
             if readme_file.exists():
+
                 # Show README content (simplified)
+
                 try:
                     with open(readme_file, "r", encoding="utf-8") as f_readme: # Renamed
                         print(f_readme.read(1000) + "\n... (content truncated, view full file for details)")
@@ -765,16 +884,21 @@ def main():
 
 if __name__ == "__main__":
     main()
-```
+
+```bash
 
 ## Quick Start Guide
+
 // ... existing quick start guide ...
 
 ## Common Issues and Solutions
+
 // ... existing common issues ...
 
 ## Setup Checklist
+
 // ... existing setup checklist ...
 
 ## Terminal Launcher
+
 // ... existing terminal launcher ...

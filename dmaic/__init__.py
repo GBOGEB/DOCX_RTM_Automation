@@ -1,22 +1,22 @@
 # DMAIC module for integration with OpenAI
 # This module implements the Define-Measure-Analyze-Improve-Control methodology
+from typing import Any, Dict, List
+
 from .dmaic_handler import DMAICHandler, DMAICPhase
-from typing import List, Dict, Any, Optional
 
-
-def rerun_dmaic_with_openai(
-    handler: DMAICHandler,
-    phases: List[DMAICPhase] = None,
-    openai_config: Dict[str, Any] = None,
+def rerun_dmaic_with_openai(:
+        handler: DMAICHandler,
+        phases: List[DMAICPhase] = None,
+        openai_config: Dict[str, Any] = None,
 ) -> Dict[str, Any]:
     """
     Rerun specific or all DMAIC phases with OpenAI integration.
-
+:
     Args:
         handler: The DMAIC handler instance
-        phases: List of phases to rerun (defaults to all phases if None)
+        phases: List of phases to rerun (defaults to all phases if None):
         openai_config: Configuration for OpenAI API
-
+:
     Returns:
         Results from the rerun phases
     """
@@ -38,14 +38,13 @@ def rerun_dmaic_with_openai(
 
     return results
 
-
 class DMAICFactorizer:
     """
     Helper class for factorizing common operations across DMAIC phases.
     These methods are placeholders for future optimization logic.
     """
 
-    @staticmethod
+    @staticmethod:
     def extract_common_patterns(data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Extract common patterns from DMAIC data for optimization.
@@ -54,7 +53,7 @@ class DMAICFactorizer:
         to suggest consolidated insights, actions, or frequently asked questions.
         Placeholder for actual pattern extraction logic.
         """
-        # Implementation for pattern extraction
+        # Implementation for pattern extraction:
         print("Placeholder: Extracting common patterns from DMAIC data.")
         return {"patterns": {"example_pattern": "found"}, "optimized_data": data}
 
@@ -68,10 +67,10 @@ class DMAICFactorizer:
         adding specific instructions, or structuring prompts for better LLM performance.
         Placeholder for actual prompt optimization logic.
         """
-        # Implementation for prompt optimization
+        # Implementation for prompt optimization:
         print("Placeholder: Optimizing prompts.")
-        return [f"optimized_{p}" for p in prompts if p]
-
+        return ["optimized_{p}" for p in prompts if p]
 
 # Add the new functionality to package exports
 __all__ = ["DMAICHandler", "DMAICPhase", "rerun_dmaic_with_openai", "DMAICFactorizer"]
+:

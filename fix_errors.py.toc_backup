@@ -11,11 +11,10 @@ This script addresses common errors in the RTM pipeline:
 """
 
 import os
-import sys
-import yaml
 import re
-from pathlib import Path
 import shutil
+
+import yaml
 
 # ANSI colors for terminal output
 

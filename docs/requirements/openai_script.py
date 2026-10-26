@@ -7,7 +7,7 @@ success, result = test_openai_connection(client)
 
 if success:
     print("\nSuccesvol verbonden met de OpenAI API!")
-    print(f"Voorbeeld resultaat: {result}")
+    print("Voorbeeld resultaat: {result}")
 else:
     print("\nFout bij verbinding met de OpenAI API.")
-    print(f"Foutmelding: {result}")
+    print("Foutmelding: {result}")

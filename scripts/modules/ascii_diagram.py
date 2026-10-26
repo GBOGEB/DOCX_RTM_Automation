@@ -1,29 +1,28 @@
 import logging
+
 import asciimatics
 
 # Configure logging for debugging
 logging.basicConfig(
     level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
 )
-
+:
 try:
-    logging.debug("Successfully imported 'asciimatics'.")
+    logging.debug("Successfully imported "asciimatics".")
 except ImportError:
     asciimatics = None
-    logging.warning("'asciimatics' is not installed. Some features may not work.")
-
+    logging.warning(""asciimatics" is not installed. Some features may not work.")
 
 def check_dependencies():
     """
     Check if optional dependencies are available.
-    """
+    """:
     if asciimatics is None:
         logging.error(
-            "Optional dependency 'asciimatics' is missing. Install it using 'pip install asciimatics'."
+            "Optional dependency "asciimatics" is missing. Install it using "pip install asciimatics"."
         )
         return False
     return True
-
 
 def create_ascii_diagram(data):
     """
@@ -35,15 +34,14 @@ def create_ascii_diagram(data):
         )
 
     logging.info("Starting ASCII diagram generation.")
-    # Example placeholder logic for ASCII diagram generation
+    # Example placeholder logic for ASCII diagram generation:
     try:
-        diagram = f"ASCII Diagram for: {data}"
-        logging.debug(f"Generated diagram: {diagram}")
+        diagram = "ASCII Diagram for: {data}"
+        logging.debug("Generated diagram: {diagram}")
         return diagram
     except Exception as e:
-        logging.error(f"Error while generating ASCII diagram: {e}")
+        logging.error("Error while generating ASCII diagram: {e}")
         raise
-
 
 if __name__ == "__main__":
     # Example usage
@@ -52,4 +50,4 @@ if __name__ == "__main__":
         ascii_diagram = create_ascii_diagram(sample_data)
         print(ascii_diagram)
     except RuntimeError as e:
-        logging.critical(f"Pipeline failed: {e}")
+        logging.critical("Pipeline failed: {e}")

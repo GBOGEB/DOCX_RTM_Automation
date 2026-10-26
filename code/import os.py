@@ -1,7 +1,6 @@
+import logging
 import os
 from pathlib import Path
-import logging
-
 
 def resolve_relative_paths():
     """
@@ -12,9 +11,8 @@ def resolve_relative_paths():
     os.chdir(script_dir)
 
     # Retrieve the logger for the current module.
-    logger = logging.getLogger(__name__)
-    logger.info(f"Working directory set to: {script_dir}")
-    logger.debug(f"Debug: Current working directory is: {os.getcwd()}")
-
+    logger = logging.getLogger(__name__):
+    logger.info("Working directory set to: {script_dir}")
+    logger.debug("Debug: Current working directory is: {os.getcwd()}")
 
 # ...existing code...

@@ -8,17 +8,22 @@ This guide will help you test and verify the various components of the DOCX RTM 
 ### Basic Refactoring Test
 
 ```bash
+
 # Run the simplified refactor interface
+
 python refactor.py path/to/file.py --mode quick
 
 # Run the more detailed refactoring tool
+
 python refactor_project.py path/to/project_directory --type modernize --files 5 --extensions .py,.js
-```
+
+```bash
 
 ### Verifying Refactoring Results
 
 1. Check the output directory (displayed in the console output)
 2. Review the generated files:
+
    - `refactoring_analysis.md` - Analysis of the code structure
    - `refactoring_report.md` - Complete refactoring report
    - `refactored_*.py` - The refactored source files
@@ -29,9 +34,12 @@ python refactor_project.py path/to/project_directory --type modernize --files 5 
 ### Full Pipeline Debug
 
 ```bash
+
 # Run the full pipeline debugger
+
 python debug_full_pipeline.py
-```
+
+```bash
 
 Follow the interactive menu to select what components to test:
 1. Full pipeline (end-to-end)
@@ -44,9 +52,12 @@ Follow the interactive menu to select what components to test:
 ### DMAIC Process Debug
 
 ```bash
+
 # Run the DMAIC process debugger
+
 python debug_dmaic_output.py
-```
+
+```bash
 
 Follow the interactive menu to select what to debug:
 1. Run full DMAIC process and show outputs
@@ -60,11 +71,15 @@ Follow the interactive menu to select what to debug:
 ### Running the Agent Orchestration Example
 
 ```bash
+
 # Run the agent orchestration example
+
 python examples/agent_orchestration_example.py
-```
+
+```bash
 
 This demonstrates:
+
 - Agent registration
 - Inter-agent messaging
 - Workflow execution
@@ -73,11 +88,15 @@ This demonstrates:
 ### Testing the DMAIC CI/CD Agent
 
 ```bash
+
 # Run the DMAIC CI/CD example
+
 python examples/dmaic_cicd_example.py
-```
+
+```bash
 
 This demonstrates:
+
 - CI/CD pipeline analysis
 - DMAIC methodology application to CI/CD
 - Report generation
@@ -87,25 +106,38 @@ This demonstrates:
 ### Document Conversion Testing
 
 ```bash
+
 # First, ensure your environment is set up
+
+
 # Create a testing environment
+
 python -m venv env
 source env/bin/activate  # On Windows: env\Scripts\activate
 
 # Install pandoc if you need document conversion
+
+
 # On Windows: choco install pandoc
+
+
 # On macOS: brew install pandoc
+
+
 # On Linux: sudo apt-get install pandoc
 
 # Run the Copilot agent example to test conversions
+
 python examples/copilot_agent_example.py
-```
+
+```bash
 
 ### Extract Requirements from Documents
 
 Use the Copilot agent to extract requirements from your own document:
 
 ```python
+
 from dmaic import DMAICHandler
 from config.openai_integration import initialize_openai
 from utils.output_handler import OutputHandler
@@ -113,6 +145,7 @@ from utils.paths_manager import PathsManager
 from agents.copilot_agent import CopilotAgent, ConversionType
 
 # Initialize components
+
 client = initialize_openai()
 paths = PathsManager()
 output = OutputHandler(paths.get_output_dir())
@@ -120,12 +153,14 @@ dmaic = DMAICHandler("Requirements Extraction", client)
 copilot = CopilotAgent(dmaic, output)
 
 # Extract requirements from a DOCX or MD file
+
 requirements_path = copilot.extract_requirements_from_docs(
     "path/to/your/requirements_doc.docx",
     output_format="json"
 )
 print(f"Requirements extracted to {requirements_path}")
-```
+
+```bash
 
 ## 5. Logs and Verification
 
@@ -133,9 +168,11 @@ print(f"Requirements extracted to {requirements_path}")
 
 Each run creates its own log file in the output directory. You can find the logs at:
 
-```
+```bash
+
 ./outputs/TIMESTAMP/workflow_YYYYMMDD_HHMMSS.log
-```
+
+```bash
 
 ### Important Log Files to Check
 
@@ -179,25 +216,33 @@ The agent system uses a message-passing architecture:
 ## 7. Troubleshooting Common Issues
 
 1. **OpenAI API Key Issues**:
+
    - Check that your API key is correctly set in one of:
      - Environment variable `OPENAI_API_KEY`
      - `config/apikeys.yaml`
      - File specified in `paths.yaml.fixed`
 
 2. **Missing Dependencies**:
+
    - Ensure all required packages are installed:
+
    ```
+
    pip install -r requirements.txt
+
    ```
 
 3. **Pandoc Missing**:
+
    - If document conversion fails, install pandoc
 
 4. **Agent Communication Failures**:
+
    - Check that agents are properly registered with the orchestrator
    - Verify message formats match expected schemas
 
 5. **Git Operation Failures**:
+
    - Ensure git is installed and configured
    - Check repository paths and permissions
 
@@ -206,7 +251,9 @@ The agent system uses a message-passing architecture:
 You can create your own test scripts by following this pattern:
 
 ```python
+
 # test_my_feature.py
+
 import os
 import sys
 from config.openai_integration import initialize_openai
@@ -215,16 +262,21 @@ from utils.paths_manager import PathsManager
 from dmaic import DMAICHandler
 
 # Initialize components
+
 client = initialize_openai()
 paths = PathsManager()
 output = OutputHandler(paths.get_output_dir())
 dmaic = DMAICHandler("My Test", client)
 
 # Run your tests
+
 def run_my_test():
+
     # Your test code here
+
     pass
 
 if __name__ == "__main__":
     run_my_test()
-```
+
+```bash

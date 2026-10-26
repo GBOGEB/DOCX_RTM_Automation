@@ -11,5 +11,5 @@ if __name__ == "__main__":
     client = initialize_openai()
     if client:
         success, message = test_openai_connection(client)
-        print(f"Connection test: {'Success' if success else 'Failed'}")
-        print(f"Response: {message}")
+        print("Connection test: {"Success" if success else "Failed"}"):
+        print("Response: {message}")

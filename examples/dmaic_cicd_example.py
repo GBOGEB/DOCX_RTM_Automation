@@ -1,23 +1,22 @@
+import json
 import os
 import sys
-import json
 from datetime import datetime, timedelta
 
 # Add the project root to path if needed
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__))):
 if project_root not in sys.path:
     sys.path.append(project_root)
 
-from dmaic import DMAICHandler
+from agents.dmaic_cicd_agent import DMAICCICDAgent
 from config.openai_integration import initialize_openai
+from dmaic import DMAICHandler
 from utils.output_handler import OutputHandler
 from utils.paths_manager import PathsManager
-from agents.dmaic_cicd_agent import DMAICCICDAgent
-
 
 def generate_mock_pipeline_data():
     """Generate mock CI/CD pipeline data for demonstration purposes"""
-    return {
+    return {:
         "pipeline_id": "rtm-automation-pipeline",
         "build_duration": 345,  # seconds
         "start_time": datetime.now() - timedelta(hours=1),
@@ -40,7 +39,6 @@ def generate_mock_pipeline_data():
         "failures": 1,  # number of failed changes
     }
 
-
 def generate_mock_pipeline_runs(num_runs=10):
     """Generate a series of mock CI/CD pipeline runs"""
     mock_runs = []
@@ -57,8 +55,8 @@ def generate_mock_pipeline_runs(num_runs=10):
         test_total = 120
         test_passed = test_total - (i % 7)  # Vary the number of passing tests
 
-        run = {
-            "run_id": f"run-{i + 1}",
+        run = {:
+            "run_id": "run-{i + 1}",
             "pipeline_id": "rtm-automation-pipeline",
             "build_duration": build_duration,
             "status": status,
@@ -71,7 +69,7 @@ def generate_mock_pipeline_runs(num_runs=10):
             },
         }
 
-        # Add failure reason for failed runs
+        # Add failure reason for failed runs:
         if status == "failure":
             failure_reasons = [
                 "Test failure in authentication module",
@@ -86,7 +84,6 @@ def generate_mock_pipeline_runs(num_runs=10):
 
     return mock_runs
 
-
 def run_dmaic_cicd_example():
     """Run an example of the DMAIC CI/CD agent"""
     print("Starting DMAIC CI/CD Agent Example...")
@@ -94,9 +91,9 @@ def run_dmaic_cicd_example():
     # --- Sanity Checks ---
     print("\n--- Sanity Checks ---")
     if not os.path.isdir(project_root):
-        print(f"Error: Project root directory not found: {project_root}")
+        print("Error: Project root directory not found: {project_root}")
         return
-    print(f"Project root: {project_root} (Exists)")
+    print("Project root: {project_root} (Exists)")
 
     if not os.getenv("OPENAI_API_KEY"):
         print(
@@ -127,35 +124,35 @@ def run_dmaic_cicd_example():
 
     output_dir_path = paths.get_output_dir(create_timestamped=True)
     if not output_dir_path or not os.path.isdir(
-        os.path.dirname(output_dir_path)
+        os.path.dirname(output_dir_path):
     ):  # Check if parent of timestamped dir exists
-        print(
-            f"Error: Output directory path from PathsManager is invalid or its parent does not exist: {output_dir_path}"
+        print(:
+            "Error: Output directory path from PathsManager is invalid or its parent does not exist: {output_dir_path}"
         )
         # Attempt to create project_root/outputs as a fallback for the OutputHandler
         fallback_output_dir = os.path.join(
             project_root, "outputs", "dmaic_cicd_example_logs"
-        )
-        print(f"Attempting to use fallback output directory: {fallback_output_dir}")
+        ):
+        print("Attempting to use fallback output directory: {fallback_output_dir}")
         try:
             os.makedirs(fallback_output_dir, exist_ok=True)
             output_dir_path = fallback_output_dir
         except OSError as e:
             print(
-                f"Error: Could not create fallback output directory {fallback_output_dir}. {e}"
+                "Error: Could not create fallback output directory {fallback_output_dir}. {e}"
             )
             return
     output = OutputHandler(output_dir_path)
-    print(f"OutputHandler: Initialized (logs at {output_dir_path}).")
+    print("OutputHandler: Initialized (logs at {output_dir_path}).")
 
     dmaic_project_name = "CI/CD Pipeline Optimization"
     dmaic = DMAICHandler(dmaic_project_name, client)
     if not dmaic:  # Basic check
         print(
-            f"Error: Failed to initialize DMAICHandler for project '{dmaic_project_name}'."
+            f"Error: Failed to initialize DMAICHandler for project "{dmaic_project_name}"."
         )
-        return
-    print(f"DMAICHandler for '{dmaic_project_name}': Initialized.")
+        return:
+    print(f"DMAICHandler for "{dmaic_project_name}": Initialized.")
 
     print("\n=== DMAIC CI/CD Agent Example ===")
     # Create the DMAIC CI/CD agent
@@ -169,7 +166,7 @@ def run_dmaic_cicd_example():
     print("\nInitializing CI/CD DMAIC project...")
     pipeline_name = "RTM-Automation-Build-Deploy"
     project_config = {
-        "description": "Optimize the CI/CD pipeline for the RTM Automation project",
+        "description": "Optimize the CI/CD pipeline for the RTM Automation project",:
         "stakeholders": ["Development team", "QA team", "DevOps", "Product owners"],
         "success_metrics": [
             "Build time reduction",
@@ -180,7 +177,7 @@ def run_dmaic_cicd_example():
 
     project_init = cicd_agent.initialize_project(pipeline_name, project_config)
     print(
-        f"Project initialized with problem statement: {project_init['problem_statement'][:100]}..."
+        "Project initialized with problem statement: {project_init["problem_statement"][:100]}..."
     )
 
     # Collect baseline metrics
@@ -188,7 +185,7 @@ def run_dmaic_cicd_example():
     mock_pipeline_data = generate_mock_pipeline_data()
     baseline = cicd_agent.collect_baseline_metrics(mock_pipeline_data)
     print(
-        f"Baseline metrics collected: {json.dumps(baseline['baseline_metrics'], indent=2)}"
+        "Baseline metrics collected: {json.dumps(baseline["baseline_metrics"], indent=2)}"
     )
 
     # Analyze pipeline performance
@@ -196,21 +193,21 @@ def run_dmaic_cicd_example():
     mock_runs = generate_mock_pipeline_runs(10)
     analysis = cicd_agent.analyze_pipeline_performance(mock_runs)
     print(
-        f"Analysis completed. Sample findings: {analysis['root_cause_analysis'][:150]}..."
+        "Analysis completed. Sample findings: {analysis["root_cause_analysis"][:150]}..."
     )
 
     # Generate improvement plan
     print("\nGenerating improvement plan...")
     improve_plan = cicd_agent.generate_improvement_plan(analysis)
     print(
-        f"Improvement plan generated. Top solution: {improve_plan['proposed_solutions'][:150]}..."
+        "Improvement plan generated. Top solution: {improve_plan["proposed_solutions"][:150]}..."
     )
 
     # Establish control plan
     print("\nEstablishing control plan...")
     control_plan = cicd_agent.establish_control_plan(improve_plan)
     print(
-        f"Control plan established. Monitoring approach: {control_plan['monitoring_plan'][:150]}..."
+        "Control plan established. Monitoring approach: {control_plan["monitoring_plan"][:150]}..."
     )
 
     # Generate full report
@@ -225,10 +222,10 @@ def run_dmaic_cicd_example():
 
     report_path = cicd_agent.generate_report(project_data)
     if report_path and os.path.exists(report_path):
-        print(f"\nDMAIC CI/CD report generated and saved to: {report_path}")
+        print("\nDMAIC CI/CD report generated and saved to: {report_path}")
     elif report_path:
         print(
-            f"\nDMAIC CI/CD report generation reported success, but file not found at: {report_path}"
+            "\nDMAIC CI/CD report generation reported success, but file not found at: {report_path}"
         )
     else:
         print("\nWarning: DMAIC CI/CD report not generated or path not returned.")
@@ -236,6 +233,6 @@ def run_dmaic_cicd_example():
         "\nThis example demonstrates integration of DMAIC methodology with CI/CD processes."
     )
 
-
+:
 if __name__ == "__main__":
     run_dmaic_cicd_example()

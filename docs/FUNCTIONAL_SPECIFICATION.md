@@ -13,16 +13,21 @@ The RTM Automation system automates the creation and management of Requirements 
 **Description**: Converts a DOCX file to Markdown format while preserving structure and optionally extracting images.
 
 **Processing Steps**:
+
 1. Validate input file existence and format
 2. Check for Pandoc availability
 3. If Pandoc is available:
+
    - Create media directory if extracting images
    - Execute Pandoc conversion command
    - Process and adjust links as needed
+
 4. If Pandoc is not available:
+
    - Fall back to basic extraction using python-docx
    - Generate simplified Markdown output
    - Add warning about limited conversion quality
+
 5. Return path to converted file
 
 **Inputs**:
@@ -41,11 +46,14 @@ The RTM Automation system automates the creation and management of Requirements 
 **Description**: Identifies and extracts requirement statements from Markdown content. This function is key for processing documents already in Markdown format or converted from other sources like DOCX.
 
 **Processing Steps**:
+
 1. Process input `markdown_content` string
 2. Apply regular expression patterns to identify requirements:
+
    - Headers with REQ- prefix
    - List items with REQ- prefix
    - Table rows with REQ- prefix
+
 3. Extract requirement attributes (ID, description, type, etc.)
 4. Organize requirements into structured format
 5. Return list of requirement objects
@@ -69,6 +77,7 @@ While `scripts/extract_structure.py` (mentioned in `README.md`) handles initial 
 **Description**: Extracts structured data directly from a DOCX document. This function would encapsulate the logic for parsing the DOCX format (e.g., using `python-docx`) to identify and structure various elements like tables, specific text patterns, metadata, etc., beyond what `extract_structure.py` currently provides.
 
 **Processing Steps (Conceptual)**:
+
 1. Validate input `document_path`.
 2. Open and parse the DOCX file using a library like `python-docx`.
 3. Iterate through document elements (paragraphs, tables, sections).
@@ -83,6 +92,7 @@ While `scripts/extract_structure.py` (mentioned in `README.md`) handles initial 
 - A dictionary or list containing the structured data extracted from the document.
 
 **Python Snippet (Placeholder)**:
+
 ```python
 def extract_data(document_path):
     """
@@ -90,21 +100,49 @@ def extract_data(document_path):
     Placeholder for actual extraction logic.
     """
     print(f"Attempting to extract data from: {document_path}")
+
     # TODO: implement extraction logic (e.g., using python-docx)
-    # This could involve parsing paragraphs, tables, styles, etc.
-    # Example:
+
+
+    # This could involve parsing paragraphs, tables, styles, etc
+
+
+    # Example
+
+
     # from docx import Document
+
+
     # document = Document(document_path)
+
+
     # extracted_tables = []
-    # for table in document.tables:
+
+
+    # for table in document.tables
+
+
     #     # process table data
+
+
     #     pass
+
+
     # extracted_text_patterns = []
-    # for para in document.paragraphs:
+
+
+    # for para in document.paragraphs
+
+
     #     # process paragraph for specific patterns
+
+
     #     pass
+
     return {"data": "example_extracted_data_from_docx", "source_path": document_path}
-```
+
+```bash
+
 This function would be a core component for scenarios requiring deep inspection of original DOCX files before or instead of Markdown conversion.
 
 ## 3. AI Integration Functions
@@ -116,6 +154,7 @@ This function would be a core component for scenarios requiring deep inspection 
 **Description**: Processes questions and tasks using the DMAIC methodology via AI.
 
 **Processing Steps**:
+
 1. Format prompt with current DMAIC phase context
 2. Send prompt to OpenAI API
 3. Process and validate response
@@ -135,6 +174,7 @@ This function would be a core component for scenarios requiring deep inspection 
 **Description**: Generates code based on requirements using AI.
 
 **Processing Steps**:
+
 1. Create prompt with language specification and requirement
 2. Send to AI for code generation
 3. Extract code from AI response
@@ -160,6 +200,7 @@ This function would be a core component for scenarios requiring deep inspection 
 **Description**: Sends a message from one agent to another via the orchestrator.
 
 **Processing Steps**:
+
 1. Create message object with source, target, content
 2. Submit message to orchestrator for routing
 3. Track message in system logs
@@ -184,12 +225,15 @@ This function would be a core component for scenarios requiring deep inspection 
 **Description**: Executes a predefined sequence of operations across multiple agents.
 
 **Processing Steps**:
+
 1. Initialize workflow context and tracking
 2. Determine workflow steps based on name
 3. Execute each step in sequence:
+
    - Assign task to appropriate agent
    - Wait for completion or failure
    - Log progress and results
+
 4. Compile workflow results
 5. Return comprehensive result object
 
@@ -213,6 +257,7 @@ This function would be a core component for scenarios requiring deep inspection 
 **Description**: Analyzes a Git repository for structure, file types, commit history, and other relevant metrics.
 
 **Processing Steps**:
+
 1. Validate repository path and ensure it's a Git repository.
 2. Scan directory structure recursively.
 3. Analyze file types and their distributions.
@@ -240,6 +285,7 @@ This function would be a core component for scenarios requiring deep inspection 
 **Description**: Creates a commit in a Git repository.
 
 **Processing Steps**:
+
 1. Verify repository exists and is registered
 2. Add specified files to staging area
 3. Create commit with provided message
@@ -266,6 +312,7 @@ This function would be a core component for scenarios requiring deep inspection 
 **Description**: Refactors code based on best practices and specified refactoring type.
 
 **Processing Steps**:
+
 1. Read and analyze source file
 2. Determine language and appropriate refactoring approach
 3. Generate refactoring prompt for AI
@@ -291,6 +338,7 @@ This function would be a core component for scenarios requiring deep inspection 
 **Description**: Generates comprehensive reports based on analysis data.
 
 **Processing Steps**:
+
 1. Format data for report generation
 2. Create AI prompt with report requirements
 3. Process AI response to get report content
@@ -318,6 +366,7 @@ The RTM Automation system is built on a modular architecture with these main com
 5. **Output Management**: Handles all system outputs and logging
 
 Components communicate primarily through:
+
 - Direct function calls within modules
 - Message passing between agents
 - File system for persistent artifacts

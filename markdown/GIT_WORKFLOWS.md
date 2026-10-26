@@ -10,7 +10,8 @@ The system provides several Git workflows through the `GitAgent`:
 
 ```bash
 python examples/agent_orchestration_example.py
-```
+
+```bash
 
 This workflow:
 1. Clones/pulls a repository
@@ -32,12 +33,17 @@ This workflow:
 ### Manual Testing
 
 ```bash
+
 # Run the debug pipeline script and choose option 2
+
 python debug_full_pipeline.py
+
 # Select "2. Git operations only"
-```
+
+```bash
 
 This will:
+
 - Create a test repository
 - Initialize git
 - Create sample files
@@ -53,7 +59,9 @@ To test the Git integration more comprehensively:
 1. Create a dedicated test file:
 
 ```python
+
 # test_git_workflows.py
+
 import os
 from config.openai_integration import initialize_openai
 from dmaic import DMAICHandler
@@ -62,31 +70,39 @@ from utils.paths_manager import PathsManager
 from agents.git_agent import GitAgent
 
 # Initialize components
+
 client = initialize_openai()
 paths = PathsManager()
 output = OutputHandler(paths.get_output_dir())
 dmaic = DMAICHandler("Git Testing", client)
 
 # Create Git agent
+
 git_agent = GitAgent("test_git_agent", dmaic, output)
 
 # Test repository operations
+
 def test_repo_operations():
+
     # Create test repo
+
     repo_path = os.path.join(paths.get_output_dir(), "test_repo")
     os.makedirs(repo_path, exist_ok=True)
 
     # Initialize git
+
     os.chdir(repo_path)
     os.system("git init .")
     os.system("git config user.name 'Test User'")
     os.system("git config user.email 'test@example.com'")
 
     # Create a test file
+
     with open(os.path.join(repo_path, "test.txt"), 'w') as f:
         f.write("Test content\n")
 
     # Register repo with agent
+
     git_agent.repositories["test_repo"] = {
         "name": "test_repo",
         "path": repo_path,
@@ -94,13 +110,16 @@ def test_repo_operations():
     }
 
     # Test commit
+
     result = git_agent.create_commit("test_repo", "Initial commit", ["test.txt"])
     print(f"Commit result: {result}")
 
     # Test branch creation
+
     os.system("git checkout -b feature/test")
 
     # Test status
+
     status = git_agent._git_status(repo_path)
     print(f"Status: {status}")
 
@@ -108,7 +127,8 @@ def test_repo_operations():
 
 if __name__ == "__main__":
     test_repo_operations()
-```
+
+```bash
 
 ## GitHub API Integration
 
@@ -124,21 +144,28 @@ However, these methods currently return instructions instead of making actual AP
 To enable full GitHub API integration:
 
 1. Install the GitHub API library:
+
 ```bash
+
 pip install PyGithub
-```
+
+```bash
 
 2. Modify the GitAgent class in `agents/git_agent.py`:
 
 ```python
+
 from github import Github
 
-# In the GitAgent class, add a proper GitHub PR creation method:
+# In the GitAgent class, add a proper GitHub PR creation method
+
 def _create_github_pr(self, repo_info: Dict[str, Any], title: str,
                     source_branch: str, target_branch: str, description: str) -> Dict[str, Any]:
     """Create a GitHub pull request"""
     try:
+
         # Get GitHub token from environment or config
+
         github_token = os.environ.get("GITHUB_TOKEN")
         if not github_token:
             return {
@@ -147,6 +174,7 @@ def _create_github_pr(self, repo_info: Dict[str, Any], title: str,
             }
 
         # Extract owner and repo name from URL
+
         repo_url = repo_info["url"]
         url_parts = repo_url.rstrip("/").split("/")
         if "github.com" in url_parts:
@@ -156,10 +184,12 @@ def _create_github_pr(self, repo_info: Dict[str, Any], title: str,
                 repo_name = url_parts[idx + 2].replace(".git", "")
 
                 # Create GitHub client
+
                 g = Github(github_token)
                 repo = g.get_repo(f"{owner}/{repo_name}")
 
                 # Create the PR
+
                 pr = repo.create_pull(
                     title=title,
                     body=description,
@@ -185,7 +215,8 @@ def _create_github_pr(self, repo_info: Dict[str, Any], title: str,
             "status": "error",
             "message": f"Failed to create PR: {str(e)}"
         }
-```
+
+```bash
 
 ## CI/CD Integration
 
@@ -194,10 +225,13 @@ The CI/CD integration is handled through the `DMAICCICDAgent` and `DMAICCICDInte
 You can test CI/CD integration by running:
 
 ```bash
+
 python examples/dmaic_cicd_example.py
-```
+
+```bash
 
 This demonstrates:
+
 - Pipeline analysis with DMAIC methodology
 - Metrics collection and analysis
 - Improvement plans generation
@@ -209,24 +243,34 @@ If your project utilizes Git submodules to include other repositories (e.g., for
 
 1. **Cloning with Submodules**:
     When cloning the main repository, use:
+
     ```bash
+
     git clone --recurse-submodules <repository_url>
+
     ```
+
     Or, if already cloned:
+
     ```bash
     git submodule update --init --recursive
+
     ```
 
 2. **Processing Submodule Content**:
     The RTM automation system can be configured to scan for input documents (e.g., Markdown requirements files) within submodules. This typically involves:
+
     * Configuring `PathsManager` or input file discovery logic to include submodule directories.
     * Ensuring that relative paths within submodules are correctly resolved.
 
 3. **Updating Submodules**:
     To pull the latest changes within submodules:
+
     ```bash
     git submodule update --remote
+
     ```
+
     Changes within submodules should be committed and pushed within the submodule's own repository first, then the main repository updated to point to the new submodule commit.
 
 ## Integrating OpenAI for Enhanced Git Operations
@@ -239,6 +283,7 @@ OpenAI (or similar LLMs) can be integrated into Git workflows to assist with:
 * **Branch Name Suggestions**: Suggest branch names based on an issue description or initial commit.
 
 This integration typically involves:
+
 * Using agents (like a specialized `GitCopilotAgent`) that interact with OpenAI APIs.
 * Securely managing OpenAI API keys (e.g., via environment variables or a secrets management system).
 * Crafting effective prompts to get desired outputs from the LLM.
@@ -253,6 +298,7 @@ Beyond basic Git operations and the `_create_github_pr` example, deeper GitHub i
 * **Updating Wiki Pages or Project Boards**: Automating updates to GitHub project wikis or boards based on RTM status.
 
 This requires:
+
 * Using a GitHub Personal Access Token (PAT) with appropriate permissions.
 * Utilizing libraries like `PyGithub` for API interactions.
 

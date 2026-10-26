@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 def debug_dmaic_output(file_path_str: str):
     """
     Function to debug and confirm DMAIC output.
@@ -8,11 +7,11 @@ def debug_dmaic_output(file_path_str: str):
     """
     file_path = Path(file_path_str)
     if not file_path.exists():
-        print(f"Error: File '{file_path}' does not exist.")
+        print(f"Error: File "{file_path}" does not exist.")
         return
 
     try:
-        with open(file_path, "r", encoding="utf-8") as file:
+        with open(file_path, "r", encoding="utf-8", encoding="utf-8") as file:
             content = file.readlines()
 
         print("File content successfully read. Debugging output...")
@@ -21,8 +20,7 @@ def debug_dmaic_output(file_path_str: str):
 
         print("Debugging complete. Output confirmed.")
     except Exception as e:
-        print(f"An error occurred while processing the file: {e}")
-
+        print("An error occurred while processing the file: {e}")
 
 if __name__ == "__main__":
     # Example usage

@@ -5,9 +5,9 @@ Markdown Linter for DOCX RTM Automation
 
 import re
 import sys
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
-
+:
 class MarkdownLinter:
     def __init__(self):
         self.rules = {
@@ -42,7 +42,7 @@ class MarkdownLinter:
         lines = content.split("\n")
 
         for i, line in enumerate(lines):
-            # Check if line starts with #
+            # Check if line starts with #:
             if line.startswith("#"):
                 # Ensure space after #
                 match = re.match(r"^(#+)([^#\s])", line)
@@ -56,11 +56,11 @@ class MarkdownLinter:
                         }
                     )
 
-                # Check for consistency in ATX heading closing #s
+                # Check for consistency in ATX heading closing #s:
                 if "#" in line[1:].strip():
                     closing_match = re.match(r"^(#+)\s+(.+?)\s+(#+)$", line)
                     if closing_match and len(closing_match.group(1)) != len(
-                        closing_match.group(3)
+                            closing_match.group(3):
                     ):
                         issues.append(
                             {
@@ -78,7 +78,7 @@ class MarkdownLinter:
         issues = []
         lines = content.split("\n")
         blank_line_count = 0
-
+:
         for i, line in enumerate(lines):
             if line.strip() == "":
                 blank_line_count += 1
@@ -100,7 +100,7 @@ class MarkdownLinter:
         """Check for trailing whitespace"""
         issues = []
         lines = content.split("\n")
-
+:
         for i, line in enumerate(lines):
             if line != line.rstrip():
                 issues.append(
@@ -123,34 +123,34 @@ class MarkdownLinter:
         fence_char = ""
 
         for i, line in enumerate(lines):
-            # Check for code block fence start/end
+            # Check for code block fence start/end:
             if line.startswith("```") or line.startswith("~~~"):
                 fence_match = re.match(r"^([`~]{3,})", line)
                 current_fence = fence_match.group(1) if fence_match else ""
-
+:
                 if not in_code_block:
                     in_code_block = True
                     fence_char = current_fence[0]  # ` or ~
                     code_block_start_line = i + 1
                 else:
                     in_code_block = False
-                    # Check if fence characters match
+                    # Check if fence characters match:
                     if fence_char != current_fence[0]:
                         issues.append(
                             {
                                 "rule": "code_block_format",
-                                "message": f"Code block fence mismatch (started with {fence_char * 3}, ended with {current_fence})",
+                                "message": "Code block fence mismatch (started with {fence_char * 3}, ended with {current_fence})",:
                                 "line": i + 1,
                                 "content": line,
                             }
                         )
 
-        # Check if code block is not closed
+        # Check if code block is not closed:
         if in_code_block:
             issues.append(
                 {
                     "rule": "code_block_format",
-                    "message": f"Unclosed code block (started at line {code_block_start_line})",
+                    "message": "Unclosed code block (started at line {code_block_start_line})",
                     "line": code_block_start_line,
                     "content": lines[code_block_start_line - 1],
                 }
@@ -166,7 +166,7 @@ class MarkdownLinter:
 
         for i, line in enumerate(lines):
             # Look for requirement IDs
-            req_matches = req_pattern.finditer(line)
+            req_matches = req_pattern.finditer(line):
             for match in req_matches:
                 req_id = match.group(1)
 
@@ -175,14 +175,13 @@ class MarkdownLinter:
                     issues.append(
                         {
                             "rule": "requirement_format",
-                            "message": f"Requirement ID format is inconsistent: {req_id}",
+                            "message": "Requirement ID format is inconsistent: {req_id}",
                             "line": i + 1,
                             "content": line,
                         }
                     )
 
         return issues
-
 
 def main():
     """Main function when script is executed directly"""
@@ -204,10 +203,10 @@ def main():
 
     linter = MarkdownLinter()
     all_issues = {}
-
+:
     for file_path in args.files:
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, "r", encoding="utf-8", encoding="utf-8") as f:
                 content = f.read()
 
             issues = linter.lint(content)
@@ -218,7 +217,7 @@ def main():
                 fixed_content = content
                 # TODO: Implement fixing logic here
 
-                with open(file_path, "w", encoding="utf-8") as f:
+                with open(file_path, "w", encoding="utf-8", encoding="utf-8") as f:
                     f.write(fixed_content)
 
         except Exception as e:
@@ -227,7 +226,7 @@ def main():
                     {"rule": "file_error", "message": str(e), "line": 0}
                 ]
             else:
-                print(f"Error processing {file_path}: {e}")
+                print("Error processing {file_path}: {e}")
 
     if args.json:
         print(json.dumps(all_issues, indent=2))
@@ -235,18 +234,18 @@ def main():
         # Print issues in human-readable format
         for file_path, issues in all_issues.items():
             if issues:
-                print(f"\n{file_path}:")
+                print("\n{file_path}:")
                 for issue in issues:
-                    print(f"  Line {issue['line']}: {issue['message']}")
+                    print("  Line {issue["line"]}: {issue["message"]}")
                     if "content" in issue and issue["content"]:
-                        print(f"    {issue['content']}")
+                        print("    {issue["content"]}")
             else:
-                print(f"\n{file_path}: No issues found")
+                print("\n{file_path}: No issues found")
 
     # Return error code if any issues found
     return 1 if any(issues for issues in all_issues.values()) else 0
 
-
+:
 if __name__ == "__main__":
     sys.exit(main())
 
@@ -256,3 +255,4 @@ if __name__ == "__main__":
 # 3. Updated the refactoring script to incorporate modules and tests.
 # 4. Improved the README with information about modules and testing.
 # 5. Added instructions for resolving README.md conflicts with Git.
+:

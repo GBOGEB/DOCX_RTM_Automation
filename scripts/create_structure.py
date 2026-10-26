@@ -23,7 +23,6 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
 
-
 def create_directory_structure():
     # Define directories to create (relative to BASE_DIR)
     directories = [
@@ -44,8 +43,7 @@ def create_directory_structure():
     for dir_name in directories:
         directory_path = BASE_DIR / dir_name
         directory_path.mkdir(parents=True, exist_ok=True)
-        print(f"Created directory: {directory_path}")
-
+        print("Created directory: {directory_path}")
 
 if __name__ == "__main__":
     create_directory_structure()

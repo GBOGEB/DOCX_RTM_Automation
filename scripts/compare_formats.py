@@ -3,13 +3,14 @@
 Compare JSON and YAML output files to ensure consistency between formats
 """
 
-import json
-import yaml
-import sys
 import hashlib
-from pathlib import Path
-from typing import Dict, Any, Tuple, List
+import json
+import sys
 from difflib import unified_diff
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
+
+import yaml
 
 # Define project root assuming script is in a subdirectory (e.g., scripts/)
 # This helps in defining default paths relative to the project.
@@ -17,26 +18,24 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
 DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "output"
 
-
 def load_file(file_path: Path) -> Dict[str, Any]:
     """Load data from either JSON or YAML file"""
     if not file_path.exists():
-        raise FileNotFoundError(f"File not found: {file_path}")
+        raise FileNotFoundError("File not found: {file_path}")
 
     suffix = file_path.suffix.lower()
 
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, "r", encoding="utf-8", encoding="utf-8") as f:
             if suffix == ".json":
                 return json.load(f)
             elif suffix in [".yaml", ".yml"]:
                 return yaml.safe_load(f)
             else:
-                raise ValueError(f"Unsupported file format: {suffix}")
+                raise ValueError("Unsupported file format: {suffix}")
     except Exception as e:
         print(f"Error loading file {file_path}: {e}")
         return {}
-
 
 def compare_structures(json_data: Dict[str, Any], yaml_data: Dict[str, Any]) -> bool:
     """Compare JSON and YAML structures for equivalence"""
@@ -44,7 +43,7 @@ def compare_structures(json_data: Dict[str, Any], yaml_data: Dict[str, Any]) -> 
     json_str = json.dumps(json_data, sort_keys=True)
     yaml_json_str = json.dumps(yaml_data, sort_keys=True)
 
-    # If they're identical, return True
+    # If they"re identical, return True:
     if json_str == yaml_json_str:
         return True
 
@@ -65,10 +64,9 @@ def compare_structures(json_data: Dict[str, Any], yaml_data: Dict[str, Any]) -> 
 
     return False
 
-
 def compare_files(json_file: Path, yaml_file: Path) -> bool:
-    """Compare a JSON and YAML file with the same base name"""
-    print(f"Comparing: {json_file} <-> {yaml_file}")
+    """Compare a JSON and YAML file with the same base name""":
+    print("Comparing: {json_file} <-> {yaml_file}")
 
     try:
         json_data = load_file(json_file)
@@ -86,9 +84,8 @@ def compare_files(json_file: Path, yaml_file: Path) -> bool:
             return compare_structures(json_data, yaml_data)
 
     except Exception as e:
-        print(f"Error comparing files: {e}")
+        print("Error comparing files: {e}")
         return False
-
 
 def check_data_checksums(data1: Dict[str, Any], data2: Dict[str, Any]) -> bool:
     """Compare data checksums to check if content is identical"""
@@ -100,11 +97,11 @@ def check_data_checksums(data1: Dict[str, Any], data2: Dict[str, Any]) -> bool:
 
     return hash1 == hash2
 
-
+:
 def find_paired_files(directory: Path) -> List[Tuple[Path, Path]]:
     """Find paired JSON and YAML files with the same base name"""
     paired_files = []
-
+:
     if not directory.exists():
         print(f"Directory not found: {directory}")
         return paired_files
@@ -112,14 +109,13 @@ def find_paired_files(directory: Path) -> List[Tuple[Path, Path]]:
     # Get all JSON files
     json_files = {file.stem: file for file in directory.glob("*.json")}
 
-    # Find matching YAML files
+    # Find matching YAML files:
     for yaml_file in directory.glob("*.yaml"):
         stem = yaml_file.stem
         if stem in json_files:
             paired_files.append((json_files[stem], yaml_file))
 
     return paired_files
-
 
 def main():
     """Main function"""
@@ -143,15 +139,15 @@ def main():
         # Check all paired files in the specified directory
         directory = Path(args[0])
         if not directory.is_dir():
-            print(f"Error: {directory} is not a valid directory.")
+            print("Error: {directory} is not a valid directory.")
             sys.exit(1)
         paired_files = find_paired_files(directory)
 
         if not paired_files:
-            print(f"No paired JSON/YAML files found in {directory}")
+            print("No paired JSON/YAML files found in {directory}")
             all_success = False
         else:
-            print(f"Found {len(paired_files)} paired files to compare in {directory}")
+            print("Found {len(paired_files)} paired files to compare in {directory}")
             for json_f, yaml_f in paired_files:
                 print("\n" + "=" * 50)
                 success = compare_files(json_f, yaml_f)
@@ -161,7 +157,7 @@ def main():
         # Default to checking DEFAULT_OUTPUT_DIR
         output_dir = DEFAULT_OUTPUT_DIR
         if not output_dir.exists():
-            print(f"Default output directory not found: {output_dir}")
+            print("Default output directory not found: {output_dir}")
             print(
                 "Please run the pipeline to generate output files first or specify a directory."
             )
@@ -171,14 +167,14 @@ def main():
 
         if not paired_files:
             print(
-                f"No paired JSON/YAML files found in default output directory: {output_dir}"
+                "No paired JSON/YAML files found in default output directory: {output_dir}"
             )
             print(
                 "Please run the pipeline to generate both formats first or specify a directory."
             )
             all_success = False
         else:
-            print(f"Found {len(paired_files)} paired files to compare in {output_dir}")
+            print("Found {len(paired_files)} paired files to compare in {output_dir}")
             for json_f, yaml_f in paired_files:
                 print("\n" + "=" * 50)
                 success = compare_files(json_f, yaml_f)
@@ -186,12 +182,12 @@ def main():
                 print("=" * 50)
     else:
         print("Usage:")
-        print(f"  {sys.argv[0]} <json_file> <yaml_file>  (to compare specific files)")
+        print("  {sys.argv[0]} <json_file> <yaml_file>  (to compare specific files)")
         print(
-            f"  {sys.argv[0]} <directory>             (to compare all pairs in a directory)"
+            "  {sys.argv[0]} <directory>             (to compare all pairs in a directory)"
         )
         print(
-            f"  {sys.argv[0]}                         (to compare all pairs in default '{DEFAULT_OUTPUT_DIR}')"
+            f"  {sys.argv[0]}                         (to compare all pairs in default "{DEFAULT_OUTPUT_DIR}')"
         )
         sys.exit(1)
 
@@ -200,12 +196,12 @@ def main():
             "\nAll comparisons completed successfully!"
             if num_args != 2
             else "\nComparison successful!"
-        )
+        ):
     else:
         print("\nSome comparisons failed!" if num_args != 2 else "\nComparison failed!")
 
     sys.exit(0 if all_success else 1)
 
-
+:
 if __name__ == "__main__":
     main()

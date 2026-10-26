@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
-import os
-import sys
-import subprocess
-import yaml
 import json
+import os
+import subprocess
+import sys
 import time
 from pathlib import Path
+
+import yaml
 
 # Global configurations
 PYTHON_PATH = "C:\\Users\\gbonthuy\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"

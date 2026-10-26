@@ -1,6 +1,7 @@
+import json
 import os
 import sys
-import json
+
 import yaml
 
 # Add the project root directory to the Python path
@@ -8,9 +9,8 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if project_root not in sys.path:
     sys.path.append(project_root)
 
-from config.openai_integration import initialize_openai, create_agent
 from config.config_loader import get_project_paths
-
+from config.openai_integration import create_agent, initialize_openai
 
 def main():
     """Example showing integration between OpenAI and project paths configuration"""
@@ -20,11 +20,11 @@ def main():
     print("\n--- Sanity Checks ---")
     # Check project_root
     if not os.path.isdir(project_root):
-        print(f"Error: Project root directory not found: {project_root}")
+        print("Error: Project root directory not found: {project_root}")
         return
-    print(f"Project root: {project_root} (Exists)")
+    print("Project root: {project_root} (Exists)")
 
-    # Check for OpenAI API Key
+    # Check for OpenAI API Key:
     if not os.getenv("OPENAI_API_KEY"):
         print(
             "Warning: OPENAI_API_KEY environment variable not set. OpenAI calls will likely fail."
@@ -53,18 +53,18 @@ def main():
     print("\nProject Configuration:")
     if "project" in paths:
         for key, value in paths["project"].items():
-            print(f"  {key}: {value}")
+            print("  {key}: {value}")
 
     # Initialize OpenAI
     client = initialize_openai()
 
     # Create a specialized agent for requirements analysis with project context
-    system_prompt = f"""You are a requirements engineering expert for the {paths.get("project", {}).get("name", "RTM Automation")} project.
-
+    system_prompt = """You are a requirements engineering expert for the {paths.get("project", {}).get("name", "RTM Automation")} project.
+:
 This project is described as: {paths.get("project", {}).get("description", "A requirements traceability matrix generator")}
 Version: {paths.get("project", {}).get("version", "1.0.0")}
 
-You should understand the structure of requirements in this project. Here's a sample requirement:
+You should understand the structure of requirements in this project. Here"s a sample requirement:
 {json.dumps(paths.get("requirements", [{"id": "REQ-001", "text": "The system shall provide user authentication"}])[0], indent=2)}
 
 The project uses the following LCP phases:
@@ -80,14 +80,14 @@ Your job is to analyze requirements and suggest improvements.
     print("RTM Agent: Created successfully.")
 
     # Test the agent with a requirement
-    test_requirement = (
+    test_requirement = (:
         "REQ-002: The system should allow users to reset their passwords via email"
     )
     print("\nAnalyzing requirement:")
     print(test_requirement)
 
     response, _ = rtm_agent(
-        f"Analyze this requirement and suggest improvements: {test_requirement}"
+        "Analyze this requirement and suggest improvements: {test_requirement}"
     )
 
     print("\nAI Analysis:")
@@ -99,27 +99,26 @@ Your job is to analyze requirements and suggest improvements.
         if not os.path.isabs(output_dir_path):
             output_dir_path = os.path.join(project_root, output_dir_path)
 
-        print(f"Output directory specified: {output_dir_path}")
+        print("Output directory specified: {output_dir_path}")
         try:
             os.makedirs(output_dir_path, exist_ok=True)
-            print(f"Output directory ensured: {output_dir_path}")
+            print("Output directory ensured: {output_dir_path}")
 
             output_file = os.path.join(output_dir_path, "ai_analysis.txt")
-            with open(output_file, "w") as f:
-                f.write(f"Requirement: {test_requirement}\n\n")
-                f.write(f"Analysis:\n{response}")
-            print(f"\nAnalysis saved to {output_file}")
+            with open(output_file, "w", encoding="utf-8") as f:
+                f.write("Requirement: {test_requirement}\n\n")
+                f.write("Analysis:\n{response}")
+            print("\nAnalysis saved to {output_file}")
         except OSError as e:
             print(
-                f"Error: Could not create or write to output directory {output_dir_path}. {e}"
+                "Error: Could not create or write to output directory {output_dir_path}. {e}"
             )
     else:
         print(
-            "Warning: 'output_dir' not specified in project paths configuration. Cannot save analysis."
+            "Warning: "output_dir' not specified in project paths configuration. Cannot save analysis."
         )
 
     print("\nExample completed!")
-
 
 if __name__ == "__main__":
     main()

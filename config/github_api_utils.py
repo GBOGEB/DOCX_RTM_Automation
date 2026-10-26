@@ -1,6 +1,5 @@
 import os
 
-
 def load_github_api_key():
     # Get the API key from an environment variable
     api_key = os.getenv("GITHUB_API_KEY")

@@ -4,9 +4,9 @@ Quick fix for toc-depth parameter issue.
 This script finds and fixes all hardcoded toc-depth values > 6 in the codebase.
 """
 
+import glob
 import os
 import re
-import glob
 
 
 def fix_toc_depth_in_file(file_path):

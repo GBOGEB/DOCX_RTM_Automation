@@ -1,19 +1,18 @@
 import os
-from typing import Dict, Any
 from enum import Enum, auto
+from typing import Any, Dict
 
-from dmaic import DMAICHandler
-from utils.paths_manager import PathsManager
-from utils.output_handler import OutputHandler
 from agents.agent_common import (
-    BaseAgent,
-    AgentRole,
-    AgentMessage,
-    StandardAgentResponse,
     AgentCapability,
+    AgentMessage,
+    AgentRole,
+    BaseAgent,
+    StandardAgentResponse,
     validate_input,
 )
-
+from dmaic import DMAICHandler
+from utils.output_handler import OutputHandler
+from utils.paths_manager import PathsManager
 
 class GitOperation(Enum):
     """Supported Git operations"""
@@ -28,15 +27,14 @@ class GitOperation(Enum):
     CREATE_PR = auto()
     MERGE = auto()
 
-
 class GitAgent(BaseAgent):
     """
     Agent responsible for Git repository operations including
     cloning, pushing, creating PRs, and analyzing repository content.
     """
 
-    def __init__(
-        self, agent_id: str, dmaic_handler: DMAICHandler, output_handler: OutputHandler
+    def __init__(:
+            self, agent_id: str, dmaic_handler: DMAICHandler, output_handler: OutputHandler
     ):
         """Initialize the Git agent"""
         super().__init__(agent_id, AgentRole.REPOSITORY, output_handler)
@@ -47,7 +45,7 @@ class GitAgent(BaseAgent):
         self.repos_dir = os.path.join(self.paths.get_data_dir(), "repositories")
         os.makedirs(self.repos_dir, exist_ok=True)
 
-        # Track repositories
+        # Track repositories:
         self.repositories: Dict[str, Dict[str, Any]] = {}
 
         # Register capabilities
@@ -72,7 +70,7 @@ class GitAgent(BaseAgent):
                 "status": "error",
                 "message": "Operation not specified in content.",
                 "data": None,
-                "error_details": "Missing 'operation'",
+                "error_details": "Missing "operation"",
                 "markdown_content": None,
             }
 
@@ -86,7 +84,7 @@ class GitAgent(BaseAgent):
                 if not validate_input(content, ["url"]):
                     return {
                         "status": "error",
-                        "message": "Missing 'url' for clone operation.",
+                        "message": "Missing "url" for clone operation.",:
                         "data": None,
                         "error_details": "Invalid input",
                         "markdown_content": None,
@@ -96,7 +94,7 @@ class GitAgent(BaseAgent):
                 if not validate_input(content, ["repository"]):
                     return {
                         "status": "error",
-                        "message": "Missing 'repository' for pull operation.",
+                        "message": "Missing "repository" for pull operation.",:
                         "data": None,
                         "error_details": "Invalid input",
                         "markdown_content": None,
@@ -106,7 +104,7 @@ class GitAgent(BaseAgent):
                 if not validate_input(content, ["repository"]):
                     return {
                         "status": "error",
-                        "message": "Missing 'repository' for push operation.",
+                        "message": "Missing "repository" for push operation.",:
                         "data": None,
                         "error_details": "Invalid input",
                         "markdown_content": None,
@@ -116,7 +114,7 @@ class GitAgent(BaseAgent):
                 if not validate_input(content, ["repository", "message"]):
                     return {
                         "status": "error",
-                        "message": "Missing 'repository' or 'message' for commit operation.",
+                        "message": "Missing "repository" or "message" for commit operation.",:
                         "data": None,
                         "error_details": "Invalid input",
                         "markdown_content": None,
@@ -124,11 +122,11 @@ class GitAgent(BaseAgent):
                 response_data = self._handle_commit_operation(content)
             elif operation_str == "create_pr":
                 if not validate_input(
-                    content, ["repository", "title", "source_branch"]
+                        content, ["repository", "title", "source_branch"]:
                 ):
                     return {
                         "status": "error",
-                        "message": "Missing 'repository', 'title', or 'source_branch' for create_pr.",
+                        "message": "Missing "repository", "title", or "source_branch" for create_pr.",:
                         "data": None,
                         "error_details": "Invalid input",
                         "markdown_content": None,
@@ -138,7 +136,7 @@ class GitAgent(BaseAgent):
                 if not validate_input(content, ["repository"]):
                     return {
                         "status": "error",
-                        "message": "Missing 'repository' for status operation.",
+                        "message": "Missing "repository" for status operation.",:
                         "data": None,
                         "error_details": "Invalid input",
                         "markdown_content": None,
@@ -146,10 +144,10 @@ class GitAgent(BaseAgent):
                 response_data = self._handle_status_operation(content)
             else:
                 error_occurred = True
-                error_message = f"Unsupported operation: {operation_str}"
+                error_message = "Unsupported operation: {operation_str}"
         except Exception as e:
             self.output_handler.log_error(
-                f"Error in Git operation {operation_str}: {e}"
+                "Error in Git operation {operation_str}: {e}"
             )
             error_occurred = True
             error_message = str(e)
@@ -157,7 +155,7 @@ class GitAgent(BaseAgent):
         if error_occurred or response_data.get("status") == "error":
             return {
                 "status": "error",
-                "message": f"Git operation '{operation_str}' failed.",
+                "message": f"Git operation "{operation_str}" failed.",
                 "data": {"operation": operation_str, **response_data.get("data", {})},
                 "error_details": error_message or response_data.get("error"),
                 "markdown_content": None,
@@ -165,7 +163,7 @@ class GitAgent(BaseAgent):
         else:
             return {
                 "status": "success",
-                "message": f"Git operation '{operation_str}' completed successfully.",
+                "message": f"Git operation "{operation_str}" completed successfully.",
                 "data": response_data,
                 "error_details": None,
                 "markdown_content": None,
@@ -178,7 +176,7 @@ class GitAgent(BaseAgent):
         if not validate_input(content, ["query_type", "repository"]):
             return {
                 "status": "error",
-                "message": "Missing 'query_type' or 'repository' in content.",
+                "message": "Missing "query_type" or "repository" in content.",
                 "data": None,
                 "error_details": "Invalid input",
                 "markdown_content": None,
@@ -190,7 +188,7 @@ class GitAgent(BaseAgent):
         if not repo_name or repo_name not in self.repositories:
             return {
                 "status": "error",
-                "message": f"Unknown repository: {repo_name}",
+                "message": "Unknown repository: {repo_name}",
                 "data": None,
                 "error_details": "Repository not found",
                 "markdown_content": None,
@@ -216,10 +214,10 @@ class GitAgent(BaseAgent):
                 query_response_data = self._get_repository_branches(repo_info)
             else:
                 error_occurred = True
-                error_message = f"Unsupported query type: {query_type}"
+                error_message = "Unsupported query type: {query_type}"
         except Exception as e:
             self.output_handler.log_error(
-                f"Error in repository query {query_type}: {e}"
+                "Error in repository query {query_type}: {e}"
             )
             error_occurred = True
             error_message = str(e)
@@ -227,7 +225,7 @@ class GitAgent(BaseAgent):
         if error_occurred or query_response_data.get("status") == "error":
             return {
                 "status": "error",
-                "message": f"Repository query '{query_type}' failed for {repo_name}.",
+                "message": f"Repository query "{query_type}" failed for {repo_name}.",:
                 "data": {
                     "query_type": query_type,
                     "repository": repo_name,
@@ -239,7 +237,7 @@ class GitAgent(BaseAgent):
         else:
             return {
                 "status": "success",
-                "message": f"Repository query '{query_type}' for {repo_name} completed.",
+                "message": f"Repository query "{query_type}" for {repo_name} completed.",:
                 "data": query_response_data,
                 "error_details": None,
                 "markdown_content": None,
@@ -251,7 +249,7 @@ class GitAgent(BaseAgent):
         branch = content.get("branch", "main")
         repo_path = self.clone_or_pull_repository(repo_url, branch)
         repo_name = self._extract_repo_name(repo_url)
-        return {
+        return {:
             "operation": "clone",
             "repository": repo_name,
             "path": repo_path,
@@ -263,7 +261,7 @@ class GitAgent(BaseAgent):
         repo_name = content["repository"]
         branch = content.get("branch")
         repo_path = self.repositories[repo_name]["path"]
-        output = self._git_pull(repo_path, branch)
+        output = self._git_pull(repo_path, branch):
         return {"operation": "pull", "repository": repo_name, "output": output}
 
     def _handle_push_operation(self, content: Dict[str, Any]) -> Dict[str, Any]:
@@ -271,7 +269,7 @@ class GitAgent(BaseAgent):
         repo_name = content["repository"]
         branch = content.get("branch")
         repo_path = self.repositories[repo_name]["path"]
-        output = self._git_push(repo_path, branch)
+        output = self._git_push(repo_path, branch):
         return {"operation": "push", "repository": repo_name, "output": output}
 
     def _handle_commit_operation(self, content: Dict[str, Any]) -> Dict[str, Any]:
@@ -280,7 +278,7 @@ class GitAgent(BaseAgent):
         message = content["message"]
         files = content.get("files")
         result = self.create_commit(repo_name, message, files)
-        return {
+        return {:
             "operation": "commit",
             "repository": repo_name,
             "commit_hash": result.get("commit_hash"),
@@ -297,14 +295,14 @@ class GitAgent(BaseAgent):
         return self.create_pull_request(
             repo_name, title, source_branch, target_branch, description
         )
-
+:
     def _handle_status_operation(self, content: Dict[str, Any]) -> Dict[str, Any]:
         """Handle status operation, returns data for StandardAgentResponse or raises error."""
         repo_name = content["repository"]
         repo_path = self.repositories[repo_name]["path"]
         status_output = self._git_status(repo_path)
         current_branch = self._get_current_branch(repo_path)
-        return {
+        return {:
             "operation": "status",
             "repository": repo_name,
             "current_branch": current_branch,
@@ -329,17 +327,17 @@ class GitAgent(BaseAgent):
             }
         except Exception as e:
             self.output_handler.log_error(
-                f"Error getting repo structure for {repo_info['name']}: {e}"
+                "Error getting repo structure for {repo_info["name"]}: {e}"
             )
             raise
 
-    def _get_repository_files(
-        self, repo_info: Dict[str, Any], path_filter: str
+    def _get_repository_files(:
+            self, repo_info: Dict[str, Any], path_filter: str
     ) -> Dict[str, Any]:
         """Get the files in a specific path of the repository. Returns data payload."""
         repo_path = repo_info["path"]
         target_path = os.path.join(repo_path, path_filter) if path_filter else repo_path
-
+:
         if not os.path.exists(target_path) or not os.path.isdir(target_path):
             raise ValueError(
                 f"Target path does not exist or is not a directory: {target_path}"
@@ -357,12 +355,12 @@ class GitAgent(BaseAgent):
             }
         except Exception as e:
             self.output_handler.log_error(
-                f"Error listing files for {repo_info['name']} at {path_filter}: {e}"
+                "Error listing files for {repo_info["name"]} at {path_filter}: {e}"
             )
             raise
 
-    def _get_repository_commits(
-        self, repo_info: Dict[str, Any], count: int
+    def _get_repository_commits(:
+            self, repo_info: Dict[str, Any], count: int
     ) -> Dict[str, Any]:
         """Get the commit history of the repository. Returns data payload."""
         repo_path = repo_info["path"]

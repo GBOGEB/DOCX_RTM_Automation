@@ -5,6 +5,7 @@ import os
 import sys
 import unittest
 
+:
 if __name__ == "__main__":
     # Change working directory to project root
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -16,3 +17,4 @@ if __name__ == "__main__":
 
     # Exit with appropriate code
     sys.exit(0 if result.wasSuccessful() else 1)
+:

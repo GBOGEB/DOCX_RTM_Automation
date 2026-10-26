@@ -1,9 +1,9 @@
-from docx import Document
-from docx.enum.text import WD_ALIGN_PARAGRAPH
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent
+from docx import Document
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 
+BASE_DIR = Path(__file__).resolve().parent
 
 def create_sample_document(filename_str="sample_document.docx"):
     """Creates a sample Word document for RTM automation testing"""
@@ -27,7 +27,7 @@ def create_sample_document(filename_str="sample_document.docx"):
     # Add requirements section
     doc.add_heading("1. Requirements Section", level=1)
 
-    # Add paragraphs with requirement IDs embedded
+    # Add paragraphs with requirement IDs embedded:
     p = doc.add_paragraph("Requirement ID: ")
     p.add_run("REQ-001").bold = True
     p.add_run(" - The system shall process input files in DOCX format.")
@@ -57,7 +57,7 @@ def create_sample_document(filename_str="sample_document.docx"):
         ("REQ-005", "The system shall support files up to 10MB", "Medium"),
         ("REQ-006", "The system shall log all processing activities", "Low"),
     ]
-
+:
     for i, (req_id, desc, priority) in enumerate(data):
         row = table.rows[i + 1].cells
         row[0].text = req_id
@@ -80,8 +80,7 @@ def create_sample_document(filename_str="sample_document.docx"):
 
     # Save the document
     doc.save(output_path)
-    print(f"Sample document created: {output_path}")
-
+    print("Sample document created: {output_path}")
 
 if __name__ == "__main__":
     create_sample_document()

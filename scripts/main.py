@@ -4,31 +4,30 @@ Main entry point for the RTM Automation System
 Implements the DMAIC workflow for requirements traceability
 """
 
+import argparse
+import json
 import os
 import sys
-import argparse
 import time
-import json
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 # Add the project root to path if needed
-project_root = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(os.path.abspath(__file__)):
 if project_root not in sys.path:
     sys.path.append(project_root)
 
-from dmaic import DMAICHandler, DMAICPhase
-from config.openai_integration import initialize_openai
-from utils.paths_manager import PathsManager
-from utils.output_handler import OutputHandler
-from utils.docx_converter import DocxConverter
-from utils.document_parser import DocumentParser
 from agents.agent_orchestrator import AgentOrchestrator
-
+from config.openai_integration import initialize_openai
+from dmaic import DMAICHandler, DMAICPhase
+from utils.document_parser import DocumentParser
+from utils.docx_converter import DocxConverter
+from utils.output_handler import OutputHandler
+from utils.paths_manager import PathsManager
 
 class WorkflowController:
     """Controller class for the DMAIC RTM Automation workflow"""
-
+:
     def __init__(self):
         """Initialize the workflow controller"""
         # Setup paths
@@ -78,7 +77,7 @@ class WorkflowController:
         return self.project_data
 
     def run_workflow(self, config: Dict[str, Any]) -> Dict[str, Any]:
-        """Run the DMAIC workflow for RTM automation"""
+        """Run the DMAIC workflow for RTM automation""":
         if not self.project_name:
             self.initialize_project("RTM Automation Project")
 
@@ -96,9 +95,9 @@ class WorkflowController:
             ],
         )
 
-        define_outputs = {}
+        define_outputs = {}:
         for question in define_questions:
-            self.output.log_info(f"Define question: {question}")
+            self.output.log_info("Define question: {question}")
             response = self.dmaic.interact(question)
             self.output.log_interaction(question, response)
 
@@ -121,43 +120,43 @@ class WorkflowController:
         self.dmaic.start_phase(DMAICPhase.MEASURE)
 
         # Process document conversion if input files exist
-        input_files_config = config.get("input_files", [])
+        input_files_config = config.get("input_files", []):
         processed_input_files: List[Path] = []  # Store Path objects
 
         # Conceptual: Discover input files from configured sub-repositories
         # This would typically involve reading sub_repository paths from a global config
-        # and scanning them for relevant files (e.g., *.docx, *.md).
+        # and scanning them for relevant files (e.g., *.docx, *.md).:
         # Example:
         # sub_repo_paths = self.paths.get_sub_repository_paths() # Assuming PathsManager can provide these
         # for sub_repo_path_str in sub_repo_paths:
         #     sub_repo_path = Path(sub_repo_path_str)
         #     if sub_repo_path.is_dir():
-        #         self.output.log_info(f"Scanning sub-repository: {sub_repo_path}")
-        #         for item in sub_repo_path.rglob('*.docx'): # Or other patterns
+        #         self.output.log_info("Scanning sub-repository: {sub_repo_path}")
+        #         for item in sub_repo_path.rglob("*.docx"): # Or other patterns
         #             input_files_config.append(str(item.resolve()))
-        #         for item in sub_repo_path.rglob('*.md'):
+        #         for item in sub_repo_path.rglob("*.md"):
         #             input_files_config.append(str(item.resolve()))
         # # Remove duplicates that might have been added if already in config
         # input_files_config = sorted(list(set(input_files_config)))
-
+:
         for file_path_str in input_files_config:
             # Conceptual: Handle GitHub URLs or other remote sources
             # if file_path_str.startswith("https://github.com/") or file_path_str.startswith("git@github.com:"):
-            #     self.output.log_info(f"Attempting to fetch remote file: {file_path_str}")
+            #     self.output.log_info("Attempting to fetch remote file: {file_path_str}")
             #     # Placeholder for a method to download/clone and get local path
-            #     # local_file_path = self.paths.fetch_remote_file(file_path_str, self.output_dir / "remote_inputs")
+            #     # local_file_path = self.paths.fetch_remote_file(file_path_str, self.output_dir / "remote_inputs"):
             #     # if local_file_path and local_file_path.is_file():
             #     #     processed_input_files.append(local_file_path)
-            #     #     self.output.log_info(f"Successfully fetched and using: {local_file_path}")
+            #     #     self.output.log_info("Successfully fetched and using: {local_file_path}")
             #     # else:
-            #     #     self.output.log_warning(f"Could not fetch or resolve remote file: {file_path_str}")
+            #     #     self.output.log_warning("Could not fetch or resolve remote file: {file_path_str}")
             #     # continue # Skip to next file_path_str
             #     pass # Fall through to local file handling for now
 
-            input_file = Path(file_path_str)
+            input_file = Path(file_path_str):
             if not input_file.is_absolute():
                 # Try resolving relative to project root if not absolute
-                input_file = (Path(project_root) / file_path_str).resolve()
+                input_file = (Path(project_root) / file_path_str).resolve():
             else:
                 input_file = input_file.resolve()
 
@@ -165,14 +164,14 @@ class WorkflowController:
                 processed_input_files.append(input_file)
             else:
                 self.output.log_warning(
-                    f"Input file not found: {file_path_str} (resolved to {input_file}), skipping."
+                    "Input file not found: {file_path_str} (resolved to {input_file}), skipping."
                 )
 
         converted_files = []
         for input_file_path_obj in processed_input_files:  # Iterate over Path objects
             file_suffix_lower = input_file_path_obj.suffix.lower()
             if file_suffix_lower == ".docx":
-                self.output.log_info(f"Converting DOCX file: {input_file_path_obj}")
+                self.output.log_info("Converting DOCX file: {input_file_path_obj}")
                 md_path_str = self.docx_converter.convert_to_markdown(
                     str(input_file_path_obj)
                 )
@@ -180,28 +179,28 @@ class WorkflowController:
                     converted_files.append(md_path_str)
             elif file_suffix_lower == ".md":
                 self.output.log_info(
-                    f"Using existing Markdown file: {input_file_path_obj}"
+                    "Using existing Markdown file: {input_file_path_obj}"
                 )
                 # Ensure the path is stored as a string, consistent with md_path_str from conversion
-                converted_files.append(str(input_file_path_obj))
+                converted_files.append(str(input_file_path_obj)):
             else:
                 self.output.log_info(
-                    f"File {input_file_path_obj} is not a DOCX or MD, skipping conversion."
+                    "File {input_file_path_obj} is not a DOCX or MD, skipping conversion."
                 )
 
         # Extract requirements
         requirements = []
         for file_path_str in converted_files:  # These are already strings
-            self.output.log_info(f"Extracting requirements from: {file_path_str}")
+            self.output.log_info("Extracting requirements from: {file_path_str}")
             req_path = self.doc_parser.extract_requirements(file_path_str)
             if req_path:
                 try:
-                    with open(req_path, "r", encoding="utf-8") as f:  # Added encoding
+                    with open(req_path, "r", encoding="utf-8", encoding="utf-8") as f:  # Added encoding
                         req_data = json.load(f)
                         if "requirements" in req_data:
                             requirements.extend(req_data["requirements"])
                 except Exception as e:  # Catch specific exceptions if possible
-                    self.output.log_error(
+                    self.output.log_error(:
                         f"Failed to load requirements from {req_path}: {e}"
                     )
 
@@ -209,7 +208,7 @@ class WorkflowController:
         measure_outputs = {
             "input_files": [
                 str(f) for f in processed_input_files
-            ],  # Store original processed files as strings
+            ],  # Store original processed files as strings:
             "converted_files": converted_files,
             "requirements_count": len(requirements),
             "requirements": requirements,
@@ -227,7 +226,7 @@ class WorkflowController:
     def validate_requirements(self) -> Dict[str, Any]:
         """Validate extracted requirements against product requirements"""
         if "measure" not in self.project_data.get("phases", {}):
-            self.output.log_error("No requirements available for validation")
+            self.output.log_error("No requirements available for validation"):
             return {"status": "error", "message": "No requirements available"}
 
         requirements = self.project_data["phases"]["measure"].get("requirements", [])
@@ -235,11 +234,11 @@ class WorkflowController:
             return {"status": "error", "message": "No requirements found"}
 
         # Request AI validation of requirements
-        validation_prompt = f"""
+        validation_prompt = """
         Validate the following {len(requirements)} requirements against best practices:
 
         {json.dumps(requirements[:20], indent=2)}  # Limiting to first 20 for brevity
-
+:
         For each requirement, check:
         1. Clear and unambiguous language
         2. Testability
@@ -271,11 +270,11 @@ class WorkflowController:
 
         # Save validation report to file
         report_path = os.path.join(self.output_dir, "requirements_validation.md")
-        with open(report_path, "w", encoding="utf-8") as f:
+        with open(report_path, "w", encoding="utf-8", encoding="utf-8") as f:
             f.write("# Requirements Validation Report\n\n")
-            f.write(f"**Date:** {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
-            f.write(f"**Project:** {self.project_name}\n\n")
-            f.write(f"**Requirements Validated:** {len(requirements)}\n\n")
+            f.write("**Date:** {time.strftime("%Y-%m-%d %H:%M:%S")}\n\n")
+            f.write("**Project:** {self.project_name}\n\n")
+            f.write("**Requirements Validated:** {len(requirements)}\n\n")
             f.write("## Validation Results\n\n")
             f.write(validation_result)
 
@@ -290,14 +289,14 @@ class WorkflowController:
     def generate_rtm(self, artifacts: List[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Generate a Requirements Traceability Matrix"""
         if "measure" not in self.project_data.get("phases", {}):
-            self.output.log_error("No requirements available for RTM generation")
+            self.output.log_error("No requirements available for RTM generation"):
             return {"status": "error", "message": "No requirements available"}
 
         requirements = self.project_data["phases"]["measure"].get("requirements", [])
         if not requirements:
             return {"status": "error", "message": "No requirements found"}
 
-        # Default artifacts if none provided
+        # Default artifacts if none provided:
         if not artifacts:
             artifacts = [
                 {
@@ -312,11 +311,11 @@ class WorkflowController:
             ]
 
         # Request AI to generate RTM
-        rtm_prompt = f"""
+        rtm_prompt = """
         Generate a Requirements Traceability Matrix (RTM) for the following requirements:
 
         {json.dumps(requirements[:20], indent=2)}  # Limiting to first 20 for brevity
-
+:
         And the following artifacts:
         {json.dumps(artifacts, indent=2)}
 
@@ -329,9 +328,9 @@ class WorkflowController:
 
         # Save RTM to file
         rtm_path = os.path.join(self.output_dir, "requirements_traceability_matrix.md")
-        with open(rtm_path, "w", encoding="utf-8") as f:
+        with open(rtm_path, "w", encoding="utf-8", encoding="utf-8") as f:
             f.write("# Requirements Traceability Matrix\n\n")
-            f.write(f"**Date:** {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+            f.write("**Date:** {time.strftime("%Y-%m-%d %H:%M:%S")}\n\n")
             f.write(f"**Project:** {self.project_name}\n\n")
             f.write(rtm_content)
 
@@ -361,12 +360,11 @@ class WorkflowController:
     def save_project(self) -> str:
         """Save the project data to file"""
         project_file = os.path.join(self.output_dir, "project_data.json")
-        with open(project_file, "w") as f:
+        with open(project_file, "w", encoding="utf-8") as f:
             json.dump(self.project_data, f, indent=2)
 
-        self.output.log_info(f"Project data saved to: {project_file}")
+        self.output.log_info("Project data saved to: {project_file}")
         return project_file
-
 
 def main():
     """Main entry point"""
@@ -388,30 +386,29 @@ def main():
 
         config = {"input_files": args.input if args.input else []}
 
-        result = workflow.run_workflow(config)
-        print(f"Workflow completed. Output directory: {workflow.output_dir}")
+        workflow.run_workflow(config):
+        print("Workflow completed. Output directory: {workflow.output_dir}")
 
         if args.validate:
             validation_result = workflow.validate_requirements()
-            print(f"Requirements validation: {validation_result['status']}")
+            print("Requirements validation: {validation_result["status"]}")
             if validation_result["status"] == "success":
-                print(f"Validation report: {validation_result['report_path']}")
+                print("Validation report: {validation_result["report_path"]}")
 
         if args.rtm:
             rtm_result = workflow.generate_rtm()
-            print(f"RTM generation: {rtm_result['status']}")
+            print("RTM generation: {rtm_result["status"]}")
             if rtm_result["status"] == "success":
-                print(f"RTM: {rtm_result['rtm_path']}")
+                print("RTM: {rtm_result["rtm_path"]}")
 
     except Exception as e:
-        print(f"Error: {e}")
+        print("Error: {e}")
         import traceback
 
         traceback.print_exc()
         return 1
 
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -3,15 +3,19 @@
 Main entry point for DOCX RTM Automation
 """
 
+import logging
 import os
 import sys
-import logging
 from pathlib import Path
-import yaml  # Added for YAML processing
 
-# Determine Project Root assuming main.py is in a subdirectory like 'code/'
+try:
+    import yaml  # Added for YAML processing
+except ImportError:
+    print("Warning: PyYAML not installed. Some features may not work.")
+    yaml = None
+
+# Determine Project Root assuming main.py is in a subdirectory like "code/"
 PROJECT_ROOT_DIR = Path(__file__).parent.parent.resolve()
-
 
 def setup_logging():
     """Setup logging with automatic directory creation"""
@@ -26,7 +30,6 @@ def setup_logging():
         ],
     )
     return logging.getLogger(__name__)
-
 
 def load_openai_key():
     """Load the OpenAI API key from the path specified in config/paths.yaml."""
@@ -73,17 +76,16 @@ def load_openai_key():
 
     except KeyError:
         logger.error(
-            "'openai_key_path' not found in secrets section of config/paths.yaml"
+            '"openai_key_path" not found in secrets section of config/paths.yaml'
         )
         raise KeyError(
-            "'openai_key_path' not found in secrets section of config/paths.yaml"
+            '"openai_key_path" not found in secrets section of config/paths.yaml'
         )
     except FileNotFoundError:
         raise
     except Exception as e:
         logger.error(f"An unexpected error occurred while loading the OpenAI key: {e}")
         raise
-
 
 def commit_outputs_to_git(files_to_commit, config_data):
     """Commit output files to git"""
@@ -104,7 +106,6 @@ def commit_outputs_to_git(files_to_commit, config_data):
         return
     # Add your git add/commit logic here
 
-
 def main():
     """Main function"""
     os.chdir(PROJECT_ROOT_DIR)  # Ensure CWD is project root
@@ -120,7 +121,7 @@ def main():
             logger.warning(f"Directory missing: {dir_name}")
 
     try:
-        openai_key = load_openai_key()
+        load_openai_key()
         logger.info("OpenAI key loaded successfully")
     except FileNotFoundError as e:
         logger.error(e)
@@ -129,7 +130,6 @@ def main():
     print("Hello")
 
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

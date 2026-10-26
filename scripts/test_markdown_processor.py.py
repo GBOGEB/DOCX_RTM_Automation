@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-import sys
 import importlib.util
+import sys
 from pathlib import Path
 
 # Add parent directory to path
@@ -21,3 +21,4 @@ write_yaml = word_module.write_yaml
 generate_global_config = word_module.generate_global_config
 
 # Rest of your test code...
+:

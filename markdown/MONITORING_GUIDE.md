@@ -33,37 +33,45 @@ from utils.paths_manager import PathsManager
 from agents.agent_orchestrator import AgentOrchestrator
 
 # Initialize components
+
 client = initialize_openai()
 paths = PathsManager()
 output = OutputHandler(paths.get_output_dir())
 dmaic = DMAICHandler("System Monitoring", client)
 
 # Create and initialize orchestrator
+
 orchestrator = AgentOrchestrator(dmaic, output)
 orchestrator.initialize_standard_agents()
 
 # Update all agents
+
 agent_statuses = orchestrator.update_all_agents()
 print("Agent statuses:")
 for agent_id, status in agent_statuses.items():
     print(f"- {agent_id}: {status['status']} ({status['queue_size']} messages in queue)")
 
 # Generate system report
+
 system_report = orchestrator.generate_system_report()
 print(f"Total agents: {len(system_report['agents'])}")
 print(f"Total messages processed: {system_report['message_count']}")
 
 # Save the system state
+
 state_path = orchestrator.save_system_state()
 print(f"System state saved to: {state_path}")
-```
+
+```bash
 
 ### Creating a Monitoring Dashboard
 
 You can create a simple monitoring dashboard script:
 
 ```python
+
 # monitor_agents.py
+
 import os
 import sys
 import time
@@ -73,6 +81,7 @@ import threading
 import datetime
 
 # Add the project root to path if needed
+
 project_root = os.path.dirname(os.path.abspath(__file__))
 if project_root not in sys.path:
     sys.path.append(project_root)
@@ -103,6 +112,7 @@ class AgentMonitor:
                 time.sleep(interval)
 
         # Start monitoring in a separate thread
+
         thread = threading.Thread(target=monitor_thread)
         thread.daemon = True
         thread.start()
@@ -134,6 +144,7 @@ class AgentMonitor:
             role = status.get("role", "unknown")
 
             # Color coding based on queue size
+
             if queue_size > 5:
                 queue_indicator = f"\033[91m{queue_size}\033[0m"  # Red
             elif queue_size > 0:
@@ -160,7 +171,8 @@ class AgentMonitor:
 if __name__ == "__main__":
     monitor = AgentMonitor()
     monitor.start_monitoring()
-```
+
+```bash
 
 ## Reading Log Files
 
@@ -168,11 +180,14 @@ The log files contain detailed information about the system's operation:
 
 ### Workflow Log Format
 
-```
+```bash
+
 YYYY-MM-DD HH:MM:SS - dmaic_workflow - INFO - Message
-```
+
+```bash
 
 Example message types:
+
 - Agent initialization: `Agent X registered with role Y`
 - Phase transitions: `Starting DEFINE phase`
 - Interactions: `Q: [question] | R: [response]`
@@ -181,6 +196,7 @@ Example message types:
 ### Agent Communication Logs
 
 Messages between agents are logged with:
+
 - Source agent
 - Target agent
 - Message type
@@ -226,19 +242,26 @@ For Git operation failures:
 You can create custom monitoring tools using the agent orchestrator API. Example:
 
 ```python
+
 def monitor_specific_agent(agent_id):
-    # Initialize the agent system...
+
+    # Initialize the agent system
 
     # Get the specific agent
+
     agent = orchestrator.agents.get(agent_id)
     if agent:
+
         # Monitor this specific agent
+
         agent_status = agent.update()
 
         # Check message queue
+
         queue_size = agent.inbox.qsize()
 
         # Process messages if needed
+
         processed = agent.process_all_messages()
 
         return {
@@ -247,6 +270,7 @@ def monitor_specific_agent(agent_id):
             "messages_processed": processed
         }
     return None
-```
+
+```bash
 
 This guide should help you effectively monitor and understand the RTM Automation system's operation.

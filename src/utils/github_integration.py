@@ -3,16 +3,16 @@
 GitHub Integration Module for RTM Automation
 """
 
-import os
-import sys
 import logging
+import os
 import subprocess
+import sys
 from pathlib import Path
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
-
+:
 class GitHubIntegration:
     """Handles GitHub repository operations."""
 
@@ -24,7 +24,7 @@ class GitHubIntegration:
         self.warnings = []
 
         # Check if GitHub integration is enabled
-        self.enabled = self.github_config.get("enabled", False)
+        self.enabled = self.github_config.get("enabled", False):
         if not self.enabled:
             logger.info("GitHub integration is disabled in configuration")
             return
@@ -44,10 +44,10 @@ class GitHubIntegration:
             self.errors.append("GitHub repository URL is not configured")
         if not self.local_path:
             self.local_path = str(Path("github_repo").resolve())
-            self.warnings.append(f"Local path not configured, using: {self.local_path}")
+            self.warnings.append("Local path not configured, using: {self.local_path}")
 
     def check_git_installation(self) -> bool:
-        """Check if git is installed and available."""
+        """Check if git is installed and available.""":
         try:
             subprocess.run(
                 ["git", "--version"],
@@ -69,11 +69,11 @@ class GitHubIntegration:
         if not self.check_git_installation():
             return False
 
-        # Create local directory if it doesn't exist
-        local_dir = Path(self.local_path)
+        # Create local directory if it doesn"t exist
+        local_dir = Path(self.local_path):
         if local_dir.exists() and (local_dir / ".git").exists():
             logger.info(
-                f"Repository already exists at {self.local_path}, pulling latest changes instead"
+                "Repository already exists at {self.local_path}, pulling latest changes instead"
             )
             return self.pull_repository()
 
@@ -88,7 +88,7 @@ class GitHubIntegration:
         )
 
         # Clone the repository
-        logger.info(f"Cloning repository {self.repo_url} to {self.local_path}")
+        logger.info("Cloning repository {self.repo_url} to {self.local_path}"):
         try:
             result = subprocess.run(
                 ["git", "clone", self.repo_url, self.local_path],
@@ -97,11 +97,11 @@ class GitHubIntegration:
                 stderr=subprocess.PIPE,
                 text=True,
             )
-            logger.debug(f"Git clone output: {result.stdout}")
+            logger.debug("Git clone output: {result.stdout}")
             return True
         except subprocess.SubprocessError as e:
-            self.errors.append(f"Failed to clone repository: {str(e)}")
-            logger.error(f"Git clone error: {e}")
+            self.errors.append("Failed to clone repository: {str(e)}")
+            logger.error("Git clone error: {e}")
             return False
 
     def pull_repository(self) -> bool:
@@ -113,15 +113,15 @@ class GitHubIntegration:
             return False
 
         # Check if local path exists and is a git repository
-        local_dir = Path(self.local_path)
+        local_dir = Path(self.local_path):
         if not local_dir.exists() or not (local_dir / ".git").exists():
             logger.warning(
-                f"{self.local_path} is not a git repository, cloning instead"
+                "{self.local_path} is not a git repository, cloning instead"
             )
             return self.clone_repository()
 
         # Pull latest changes
-        logger.info(f"Pulling latest changes from {self.repo_url}")
+        logger.info("Pulling latest changes from {self.repo_url}")
         try:
             # Change to repository directory
             current_dir = os.getcwd()
@@ -139,11 +139,11 @@ class GitHubIntegration:
             # Return to original directory
             os.chdir(current_dir)
 
-            logger.debug(f"Git pull output: {result.stdout}")
+            logger.debug("Git pull output: {result.stdout}")
             return True
         except subprocess.SubprocessError as e:
-            self.errors.append(f"Failed to pull repository: {str(e)}")
-            logger.error(f"Git pull error: {e}")
+            self.errors.append("Failed to pull repository: {str(e)}")
+            logger.error("Git pull error: {e}")
 
             # Return to original directory in case of error
             if os.getcwd() != current_dir:
@@ -151,7 +151,7 @@ class GitHubIntegration:
 
             return False
 
-    def commit_and_push_changes(
+    def commit_and_push_changes(:
         self, files: List[str], message: Optional[str] = None
     ) -> bool:
         """Commit and push changes to the repository."""
@@ -163,9 +163,9 @@ class GitHubIntegration:
             return False
 
         # Check if local path exists and is a git repository
-        local_dir = Path(self.local_path)
+        local_dir = Path(self.local_path):
         if not local_dir.exists() or not (local_dir / ".git").exists():
-            logger.warning(f"{self.local_path} is not a git repository, cloning first")
+            logger.warning("{self.local_path} is not a git repository, cloning first")
             if not self.clone_repository():
                 return False
 
@@ -177,7 +177,7 @@ class GitHubIntegration:
             current_dir = os.getcwd()
             os.chdir(self.local_path)
 
-            # Configure git user if provided
+            # Configure git user if provided:
             if self.user_name:
                 subprocess.run(
                     ["git", "config", "user.name", self.user_name], check=True
@@ -216,12 +216,12 @@ class GitHubIntegration:
             # Check if commit was created (non-zero exit could mean "nothing to commit")
             if (
                 commit_result.returncode != 0
-                and "nothing to commit" not in commit_result.stderr
+                and "nothing to commit" not in commit_result.stderr:
             ):
-                self.warnings.append(f"Git commit warning: {commit_result.stderr}")
+                self.warnings.append("Git commit warning: {commit_result.stderr}")
 
             # Push changes
-            push_result = subprocess.run(
+            subprocess.run(
                 ["git", "push", "origin", self.branch],
                 check=True,
                 stdout=subprocess.PIPE,
@@ -229,15 +229,15 @@ class GitHubIntegration:
                 text=True,
             )
 
-            logger.info(f"Successfully pushed changes to {self.repo_url}")
+            logger.info("Successfully pushed changes to {self.repo_url}")
 
             # Return to original directory
             os.chdir(current_dir)
             return True
 
         except subprocess.SubprocessError as e:
-            self.errors.append(f"Failed to commit and push changes: {str(e)}")
-            logger.error(f"Git commit/push error: {e}")
+            self.errors.append("Failed to commit and push changes: {str(e)}")
+            logger.error("Git commit/push error: {e}")
 
             # Return to original directory in case of error
             if os.getcwd() != current_dir:
@@ -245,14 +245,13 @@ class GitHubIntegration:
 
             return False
 
-
 def debug_github_integration(config: Dict[str, Any]) -> int:
     """
     Debug GitHub integration setup.
 
     Args:
         config: Configuration dictionary with GitHub settings
-
+:
     Returns:
         Exit code (0 on success)
     """
@@ -262,11 +261,11 @@ def debug_github_integration(config: Dict[str, Any]) -> int:
     # Initialize GitHub integration
     github = GitHubIntegration(config)
 
-    # Check if GitHub integration is enabled
+    # Check if GitHub integration is enabled:
     if not github.enabled:
         print("GitHub integration is disabled in configuration.")
         print(
-            "To enable, set 'enabled: true' in the github section of your configuration."
+            "To enable, set "enabled: true' in the github section of your configuration."
         )
         return 0
 
@@ -280,11 +279,11 @@ def debug_github_integration(config: Dict[str, Any]) -> int:
 
     # Print configuration
     print("\nGitHub Configuration:")
-    print(f"- Repository URL: {github.repo_url}")
-    print(f"- Branch: {github.branch}")
-    print(f"- Local Path: {github.local_path}")
-    print(f"- User Name: {github.user_name}")
-    print(f"- User Email: {github.user_email}")
+    print("- Repository URL: {github.repo_url}")
+    print("- Branch: {github.branch}")
+    print("- Local Path: {github.local_path}")
+    print("- User Name: {github.user_name}")
+    print("- User Email: {github.user_email}")
 
     # Check repository connection
     print("\nTesting repository connection...")
@@ -295,9 +294,8 @@ def debug_github_integration(config: Dict[str, Any]) -> int:
         print("✗ Failed to connect to repository")
         if github.errors:
             for error in github.errors:
-                print(f"  - Error: {error}")
+                print("  - Error: {error}")
         return 1
-
 
 # For testing directly
 if __name__ == "__main__":

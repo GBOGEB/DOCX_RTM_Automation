@@ -9,4 +9,3 @@ The system must support multiple user roles.
 ## Performance Requirements
 
 The system shall respond within 2 seconds.
-

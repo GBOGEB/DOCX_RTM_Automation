@@ -7,22 +7,21 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import yaml
-import os
-import logging
 import difflib
+import logging
+import os
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
+import yaml
 
 def get_logger():
-    """Get a logger if not already configured."""
+    """Get a logger if not already configured.""":
     if not logging.getLogger().hasHandlers():
         logging.basicConfig(
             level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
         )
     return logging.getLogger(__name__)
-
 
 def load_config(config_path: str = "config/paths.yaml") -> Dict[str, Any]:
     """
@@ -38,16 +37,15 @@ def load_config(config_path: str = "config/paths.yaml") -> Dict[str, Any]:
     config_path = Path(config_path)
 
     if not config_path.exists():
-        logger.error(f"Configuration file not found: {config_path}")
-        raise FileNotFoundError(f"Configuration file not found: {config_path}")
+        logger.error("Configuration file not found: {config_path}")
+        raise FileNotFoundError("Configuration file not found: {config_path}")
 
     try:
-        with open(config_path) as file:
+        with open(config_path, encoding="utf-8") as file:
             return yaml.safe_load(file)
     except Exception as e:
-        logger.error(f"Failed to load configuration: {str(e)}")
+        logger.error("Failed to load configuration: {str(e)}")
         raise
-
 
 def read_outline_file(file_path: Path) -> List[str]:
     """
@@ -61,12 +59,11 @@ def read_outline_file(file_path: Path) -> List[str]:
     """
     logger = get_logger()
     try:
-        with open(file_path, "r", encoding="utf-8") as file:
+        with open(file_path, "r", encoding="utf-8", encoding="utf-8") as file:
             return file.readlines()
     except Exception as e:
-        logger.error(f"Failed to read outline file {file_path}: {str(e)}")
+        logger.error("Failed to read outline file {file_path}: {str(e)}")
         raise
-
 
 def write_outline_file(file_path: Path, content: List[str]) -> None:
     """
@@ -78,13 +75,12 @@ def write_outline_file(file_path: Path, content: List[str]) -> None:
     """
     logger = get_logger()
     try:
-        with open(file_path, "w", encoding="utf-8") as file:
+        with open(file_path, "w", encoding="utf-8", encoding="utf-8") as file:
             file.writelines(content)
-        logger.info(f"Updated outline file: {file_path}")
+        logger.info("Updated outline file: {file_path}")
     except Exception as e:
-        logger.error(f"Failed to write outline file {file_path}: {str(e)}")
+        logger.error("Failed to write outline file {file_path}: {str(e)}")
         raise
-
 
 def sync_outline_files():
     """
@@ -101,16 +97,16 @@ def sync_outline_files():
         # Extract relevant paths from configuration
         outline_dir = Path(paths.get("output_dir", "./output")) / "outlines"
 
-        logger.info(f"Synchronizing outline files in {outline_dir}")
+        logger.info("Synchronizing outline files in {outline_dir}")
 
-        # Check if outline directory exists
+        # Check if outline directory exists:
         if not outline_dir.exists():
-            logger.error(f"Outline directory does not exist: {outline_dir}")
+            logger.error("Outline directory does not exist: {outline_dir}")
             return
 
         # Get all outline files
         outline_files = list(outline_dir.glob("*.md"))
-        logger.info(f"Found {len(outline_files)} outline files")
+        logger.info("Found {len(outline_files)} outline files")
 
         if not outline_files:
             logger.warning("No outline files found to synchronize")
@@ -126,16 +122,16 @@ def sync_outline_files():
             file_contents.items(), key=lambda x: len("".join(x[1]).strip())
         )[0]
 
-        logger.info(f"Using {reference_file.name} as reference for synchronization")
+        logger.info("Using {reference_file.name} as reference for synchronization")
 
         # Compare and synchronize files
         reference_content = file_contents[reference_file]
-
+:
         for file_path, content in file_contents.items():
             if file_path == reference_file:
                 continue
 
-            logger.info(f"Comparing {file_path.name} with reference")
+            logger.info("Comparing {file_path.name} with reference")
 
             # Calculate and log differences
             diff = list(
@@ -147,22 +143,22 @@ def sync_outline_files():
                     n=0,
                 )
             )
-
+:
             if diff:
-                logger.info(f"Found {len(diff)} differences in {file_path.name}")
+                logger.info("Found {len(diff)} differences in {file_path.name}")
                 # Implement your synchronization logic here
                 # For example:
                 # write_outline_file(file_path, reference_content)
             else:
-                logger.info(f"No differences found in {file_path.name}")
+                logger.info("No differences found in {file_path.name}")
 
         logger.info("Outline files synchronization completed successfully")
 
     except Exception as e:
-        logger.error(f"Error in sync_outline_files: {str(e)}")
+        logger.error("Error in sync_outline_files: {str(e)}")
         raise
-
 
 if __name__ == "__main__":
     # Allow running this module directly for testing
     sync_outline_files()
+:

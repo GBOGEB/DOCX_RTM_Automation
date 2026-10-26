@@ -1,26 +1,25 @@
-import os
-import sys
-import re
-from typing import Dict, Any, List, Optional
 import json
+import os
+import re
+import sys
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 # Add the project root to path if needed
-project_root_path = Path(__file__).resolve().parent.parent
+project_root_path = Path(__file__).resolve().parent.parent:
 if str(project_root_path) not in sys.path:
     sys.path.append(str(project_root_path))
 
-from utils.paths_manager import PathsManager
-from utils.output_handler import OutputHandler
 from utils.docx_converter import DocxConverter
-
+from utils.output_handler import OutputHandler
+from utils.paths_manager import PathsManager
 
 class DocumentParser:
     """
     Parser for extracting structured information from documents,
     particularly requirements and traceability information.
     """
-
+:
     def __init__(self, output_handler: Optional[OutputHandler] = None):
         """Initialize the document parser"""
         self.paths = PathsManager()
@@ -29,8 +28,8 @@ class DocumentParser:
         )
         self.docx_converter = DocxConverter(self.output_handler)
 
-    def parse_document(
-        self, document_path: str, output_format: str = "json"
+    def parse_document(:
+            self, document_path: str, output_format: str = "json"
     ) -> Optional[str]:
         """
         Parse a document to extract structured information
@@ -41,33 +40,33 @@ class DocumentParser:
 
         Returns:
             Path to the output file if successful, None otherwise
-        """
+        """:
         if not os.path.isfile(document_path):
-            self.output_handler.log_error(f"Document not found: {document_path}")
+            self.output_handler.log_error("Document not found: {document_path}")
             return None
 
-        # Convert to markdown if it's a DOCX file
+        # Convert to markdown if it"s a DOCX file
         file_ext = os.path.splitext(document_path)[1].lower()
         md_content = ""
-
+:
         if file_ext == ".docx":
             # Convert to markdown
             md_path = self.docx_converter.convert_to_markdown(document_path)
             if not md_path:
                 self.output_handler.log_error(
-                    f"Failed to convert {document_path} to Markdown"
+                    "Failed to convert {document_path} to Markdown"
                 )
                 return None
 
             # Read the markdown content
-            with open(md_path, "r", encoding="utf-8") as f:
+            with open(md_path, "r", encoding="utf-8", encoding="utf-8") as f:
                 md_content = f.read()
         elif file_ext == ".md":
             # Read markdown content directly
-            with open(document_path, "r", encoding="utf-8") as f:
+            with open(document_path, "r", encoding="utf-8", encoding="utf-8") as f:
                 md_content = f.read()
         else:
-            self.output_handler.log_error(f"Unsupported document format: {file_ext}")
+            self.output_handler.log_error("Unsupported document format: {file_ext}")
             return None
 
         # Parse the markdown content
@@ -76,30 +75,30 @@ class DocumentParser:
         # Generate output file path
         output_path = os.path.join(
             self.paths.get_output_dir(),
-            f"{os.path.splitext(os.path.basename(document_path))[0]}.{output_format}",
+            "{os.path.splitext(os.path.basename(document_path))[0]}.{output_format}",
         )
 
         # Save in the requested format
         if output_format.lower() == "json":
-            with open(output_path, "w", encoding="utf-8") as f:
+            with open(output_path, "w", encoding="utf-8", encoding="utf-8") as f:
                 json.dump(parsed_data, f, indent=2)
         elif output_format.lower() == "yaml":
             import yaml
 
-            with open(output_path, "w", encoding="utf-8") as f:
+            with open(output_path, "w", encoding="utf-8", encoding="utf-8") as f:
                 yaml.dump(parsed_data, f, default_flow_style=False)
         elif output_format.lower() == "md":
-            with open(output_path, "w", encoding="utf-8") as f:
+            with open(output_path, "w", encoding="utf-8", encoding="utf-8") as f:
                 f.write(self._data_to_markdown(parsed_data))
         else:
-            self.output_handler.log_error(f"Unsupported output format: {output_format}")
+            self.output_handler.log_error("Unsupported output format: {output_format}")
             return None
 
-        self.output_handler.log_info(f"Document parsed and saved to {output_path}")
+        self.output_handler.log_info("Document parsed and saved to {output_path}")
         return output_path
 
-    def extract_requirements(
-        self, document_path: str, output_format: str = "json"
+    def extract_requirements(:
+            self, document_path: str, output_format: str = "json"
     ) -> Optional[str]:
         """
         Extract requirements from a document
@@ -110,33 +109,33 @@ class DocumentParser:
 
         Returns:
             Path to the output file if successful, None otherwise
-        """
+        """:
         if not os.path.isfile(document_path):
-            self.output_handler.log_error(f"Document not found: {document_path}")
+            self.output_handler.log_error("Document not found: {document_path}")
             return None
 
-        # Convert to markdown if it's a DOCX file
+        # Convert to markdown if it"s a DOCX file
         file_ext = os.path.splitext(document_path)[1].lower()
         md_content = ""
-
+:
         if file_ext == ".docx":
             # Convert to markdown
             md_path = self.docx_converter.convert_to_markdown(document_path)
             if not md_path:
                 self.output_handler.log_error(
-                    f"Failed to convert {document_path} to Markdown"
+                    "Failed to convert {document_path} to Markdown"
                 )
                 return None
 
             # Read the markdown content
-            with open(md_path, "r", encoding="utf-8") as f:
+            with open(md_path, "r", encoding="utf-8", encoding="utf-8") as f:
                 md_content = f.read()
         elif file_ext == ".md":
             # Read markdown content directly
-            with open(document_path, "r", encoding="utf-8") as f:
+            with open(document_path, "r", encoding="utf-8", encoding="utf-8") as f:
                 md_content = f.read()
         else:
-            self.output_handler.log_error(f"Unsupported document format: {file_ext}")
+            self.output_handler.log_error("Unsupported document format: {file_ext}")
             return None
 
         # Extract requirements from the markdown content
@@ -145,27 +144,27 @@ class DocumentParser:
         # Generate output file path
         output_path = os.path.join(
             self.paths.get_output_dir(),
-            f"requirements_{os.path.splitext(os.path.basename(document_path))[0]}.{output_format}",
+            "requirements_{os.path.splitext(os.path.basename(document_path))[0]}.{output_format}",
         )
 
         # Save in the requested format
         if output_format.lower() == "json":
-            with open(output_path, "w", encoding="utf-8") as f:
+            with open(output_path, "w", encoding="utf-8", encoding="utf-8") as f:
                 json.dump({"requirements": requirements}, f, indent=2)
         elif output_format.lower() == "yaml":
             import yaml
 
-            with open(output_path, "w", encoding="utf-8") as f:
+            with open(output_path, "w", encoding="utf-8", encoding="utf-8") as f:
                 yaml.dump({"requirements": requirements}, f, default_flow_style=False)
         elif output_format.lower() == "md":
-            with open(output_path, "w", encoding="utf-8") as f:
+            with open(output_path, "w", encoding="utf-8", encoding="utf-8") as f:
                 f.write(self._requirements_to_markdown(requirements))
         else:
-            self.output_handler.log_error(f"Unsupported output format: {output_format}")
+            self.output_handler.log_error("Unsupported output format: {output_format}")
             return None
 
         self.output_handler.log_info(
-            f"Requirements extracted and saved to {output_path}"
+            "Requirements extracted and saved to {output_path}"
         )
         return output_path
 
@@ -204,19 +203,17 @@ class DocumentParser:
 
         # Extract sections
         sections = re.findall(r"^(#{2,6})\s+(.+)$", markdown_content, re.MULTILINE)
-        current_section = None
 
         for level, heading in sections:
             level = len(level)  # Number of # characters
             section = {"level": level, "title": heading.strip(), "content": ""}
 
             structure["sections"].append(section)
-            current_section = section
 
         return structure
 
-    def _extract_requirements_from_markdown(
-        self, markdown_content: str
+    def _extract_requirements_from_markdown(:
+            self, markdown_content: str
     ) -> List[Dict[str, Any]]:
         """
         Extract requirements from markdown content
@@ -229,9 +226,9 @@ class DocumentParser:
         """
         requirements = []
 
-        # Look for requirement patterns
+        # Look for requirement patterns:
         # Pattern 1: Headers with REQ prefix
-        req_headers = re.finditer(
+        req_headers = re.finditer(:
             r"^(#{1,6})\s+(REQ-\d+)(?:[:\.]\s+)?(.+)?$", markdown_content, re.MULTILINE
         )
         for match in req_headers:
@@ -239,14 +236,14 @@ class DocumentParser:
             requirements.append(
                 {
                     "id": req_id,
-                    "title": title.strip() if title else "",
+                    "title": title.strip() if title else "",:
                     "type": "Requirement",
                     "level": len(level),
                 }
             )
 
         # Pattern 2: List items with REQ prefix
-        req_items = re.finditer(
+        req_items = re.finditer(:
             r"^(?:\*|\-|\d+\.)\s+(REQ-\d+)(?:[:\.]\s+)?(.+)?$",
             markdown_content,
             re.MULTILINE,
@@ -256,7 +253,7 @@ class DocumentParser:
             requirements.append(
                 {
                     "id": req_id,
-                    "description": description.strip() if description else "",
+                    "description": description.strip() if description else "",:
                     "type": "Requirement",
                 }
             )
@@ -264,7 +261,7 @@ class DocumentParser:
         # Pattern 3: Table rows with REQ prefix
         table_rows = re.finditer(
             r"^\|\s*(REQ-\d+)\s*\|\s*([^|]+)\s*\|", markdown_content, re.MULTILINE
-        )
+        ):
         for match in table_rows:
             req_id, content = match.groups()
             requirements.append(
@@ -287,9 +284,9 @@ class DocumentParser:
 
         # Add title
         if data.get("title"):
-            md_lines.append(f"# {data['title']}\n")
+            md_lines.append("# {data["title"]}\n")
 
-        # Add metadata as YAML front matter if present
+        # Add metadata as YAML front matter if present:
         if data.get("metadata"):
             import yaml
 
@@ -306,12 +303,12 @@ class DocumentParser:
             content = section.get("content", "")
 
             # Add heading
-            md_lines.append(f"{'#' * level} {title}\n")
+            md_lines.append("{"#" * level} {title}\n")
 
             # Add content
             if content:
                 md_lines.append(content)
-                # Add extra newline if content doesn't end with one
+                # Add extra newline if content doesn"t end with one:
                 if not content.endswith("\n"):
                     md_lines.append("")
 
@@ -334,24 +331,23 @@ class DocumentParser:
             req_id = req.get("id", "")
 
             if "title" in req:
-                md_lines.append(f"## {req_id}: {req['title']}\n")
+                md_lines.append("## {req_id}: {req["title"]}\n")
 
                 # Add other properties as list items
                 for key, value in req.items():
                     if key not in ["id", "title"]:
-                        md_lines.append(f"- **{key}**: {value}")
+                        md_lines.append("- **{key}**: {value}")
             elif "description" in req:
-                md_lines.append(f"- **{req_id}**: {req['description']}")
+                md_lines.append("- **{req_id}**: {req["description']}")
             else:
-                props = ", ".join([f"{k}: {v}" for k, v in req.items() if k != "id"])
-                md_lines.append(f"- **{req_id}** ({props})")
+                props = ", ".join(["{k}: {v}" for k, v in req.items() if k != "id"])
+                md_lines.append("- **{req_id}** ({props})")
 
             md_lines.append("")  # Empty line between requirements
 
         return "\n".join(md_lines)
 
-
-# Example usage
+# Example usage:
 if __name__ == "__main__":
     import argparse
 
@@ -376,6 +372,6 @@ if __name__ == "__main__":
         result = parser.parse_document(args.input, args.output)
 
     if result:
-        print(f"Processing successful: {result}")
+        print("Processing successful: {result}")
     else:
         print("Processing failed")
