@@ -5,44 +5,58 @@
 ```bash
 git clone https://github.com/your-username/DOCX_RTM_Automation_v1.0.git
 cd DOCX_RTM_Automation_v1.0
-```
+
+```bash
 
 ### Working with Submodules
 
 If the project uses Git submodules, you can clone the repository and initialize submodules in one step:
 
 ```bash
+
 git clone --recurse-submodules https://github.com/your-username/DOCX_RTM_Automation_v1.0.git
 cd DOCX_RTM_Automation_v1.0
-```
+
+```bash
 
 If you have already cloned the repository without submodules, you can initialize and update them using:
 
 ```bash
+
 git submodule update --init --recursive
-```
+
+```bash
 
 To update submodules to their latest commit from their respective remotes:
+
 ```bash
+
 git submodule update --remote
-# After this, you'll likely need to commit the updated submodule references in the parent repository.
+
+# After this, you'll likely need to commit the updated submodule references in the parent repository
+
 git add . # Or add specific submodule paths
 git commit -m "Update submodules to latest versions"
-```
+
+```bash
 
 ## Set Up Remote
 
 ```bash
+
 git remote add origin https://github.com/your-username/DOCX_RTM_Automation_v1.0.git
-```
+
+```bash
 
 ## Push Changes
 
 ```bash
+
 git add .
 git commit -m "Initial commit"
 git push -u origin main
-```
+
+```bash
 
 ## Automated CI/CD Pipeline
 
@@ -51,9 +65,12 @@ The project now includes an integrated CI/CD pipeline that handles Git operation
 ### Running the Automated Pipeline
 
 ```bash
+
 # Simply run the pipeline script
+
 python run_pipeline.py
-```
+
+```bash
 
 The automated pipeline will:
 1. Clone the repository if not already present
@@ -64,6 +81,7 @@ The automated pipeline will:
 ### Configuration
 
 All GitHub integration settings are in the `config/paths.yaml` file:
+
 - `enabled`: Set to true/false to enable/disable GitHub integration
 - `repo_url`: The URL of your GitHub repository
 - `branch`: The branch to work with (default: main)

@@ -4,10 +4,11 @@ Extract Requirements Traceability Matrix
 Extract requirements from markdown documents
 """
 
-import re
-import yaml
-from pathlib import Path
 import os
+import re
+from pathlib import Path
+
+import yaml
 
 
 def extract_requirements_from_md(md_file, output_file="output/requirements.yaml"):
@@ -87,12 +88,12 @@ def extract_requirements_from_md(md_file, output_file="output/requirements.yaml"
 if __name__ == "__main__":
     import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-    if len(sys.argv) > 1:
-        extract_requirements_from_md(sys.argv[1])
-    else:
-        extract_requirements_from_md("output/MASTER_1805_1144.md")
+if len(sys.argv) > 1:
+    extract_requirements_from_md(sys.argv[1])
+else:
+    extract_requirements_from_md("output/MASTER_1805_1144.md")
 ")""

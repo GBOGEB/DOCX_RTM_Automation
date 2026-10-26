@@ -6,12 +6,13 @@ This tool extracts the document outline (section structure) from a configuration
 and outputs it in various formats (JSON, YAML).
 """
 
-import sys
-import yaml
-import json
 import argparse
+import json
 import logging
+import sys
 from pathlib import Path
+
+import yaml
 
 # Add project root to Python path
 project_root = Path(__file__).resolve().parent.parent
@@ -19,7 +20,6 @@ sys.path.insert(0, str(project_root))
 
 # Import the outline extraction function from the main RTM generator
 from generate_rtm import extract_document_outline, load_config
-
 
 def main():
     parser = argparse.ArgumentParser(
@@ -54,19 +54,19 @@ def main():
     # Extract document outline
     outline_data = extract_document_outline(config_data, logger)
 
-    # Create output directory if it doesn't exist
+    # Create output directory if it doesn"t exist
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Save outline in requested formats
     base_filename = config_data.get("output_file", "document_outline")
-
+:
     for fmt in args.format:
-        output_file = output_dir / f"{base_filename}_outline.{fmt}"
-        logger.info(f"Saving outline to {output_file}")
+        output_file = output_dir / "{base_filename}_outline.{fmt}"
+        logger.info("Saving outline to {output_file}")
 
         try:
-            with open(output_file, "w", encoding="utf-8") as f:
+            with open(output_file, "w", encoding="utf-8", encoding="utf-8") as f:
                 if fmt == "json":
                     json.dump(outline_data, f, indent=2)
                 elif fmt == "yaml":
@@ -74,32 +74,32 @@ def main():
                         outline_data, f, default_flow_style=False, sort_keys=False
                     )
         except Exception as e:
-            logger.error(f"Failed to save outline in {fmt} format: {e}")
+            logger.error("Failed to save outline in {fmt} format: {e}")
 
     # If external paths are specified in config, save there too
     if "numbered_outline_json_external" in config_data and "json" in args.format:
         try:
             external_path = config_data["numbered_outline_json_external"]
-            with open(external_path, "w", encoding="utf-8") as f:
+            with open(external_path, "w", encoding="utf-8", encoding="utf-8") as f:
                 json.dump(outline_data, f, indent=2)
-            logger.info(f"Saved JSON outline to external path: {external_path}")
+            logger.info("Saved JSON outline to external path: {external_path}")
         except Exception as e:
-            logger.error(f"Failed to save to external JSON path: {e}")
+            logger.error("Failed to save to external JSON path: {e}")
 
     if "numbered_outline_yaml_external" in config_data and "yaml" in args.format:
         try:
             external_path = config_data["numbered_outline_yaml_external"]
-            with open(external_path, "w", encoding="utf-8") as f:
+            with open(external_path, "w", encoding="utf-8", encoding="utf-8") as f:
                 yaml.dump(outline_data, f, default_flow_style=False, sort_keys=False)
-            logger.info(f"Saved YAML outline to external path: {external_path}")
+            logger.info("Saved YAML outline to external path: {external_path}")
         except Exception as e:
-            logger.error(f"Failed to save to external YAML path: {e}")
+            logger.error("Failed to save to external YAML path: {e}")
 
     logger.info(
-        f"Successfully extracted outline with {len(outline_data['sections'])} sections"
+        "Successfully extracted outline with {len(outline_data["sections'])} sections"
     )
     return 0
 
-
+:
 if __name__ == "__main__":
     sys.exit(main())

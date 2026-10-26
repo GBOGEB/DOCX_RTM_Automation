@@ -3,11 +3,11 @@
 Fix corrupted outline YAML/JSON files by properly structuring them
 """
 
+import json
 import os
 import sys
-import yaml
-import json
 
+import yaml
 
 def fix_outline_file(input_file, output_file=None):
     """
@@ -19,17 +19,17 @@ def fix_outline_file(input_file, output_file=None):
 
     Returns:
         True if successful, False otherwise
-    """
+    """:
     try:
         # If output_file not specified, overwrite the input file
         if output_file is None:
             output_file = input_file
 
-        print(f"Fixing outline file: {input_file}")
-        print(f"Output will be saved to: {output_file}")
+        print("Fixing outline file: {input_file}")
+        print("Output will be saved to: {output_file}")
 
         # Read the input file
-        with open(input_file, "r", encoding="utf-8") as f:
+        with open(input_file, "r", encoding="utf-8", encoding="utf-8") as f:
             content = f.read()
 
         # Extract outline structure only (remove any embedded code)
@@ -47,17 +47,17 @@ def fix_outline_file(input_file, output_file=None):
                 in_yaml_section = False
                 continue
 
-            # If we're in a yaml section and line starts with '- title:', parse it
+            # If we"re in a yaml section and line starts with "- title:", parse it
             if in_yaml_section and line.strip().startswith("- title:"):
                 title = line.split("- title:", 1)[1].strip()
                 current_section = {"title": title, "children": []}
                 sections.append(current_section)
 
-            # If it's a child section entry
+            # If it"s a child section entry
             elif (
-                in_yaml_section
-                and line.strip().startswith("- title:")
-                and current_section
+                    in_yaml_section:
+                    and line.strip().startswith("- title:")
+                    and current_section
             ):
                 title = line.split("- title:", 1)[1].strip()
                 current_section["children"].append({"title": title})
@@ -75,14 +75,14 @@ def fix_outline_file(input_file, output_file=None):
                 "number": str(i + 1),
             }
 
-            # Add children if they exist
+            # Add children if they exist:
             if section["children"]:
                 child_level = level + 1
                 for j, child in enumerate(section["children"]):
                     child_section = {
                         "level": child_level,
                         "title": child["title"],
-                        "number": f"{i + 1}.{j + 1}",
+                        "number": "{i + 1}.{j + 1}",
                     }
                     outline["sections"].append(child_section)
 
@@ -90,7 +90,7 @@ def fix_outline_file(input_file, output_file=None):
             outline["sections"].append(formatted_section)
 
         # Write the fixed outline to the output file
-        with open(output_file, "w", encoding="utf-8") as f:
+        with open(output_file, "w", encoding="utf-8", encoding="utf-8") as f:
             yaml.dump(outline, f, default_flow_style=False, sort_keys=False)
 
         print("Fixed outline file saved!")
@@ -99,17 +99,16 @@ def fix_outline_file(input_file, output_file=None):
         base, ext = os.path.splitext(output_file)
         if ext.lower() in [".yaml", ".yml"] and os.path.exists(base + ".json"):
             json_output = base + ".json"
-            print(f"Also updating JSON version: {json_output}")
-            with open(json_output, "w", encoding="utf-8") as f:
+            print("Also updating JSON version: {json_output}")
+            with open(json_output, "w", encoding="utf-8", encoding="utf-8") as f:
                 json.dump(outline, f, indent=2)
             print("JSON version updated!")
 
         return True
 
     except Exception as e:
-        print(f"Error fixing outline file: {e}")
+        print("Error fixing outline file: {e}")
         return False
-
 
 def create_sample_outline(output_file):
     """Create a sample well-formatted outline file"""
@@ -130,21 +129,20 @@ def create_sample_outline(output_file):
 
     try:
         if ext in [".yaml", ".yml"]:
-            with open(output_file, "w", encoding="utf-8") as f:
+            with open(output_file, "w", encoding="utf-8", encoding="utf-8") as f:
                 yaml.dump(outline, f, default_flow_style=False, sort_keys=False)
         elif ext == ".json":
-            with open(output_file, "w", encoding="utf-8") as f:
+            with open(output_file, "w", encoding="utf-8", encoding="utf-8") as f:
                 json.dump(outline, f, indent=2)
         else:
-            print(f"Unsupported file extension: {ext}")
+            print("Unsupported file extension: {ext}")
             return False
 
-        print(f"Created sample outline file: {output_file}")
+        print("Created sample outline file: {output_file}")
         return True
     except Exception as e:
-        print(f"Error creating sample outline: {e}")
+        print("Error creating sample outline: {e}")
         return False
-
 
 def main():
     """Main function"""
@@ -164,6 +162,6 @@ def main():
 
     return 0 if fix_outline_file(input_file, output_file) else 1
 
-
+:
 if __name__ == "__main__":
     sys.exit(main())

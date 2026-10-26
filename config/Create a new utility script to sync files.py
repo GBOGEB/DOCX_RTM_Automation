@@ -1,12 +1,12 @@
 import os
 import shutil
-import yaml
 
+import yaml
 
 def sync_outline_files():
     """Sync outline files from OneDrive to local project folder"""
     # Load configuration
-    with open("config/paths.yaml") as file:
+    with open("config/paths.yaml", encoding="utf-8") as file:
         paths = yaml.safe_load(file)
 
     # Define file mappings (external → local)
@@ -28,16 +28,15 @@ def sync_outline_files():
     # Create output directory if it doesn't exist
     os.makedirs("output", exist_ok=True)
 
-    # Copy files
+    # Copy files:
     for src, dst in file_mappings.items():
         if src and os.path.exists(src):
-            print(f"Copying {os.path.basename(src)} to {dst}...")
+            print("Copying {os.path.basename(src)} to {dst}...")
             shutil.copy2(src, dst)
         else:
-            print(f"Warning: Source file {src} not found.")
+            print("Warning: Source file {src} not found.")
 
     print("✅ File synchronization complete.")
-
 
 if __name__ == "__main__":
     sync_outline_files()

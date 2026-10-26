@@ -19,7 +19,8 @@ The automation pipeline generates various files during its operation. These file
     └── backups/
             ├── daily/
             └── weekly/
-```
+
+```bash
 
 ## Backup Management
 
@@ -30,26 +31,35 @@ Backups are automatically generated during pipeline runs. To prevent excessive d
 We provide a Python-based cleanup utility script (`scripts/cleanup_backups.py`) that intelligently preserves the most recent backups while removing older ones:
 
 ```bash
+
 # Run cleanup using default settings (often defined in a config file or script defaults)
+
 python scripts/cleanup_backups.py
 
 # Specify custom retention periods
+
 python scripts/cleanup_backups.py --daily 10 --weekly 6 --monthly 2
 
 # Dry run (shows what would be deleted without actually removing files)
+
 python scripts/cleanup_backups.py --dry-run
 
 # Use a specific configuration file
+
 python scripts/cleanup_backups.py --config /path/to/custom_cleanup_config.ini
-```
+
+```bash
 
 ### Cleanup Configuration
 
 You can customize the cleanup behavior by modifying a configuration file (e.g., `cleanup_config.ini` or `config/cleanup.ini`) used by the `cleanup_backups.py` script. The script should be designed to look for this file in a predefined location or allow specifying it via a command-line argument.
 
 Example `cleanup_config.ini`:
+
 ```ini
+
 # Sample cleanup_config.ini
+
 [General]
 BACKUP_DIR="/samples/backups" # Or an absolute path
 
@@ -57,16 +67,20 @@ BACKUP_DIR="/samples/backups" # Or an absolute path
 RETAIN_DAILY=7
 RETAIN_WEEKLY=4
 RETAIN_MONTHLY=3
+
 # Set to 0 to disable a specific retention period, e.g., RETAIN_MONTHLY=0
-```
+
+```bash
 
 ### Listing Markdown Files
 
 To list all markdown files in the directory and its subdirectories, use the following command:
 
 ```bash
+
 find . -name "*.md"
-```
+
+```bash
 
 ## Best Practices
 

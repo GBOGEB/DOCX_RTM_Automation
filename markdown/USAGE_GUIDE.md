@@ -21,43 +21,54 @@ The DOCX RTM Automation Tool helps automate the creation and management of Requi
 2. Extract the files to your desired location
 3. Navigate to the extracted directory
 4. Install dependencies:
+
      ```
      pip install -r requirements.txt
+
      ```
 
 ## Getting Started
 
 ### Basic Command Structure
 
-```
+```bash
 python rtm_automation.py [OPTIONS] INPUT_FILE OUTPUT_FILE
-```
+
+```bash
 
 ### Quick Start Example
 
-```
+```bash
+
 python rtm_automation.py --format matrix input_requirements.docx output_rtm.docx
-```
+
+```bash
 
 ## Usage Examples
 
 ### Generate a Basic RTM
 
-```
+```bash
+
 python rtm_automation.py --type basic input.docx output_rtm.docx
-```
+
+```bash
 
 ### Import Requirements from Excel
 
-```
+```bash
+
 python rtm_automation.py --import-excel requirements.xlsx --sheet "Requirements" input.docx output_rtm.docx
-```
+
+```bash
 
 ### Export RTM to Excel
 
-```
+```bash
+
 python rtm_automation.py --export-excel --format xlsx input.docx output_rtm.xlsx
-```
+
+```bash
 
 ## Configuration
 
@@ -66,6 +77,7 @@ python rtm_automation.py --export-excel --format xlsx input.docx output_rtm.xlsx
 Create a `config.json` file to store default settings:
 
 ```json
+
 {
     "default_format": "matrix",
     "include_headers": true,
@@ -75,7 +87,8 @@ Create a `config.json` file to store default settings:
         "detailed": "templates/detailed_template.docx"
     }
 }
-```
+
+```bash
 
 ### Command Line Options
 
@@ -98,13 +111,16 @@ Create your own templates in DOCX format with placeholders:
 ### Automatic Validation
 
 Use the validation feature to check for:
+
 - Orphaned requirements
 - Missing test cases
 - Incomplete traceability
 
-```
+```bash
+
 python rtm_automation.py --validate input.docx
-```
+
+```bash
 
 ## Troubleshooting
 
@@ -118,13 +134,16 @@ python rtm_automation.py --validate input.docx
 
 Enable debug mode for detailed logs:
 
-```
+```bash
+
 python rtm_automation.py --debug input.docx output.docx
-```
+
+```bash
 
 ## Support
 
 For additional help or to report bugs:
+
 - Open an issue on the project repository
 - Email support at: support@example.com
 

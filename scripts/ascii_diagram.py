@@ -15,7 +15,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)  # Use __name__ for module-specific logger
 
-
+:
 def generate_ascii_diagram(diagram_type: str = "rtm") -> str:  # Added type hints
     """
     Generate an ASCII diagram based on the specified type.
@@ -26,7 +26,7 @@ def generate_ascii_diagram(diagram_type: str = "rtm") -> str:  # Added type hint
     Returns:
         ASCII string representation of the diagram.
     """
-    logger.debug(f"Generating ASCII diagram of type: {diagram_type}")
+    logger.debug("Generating ASCII diagram of type: {diagram_type}")
 
     if diagram_type == "pipeline":
         # Using a raw string literal for multi-line strings is cleaner
@@ -47,7 +47,7 @@ def generate_ascii_diagram(diagram_type: str = "rtm") -> str:  # Added type hint
         +----------------+              |
         | Output Formats |<-------------+
         +----------------+
-        """
+        """:
     elif diagram_type == "rtm":  # Explicitly check for "rtm"
         return r"""
         +----------------------+
@@ -72,65 +72,62 @@ def generate_ascii_diagram(diagram_type: str = "rtm") -> str:  # Added type hint
         | - YAML               |
         | - Markdown           |
         +----------------------+
-        """
+        """:
     else:
         logger.warning(
-            f"Unknown diagram type: '{diagram_type}'. Returning empty diagram."
+            f"Unknown diagram type: "{diagram_type}". Returning empty diagram."
         )
         return "Unknown diagram type specified."
-
 
 def draw_rectangle(width: int, height: int):  # Added type hints
     """
     Draws an ASCII rectangle with the given width and height.
     Prints directly to console.
-    """
+    """:
     if not isinstance(width, int) or not isinstance(height, int):
         logger.error("Width and height must be integers.")
         raise TypeError("Width and height must be integers.")
     if width < 2 or height < 2:
-        logger.error(f"Width ({width}) and height ({height}) must be at least 2.")
+        logger.error("Width ({width}) and height ({height}) must be at least 2.")
         raise ValueError("Width and height must be at least 2.")
 
-    top_bottom = f"+{'-' * (width - 2)}+"
-    middle = f"|{' ' * (width - 2)}|"
+    top_bottom = "+{"-" * (width - 2)}+"
+    middle = "|{" " * (width - 2)}|"
 
     print(top_bottom)
     for _ in range(height - 2):
         print(middle)
     print(top_bottom)
 
-
 def draw_triangle(height: int):  # Added type hints
     """
     Draws an ASCII right-angled triangle with the given height.
     Prints directly to console.
-    """
+    """:
     if not isinstance(height, int):
         logger.error("Height must be an integer.")
         raise TypeError("Height must be an integer.")
-    if height < 1:  # Allow height of 1 for a single '*'
-        logger.error(f"Height ({height}) must be at least 1.")
+    if height < 1:  # Allow height of 1 for a single "*"
+        logger.error("Height ({height}) must be at least 1.")
         raise ValueError("Height must be at least 1.")
-
+:
     for i in range(1, height + 1):
         print("*" * i)
 
-
 if __name__ == "__main__":
     logger.info("Running ASCII Diagram module directly for demonstration.")
-
+:
     print("\nRectangle (width=10, height=5):")
     try:
         draw_rectangle(10, 5)
     except (ValueError, TypeError) as e:
-        logger.error(f"Error drawing rectangle: {e}")
+        logger.error("Error drawing rectangle: {e}")
 
     print("\nTriangle (height=5):")
     try:
         draw_triangle(5)
     except (ValueError, TypeError) as e:
-        logger.error(f"Error drawing triangle: {e}")
+        logger.error("Error drawing triangle: {e}")
 
     print("\nDefault RTM diagram:")
     print(generate_ascii_diagram())  # Default is "rtm"

@@ -6,10 +6,13 @@ This guide provides step-by-step instructions for running the various components
 
 1. Ensure Python 3.8+ is installed
 2. Set up your OpenAI API key using one of these methods:
+
    - Environment variable: `export OPENAI_API_KEY=your-api-key`
    - Create `config/apikeys.yaml` with:
+
      ```yaml
      openai: "your-api-key"
+
      ```
 
 ## Quick Start Commands
@@ -17,27 +20,35 @@ This guide provides step-by-step instructions for running the various components
 Here are the primary commands for running different components:
 
 ```bash
+
 # Run the main workflow
+
 python main.py
 
 # Run refactoring (simplified interface)
+
 python refactor.py path/to/file_or_directory --mode quick|deep|analyze
 
 # Run detailed refactoring
+
 python refactor_project.py path/to/directory --type general --files 10
 
 # Debug the full pipeline
+
 python debug_full_pipeline.py
 
 # Debug DMAIC output
+
 python debug_dmaic_output.py
 
 # Run examples
+
 python examples/dmaic_example.py
 python examples/dmaic_cicd_example.py
 python examples/agent_orchestration_example.py
 python examples/copilot_agent_example.py
-```
+
+```bash
 
 ## Detailed Usage Instructions
 
@@ -46,8 +57,10 @@ python examples/copilot_agent_example.py
 The main workflow integrates DMAIC methodology with the RTM automation process:
 
 ```bash
+
 python main.py
-```
+
+```bash
 
 This will:
 1. Initialize the OpenAI client
@@ -61,21 +74,28 @@ This will:
 The refactoring tool has two interfaces:
 
 1. **Simple interface** (recommended for most users):
+
    ```bash
+
    python refactor.py path/to/code --mode quick
+
    ```
 
    Available modes:
+
    - `quick`: Basic improvements (faster)
    - `deep`: Comprehensive refactoring (slower)
    - `analyze`: Only analyze without changes
 
 2. **Advanced interface** (for fine-grained control):
+
    ```bash
    python refactor_project.py path/to/project --type general --files 10 --extensions .py,.js
+
    ```
 
    Parameters:
+
    - `--type`: Refactoring type (general, performance, readability, modernize, patterns)
    - `--files`: Maximum number of files to process
    - `--extensions`: File extensions to include
@@ -86,22 +106,27 @@ For debugging the system, use:
 
 ```bash
 python debug_full_pipeline.py
-```
+
+```bash
 
 This provides an interactive menu to test specific components or the entire pipeline.
 
 For debugging DMAIC output specifically:
 
 ```bash
+
 python debug_dmaic_output.py
-```
+
+```bash
 
 ### Working with Documents
 
 To test document processing:
 
 ```python
+
 # Create a simple test script
+
 from dmaic import DMAICHandler
 from config.openai_integration import initialize_openai
 from agents.copilot_agent import CopilotAgent, ConversionType
@@ -109,6 +134,7 @@ from utils.output_handler import OutputHandler
 from utils.paths_manager import PathsManager
 
 # Initialize components
+
 client = initialize_openai()
 paths = PathsManager()
 output = OutputHandler(paths.get_output_dir())
@@ -116,23 +142,28 @@ dmaic = DMAICHandler("Document Processing", client)
 copilot = CopilotAgent(dmaic, output)
 
 # Convert a DOCX to Markdown
+
 input_file = "path/to/document.docx"
 output_file = "path/to/output.md"
 result = copilot.convert_file(input_file, output_file, ConversionType.DOCX_TO_MD)
 print(f"Conversion successful: {result}")
 
 # Extract requirements
+
 requirements_path = copilot.extract_requirements_from_docs(input_file)
 print(f"Requirements extracted to: {requirements_path}")
-```
+
+```bash
 
 ### Agent Orchestration
 
 To see how the agent system works together:
 
 ```bash
+
 python examples/agent_orchestration_example.py
-```
+
+```bash
 
 This demonstrates:
 1. Agent registration and initialization
@@ -145,8 +176,10 @@ This demonstrates:
 To test the CI/CD integration with DMAIC:
 
 ```bash
+
 python examples/dmaic_cicd_example.py
-```
+
+```bash
 
 This will:
 1. Generate mock CI/CD pipeline data
@@ -163,6 +196,7 @@ All outputs are saved in the `outputs` directory:
 - Timestamped runs: `./outputs/YYYYMMDD_HHMMSS/`
 
 Important files to check:
+
 - `workflow_*.log`: Log of all operations
 - `*_report.md`: Generated reports
 - `requirements_*.json`: Extracted requirements
@@ -173,12 +207,16 @@ Important files to check:
 To check agent communication:
 
 1. Run with the agent orchestrator:
+
    ```bash
+
    python examples/agent_orchestration_example.py
+
    ```
 
 2. Check the log file in the output directory
 3. Look for entries with patterns like:
+
    - "Message sent from agent X to agent Y"
    - "Agent X processing message of type Z"
    - "Broadcasting message to all agents"
@@ -186,21 +224,25 @@ To check agent communication:
 ## Best Practices
 
 1. **Before processing large projects:**
+
    - Start with small test files/projects
    - Check output quality
    - Adjust configurations as needed
 
 2. **For document conversion:**
+
    - Ensure pandoc is installed for best results
    - Verify document formatting is consistent
    - Check output for conversion issues
 
 3. **For refactoring:**
+
    - Make backup copies of important code
    - Review refactoring reports carefully
    - Test refactored code before deploying
 
 4. **For debugging:**
+
    - Check log files for detailed error messages
    - Use the debug tools to isolate issues
    - Set logging level to DEBUG for more details

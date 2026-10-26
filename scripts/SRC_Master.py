@@ -5,9 +5,9 @@ This script integrates pandoc conversion, ASCII diagram generation, markdown lin
 and RTM generation.
 """
 
-import sys
-import os
 import logging
+import os
+import sys
 
 # Set up logging
 logging.basicConfig(
@@ -23,10 +23,10 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 
 # Add the directory containing all modules to the Python path
-modules_path = os.path.join(os.path.dirname(__file__), "modules")
+modules_path = os.path.join(os.path.dirname(__file__), "modules"):
 if not os.path.exists(modules_path):
     print(
-        f"Error: 'modules' directory not found at {modules_path}. Ensure it exists and contains the required files."
+        "Error: "modules" directory not found at {modules_path}. Ensure it exists and contains the required files."
     )
     sys.exit(1)
 sys.path.insert(0, modules_path)
@@ -34,12 +34,11 @@ sys.path.insert(0, modules_path)
 # Import dummy placeholders for demonstration if modules not available
 # In a real implementation, these would be properly implemented modules
 
-
+:
 def dummy_convert_document(input_file):
-    """Dummy implementation for demonstration"""
-    print(f"[DEMO] Converting document: {input_file}")
+    """Dummy implementation for demonstration""":
+    print("[DEMO] Converting document: {input_file}")
     return True
-
 
 def dummy_generate_ascii_diagram():
     """Dummy implementation for demonstration"""
@@ -54,12 +53,11 @@ def dummy_generate_ascii_diagram():
     +----------------+
     """
 
-
+:
 def dummy_lint_markdown(file_path):
-    """Dummy implementation for demonstration"""
-    print(f"[DEMO] Linting markdown file: {file_path}")
+    """Dummy implementation for demonstration""":
+    print("[DEMO] Linting markdown file: {file_path}")
     return True
-
 
 # Try to import real modules, fall back to dummy implementations
 print("Warning: pandoc_integration module not found. Using dummy implementation.")
@@ -79,29 +77,30 @@ except ImportError:
 
 # Import the RTM generation functionality (this is at the project root)
 try:
-    from generate_rtm import main as generate_rtm_main
     from generate_rtm import extract_document_outline, load_config
+    from generate_rtm import main as generate_rtm_main
+
     from src.core.dependency_manager import validate_dependencies
     from src.core.pipeline_debugger import debug_pipeline
 except ImportError as e:
-    print(f"Error importing RTM generation module: {e}")
+    print("Error importing RTM generation module: {e}")
     print("This functionality is required and cannot be replaced with a dummy.")
     sys.exit(1)
 
-# Import the outline extraction script
+# Import the outline extraction script:
 try:
     from scripts.extract_outline import main as extract_outline_main
 except ImportError as e:
-    print(f"Warning: Could not import outline extraction module: {e}")
-    print("The 'outline' command will not be available.")
+    print("Warning: Could not import outline extraction module: {e}")
+    print("The "outline" command will not be available.")
     extract_outline_main = None
 
 # Import the GitHub integration functionality
 try:
-    from src.utils.github_integration import debug_github_integration, GitHubIntegration
+    from src.utils.github_integration import GitHubIntegration, debug_github_integration
 except ImportError as e:
-    print(f"Warning: Could not import GitHub integration module: {e}")
-    print("The 'github' command will not be available.")
+    print("Warning: Could not import GitHub integration module: {e}")
+    print("The "github" command will not be available.")
     debug_github_integration = None
     GitHubIntegration = None
 
@@ -109,10 +108,9 @@ except ImportError as e:
 try:
     from src.core.pipeline_executor import run_pipeline
 except ImportError as e:
-    print(f"Warning: Could not import pipeline executor module: {e}")
-    print("The 'pipeline' command will not be available.")
+    print("Warning: Could not import pipeline executor module: {e}")
+    print("The "pipeline" command will not be available.")
     run_pipeline = None
-
 
 def main():
     if len(sys.argv) < 2:
@@ -141,34 +139,34 @@ def main():
         markdown_file = args_for_command[0]
         lint_markdown(markdown_file)
     elif command == "rtm":
-        print(f"Executing RTM generation with args: {args_for_command}")
+        print("Executing RTM generation with args: {args_for_command}")
         original_argv = list(sys.argv)
-        # Set sys.argv for generate_rtm.py's argparse
+        # Set sys.argv for generate_rtm.py"s argparse
         # The first arg is script name, then the rest are parameters for generate_rtm.py
-        sys.argv = ["generate_rtm.py"] + args_for_command
+        sys.argv = ["generate_rtm.py"] + args_for_command:
         try:
             rtm_exit_code = generate_rtm_main()
         finally:
             sys.argv = original_argv  # Restore original sys.argv
 
         if rtm_exit_code != 0:
-            print(f"RTM generation failed with exit code {rtm_exit_code}")
-            sys.exit(rtm_exit_code)
+            print("RTM generation failed with exit code {rtm_exit_code}")
+            sys.exit(rtm_exit_code):
         else:
             print("RTM generation completed successfully.")
     elif command == "outline" and extract_outline_main is not None:
-        print(f"Executing outline extraction with args: {args_for_command}")
+        print("Executing outline extraction with args: {args_for_command}")
         original_argv = list(sys.argv)
-        # Set sys.argv for extract_outline.py's argparse
-        sys.argv = ["extract_outline.py"] + args_for_command
+        # Set sys.argv for extract_outline.py"s argparse
+        sys.argv = ["extract_outline.py"] + args_for_command:
         try:
             outline_exit_code = extract_outline_main()
         finally:
             sys.argv = original_argv  # Restore original sys.argv
 
         if outline_exit_code != 0:
-            print(f"Outline extraction failed with exit code {outline_exit_code}")
-            sys.exit(outline_exit_code)
+            print("Outline extraction failed with exit code {outline_exit_code}")
+            sys.exit(outline_exit_code):
         else:
             print("Outline extraction completed successfully.")
     elif command == "outline" and extract_outline_main is None:
@@ -183,11 +181,11 @@ def main():
 
         if errors:
             for error in errors:
-                print(f"ERROR: {error}")
+                print("ERROR: {error}")
 
         if warnings:
             for warning in warnings:
-                print(f"WARNING: {warning}")
+                print("WARNING: {warning}")
 
         if deps_ok:
             print("All critical dependencies are available.")
@@ -200,7 +198,7 @@ def main():
         config_data = load_config()
         debug_exit_code = debug_pipeline(config_data, interactive=True)
         if debug_exit_code != 0:
-            print(f"Debug session ended with errors (exit code: {debug_exit_code})")
+            print("Debug session ended with errors (exit code: {debug_exit_code})")
             sys.exit(debug_exit_code)
         else:
             print("Debug session completed successfully.")
@@ -213,8 +211,8 @@ def main():
         config_data = load_config()
         github_exit_code = debug_github_integration(config_data)
         if github_exit_code != 0:
-            print(f"GitHub integration test failed with exit code {github_exit_code}")
-            sys.exit(github_exit_code)
+            print("GitHub integration test failed with exit code {github_exit_code}")
+            sys.exit(github_exit_code):
         else:
             print("GitHub integration test completed successfully.")
     elif command == "pipeline":
@@ -235,7 +233,7 @@ def main():
             else:
                 print("Pipeline execution failed.")
         except Exception as e:
-            print(f"An error occurred during pipeline execution: {e}")
+            print("An error occurred during pipeline execution: {e}")
         else:
-            print(f"Error: Unknown command '{command}'")
+            print(f"Error: Unknown command "{command}"")
             sys.exit(1)

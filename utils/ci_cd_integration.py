@@ -1,7 +1,6 @@
 import json
-from typing import Dict, Any, List
 from enum import Enum, auto
-
+from typing import Any, Dict, List
 
 class CICDStage(Enum):
     """Enumeration of CI/CD pipeline stages"""
@@ -11,18 +10,17 @@ class CICDStage(Enum):
     ANALYZE = auto()
     DEPLOY = auto()
 
-
 class DMAICCICDIntegration:
     """Integrates DMAIC methodology with CI/CD pipelines"""
-
+:
     def __init__(self, dmaic_handler, output_handler):
         """Initialize with DMAIC handler and output handler"""
         self.dmaic_handler = dmaic_handler
         self.output_handler = output_handler
-
+:
     def map_stage_to_phase(self, stage: CICDStage) -> str:
         """Map CI/CD stage to DMAIC phase for analysis"""
-        mapping = {
+        mapping = {:
             CICDStage.BUILD: "DEFINE",
             CICDStage.TEST: "MEASURE",
             CICDStage.ANALYZE: "ANALYZE",
@@ -30,13 +28,13 @@ class DMAICCICDIntegration:
         }
         return mapping.get(stage, "CONTROL")
 
-    def process_pipeline_results(
-        self, stage: CICDStage, results: Dict[str, Any]
+    def process_pipeline_results(:
+            self, stage: CICDStage, results: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Process CI/CD pipeline results using DMAIC methodology"""
         dmaic_phase = self.map_stage_to_phase(stage)
 
-        # Format the results for DMAIC analysis
+        # Format the results for DMAIC analysis:
         prompt = f"Analyze the following {stage.name} stage results using {dmaic_phase} principles:\n"
         prompt += json.dumps(results, indent=2)
 
@@ -60,17 +58,17 @@ class DMAICCICDIntegration:
         recommendations = []
         for line in dmaic_response.split("\n"):
             if any(
-                keyword in line.lower()
-                for keyword in ["recommend", "suggest", "should", "improve"]
+                    keyword in line.lower()
+                    for keyword in ["recommend", "suggest", "should", "improve"]:
             ):
                 recommendations.append(line.strip())
         return recommendations
 
-    def generate_report(
-        self, all_stage_results: Dict[str, Any], output_path: str
+    def generate_report(:
+            self, all_stage_results: Dict[str, Any], output_path: str
     ) -> str:
         """Generate a comprehensive CI/CD pipeline report with DMAIC insights"""
-        report = {
+        report = {:
             "summary": "DMAIC Analysis of CI/CD Pipeline Results",
             "stages": all_stage_results,
             "overall_recommendations": [],
@@ -80,7 +78,7 @@ class DMAICCICDIntegration:
         for stage, results in all_stage_results.items():
             if "recommendations" in results:
                 for rec in results["recommendations"]:
-                    report["overall_recommendations"].append(f"[{stage}] {rec}")
+                    report["overall_recommendations"].append("[{stage}] {rec}")
 
         # Save report
         return self.output_handler.save_results(report, output_path)

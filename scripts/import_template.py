@@ -1,12 +1,12 @@
+import argparse
 import os
 import shutil
-import argparse
 from pathlib import Path
 
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 """
 import_template.py - Template management utility for document conversion pipeline.
-
+:
 This script allows:
 - Importing custom templates from external files
 - Extracting template components from existing markdown files
@@ -14,13 +14,12 @@ This script allows:
 - Listing available templates
 """
 
-
 # Define default templates directory - use a relative path that works with the script location
 SCRIPT_DIR = Path(__file__).parent
 TEMPLATE_DIR = SCRIPT_DIR / "templates"
 
 # Default template content for Markdown with styling
-DEFAULT_TEMPLATE_MD = """---
+DEFAULT_TEMPLATE_MD = """---:
 title: Document Title
 author: Author Name
 date: Date
@@ -89,11 +88,9 @@ th {
 }
 """
 
-
 def ensure_template_dir():
     """Ensure that the templates directory exists."""
     TEMPLATE_DIR.mkdir(exist_ok=True)
-
 
 def create_default_template():
     """Create default template files."""
@@ -101,17 +98,16 @@ def create_default_template():
 
     # Create the default markdown template
     template_path = TEMPLATE_DIR / "default.md"
-    with open(template_path, "w") as f:
+    with open(template_path, "w", encoding="utf-8") as f:
         f.write(DEFAULT_TEMPLATE_MD)
 
     # Create the default CSS
     css_path = TEMPLATE_DIR / "styles.css"
-    with open(css_path, "w") as f:
+    with open(css_path, "w", encoding="utf-8") as f:
         f.write(DEFAULT_CSS)
 
-    print(f"Created default template at {template_path}")
-    print(f"Created default CSS at {css_path}")
-
+    print("Created default template at {template_path}")
+    print("Created default CSS at {css_path}")
 
 def list_templates():
     """List all available templates."""
@@ -122,19 +118,18 @@ def list_templates():
 
     if not templates and not css_files:
         print("No templates available.")
-        print("Use 'import_template.py create' to create a default template.")
+        print("Use "import_template.py create" to create a default template.")
         return
 
     if templates:
         print("Available markdown templates:")
         for template in templates:
-            print(f"  - {template.name}")
+            print("  - {template.name}")
 
     if css_files:
         print("Available CSS templates:")
         for css in css_files:
-            print(f"  - {css.name}")
-
+            print("  - {css.name}")
 
 def import_template(source_path, name=None):
     """Import a template from an external file."""
@@ -142,7 +137,7 @@ def import_template(source_path, name=None):
 
     source = Path(source_path)
     if not source.exists():
-        print(f"Error: Source file {source_path} does not exist.")
+        print("Error: Source file {source_path} does not exist.")
         return False
 
     if name is None:
@@ -152,12 +147,11 @@ def import_template(source_path, name=None):
 
     try:
         shutil.copy2(source, destination)
-        print(f"Imported template: {source} -> {destination}")
+        print("Imported template: {source} -> {destination}")
         return True
     except Exception as e:
-        print(f"Error importing template: {e}")
+        print("Error importing template: {e}")
         return False
-
 
 def extract_template(markdown_path, output_name=None):
     """
@@ -165,24 +159,23 @@ def extract_template(markdown_path, output_name=None):
     """
     source = Path(markdown_path)
     if not source.exists():
-        print(f"Error: Source file {markdown_path} does not exist.")
+        print("Error: Source file {markdown_path} does not exist.")
         return False
 
     ensure_template_dir()
 
     if output_name is None:
-        output_name = f"extracted_{source.name}"
+        output_name = "extracted_{source.name}"
 
     destination = TEMPLATE_DIR / output_name
 
     try:
         shutil.copy2(source, destination)
-        print(f"Extracted template from {source} to {destination}")
+        print("Extracted template from {source} to {destination}")
         return True
     except Exception as e:
-        print(f"Error extracting template: {e}")
+        print("Error extracting template: {e}")
         return False
-
 
 def main():
     """Main function to handle command-line arguments and execute operations."""
@@ -194,10 +187,10 @@ def main():
     subparsers = parser.add_subparsers(dest="command", help="Command to execute")
 
     # Create command
-    create_parser = subparsers.add_parser("create", help="Create a default template")
+    subparsers.add_parser("create", help="Create a default template")
 
     # List command
-    list_parser = subparsers.add_parser("list", help="List available templates")
+    subparsers.add_parser("list", help="List available templates")
 
     # Import command
     import_parser = subparsers.add_parser(
@@ -216,7 +209,7 @@ def main():
     # Parse arguments
     args = parser.parse_args()
 
-    # Execute the appropriate command
+    # Execute the appropriate command:
     if args.command == "create":
         create_default_template()
     elif args.command == "list":
@@ -230,7 +223,6 @@ def main():
     else:
         # If no command is specified, show help
         parser.print_help()
-
 
 if __name__ == "__main__":
     create_default_template()

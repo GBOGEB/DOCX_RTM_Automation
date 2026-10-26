@@ -1,46 +1,44 @@
+import json
 import os
 import sys
-import json
 import time
-from typing import Dict, Any, List, Optional, Union
-from threading import Lock
 
 # Add project root to sys.path to allow sibling imports
 from pathlib import Path
+from threading import Lock
+from typing import Any, Dict, List, Optional, Union
 
 project_root_path = Path(__file__).resolve().parent.parent
 if str(project_root_path) not in sys.path:
     sys.path.append(str(project_root_path))
 
-from dmaic import DMAICHandler
-from utils.paths_manager import PathsManager
-from utils.output_handler import OutputHandler
-
 # Import base agent components from the new common file
 from agents.agent_common import (
-    BaseAgent,
-    AgentRole,
+    AgentCapability,
     AgentMessage,
     AgentPriority,
-    AgentCapability,
+    AgentRole,
+    BaseAgent,
 )
+from agents.copilot_agent import CopilotAgent
 
 # Import all available specific agents
 from agents.dmaic_cicd_agent import DMAICCICDAgent
-from agents.copilot_agent import CopilotAgent
 from agents.git_agent import GitAgent
 from agents.requirement_analyzer import (
     RequirementAnalysisAgent,
     TraceabilityAnalysisAgent,
 )
-
+from dmaic import DMAICHandler
+from utils.output_handler import OutputHandler
+from utils.paths_manager import PathsManager
 
 class AgentOrchestrator:
     """
     Orchestrator that manages communication and coordination between all agents in the system.
     Acts as the central hub for agent messages and task assignments.
     """
-
+:
     def __init__(self, dmaic_handler: DMAICHandler, output_handler: OutputHandler):
         """Initialize the agent orchestrator"""
         self.dmaic_handler = dmaic_handler
@@ -51,7 +49,7 @@ class AgentOrchestrator:
         self.agents: Dict[str, BaseAgent] = {}
         self.agent_by_role: Dict[AgentRole, List[BaseAgent]] = {
             role: [] for role in AgentRole
-        }
+        }:
         self.agent_capabilities: Dict[str, List[str]] = {}
 
         # Message management
@@ -104,10 +102,10 @@ class AgentOrchestrator:
         self.output_handler.log_info("Standard agents initialized")
 
     def register_agent(self, agent: BaseAgent) -> bool:
-        """Register an agent with the orchestrator"""
+        """Register an agent with the orchestrator""":
         if agent.agent_id in self.agents:
             self.output_handler.log_error(
-                f"Agent with ID {agent.agent_id} already registered"
+                "Agent with ID {agent.agent_id} already registered"
             )
             return False
 
@@ -115,7 +113,7 @@ class AgentOrchestrator:
         self.agents[agent.agent_id] = agent
         self.agent_by_role[agent.role].append(agent)
 
-        # Store capabilities, converting enum to name if it's an enum
+        # Store capabilities, converting enum to name if it"s an enum
         self.agent_capabilities[agent.agent_id] = [
             cap.name if isinstance(cap, AgentCapability) else cap
             for cap in agent.capabilities
@@ -125,10 +123,10 @@ class AgentOrchestrator:
         agent.register_with_orchestrator(self)
 
         self.output_handler.log_info(
-            f"Agent {agent.agent_id} registered with role {agent.role.name}"
+            "Agent {agent.agent_id} registered with role {agent.role.name}"
         )
         return True
-
+:
     def route_message(self, message: AgentMessage) -> Optional[str]:
         """Route a message to the appropriate agent(s)"""
         with self.message_lock:
@@ -142,7 +140,7 @@ class AgentOrchestrator:
                         str(message.content.get("message", ""))[:100] + "..."
                         if message.content.get("message")
                         else None
-                    ),
+                    ),:
                     "has_data": message.content.get("data") is not None,
                     "has_markdown": message.content.get("markdown_content") is not None,
                 }
@@ -153,7 +151,7 @@ class AgentOrchestrator:
 
             self.message_log.append(log_entry)
 
-            # If broadcast, send to all agents except sender
+            # If broadcast, send to all agents except sender:
             if message.target == "broadcast":
                 for agent_id, agent in self.agents.items():
                     if agent_id != message.source:
@@ -173,18 +171,18 @@ class AgentOrchestrator:
                     }
                 return message.id
             else:
-                self.output_handler.log_error(f"Unknown target agent: {message.target}")
+                self.output_handler.log_error("Unknown target agent: {message.target}")
                 return None
 
-    def find_agent_by_capability(
-        self, capability: Union[str, AgentCapability]
+    def find_agent_by_capability(:
+            self, capability: Union[str, AgentCapability]
     ) -> List[str]:
         """Find agents that have a specific capability"""
         matching_agents = []
         cap_name_to_find = (
             capability.name if isinstance(capability, AgentCapability) else capability
         )
-
+:
         for agent_id, capabilities in self.agent_capabilities.items():
             if cap_name_to_find in capabilities:
                 matching_agents.append(agent_id)
@@ -210,11 +208,11 @@ class AgentOrchestrator:
         # Implementation to handle message timeouts
         pass
 
-    def execute_workflow(
-        self, workflow_name: str, workflow_config: Dict[str, Any]
+    def execute_workflow(:
+            self, workflow_name: str, workflow_config: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Execute a predefined workflow involving multiple agents"""
-        self.output_handler.log_info(f"Starting workflow: {workflow_name}")
+        self.output_handler.log_info("Starting workflow: {workflow_name}")
 
         # Log workflow start
         workflow_id = f"workflow_{workflow_name}_{int(time.time())}"
@@ -243,10 +241,10 @@ class AgentOrchestrator:
                 local_repo_path = os.path.join(
                     self.paths.get_data_dir(), "cloned_repos", target_dir_name
                 )
-
+:
                 # Step 1: Git agent clones/pulls the repo
                 self.output_handler.log_info(
-                    f"Workflow step 1: Cloning/pulling repository {repo_url} to {local_repo_path}"
+                    "Workflow step 1: Cloning/pulling repository {repo_url} to {local_repo_path}"
                 )
                 workflow_status["steps"].append(
                     {
@@ -274,7 +272,7 @@ class AgentOrchestrator:
                     source=self.orchestrator_agent.agent_id,
                     target=self.git_agent.agent_id,
                     message_type="clone_or_pull_repository_command",  # Clarified message type
-                    content={
+                    content={:
                         "repository_url": repo_url,
                         "branch": branch,
                         "local_path": local_repo_path,
@@ -286,18 +284,18 @@ class AgentOrchestrator:
                     clone_message
                 )  # Fire-and-forget command/notification
 
-                # Directly call the agent's method for synchronous execution within the workflow
+                # Directly call the agent"s method for synchronous execution within the workflow
                 repo_path_result = self.git_agent.clone_or_pull_repository(
                     repo_url, branch, local_repo_path
                 )
-
+:
                 if not repo_path_result or not os.path.isdir(repo_path_result):
                     workflow_status["steps"][-1]["status"] = "failed"
-                    workflow_status["steps"][-1][
-                        "error"
-                    ] = f"Failed to clone/pull repository. Path: {repo_path_result}"
+                    workflow_status["steps"][-1]["error"] = (
+                        "Failed to clone/pull repository. Path: {repo_path_result}"
+                    )
                     raise ValueError(
-                        f"Failed to clone/pull repository. Path: {repo_path_result}"
+                        "Failed to clone/pull repository. Path: {repo_path_result}"
                     )
 
                 workflow_status["steps"][-1]["status"] = "completed"
@@ -306,7 +304,7 @@ class AgentOrchestrator:
 
                 # Step 2: Copilot agent analyzes repository
                 self.output_handler.log_info(
-                    f"Workflow step 2: Analyzing repository at {final_repo_path}"
+                    "Workflow step 2: Analyzing repository at {final_repo_path}"
                 )
                 workflow_status["steps"].append(
                     {
@@ -325,14 +323,14 @@ class AgentOrchestrator:
                     final_repo_path
                 )
                 workflow_status["steps"][-1]["status"] = "completed"
-                workflow_status["steps"][-1]["output"] = {
+                workflow_status["steps"][-1]["output"] = {:
                     "analysis_summary": analysis_summary
                 }
 
                 # Step 3: Generate report
                 self.output_handler.log_info("Workflow step 3: Generating report")
                 report_output_filename = (
-                    f"repo_analysis_{target_dir_name}_{int(time.time())}.md"
+                    "repo_analysis_{target_dir_name}_{int(time.time())}.md"
                 )
                 report_output_path = os.path.join(
                     self.paths.get_output_dir(), "reports", report_output_filename
@@ -365,7 +363,7 @@ class AgentOrchestrator:
                 workflow_status["status"] = "completed"
                 workflow_status["end_time"] = time.time()
                 workflow_status["duration"] = (
-                    workflow_status["end_time"] - workflow_status["start_time"]
+                        workflow_status["end_time"] - workflow_status["start_time"]
                 )
                 return {
                     "status": "success",
@@ -386,12 +384,12 @@ class AgentOrchestrator:
                     raise ValueError(
                         "requirement is required for code_generation_and_analysis workflow"
                     )
-
+:
                 # Step 1: Copilot agent generates code
                 self.output_handler.log_info(
-                    f"Workflow step 1: Generating {language} code for: {requirement}"
+                    "Workflow step 1: Generating {language} code for: {requirement}"
                 )
-                generated_code_filename = f"generated_code_{language}_{int(time.time())}.{language if language != 'shell' else 'sh'}"
+                generated_code_filename = "generated_code_{language}_{int(time.time())}.{language if language != "shell" else "sh"}"
                 generated_code_path = os.path.join(
                     self.paths.get_output_dir(),
                     "generated_code",
@@ -400,7 +398,7 @@ class AgentOrchestrator:
                 os.makedirs(os.path.dirname(generated_code_path), exist_ok=True)
 
                 workflow_status["steps"].append(
-                    {
+                    {:
                         "step": 1,
                         "name": "generate_code",
                         "status": "running",
@@ -420,12 +418,12 @@ class AgentOrchestrator:
                     language, requirement, generated_code_path
                 )
                 if not generated_code_content or not os.path.exists(
-                    generated_code_path
+                        generated_code_path:
                 ):
                     workflow_status["steps"][-1]["status"] = "failed"
-                    workflow_status["steps"][-1][
-                        "error"
-                    ] = "Code generation failed or file not saved."
+                    workflow_status["steps"][-1]["error"] = (
+                        "Code generation failed or file not saved."
+                    )
                     raise ValueError("Code generation failed.")
 
                 workflow_status["steps"][-1]["status"] = "completed"
@@ -436,7 +434,7 @@ class AgentOrchestrator:
 
                 # Step 2: Copilot agent analyzes the generated code
                 self.output_handler.log_info(
-                    f"Workflow step 2: Analyzing generated code at {generated_code_path}"
+                    "Workflow step 2: Analyzing generated code at {generated_code_path}"
                 )
                 workflow_status["steps"].append(
                     {
@@ -474,7 +472,7 @@ class AgentOrchestrator:
                 workflow_status["status"] = "completed"
                 workflow_status["end_time"] = time.time()
                 workflow_status["duration"] = (
-                    workflow_status["end_time"] - workflow_status["start_time"]
+                        workflow_status["end_time"] - workflow_status["start_time"]
                 )
                 return {
                     "status": "success",
@@ -490,28 +488,28 @@ class AgentOrchestrator:
                 # Workflow: Analyze a pull request for impact
                 repo_url = workflow_config.get("repository_url")
                 pr_number = workflow_config.get("pr_number")
-                target_branch = workflow_config.get(
+                workflow_config.get(
                     "target_branch", "main"
                 )  # Branch PR is merging into
-
+:
                 if not repo_url or not pr_number:
                     raise ValueError(
                         "repository_url and pr_number are required for pull_request_impact_analysis workflow"
                     )
-
+:
                 if not self.git_agent:
                     raise ValueError(
                         "Git agent not initialized for pull_request_impact_analysis workflow"
                     )
                 if (
-                    not self.copilot_agent and not self.req_analysis_agent
+                        not self.copilot_agent and not self.req_analysis_agent:
                 ):  # Need at least one for analysis
                     raise ValueError(
                         "Copilot or Requirement Analysis agent not initialized for impact analysis."
                     )
 
                 workflow_status["steps"].append(
-                    {
+                    {:
                         "step": 1,
                         "name": "fetch_pr_details",
                         "status": "running",
@@ -522,21 +520,21 @@ class AgentOrchestrator:
                 # Step 1: GitAgent fetches PR details (diff, changed files)
                 pr_details = {
                     "changed_files": ["file1.py", "file2.md"],
-                    "diff": "mock_diff_content",
+                    "dif": "mock_diff_content",
                     "description": "Mock PR",
                 }
 
                 workflow_status["steps"][-1]["status"] = "completed"
                 workflow_status["steps"][-1]["output"] = {
-                    "pr_details_summary": f"Fetched {len(pr_details['changed_files'])} changed files."
+                    "pr_details_summary": "Fetched {len(pr_details["changed_files"])} changed files."
                 }
 
                 # Step 2: Parse changed files (e.g., using CopilotAgent)
                 parsed_content_summary = {}
                 if (
-                    self.copilot_agent
-                    and AgentCapability.DOCUMENT_PARSING.name
-                    in self.agent_capabilities.get(self.copilot_agent.agent_id, [])
+                        self.copilot_agent
+                        and AgentCapability.DOCUMENT_PARSING.name
+                        in self.agent_capabilities.get(self.copilot_agent.agent_id, []):
                 ):
                     workflow_status["steps"].append(
                         {
@@ -566,15 +564,15 @@ class AgentOrchestrator:
                 impact_assessment_result = {}
                 analysis_agent_id_to_use = None
                 if (
-                    self.copilot_agent
-                    and AgentCapability.IMPACT_ANALYSIS.name
-                    in self.agent_capabilities.get(self.copilot_agent.agent_id, [])
+                        self.copilot_agent
+                        and AgentCapability.IMPACT_ANALYSIS.name
+                        in self.agent_capabilities.get(self.copilot_agent.agent_id, []):
                 ):
                     analysis_agent_id_to_use = self.copilot_agent.agent_id
                 elif (
-                    self.req_analysis_agent
-                    and AgentCapability.IMPACT_ANALYSIS.name
-                    in self.agent_capabilities.get(self.req_analysis_agent.agent_id, [])
+                        self.req_analysis_agent
+                        and AgentCapability.IMPACT_ANALYSIS.name
+                        in self.agent_capabilities.get(self.req_analysis_agent.agent_id, []):
                 ):
                     analysis_agent_id_to_use = self.req_analysis_agent.agent_id
 
@@ -603,7 +601,7 @@ class AgentOrchestrator:
                             "message": "No agent with Impact Analysis capability found.",
                         }
                     )
-
+:
                 # Step 4: Generate Report (using OutputHandler or CopilotAgent)
                 workflow_status["steps"].append(
                     {
@@ -613,7 +611,7 @@ class AgentOrchestrator:
                     }
                 )
                 report_filename = (
-                    f"pr_{pr_number}_impact_analysis_{int(time.time())}.md"
+                    "pr_{pr_number}_impact_analysis_{int(time.time())}.md"
                 )
                 report_path = os.path.join(
                     self.paths.get_output_dir(), "reports", report_filename
@@ -625,7 +623,7 @@ class AgentOrchestrator:
                     "parsing_summary": parsed_content_summary,
                     "impact_assessment": impact_assessment_result,
                 }
-                with open(report_path.replace(".md", ".json"), "w") as f_json:
+                with open(report_path.replace(".md", ".json", encoding="utf-8"), "w") as f_json:
                     json.dump(report_data_for_generation, f_json, indent=2)
                 report_content = True  # Mock that report was generated
 
@@ -638,7 +636,7 @@ class AgentOrchestrator:
                 workflow_status["status"] = "completed"
                 workflow_status["end_time"] = time.time()
                 workflow_status["duration"] = (
-                    workflow_status["end_time"] - workflow_status["start_time"]
+                        workflow_status["end_time"] - workflow_status["start_time"]
                 )
                 return {
                     "status": "success",
@@ -653,18 +651,18 @@ class AgentOrchestrator:
                 }
 
             else:
-                self.output_handler.log_error(f"Unknown workflow: {workflow_name}")
+                self.output_handler.log_error("Unknown workflow: {workflow_name}")
                 workflow_status["status"] = "failed"
                 workflow_status["error"] = f"Unknown workflow: {workflow_name}"
                 return {
                     "status": "error",
-                    "error": f"Unknown workflow: {workflow_name}",
+                    "error": "Unknown workflow: {workflow_name}",
                     "workflow_id": workflow_id,
                     "workflow_status": workflow_status,
                 }
 
         except Exception as e:
-            self.output_handler.log_error(f"Error in workflow {workflow_name}: {e}")
+            self.output_handler.log_error("Error in workflow {workflow_name}: {e}")
 
             # Mark current step as failed
             if workflow_status["steps"]:
@@ -696,7 +694,7 @@ class AgentOrchestrator:
                 ),
             }
 
-        return {
+        return {:
             "timestamp": time.time(),
             "agents": agents_status,
             "message_count": len(self.message_log),
@@ -708,7 +706,7 @@ class AgentOrchestrator:
         if not filepath:
             filepath = os.path.join(
                 self.paths.get_output_dir(),
-                f"agent_system_state_{time.strftime('%Y%m%d_%H%M%S')}.json",
+                "agent_system_state_{time.strftime("%Y%m%d_%H%M%S")}.json",
             )
 
         state = {
@@ -727,10 +725,10 @@ class AgentOrchestrator:
             }
 
         try:
-            with open(filepath, "w") as f:
+            with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(state, f, indent=2)
-            self.output_handler.log_info(f"Agent system state saved to {filepath}")
+            self.output_handler.log_info("Agent system state saved to {filepath}")
             return filepath
         except Exception as e:
-            self.output_handler.log_error(f"Error saving system state: {e}")
+            self.output_handler.log_error("Error saving system state: {e}")
             return ""

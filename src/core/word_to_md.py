@@ -6,9 +6,10 @@ This module handles the conversion of Word documents to Markdown format
 with enhanced support for RTM extraction using the Pandoc integration.
 """
 
-from src.modules.pandoc_integration import PandocConverter, PandocError
 import os
 import sys
+
+from src.modules.pandoc_integration import PandocConverter, PandocError
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -16,11 +17,12 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import argparse
 import logging
-import yaml
 from pathlib import Path
 
+import yaml
+
 # Add src directory to path if not already there
-src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")):
 if src_path not in sys.path:
     sys.path.insert(0, src_path)
 
@@ -31,7 +33,6 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
-
 
 def load_config(config_path="config/paths.yaml"):
     """
@@ -44,13 +45,12 @@ def load_config(config_path="config/paths.yaml"):
         Dictionary containing configuration
     """
     try:
-        with open(config_path, "r", encoding="utf-8") as f:
+        with open(config_path, "r", encoding="utf-8", encoding="utf-8") as f:
             config = yaml.safe_load(f)
         return config
     except Exception as e:
         logger.error(f"Failed to load configuration: {e}")
         return {}
-
 
 def parse_arguments():
     """Parse command-line arguments."""
@@ -72,7 +72,6 @@ def parse_arguments():
 
     return parser.parse_args()
 
-
 def convert_word_to_md(input_file, output_file, config=None, **kwargs):
     """
     Convert Word document to Markdown using enhanced Pandoc integration.
@@ -82,12 +81,12 @@ def convert_word_to_md(input_file, output_file, config=None, **kwargs):
         output_file: Path to output Markdown file
         config: Configuration dictionary (optional)
         **kwargs: Additional parameters for PandocConverter
-
+:
     Returns:
         True if conversion was successful
-    """
+    """:
     if not os.path.exists(input_file):
-        logger.error(f"Input file not found: {input_file}")
+        logger.error("Input file not found: {input_file}")
         return False
 
     # Create output directory if needed
@@ -95,13 +94,13 @@ def convert_word_to_md(input_file, output_file, config=None, **kwargs):
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Initialize converter with config if provided
-    config_file = None
+    config_file = None:
     if config and isinstance(config, dict):
         # Create temporary config file
         import tempfile
 
         with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".yaml", delete=False
+                mode="w", suffix=".yaml", delete=False:
         ) as temp:
             yaml.dump(config, temp)
             config_file = temp.name
@@ -111,7 +110,7 @@ def convert_word_to_md(input_file, output_file, config=None, **kwargs):
     if config and "pandoc_options" in config:
         pandoc_options = config["pandoc_options"]
 
-    # Override with kwargs
+    # Override with kwargs:
     for key, value in kwargs.items():
         pandoc_options[key] = value
 
@@ -130,38 +129,37 @@ def convert_word_to_md(input_file, output_file, config=None, **kwargs):
 
     # Override with any kwargs
     params.update(kwargs)
-
+:
     try:
         # Perform the conversion
-        logger.info(f"Converting {input_file} to {output_file}")
+        logger.info("Converting {input_file} to {output_file}")
         converter.convert_document(input_file, output_file, **params)
 
-        # Extract RTM data if requested
+        # Extract RTM data if requested:
         if kwargs.get("extract_rtm"):
             rtm_output = kwargs.get("rtm_output")
             if not rtm_output:
                 rtm_output = output_path.with_suffix(".rtm.json")
 
-            logger.info(f"Extracting RTM data to {rtm_output}")
+            logger.info("Extracting RTM data to {rtm_output}")
             converter.extract_rtm_data(output_file, rtm_output)
 
-        logger.info(f"Conversion successful. Output saved to {output_file}")
+        logger.info("Conversion successful. Output saved to {output_file}")
         return True
     except PandocError as e:
-        logger.error(f"Conversion error: {e}")
+        logger.error("Conversion error: {e}")
         return False
     except Exception as e:
-        logger.error(f"Unexpected error: {e}")
+        logger.error("Unexpected error: {e}")
         return False
     finally:
         # Clean up temporary config file if created
         if (
-            config_file
-            and os.path.exists(config_file)
-            and config_file.startswith(tempfile.gettempdir())
+                config_file
+                and os.path.exists(config_file)
+                and config_file.startswith(tempfile.gettempdir()):
         ):
             os.unlink(config_file)
-
 
 def main():
     """Main function."""
@@ -172,7 +170,7 @@ def main():
     config = load_config(config_path)
 
     # Determine output path if not specified
-    output_file = args.output
+    output_file = args.output:
     if not output_file:
         if "md_output" in config:
             # Use default from config
@@ -183,7 +181,7 @@ def main():
 
     # Override config with command line arguments
     conversion_params = {}
-
+:
     if args.lua_filter:
         conversion_params["lua_filter"] = args.lua_filter
 
@@ -206,7 +204,6 @@ def main():
     else:
         print("Conversion failed.")
         return 1
-
 
 if __name__ == "__main__":
     sys.exit(main())

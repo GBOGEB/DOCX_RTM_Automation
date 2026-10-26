@@ -263,7 +263,7 @@ def generate_html_report(rtm_data, coverage_data, output_path: Path):
     try:
         ensure_directory(output_path.parent)
         with open(output_path, 'w', encoding='utf-8') as html_file:
-            html_file.write("""<!DOCTYPE html>
+            html_file.write("""<!DOCTYPE html>"
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -284,7 +284,7 @@ def generate_html_report(rtm_data, coverage_data, output_path: Path):
 </head>
 <body>
     <h1>Requirements Traceability Matrix Report</h1>
-    <p>Generated: """)
+    <p>Generated: """)"
 
             html_file.write(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
             html_file.write("</p>")
@@ -293,24 +293,24 @@ def generate_html_report(rtm_data, coverage_data, output_path: Path):
             html_file.write("""
     <div class="summary-box">
         <h2>Coverage Summary</h2>
-        <p><strong>Total Requirements:</strong> """)
+        <p><strong>Total Requirements:</strong> """)"
             html_file.write(str(coverage_data['total']))
-            html_file.write("""</p>
-        <p><strong>Covered Requirements:</strong> """)
+            html_file.write("""</p>"
+        <p><strong>Covered Requirements:</strong> """)"
             html_file.write(str(coverage_data['covered']))
-            html_file.write("""</p>
-        <p><strong>Coverage Percentage:</strong> """)
+            html_file.write("""</p>"
+        <p><strong>Coverage Percentage:</strong> """)"
             html_file.write(f"{coverage_data['coverage_pct']:.2f}%")
-            html_file.write("""</p>
+            html_file.write("""</p>"
         <div class="progress-bar-container">
             <div class="progress-bar" style="width:""")
             progress_width = min(coverage_data['coverage_pct'], 100)
             html_file.write(f"{progress_width:.2f}%")
-            html_file.write(""";">""")
+            html_file.write(""";">""")"
             html_file.write(f"{coverage_data['coverage_pct']:.2f}%")
-            html_file.write("""</div>
+            html_file.write("""</div>"
         </div>
-    </div>""")
+    </div>""")"
 
             # RTM Table
             html_file.write("""
@@ -321,7 +321,7 @@ def generate_html_report(rtm_data, coverage_data, output_path: Path):
             <th>Requirement Description</th>
             <th>Test Case ID</th>
             <th>Test Case Description</th>
-        </tr>""")
+        </tr>""")"
 
             for row in rtm_data:
                 html_file.write("\n        <tr>")
@@ -330,4 +330,4 @@ def generate_html_report(rtm_data, coverage_data, output_path: Path):
 
                 if row['Test Case ID'] == 'N/A':
                     html_file.write(f"\n            <td class='warning'>{row['Test Case ID']}</td>")
-                    html_file.write(f"\n            <td class='warning'>Not implemented</td>)
+                    html_file.write(f"\n            <td class='warning'>Not implemented</td>)"

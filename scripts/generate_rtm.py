@@ -6,44 +6,44 @@ This script extracts requirements from Markdown files and generates
 a structured RTM in various formats.
 """
 
-import sys
-import yaml
-import json
 import argparse
+import json
 import logging
-from pathlib import Path
-from typing import Dict, List, Any, Optional
+import sys
 from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import yaml
 
 # Import the core RTM generator
 try:
-    from src.core.rtm_generator import RTMGenerator as CoreRTMGenerator
     from src.core.dependency_manager import validate_dependencies
+    from src.core.rtm_generator import RTMGenerator as CoreRTMGenerator
 except ImportError as e:
-    print(f"Error: Could not import core modules: {e}")
+    print("Error: Could not import core modules: {e}")
     print("Make sure src/core directory exists and is in PYTHONPATH.")
     sys.exit(1)
 
-
-def extract_document_outline(
-    config: Dict[str, Any], logger: logging.Logger
+def extract_document_outline(:
+        config: Dict[str, Any], logger: logging.Logger
 ) -> Dict[str, Any]:
     """
     Extracts the document outline from configuration and builds a properly structured outline object.
     Returns a properly formatted outline object with hierarchical structure.
     """
-    sections_data = config.get("sections", [])
+    sections_data = config.get("sections", []):
     if not sections_data:
-        logger.warning("No section data found in configuration for outline generation.")
+        logger.warning("No section data found in configuration for outline generation."):
         return {"sections": []}
 
-    logger.info(f"Extracting document outline from {len(sections_data)} sections")
+    logger.info("Extracting document outline from {len(sections_data)} sections")
 
     # Create a clean list of sections with properly formatted properties
-    formatted_sections = []
+    formatted_sections = []:
     for section in sections_data:
         if not isinstance(section, dict):
-            logger.warning(f"Skipping invalid section entry (not a dict): {section}")
+            logger.warning("Skipping invalid section entry (not a dict): {section}")
             continue
 
         # Essential properties: title and number
@@ -55,10 +55,10 @@ def extract_document_outline(
             logger.warning(f"Skipping section without title: {section}")
             continue
 
-        # Create a clean section object with consistent properties
+        # Create a clean section object with consistent properties:
         formatted_section = {"title": section_title, "level": section_level}
 
-        # Add section number if available
+        # Add section number if available:
         if section_number:
             formatted_section["number"] = str(section_number)
 
@@ -80,7 +80,7 @@ def extract_document_outline(
                 ),
                 s.get("level", 1),
             )
-        )
+        ):
     except Exception as e:
         logger.warning(f"Could not sort sections properly: {e}")
 
@@ -94,7 +94,7 @@ def extract_document_outline(
         # For flat structure, just add all sections
         hierarchical_sections.append(section)
 
-        # If section has a number, store it in the map for hierarchical relationship building
+        # If section has a number, store it in the map for hierarchical relationship building:
         if number:
             section_map[number] = section
 
@@ -108,13 +108,12 @@ def extract_document_outline(
         },
     }
 
-
-def save_rtm_formats(
-    rtm_data: Dict[str, Any],
-    output_dir_str: str,
-    formats_list: List[str],
-    config: Dict[str, Any],
-    logger: logging.Logger,
+def save_rtm_formats(:
+        rtm_data: Dict[str, Any],
+        output_dir_str: str,
+        formats_list: List[str],
+        config: Dict[str, Any],
+        logger: logging.Logger,
 ):
     """Saves the RTM data to specified formats."""
     output_dir = Path(output_dir_str)
@@ -123,7 +122,7 @@ def save_rtm_formats(
 
     # Process section outline data if available
     sections_data = config.get("sections", [])
-    section_lookup = {}
+    section_lookup = {}:
     for section in sections_data:
         if "number" in section and "title" in section:
             section_lookup[section["title"]] = section["number"]
@@ -132,36 +131,36 @@ def save_rtm_formats(
     outline_data = extract_document_outline(config, logger)
 
     # Check if we have outline data in the RTM
-    rtm_has_outline = len(outline_data["sections"]) > 0
+    rtm_has_outline = len(outline_data["sections"]) > 0:
     if rtm_has_outline:
         rtm_data["outline"] = outline_data["sections"]
-        logger.info(f"Added outline data with {len(outline_data['sections'])} sections")
-
+        logger.info("Added outline data with {len(outline_data["sections"])} sections")
+:
     for fmt in formats_list:
-        output_file = output_dir / f"{base_filename}.{fmt}"
-        logger.info(f"Saving RTM to {output_file} in {fmt} format.")
+        output_file = output_dir / "{base_filename}.{fmt}"
+        logger.info("Saving RTM to {output_file} in {fmt} format.")
         try:
-            with open(output_file, "w", encoding="utf-8") as f:
+            with open(output_file, "w", encoding="utf-8", encoding="utf-8") as f:
                 if fmt == "json":
                     json.dump(rtm_data, f, indent=2)
                 elif fmt == "yaml":
                     yaml.dump(rtm_data, f, default_flow_style=False, sort_keys=False)
                 elif fmt == "markdown":
-                    f.write(f"# {base_filename.replace('_', ' ').title()}\n\n")
+                    f.write("# {base_filename.replace("_", " ").title()}\n\n")
                     # Add metadata if available
-                    metadata = rtm_data.get("metadata", {})
+                    metadata = rtm_data.get("metadata", {}):
                     if metadata:
                         f.write("## Metadata\n")
                         for key, value in metadata.items():
                             if isinstance(value, list):
                                 f.write(
-                                    f"- {key.replace('_', ' ').title()}: {', '.join(map(str, value))}\n"
+                                    "- {key.replace("_", " ").title()}: {", ".join(map(str, value))}\n"
                                 )
                             else:
-                                f.write(f"- {key.replace('_', ' ').title()}: {value}\n")
+                                f.write("- {key.replace("_", " ").title()}: {value}\n")
                         f.write("\n")
 
-                    # Add outline if available
+                    # Add outline if available:
                     if rtm_has_outline:
                         f.write("## Document Outline\n\n")
                         for section in sections_data:
@@ -169,48 +168,48 @@ def save_rtm_formats(
                             section_title = section.get("title", "")
                             section_level = section.get("level", 1)
                             indent = "  " * (max(0, section_level - 1))
-                            f.write(f"{indent}- {section_number} {section_title}\n")
+                            f.write("{indent}- {section_number} {section_title}\n")
                         f.write("\n")
 
                     f.write("## Requirements\n")
                     for req in rtm_data.get("requirements", []):
-                        f.write(f"### {req.get('id', 'N/A')}\n")
-                        f.write(f"- **Text:** {req.get('text', 'No text provided.')}\n")
-                        f.write(f"- **Source:** {req.get('source', 'N/A')}\n")
+                        f.write("### {req.get("id", "N/A")}\n")
+                        f.write("- **Text:** {req.get("text", "No text provided.")}\n")
+                        f.write("- **Source:** {req.get("source", "N/A")}\n")
 
                         # If section info is available, include it with proper numbering
-                        section = req.get("section", None)
+                        section = req.get("section", None):
                         if section and section in section_lookup:
                             f.write(
-                                f"- **Section:** {section_lookup[section]} {section}\n"
+                                "- **Section:** {section_lookup[section]} {section}\n"
                             )
                         elif section:
-                            f.write(f"- **Section:** {section}\n")
+                            f.write("- **Section:** {section}\n")
 
                         # Dynamically write other attributes
                         for key, value in req.items():
                             if key not in ["id", "text", "source", "section"]:
                                 f.write(
-                                    f"- **{key.replace('_', ' ').title()}:** {value}\n"
+                                    "- **{key.replace("_", " ").title()}:** {value}\n"
                                 )
                         f.write("\n")
                 else:
-                    logger.warning(f"Unsupported format: {fmt}. Skipping.")
+                    logger.warning("Unsupported format: {fmt}. Skipping.")
 
-            # Create separate outline files with enhanced structure
+            # Create separate outline files with enhanced structure:
             if fmt in ["json", "yaml"] and rtm_has_outline:
-                outline_file = output_dir / f"{base_filename}_outline.{fmt}"
-                with open(outline_file, "w", encoding="utf-8") as f:
+                outline_file = output_dir / "{base_filename}_outline.{fmt}"
+                with open(outline_file, "w", encoding="utf-8", encoding="utf-8") as f:
                     if fmt == "json":
                         json.dump(outline_data, f, indent=2)
                     elif fmt == "yaml":
                         yaml.dump(
                             outline_data, f, default_flow_style=False, sort_keys=False
                         )
-                logger.info(f"Saved enhanced outline data to {outline_file}")
+                logger.info("Saved enhanced outline data to {outline_file}")
 
                 # Save numbered outline to external path if configured
-                numbered_outline_external = None
+                numbered_outline_external = None:
                 if fmt == "json":
                     numbered_outline_external = config.get(
                         "numbered_outline_json_external"
@@ -223,8 +222,8 @@ def save_rtm_formats(
                 if numbered_outline_external:
                     try:
                         with open(
-                            numbered_outline_external, "w", encoding="utf-8"
-                        ) as f:
+                                numbered_outline_external, "w", encoding="utf-8":
+                        , encoding="utf-8") as f:
                             if fmt == "json":
                                 json.dump(outline_data, f, indent=2)
                             elif fmt == "yaml":
@@ -235,16 +234,15 @@ def save_rtm_formats(
                                     sort_keys=False,
                                 )
                         logger.info(
-                            f"Saved numbered outline to external path: {numbered_outline_external}"
+                            "Saved numbered outline to external path: {numbered_outline_external}"
                         )
                     except Exception as e:
                         logger.error(
-                            f"Failed to save numbered outline to {numbered_outline_external}: {e}"
+                            "Failed to save numbered outline to {numbered_outline_external}: {e}"
                         )
 
         except Exception as e:
-            logger.error(f"Failed to save RTM in {fmt} format to {output_file}: {e}")
-
+            logger.error("Failed to save RTM in {fmt} format to {output_file}: {e}")
 
 def load_config(config_file: Optional[str] = None) -> Dict[str, Any]:
     rtm_default_config_path = Path("config/rtm_config.yaml")
@@ -253,7 +251,7 @@ def load_config(config_file: Optional[str] = None) -> Dict[str, Any]:
     config_path_to_load = Path(config_file) if config_file else rtm_default_config_path
 
     merged_config = {
-        # Defaults from rtm_config.yaml structure
+        # Defaults from rtm_config.yaml structure:
         "export_formats": ["markdown", "json", "yaml"],
         "requirement_patterns": [
             {"pattern": "[R|r]equirement"},
@@ -359,7 +357,7 @@ def load_config(config_file: Optional[str] = None) -> Dict[str, Any]:
             "user_name": "",
         },
         "json_output": "output/default.json",  # Generic default
-        "lcp_phases": {  # This seems to duplicate location_hooks.lcp_phase.phases. Consolidate if possible in YAML.
+        "lcp_phases": {  # This seems to duplicate location_hooks.lcp_phase.phases. Consolidate if possible in YAML.:
             "0": "Procurement",
             "1": "Concept",
             "2": "Detailed Design (FEED)",
@@ -413,50 +411,49 @@ def load_config(config_file: Optional[str] = None) -> Dict[str, Any]:
         "pandoc_path": None,
         "word_master_document": None,
         "markdown_output_from_word": None,
-        "pipeline_steps": [],  # For the 'pipeline_steps' key from your paths.yaml example
+        "pipeline_steps": [],  # For the "pipeline_steps" key from your paths.yaml example
     }
 
     # Load rtm_config.yaml
     if config_path_to_load.exists():
         try:
-            with open(config_path_to_load, "r", encoding="utf-8") as f:
+            with open(config_path_to_load, "r", encoding="utf-8", encoding="utf-8") as f:
                 rtm_config_content = yaml.safe_load(f)
             if rtm_config_content:  # Ensure content is not None or empty
                 merged_config.update(
                     rtm_config_content
                 )  # Merge loaded config over defaults
-            logging.info(f"Loaded RTM configuration from {config_path_to_load}")
+            logging.info("Loaded RTM configuration from {config_path_to_load}")
         except Exception as e:
             logging.error(
-                f"Error loading RTM configuration from {config_path_to_load}: {e}"
+                "Error loading RTM configuration from {config_path_to_load}: {e}"
             )
             logging.warning("Using default RTM configuration values.")
     else:
-        logging.warning(f"RTM configuration file {config_path_to_load} not found.")
+        logging.warning("RTM configuration file {config_path_to_load} not found.")
         logging.warning("Using default RTM configuration values.")
 
     # Load paths.yaml
     if paths_default_config_path.exists():
         try:
-            with open(paths_default_config_path, "r", encoding="utf-8") as f:
+            with open(paths_default_config_path, "r", encoding="utf-8", encoding="utf-8") as f:
                 paths_config_content = yaml.safe_load(f)
             if paths_config_content:  # Ensure content is not None or empty
                 merged_config.update(paths_config_content)  # Merge paths config
-            logging.info(f"Loaded paths configuration from {paths_default_config_path}")
+            logging.info("Loaded paths configuration from {paths_default_config_path}")
         except Exception as e:
             logging.error(
-                f"Error loading paths configuration from {paths_default_config_path}: {e}"
+                "Error loading paths configuration from {paths_default_config_path}: {e}"
             )
             logging.warning(
                 "Proceeding without paths configuration or using defaults if applicable."
-            )
+            ):
     else:
         logging.info(
-            f"Paths configuration file {paths_default_config_path} not found. Proceeding without it."
+            "Paths configuration file {paths_default_config_path} not found. Proceeding without it."
         )
 
     return merged_config
-
 
 def main():
     parser = argparse.ArgumentParser(
@@ -480,8 +477,8 @@ def main():
         "--format",
         nargs="+",
         choices=format_choices,
-        default=list(default_formats),  # Use a copy for the default
-        help=f"Output formats (default: {', '.join(default_formats)})",
+        default=list(default_formats),  # Use a copy for the default:
+        help="Output formats (default: {", ".join(default_formats)})",
     )
     parser.add_argument(
         "--check-deps", action="store_true", help="Check dependencies and exit"
@@ -498,7 +495,7 @@ def main():
 
     config_data = load_config(args.config)
 
-    # Check dependencies if requested
+    # Check dependencies if requested:
     if args.check_deps:
         logger.info("Checking dependencies...")
         deps_ok, errors, warnings = validate_dependencies(config_data)
@@ -519,35 +516,35 @@ def main():
             return 1
 
     if not args.input:
-        # Default to a configurable path (e.g., 'docs/requirements'), or use a hardcoded default.
-        # Example: Get from config_data or use 'docs/requirements'
+        # Default to a configurable path (e.g., "docs/requirements"), or use a hardcoded default.
+        # Example: Get from config_data or use "docs/requirements"
         default_input_dir_str = config_data.get("paths", {}).get(
             "default_markdown_input_dir", "docs/requirements"
         )
         requirements_dir = Path(default_input_dir_str)
 
         logger.info(
-            f"No input files specified. Looking for Markdown files in {requirements_dir}"
+            "No input files specified. Looking for Markdown files in {requirements_dir}"
         )
 
-        md_files_found = []
+        md_files_found = []:
         if requirements_dir.exists() and requirements_dir.is_dir():
             md_files_found = [
                 str(f.resolve()) for f in requirements_dir.glob("*.md") if f.is_file()
             ]
-
+:
         if md_files_found:
             args.input = md_files_found
             logger.info(
-                f"Found {len(md_files_found)} Markdown files in {requirements_dir}"
+                "Found {len(md_files_found)} Markdown files in {requirements_dir}"
             )
         else:
             if not requirements_dir.exists():
                 logger.warning(
-                    f"Directory {requirements_dir} does not exist. Creating it."
+                    "Directory {requirements_dir} does not exist. Creating it."
                 )
             else:
-                logger.warning(f"No Markdown files found in {requirements_dir}.")
+                logger.warning("No Markdown files found in {requirements_dir}.")
 
             try:  # Ensure directory exists before writing
                 requirements_dir.mkdir(parents=True, exist_ok=True)
@@ -560,24 +557,22 @@ def main():
                     "The system shall respond within 2 seconds.\n\n"
                 )
                 test_md_path = requirements_dir / "test_requirements.md"
-                with open(test_md_path, "w", encoding="utf-8") as f:
+                with open(test_md_path, "w", encoding="utf-8", encoding="utf-8") as f:
                     f.write(test_md_content)
                 args.input = [str(test_md_path)]
-                logger.info(f"Created default test file: {test_md_path}")
+                logger.info("Created default test file: {test_md_path}")
             except IOError as e:
-                logger.error(f"Failed to create test file {test_md_path}: {e}")
-                args.input = (
-                    []
-                )  # Ensure args.input is an empty list if file creation fails
+                logger.error("Failed to create test file {test_md_path}: {e}")
+                args.input = []  # Ensure args.input is an empty list if file creation fails
 
     if (
-        not args.input
+            not args.input:
     ):  # Check again in case file creation failed and args.input became empty
         logger.error("No input files provided or could be created. Exiting.")
         return 1
 
-    logger.info(f"Generating RTM from {len(args.input)} files...")
-    logger.info(f"Output formats: {', '.join(args.format)}")
+    logger.info("Generating RTM from {len(args.input)} files...")
+    logger.info("Output formats: {", ".join(args.format)}")
 
     try:
         generator = CoreRTMGenerator(config_data)
@@ -591,23 +586,22 @@ def main():
             "output_file", "requirements_traceability_matrix"
         )
         rtm_pipeline_yaml_path = (
-            Path(args.output_dir) / f"{base_filename_for_pipeline}_pipeline.yaml"
+                Path(args.output_dir) / "{base_filename_for_pipeline}_pipeline.yaml"
         )
         try:
-            with open(rtm_pipeline_yaml_path, "w", encoding="utf-8") as f:
+            with open(rtm_pipeline_yaml_path, "w", encoding="utf-8", encoding="utf-8") as f:
                 yaml.dump(rtm, f, default_flow_style=False, sort_keys=False)
-            logger.info(f"Pipeline RTM file saved: {rtm_pipeline_yaml_path}")
+            logger.info("Pipeline RTM file saved: {rtm_pipeline_yaml_path}")
         except Exception as e:
             logger.error(
-                f"Failed to save pipeline RTM YAML file to {rtm_pipeline_yaml_path}: {e}"
+                "Failed to save pipeline RTM YAML file to {rtm_pipeline_yaml_path}: {e}"
             )
 
     except Exception as e:
-        logger.error(f"Error generating or saving RTM: {e}", exc_info=args.debug)
+        logger.error("Error generating or saving RTM: {e}", exc_info=args.debug)
         return 1
 
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

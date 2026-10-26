@@ -9,4 +9,4 @@ try:
     # Code that might raise a ConnectionAbortedError
     pass
 except ConnectionAbortedError as e:
-    logging.error(f"Connection was aborted: {e}")
+    logging.error("Connection was aborted: {e}")

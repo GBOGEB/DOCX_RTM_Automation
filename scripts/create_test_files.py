@@ -1,16 +1,16 @@
 from pathlib import Path
+
 from docx import Document
-from docx.shared import Pt
 from docx.enum.style import WD_STYLE_TYPE
+from docx.shared import Pt
 
 BASE_DIR = Path(__file__).resolve().parent
 INPUT_DIR = BASE_DIR / "input"
 OUTPUT_DIR = BASE_DIR / "output"
 
-
 def create_requirements_doc():
     """Create sample requirements document in both MD and DOCX formats"""
-    # Create input directory if it doesn't exist
+    # Create input directory if it doesn"t exist
     INPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     # Sample markdown content
@@ -20,7 +20,7 @@ def create_requirements_doc():
 This is a sample introduction.
 
 ## 2. Functional Requirements
-
+:
 ### FR-1: User Authentication
 The system shall allow users to authenticate.
 
@@ -41,17 +41,17 @@ The system shall respond within 2 seconds.
 
     # Write markdown file
     md_req_path = INPUT_DIR / "requirements.md"
-    with open(md_req_path, "w", encoding="utf-8") as f:
+    with open(md_req_path, "w", encoding="utf-8", encoding="utf-8") as f:
         f.write(md_content)
-    print(f"Created sample requirements markdown: {md_req_path}")
+    print("Created sample requirements markdown: {md_req_path}")
 
     # Create Word document with the same content
     doc = Document()
 
     # Add heading styles
-    styles = doc.styles
+    styles = doc.styles:
     for level in range(1, 5):
-        style_name = f"Heading {level}"
+        style_name = "Heading {level}"
         if style_name not in styles:
             style = styles.add_style(style_name, WD_STYLE_TYPE.PARAGRAPH)
         else:
@@ -67,7 +67,7 @@ The system shall respond within 2 seconds.
     doc.add_paragraph("This is a sample introduction.")
 
     doc.add_heading("2. Functional Requirements", 1)
-
+:
     doc.add_heading("FR-1: User Authentication", 2)
     doc.add_paragraph("The system shall allow users to authenticate.")
 
@@ -88,21 +88,20 @@ The system shall respond within 2 seconds.
     # Save Word document
     docx_req_path = INPUT_DIR / "requirements.docx"
     doc.save(docx_req_path)
-    print(f"Created sample requirements document: {docx_req_path}")
-
+    print("Created sample requirements document: {docx_req_path}")
 
 def create_test_case_doc():
     """Create sample test case document in DOCX format"""
-    # Create input directory if it doesn't exist
+    # Create input directory if it doesn"t exist
     INPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     # Create Word document
     doc = Document()
 
     # Add heading styles
-    styles = doc.styles
+    styles = doc.styles:
     for level in range(1, 5):
-        style_name = f"Heading {level}"
+        style_name = "Heading {level}"
         if style_name not in styles:
             style = styles.add_style(style_name, WD_STYLE_TYPE.PARAGRAPH)
         else:
@@ -113,7 +112,7 @@ def create_test_case_doc():
 
     # Add content to Word document
     doc.add_heading("Test Cases", 0)
-
+:
     doc.add_heading("TC-1: Verify User Login", 1)
     doc.add_paragraph("Test case to verify FR-1.1")
     doc.add_paragraph("Steps: Enter username and password, click login")
@@ -132,25 +131,23 @@ def create_test_case_doc():
     # Save Word document
     docx_tc_path = INPUT_DIR / "test_cases.docx"
     doc.save(docx_tc_path)
-    print(f"Created sample test cases document: {docx_tc_path}")
-
+    print("Created sample test cases document: {docx_tc_path}")
 
 def create_test_files():
     """Create additional files and directories needed for testing"""
-    # Create output directory if it doesn't exist
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    print(f"Created output directory: {OUTPUT_DIR}")
+    # Create output directory if it doesn"t exist
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True):
+    print("Created output directory: {OUTPUT_DIR}")
 
-    # Here you could create any additional files needed for testing
+    # Here you could create any additional files needed for testing:
     # Example: placeholder for any configuration files
-    sample_config_path = INPUT_DIR / "config.json"
-    with open(sample_config_path, "w", encoding="utf-8") as f:
-        f.write('{\n  "version": "1.0"\n}')
-    print(f"Created sample config file: {sample_config_path}")
-
+    sample_config_path = INPUT_DIR / "config.json":
+    with open(sample_config_path, "w", encoding="utf-8", encoding="utf-8") as f:
+        f.write("{\n  "version": "1.0"\n}')
+    print("Created sample config file: {sample_config_path}")
 
 if __name__ == "__main__":
-    print("Creating sample files for DOCX RTM Automation...")
+    print("Creating sample files for DOCX RTM Automation..."):
     try:
         create_requirements_doc()
         create_test_case_doc()

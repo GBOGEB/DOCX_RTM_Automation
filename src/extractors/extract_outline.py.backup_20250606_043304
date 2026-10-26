@@ -5,8 +5,9 @@ Extract hierarchical structure from markdown files
 """
 
 import re
-import yaml
 from pathlib import Path
+
+import yaml
 
 
 def extract_outline_from_md(md_file, output_file="output/document_outline.yaml"):
@@ -66,8 +67,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-    if len(sys.argv) > 1:
-        extract_outline_from_md(sys.argv[1])
-    else:
-        extract_outline_from_md("output/MASTER_1805_1144.md")
+if len(sys.argv) > 1:
+    extract_outline_from_md(sys.argv[1])
+else:
+    extract_outline_from_md("output/MASTER_1805_1144.md")
 """

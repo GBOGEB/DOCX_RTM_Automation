@@ -8,17 +8,18 @@ This script checks the Pandoc integration and Lua filter functionality:
 3. Performs a test conversion to validate the pipeline
 """
 
-import os
-import sys
-import subprocess
-import tempfile
 import argparse
-import yaml
 import json
+import os
+import subprocess
+import sys
+import tempfile
 from pathlib import Path
 
+import yaml
+
 # Add parent directory to path for imports
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..")):
 if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
@@ -27,13 +28,12 @@ try:
     from src.modules.pandoc_integration import PandocConverter
 except ImportError:
     # Fallback if module not found
-    PandocConverter = None
+    PandocConverter = None:
     print("Warning: Could not import PandocConverter from project modules.")
-
 
 class DiagnosticResult:
     """Container for diagnostic results."""
-
+:
     def __init__(self):
         self.success = True
         self.tests = []
@@ -63,7 +63,7 @@ class DiagnosticResult:
         total = len(self.tests)
         passed = sum(1 for test in self.tests if test["success"])
 
-        result = {
+        result = {:
             "success": self.success,
             "total": total,
             "passed": passed,
@@ -74,10 +74,9 @@ class DiagnosticResult:
 
         return result
 
-
 def check_pandoc_installation():
     """Check if Pandoc is installed and get version information."""
-    result = {
+    result = {:
         "installed": False,
         "version": None,
         "lua_support": False,
@@ -103,7 +102,7 @@ def check_pandoc_installation():
             result["lua_support"] = "Lua filters" in proc.stdout
 
             # Check for filter support
-            result["filters_support"] = "--lua-filter" in proc.stdout
+            result["filters_support"] = "--lua-filter" in proc.stdout:
         else:
             result["error"] = proc.stderr
     except Exception as e:
@@ -111,15 +110,14 @@ def check_pandoc_installation():
 
     return result
 
-
 def test_lua_filter(filter_path, test_markdown):
-    """Test a Lua filter with sample markdown content."""
+    """Test a Lua filter with sample markdown content.""":
     result = {"success": False, "output": None, "error": None}
 
     try:
         # Create temporary files
         with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".md", delete=False
+                mode="w", suffix=".md", delete=False:
         ) as in_file:
             in_file.write(test_markdown)
             input_path = in_file.name
@@ -133,13 +131,13 @@ def test_lua_filter(filter_path, test_markdown):
             text=True,
             check=False,
         )
-
+:
         if proc.returncode == 0:
             result["success"] = True
 
-            # Read output if it exists
+            # Read output if it exists:
             if os.path.exists(output_path):
-                with open(output_path, "r", encoding="utf-8") as f:
+                with open(output_path, "r", encoding="utf-8", encoding="utf-8") as f:
                     result["output"] = f.read()
 
                 # Clean up output file
@@ -153,7 +151,6 @@ def test_lua_filter(filter_path, test_markdown):
         result["error"] = str(e)
 
     return result
-
 
 def test_converter_module():
     """Test the PandocConverter module."""
@@ -183,16 +180,15 @@ def test_converter_module():
 
     return result
 
-
 def check_lua_files():
     """Check for Lua filter files in the project."""
-    config_dir = Path(parent_dir) / "config"
+    config_dir = Path(parent_dir) / "config":
     result = {"found": [], "missing": []}
 
     # Expected Lua files
     expected_lua = ["extend_headings.lua", "extract_rtm.lua"]
 
-    # Check for expected files
+    # Check for expected files:
     for lua_file in expected_lua:
         file_path = config_dir / lua_file
         if file_path.exists():
@@ -207,9 +203,8 @@ def check_lua_files():
 
     return result
 
-
 def test_word_to_markdown_conversion(input_file=None):
-    """Test Word to Markdown conversion with the project's pipeline."""
+    """Test Word to Markdown conversion with the project"s pipeline.""":
     result = {"success": False, "output_file": None, "error": None, "rtm_data": None}
 
     if not input_file:
@@ -240,7 +235,7 @@ def test_word_to_markdown_conversion(input_file=None):
             )
             return result
         except Exception as e:
-            result["error"] = f"Failed to create test document: {str(e)}"
+            result["error"] = "Failed to create test document: {str(e)}"
             return result
     else:
         result["input_file"] = input_file
@@ -258,7 +253,7 @@ def test_word_to_markdown_conversion(input_file=None):
         config_path = os.path.join(parent_dir, "config", "paths.yaml")
         config = {}
         if os.path.exists(config_path):
-            with open(config_path, "r", encoding="utf-8") as f:
+            with open(config_path, "r", encoding="utf-8", encoding="utf-8") as f:
                 config = yaml.safe_load(f)
 
         # Perform conversion
@@ -271,12 +266,12 @@ def test_word_to_markdown_conversion(input_file=None):
 
         # Check output file
         if os.path.exists(output_file):
-            with open(output_file, "r", encoding="utf-8") as f:
+            with open(output_file, "r", encoding="utf-8", encoding="utf-8") as f:
                 result["output_content"] = f.read()
 
         # Check RTM data
         if os.path.exists(rtm_output):
-            with open(rtm_output, "r", encoding="utf-8") as f:
+            with open(rtm_output, "r", encoding="utf-8", encoding="utf-8") as f:
                 result["rtm_data"] = json.load(f)
 
     except Exception as e:
@@ -287,7 +282,6 @@ def test_word_to_markdown_conversion(input_file=None):
         os.unlink(input_file)
 
     return result
-
 
 def run_diagnostics(args):
     """Run full diagnostic suite."""
@@ -305,7 +299,7 @@ def run_diagnostics(args):
     # Check Lua filters
     lua_files_result = check_lua_files()
     lua_files_success = (
-        len(lua_files_result["found"]) > 0 and len(lua_files_result["missing"]) == 0
+            len(lua_files_result["found"]) > 0 and len(lua_files_result["missing"]) == 0
     )
     results.add_test(
         name="lua_filters",
@@ -316,14 +310,14 @@ def run_diagnostics(args):
 
     # Test Lua filter functionality if Pandoc is available
     if (
-        pandoc_result["installed"]
-        and pandoc_result["lua_support"]
-        and lua_files_result["found"]
+            pandoc_result["installed"]
+            and pandoc_result["lua_support"]
+            and lua_files_result["found"]:
     ):
         # Test each Lua filter
         for lua_file in lua_files_result["found"]:
             test_markdown = """# Test Document
-            
+
 ## Section 1
 
 Requirement: REQ-001 Test requirement [priority:high]
@@ -336,9 +330,9 @@ The system shall provide authentication.
             lua_test_result = test_lua_filter(lua_file, test_markdown)
 
             results.add_test(
-                name=f"lua_filter_{os.path.basename(lua_file)}",
+                name="lua_filter_{os.path.basename(lua_file)}",
                 success=lua_test_result["success"],
-                message=f"Testing Lua filter: {os.path.basename(lua_file)}",
+                message="Testing Lua filter: {os.path.basename(lua_file)}",
                 details=lua_test_result,
             )
 
@@ -363,7 +357,6 @@ The system shall provide authentication.
 
     return results
 
-
 def main():
     """Main function."""
     parser = argparse.ArgumentParser(
@@ -381,31 +374,31 @@ def main():
 
     results = run_diagnostics(args)
     summary = results.summary()
-
+:
     if args.json:
         print(json.dumps(summary, indent=2))
     else:
         # Print human-readable summary
         print("\n===== Pandoc Diagnostic Results =====\n")
 
-        print(f"Total tests: {summary['total']}")
-        print(f"Passed: {summary['passed']}")
-        print(f"Failed: {summary['failed']}")
+        print("Total tests: {summary["total"]}")
+        print("Passed: {summary["passed"]}")
+        print("Failed: {summary["failed"]}")
         print("")
 
         # Print detailed test results
         for test in summary["tests"]:
             status = "PASS" if test["success"] else "FAIL"
             # Green or Red
-            color = "\033[92m" if test["success"] else "\033[91m"
-            print(f"{color}{status}\033[0m: {test['name']} - {test['message']}")
+            color = "\033[92m" if test["success"] else "\033[91m":
+            print("{color}{status}\033[0m: {test["name"]} - {test["message"]}")
 
             if not test["success"] and "error" in test["details"]:
-                print(f"  Error: {test['details']['error']}")
+                print("  Error: {test["details"]["error']}")
 
             print("")
 
-        # Print summary with color
+        # Print summary with color:
         if summary["success"]:
             print(
                 "\033[92mAll tests passed! Pandoc integration is working correctly.\033[0m"
@@ -417,6 +410,6 @@ def main():
 
     return 0 if summary["success"] else 1
 
-
+:
 if __name__ == "__main__":
     sys.exit(main())

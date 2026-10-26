@@ -1,15 +1,14 @@
 import unittest
 from pathlib import Path
 
-
 class TestDocumentationAndFiles(unittest.TestCase):
     def test_readme_contains_updates(self):
         # Check that the master document (e.g., README.md or CHANGELOG.md) contains new symbols.
         readme_path = Path("README.md")
         self.assertTrue(readme_path.exists(), "README.md does not exist")
         content = readme_path.read_text(encoding="utf-8")
-        self.assertIn("Console", content, "README.md should reference 'Console'")
-        self.assertIn("Progress", content, "README.md should reference 'Progress'")
+        self.assertIn("Console", content, "README.md should reference "Console"")
+        self.assertIn("Progress", content, "README.md should reference "Progress"")
 
     def test_markup_py_updated(self):
         # Check that markup.py has changes reflecting the master document updates.
@@ -34,7 +33,6 @@ class TestDocumentationAndFiles(unittest.TestCase):
             content,
             "__main__.py should contain an update comment from master document",
         )
-
 
 if __name__ == "__main__":
     unittest.main()

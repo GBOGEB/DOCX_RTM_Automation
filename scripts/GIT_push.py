@@ -1,5 +1,5 @@
-import subprocess
 import os
+import subprocess
 
 # Navigate to your project directory
 os.chdir("C:/Users/gbonthuy/Downloads/DOCX_RTM_Automation_v1.0")
@@ -26,7 +26,6 @@ subprocess.run(
     check=True,
 )
 
-
 def git_push(commit_message="Update project"):
     """Push changes to GitHub."""
     try:
@@ -35,8 +34,7 @@ def git_push(commit_message="Update project"):
         subprocess.run(["git", "push"], check=True)
         print("✅ Changes pushed to GitHub.")
     except subprocess.CalledProcessError as e:
-        print(f"❌ Git operation failed: {e}")
-
+        print("❌ Git operation failed: {e}")
 
 if __name__ == "__main__":
     git_push("Automated commit")

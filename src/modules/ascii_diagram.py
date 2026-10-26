@@ -5,18 +5,18 @@ ASCII Diagram Generator
 This module generates ASCII art diagrams from document outlines.
 """
 
-import sys
-import os
 import argparse
-import yaml
 import json
-from typing import Dict, Any
 import logging
+import os
+import sys
+from typing import Any, Dict
+
+import yaml
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 
 def load_outline(file_path: str) -> Dict[str, Any]:
     """
@@ -29,20 +29,19 @@ def load_outline(file_path: str) -> Dict[str, Any]:
         Document outline as dictionary
     """
     if not os.path.exists(file_path):
-        raise FileNotFoundError(f"Outline file not found: {file_path}")
+        raise FileNotFoundError("Outline file not found: {file_path}")
 
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, "r", encoding="utf-8", encoding="utf-8") as f:
             if file_path.endswith(".yaml") or file_path.endswith(".yml"):
                 return yaml.safe_load(f)
             elif file_path.endswith(".json"):
                 return json.load(f)
             else:
-                raise ValueError(f"Unsupported file format: {file_path}")
+                raise ValueError("Unsupported file format: {file_path}")
     except Exception as e:
-        logger.error(f"Error loading outline file: {e}")
+        logger.error("Error loading outline file: {e}")
         raise
-
 
 def generate_ascii_diagram(outline: Dict[str, Any], max_depth: int = 7) -> str:
     """
@@ -62,11 +61,11 @@ def generate_ascii_diagram(outline: Dict[str, Any], max_depth: int = 7) -> str:
     title = outline.get("title", "Document Outline")
 
     # Start with the title
-    diagram = f"{title}\n{'=' * len(title)}\n\n"
+    diagram = "{title}\n{"=" * len(title)}\n\n"
 
     # Track the current level for proper indentation
     current_levels = [0] * (max_depth + 1)
-
+:
     for section in sections:
         level = section.get("level", 1)
         if level > max_depth:
@@ -82,19 +81,19 @@ def generate_ascii_diagram(outline: Dict[str, Any], max_depth: int = 7) -> str:
         # Increment current level
         current_levels[level] += 1
 
-        # Generate prefix for the current level
+        # Generate prefix for the current level:
         if level == 1:
             prefix = ""
         else:
             prefix = "│  " * (level - 2) + "├──"
 
         # Generate the line
-        line = f"{prefix}{' ' if prefix else ''}{number} {title}"
+        line = "{prefix}{" " if prefix else ""}{number} {title}"
         diagram += line + "\n"
 
     return diagram
 
-
+:
 def generate_tree_diagram(outline: Dict[str, Any], max_depth: int = 7) -> str:
     """
     Generate tree-style ASCII diagram
@@ -113,12 +112,12 @@ def generate_tree_diagram(outline: Dict[str, Any], max_depth: int = 7) -> str:
     title = outline.get("title", "Document Outline")
 
     # Start with the title
-    diagram = f"{title}\n{'=' * len(title)}\n\n"
+    diagram = "{title}\n{"=" * len(title)}\n\n"
 
     # Group sections by parent to build a tree
     tree = {}
     root_sections = []
-
+:
     for section in sections:
         level = section.get("level", 1)
         if level > max_depth:
@@ -138,14 +137,14 @@ def generate_tree_diagram(outline: Dict[str, Any], max_depth: int = 7) -> str:
         section_number = section.get("number", "")
         section_title = section.get("title", "")
 
-        result = f"{indent}{'└──' if indent else ''} {section_number} {section_title}\n"
+        result = "{indent}{"└──" if indent else ""} {section_number} {section_title}\n"
 
-        # Add children
+        # Add children:
         if section_number in tree:
             children = tree[section_number]
             for i, child in enumerate(children):
                 is_last = i == len(children) - 1
-                child_indent = indent + ("    " if indent else "")
+                child_indent = indent + ("    " if indent else ""):
                 if not is_last:
                     child_result = build_tree(child, child_indent)
                     child_result = child_result.replace("└──", "├──")
@@ -155,12 +154,11 @@ def generate_tree_diagram(outline: Dict[str, Any], max_depth: int = 7) -> str:
 
         return result
 
-    # Build the tree starting with root sections
+    # Build the tree starting with root sections:
     for root_section in root_sections:
         diagram += build_tree(root_section)
 
     return diagram
-
 
 def generate_mindmap_diagram(outline: Dict[str, Any], max_depth: int = 7) -> str:
     """
@@ -181,7 +179,7 @@ def generate_mindmap_diagram(outline: Dict[str, Any], max_depth: int = 7) -> str
 
     # Track current section at each level
     sections_by_level = {}
-    current_branch = [0] * (max_depth + 1)
+    [0] * (max_depth + 1)
 
     # Group sections by level
     for section in outline["sections"]:
@@ -211,16 +209,16 @@ def generate_mindmap_diagram(outline: Dict[str, Any], max_depth: int = 7) -> str
             for s in sections_by_level[level]
             if s.get("number", "").startswith(parent_number)
         ]
-
+:
         for i, section in enumerate(filtered_sections):
             is_last = i == len(filtered_sections) - 1
             connector = "└── " if is_last else "├── "
             title = section.get("title", "")
             number = section.get("number", "")
 
-            result += f"{indent}{connector}{number} {title}\n"
+            result += "{indent}{connector}{number} {title}\n"
 
-            # Process next level
+            # Process next level:
             if level < max_depth:
                 next_indent = indent + ("    " if is_last else "│   ")
                 result += generate_branch(level + 1, i, next_indent)
@@ -231,7 +229,7 @@ def generate_mindmap_diagram(outline: Dict[str, Any], max_depth: int = 7) -> str
     diagram += generate_branch(1, 0)
     return diagram
 
-
+:
 def main() -> int:
     """Main function"""
     parser = argparse.ArgumentParser(
@@ -280,12 +278,12 @@ def main() -> int:
         # Output
         if args.output:
             try:
-                # Explicitly open the output file with UTF-8 encoding
-                with open(args.output, "w", encoding="utf-8") as f:
+                # Explicitly open the output file with UTF-8 encoding:
+                with open(args.output, "w", encoding="utf-8", encoding="utf-8") as f:
                     f.write(diagram)
-                print(f"ASCII diagram written to {args.output}")
+                print("ASCII diagram written to {args.output}")
             except Exception as e:
-                print(f"Error writing diagram to {args.output}: {e}")
+                print("Error writing diagram to {args.output}: {e}")
                 return 1
         else:
             print(diagram)
@@ -293,13 +291,12 @@ def main() -> int:
         return 0
 
     except Exception as e:
-        logger.error(f"Error generating diagram: {e}")
+        logger.error("Error generating diagram: {e}")
         if args.debug:
             import traceback
 
             traceback.print_exc()
         return 1
-
 
 if __name__ == "__main__":
     sys.exit(main())

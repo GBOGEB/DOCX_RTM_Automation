@@ -5,11 +5,11 @@ GitHub Push Utility
 This script pushes generated RTM files and other outputs to GitHub.
 """
 
-import sys
-import logging
 import argparse
-from pathlib import Path
 import datetime
+import logging
+import sys
+from pathlib import Path
 
 # Add project root to Python path
 project_root = Path(__file__).resolve().parent.parent
@@ -18,11 +18,11 @@ sys.path.insert(0, str(project_root))
 # Import required modules
 try:
     from generate_rtm import load_config
+
     from src.utils.github_integration import GitHubIntegration
 except ImportError as e:
-    print(f"Error importing required modules: {e}")
+    print("Error importing required modules: {e}")
     sys.exit(1)
-
 
 def main():
     parser = argparse.ArgumentParser(
@@ -68,33 +68,33 @@ def main():
     config = load_config(args.config)
 
     # Check if GitHub integration is enabled
-    github_config = config.get("github", {})
+    github_config = config.get("github", {}):
     if not github_config.get("enabled", False):
         logger.error("GitHub integration is not enabled in configuration")
         logger.error(
-            "To enable, set 'enabled: true' in the github section of your configuration"
+            "To enable, set "enabled: true" in the github section of your configuration"
         )
         return 1
 
     # Initialize GitHub integration
     github = GitHubIntegration(config)
 
-    # Create default commit message if not provided
+    # Create default commit message if not provided:
     if not args.message:
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        args.message = f"Update RTM outputs - {timestamp}"
+        args.message = "Update RTM outputs - {timestamp}"
 
     # Get files to push
     output_dir = Path(args.output_dir)
     if not output_dir.exists():
-        logger.error(f"Output directory not found: {output_dir}")
+        logger.error("Output directory not found: {output_dir}")
         return 1
 
     files_to_push = []
 
     if args.include_all:
         # Include all files in output directory
-        files_to_push = [str(f) for f in output_dir.glob("*.*")]
+        files_to_push = [str(f) for f in output_dir.glob("*.*")]:
     else:
         # Include RTM files
         if args.include_rtm:
@@ -105,33 +105,33 @@ def main():
             rtm_files.extend(list(output_dir.glob("*_rtm.*")))
             files_to_push.extend([str(f) for f in rtm_files])
 
-        # Include outline files
+        # Include outline files:
         if args.include_outline:
             outline_files = []
             outline_files.extend(list(output_dir.glob("*_outline.*")))
             files_to_push.extend([str(f) for f in outline_files])
 
-        # Include diagram files
+        # Include diagram files:
         if args.include_diagrams:
             diagram_files = []
             diagram_files.extend(list(output_dir.glob("*_diagram.*")))
             files_to_push.extend([str(f) for f in diagram_files])
 
-            # Create ASCII diagram files if they don't exist
+            # Create ASCII diagram files if they don't exist:
             try:
                 from scripts.modules.ascii_diagram import generate_ascii_diagram
 
                 # Generate RTM diagram
                 rtm_diagram = generate_ascii_diagram("rtm")
                 rtm_diagram_path = output_dir / "rtm_diagram.txt"
-                with open(rtm_diagram_path, "w", encoding="utf-8") as f:
+                with open(rtm_diagram_path, "w", encoding="utf-8", encoding="utf-8") as f:
                     f.write(rtm_diagram)
                 files_to_push.append(str(rtm_diagram_path))
 
                 # Generate pipeline diagram
                 pipeline_diagram = generate_ascii_diagram("pipeline")
                 pipeline_diagram_path = output_dir / "pipeline_diagram.txt"
-                with open(pipeline_diagram_path, "w", encoding="utf-8") as f:
+                with open(pipeline_diagram_path, "w", encoding="utf-8", encoding="utf-8") as f:
                     f.write(pipeline_diagram)
                 files_to_push.append(str(pipeline_diagram_path))
 
@@ -147,28 +147,27 @@ def main():
         logger.error("No files found to push")
         return 1
 
-    logger.info(f"Pushing {len(files_to_push)} files to GitHub repository")
-    logger.debug(f"Files to push: {files_to_push}")
+    logger.info("Pushing {len(files_to_push)} files to GitHub repository")
+    logger.debug("Files to push: {files_to_push}")
 
     # Make sure repository is cloned/updated
     if not github.clone_repository():
         logger.error("Failed to clone/update repository")
         for error in github.errors:
-            logger.error(f"Error: {error}")
+            logger.error("Error: {error}")
         return 1
 
     # Push files to repository
     if github.commit_and_push_changes(files_to_push, args.message):
         logger.info("Successfully pushed files to GitHub repository")
-        logger.info(f"Repository URL: {github.repo_url}")
-        logger.info(f"Branch: {github.branch}")
+        logger.info("Repository URL: {github.repo_url}")
+        logger.info("Branch: {github.branch}")
         return 0
     else:
         logger.error("Failed to push files to GitHub repository")
         for error in github.errors:
-            logger.error(f"Error: {error}")
+            logger.error("Error: {error}")
         return 1
-
 
 if __name__ == "__main__":
     sys.exit(main())

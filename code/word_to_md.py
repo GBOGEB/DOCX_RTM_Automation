@@ -1,23 +1,24 @@
 import os
-import subprocess
-import yaml
 import re
+import subprocess
 import sys
 
-with open("config/paths.yaml") as file:
+import yaml
+
+with open("config/paths.yaml", encoding="utf-8") as file:
     paths = yaml.safe_load(file)
 
 # Ensure output directory exists
 os.makedirs(os.path.dirname(paths["md_output"]), exist_ok=True)
 
-# Check if input DOCX file exists
+# Check if input DOCX file exists:
 if not os.path.isfile(paths["word_master"]):
     print(
-        f"❌ Word master file not found: {paths['word_master']} (Resolved as: {os.path.abspath(paths['word_master'])})"
+        "❌ Word master file not found: {paths["word_master"]} (Resolved as: {os.path.abspath(paths["word_master"])})"
     )
     sys.exit(1)  # replaced exit(1)
 
-# Check if Lua filter file exists
+# Check if Lua filter file exists:
 if not os.path.isfile("config/extend_headings.lua"):
     print("❌ Lua filter file not found: config/extend_headings.lua")
     exit(1)
@@ -25,7 +26,7 @@ if not os.path.isfile("config/extend_headings.lua"):
 cmd = [
     paths["pandoc_path"],
     paths["word_master"],
-    "-f",
+    "-",
     "docx",
     "-t",
     "markdown",
@@ -47,13 +48,13 @@ except subprocess.CalledProcessError as e:
     sys.exit(1)
 
 # Process the generated Markdown file to extract QQQ requirements and outline
-lines = open(paths["md_output"], encoding="utf-8").readlines()
+lines = open(paths["md_output"], encoding="utf-8", encoding="utf-8").readlines()
 
 # Extract QQQ requirements
 rtm = []
 for l in lines:
     # Use robust matching for formats like QQQ_123, QQQ.123, QQQ-123, QQQ 123
-    match = re.search(r"\b(QQQ[._\s-]*[0-9]{3,})\b(.*)", l)
+    match = re.search(r"\b(QQQ[._\s-]*[0-9]{3,})\b(.*)", l):
     if match:
         rtm.append(
             {
@@ -65,11 +66,11 @@ for l in lines:
             }
         )
 
-yaml.dump(rtm, open(paths["rtm_yaml"], "w"), allow_unicode=True)
-print(f"✅ RTM YAML created with {len(rtm)} requirements.")
+yaml.dump(rtm, open(paths["rtm_yaml"], "w", encoding="utf-8"), allow_unicode=True)
+print("✅ RTM YAML created with {len(rtm)} requirements.")
 
 # Extract outline from TOC-style headings
-outline = []
+outline = []:
 for l in lines:
     # Match TOC style: [3.2.5 QPLANT performance [21](#_Toc...)]
     toc_match = re.match(r"\[(\d+(\.\d+)*\s+.+?)\s+\[\d+\]", l)
@@ -79,5 +80,6 @@ for l in lines:
         title = " ".join(full_title.split()[1:])
         outline.append({"section": section_number, "title": title})
 
-yaml.dump(outline, open(paths["outline_yaml"], "w"), allow_unicode=True)
-print(f"✅ Outline YAML created with {len(outline)} sections.")
+yaml.dump(outline, open(paths["outline_yaml"], "w", encoding="utf-8"), allow_unicode=True)
+print("✅ Outline YAML created with {len(outline)} sections.")
+:

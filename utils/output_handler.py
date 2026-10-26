@@ -1,13 +1,12 @@
-import os
 import json
 import logging
+import os
 from datetime import datetime
-from typing import Dict, Any
-
+from typing import Any, Dict
 
 class OutputHandler:
     """Handler for managing output files and logging"""
-
+:
     def __init__(self, output_dir: str):
         """Initialize the output handler"""
         self.output_dir = output_dir
@@ -15,7 +14,7 @@ class OutputHandler:
 
         # Set up logging
         log_file = os.path.join(
-            output_dir, f"workflow_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+            output_dir, "workflow_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log"
         )
         logging.basicConfig(
             level=logging.INFO,
@@ -36,13 +35,13 @@ class OutputHandler:
     def log_interaction(self, question: str, response: str):
         """Log an interaction with the DMAIC system"""
         self.interaction_history.append(
-            {
+            {:
                 "timestamp": datetime.now().isoformat(),
                 "question": question,
                 "response": response,
             }
         )
-        self.logger.info(f"Q: {question[:50]}... | R: {response[:50]}...")
+        self.logger.info("Q: {question[:50]}... | R: {response[:50]}...")
 
     def save_results(self, results: Dict[str, Any], filename: str) -> str:
         """Save results to a JSON file"""
@@ -55,7 +54,7 @@ class OutputHandler:
             "timestamp": datetime.now().isoformat(),
         }
 
-        with open(output_path, "w", encoding="utf-8") as f:
+        with open(output_path, "w", encoding="utf-8", encoding="utf-8") as f:
             # Handle different file formats
             if filename.endswith(".json"):
                 json.dump(full_output, f, indent=2, ensure_ascii=False)
@@ -69,5 +68,5 @@ class OutputHandler:
                 # Default to JSON
                 json.dump(full_output, f, indent=2, ensure_ascii=False)
 
-        self.log_info(f"Results saved to {output_path}")
+        self.log_info("Results saved to {output_path}")
         return output_path

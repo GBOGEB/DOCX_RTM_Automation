@@ -1,34 +1,34 @@
 from typing import Any, Optional
 
+from agents.agent_common import (
+    AgentCapability,
+    AgentMessage,
+    AgentRole,
+    BaseAgent,
+    StandardAgentResponse,
+    validate_input,
+)
+from config.openai_integration import create_agent as create_openai_llm_agent
 from config.openai_integration import (
     initialize_openai,
-    create_agent as create_openai_llm_agent,
-)
-from agents.agent_common import (
-    BaseAgent,
-    AgentRole,
-    AgentMessage,
-    StandardAgentResponse,
-    AgentCapability,
-    validate_input,
 )
 
 # Initialize OpenAI client once at module level if shared, or per instance
 # For simplicity here, we assume it might be passed or initialized in __init__
 # client = initialize_openai() # This might be better handled by passing client to agents
 
-
+:
 class RequirementAnalysisAgent(BaseAgent):
     """
     Agent specialized in analyzing software requirements for clarity, testability, and completeness.
     """
 
     def __init__(
-        self,
-        agent_id: str,
-        output_handler: Optional[Any] = None,
-        client: Optional[Any] = None,
-        model: str = "gpt-4",
+            self,:
+            agent_id: str,
+            output_handler: Optional[Any] = None,
+            client: Optional[Any] = None,
+            model: str = "gpt-4",
     ):
         super().__init__(agent_id, AgentRole.ANALYST, output_handler)
         self.client = client or initialize_openai()  # Ensure client is initialized
@@ -46,21 +46,21 @@ Your task is to evaluate requirements for clarity, testability, and completeness
             "analyze_single_requirement", self.handle_analyze_single_requirement
         )
 
-    def handle_analyze_single_requirement(
-        self, message: AgentMessage
+    def handle_analyze_single_requirement(:
+            self, message: AgentMessage
     ) -> StandardAgentResponse:
         """Handles a request to analyze a single requirement."""
         if not validate_input(message.content, ["requirement_text"]):
             return {
                 "status": "error",
-                "message": "Missing 'requirement_text' in message content.",
+                "message": "Missing "requirement_text" in message content.",
                 "data": None,
                 "error_details": "Invalid input",
                 "markdown_content": None,
             }
 
         requirement_text = message.content["requirement_text"]
-        prompt = f"Analyze this requirement for clarity, testability, and completeness:\n\n{requirement_text}"
+        prompt = "Analyze this requirement for clarity, testability, and completeness:\n\n{requirement_text}"
 
         try:
             result, _ = self.llm_agent(prompt)
@@ -89,18 +89,17 @@ Your task is to evaluate requirements for clarity, testability, and completeness
                 "markdown_content": None,
             }
 
-
 class TraceabilityAnalysisAgent(BaseAgent):
     """
     Agent specialized in requirement traceability analysis.
     """
 
     def __init__(
-        self,
-        agent_id: str,
-        output_handler: Optional[Any] = None,
-        client: Optional[Any] = None,
-        model: str = "gpt-3.5-turbo",
+            self,:
+            agent_id: str,
+            output_handler: Optional[Any] = None,
+            client: Optional[Any] = None,
+            model: str = "gpt-3.5-turbo",
     ):
         super().__init__(agent_id, AgentRole.ANALYST, output_handler)
         self.client = client or initialize_openai()  # Ensure client is initialized
@@ -115,13 +114,13 @@ Your task is to identify relationships between requirements and suggest improvem
         self.register_message_handler(
             "check_traceability", self.handle_check_traceability
         )
-
+:
     def handle_check_traceability(self, message: AgentMessage) -> StandardAgentResponse:
         """Handles a request to check traceability between requirements."""
         if not validate_input(message.content, ["requirements_list"]):
             return {
                 "status": "error",
-                "message": "Missing 'requirements_list' in message content.",
+                "message": "Missing "requirements_list" in message content.",
                 "data": None,
                 "error_details": "Invalid input",
                 "markdown_content": None,
@@ -129,11 +128,11 @@ Your task is to identify relationships between requirements and suggest improvem
 
         requirements_list = message.content["requirements_list"]
         if not isinstance(requirements_list, list) or not all(
-            isinstance(req, str) for req in requirements_list
+                isinstance(req, str) for req in requirements_list:
         ):
             return {
                 "status": "error",
-                "message": "'requirements_list' must be a list of strings.",
+                "message": ""requirements_list" must be a list of strings.",
                 "data": None,
                 "error_details": "Invalid input type",
                 "markdown_content": None,
@@ -147,7 +146,7 @@ Your task is to identify relationships between requirements and suggest improvem
             result, _ = self.llm_agent(prompt)
             markdown_report = "### Traceability Analysis Report for:\n\n"
             for i, req in enumerate(requirements_list):
-                markdown_report += f"{i + 1}. ```\n{req}\n```\n"
+                markdown_report += "{i + 1}. ```\n{req}\n```\n"
             markdown_report += f"\n**Analysis:**\n{result}"
 
             return {
@@ -173,19 +172,17 @@ Your task is to identify relationships between requirements and suggest improvem
                 "markdown_content": None,
             }
 
-
 # Example usage (for testing, actual instantiation would be by orchestrator)
 if __name__ == "__main__":
-
     class MockOutputHandler:
         def log_info(self, msg):
-            print(f"INFO: {msg}")
+            print("INFO: {msg}")
 
         def log_error(self, msg):
-            print(f"ERROR: {msg}")
+            print("ERROR: {msg}")
 
         def log_debug(self, msg):
-            print(f"DEBUG: {msg}")
+            print("DEBUG: {msg}")
 
     mock_output = MockOutputHandler()
 
@@ -215,4 +212,4 @@ if __name__ == "__main__":
         "test_suite", trace_agent.agent_id, "check_traceability", trace_msg_content
     )
     trace_response = trace_agent.handle_check_traceability(trace_message)
-    mock_output.log_info(f"Traceability Analysis Response: {trace_response}")
+    mock_output.log_info("Traceability Analysis Response: {trace_response}")

@@ -2,10 +2,9 @@ import os
 import sys
 from datetime import datetime
 
-
 class PathsManager:
     """Utility for managing file paths across the application"""
-
+:
     def __init__(self):
         """Initialize path manager with default paths"""
         self.project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -17,7 +16,7 @@ class PathsManager:
         self.data_dir = os.path.join(self.project_root, "data")
         self.templates_dir = os.path.join(self.project_root, "templates")
 
-        # Ensure directories exist
+        # Ensure directories exist:
         for directory in [self.output_dir, self.data_dir]:
             os.makedirs(directory, exist_ok=True)
 
@@ -27,7 +26,7 @@ class PathsManager:
             sys.path.append(self.project_root)
 
     def get_output_dir(self, create_timestamped: bool = False) -> str:
-        """Get the output directory path, optionally with timestamp"""
+        """Get the output directory path, optionally with timestamp""":
         if not create_timestamped:
             return self.output_dir
 

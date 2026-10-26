@@ -7,17 +7,17 @@ an ASCII tree visualization of the document hierarchy, along with a
 requirements dependency graph.
 """
 
+import json
+import logging
 import os
 import re
-import logging
-import json
 from collections import defaultdict
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
+:
 class DocumentStructure:
     """Extract and visualize document structure from markdown"""
 
@@ -37,13 +37,13 @@ class DocumentStructure:
 
         Returns:
             True if parsing was successful
-        """
+        """:
         try:
-            with open(markdown_file, "r", encoding="utf-8") as f:
+            with open(markdown_file, "r", encoding="utf-8", encoding="utf-8") as f:
                 content = f.read()
 
             # Extract headings with potential LCP phase
-            heading_pattern = (
+            heading_pattern = (:
                 r"^(#{1,6})\s+((\d+(?:\.\d+)*)\s+)?([^\n\[]+)(?:\s+\[LCP:(\d+)\])?"
             )
             for match in re.finditer(heading_pattern, content, re.MULTILINE):
@@ -54,11 +54,11 @@ class DocumentStructure:
 
                 self.headings.append((level, section_num, title, lcp_phase))
                 logger.debug(
-                    f"Found heading: L{level} {section_num} {title} [LCP:{lcp_phase}]"
+                    "Found heading: L{level} {section_num} {title} [LCP:{lcp_phase}]"
                 )
 
             # Extract requirements from div class="requirement"
-            req_div_pattern = r'<div\s+class="requirement">\s*([^<]*)</div>'
+            req_div_pattern = r"<div\s+class="requirement">\s*([^<]*)</div>"
             for match in re.finditer(req_div_pattern, content, re.DOTALL):
                 req_text = match.group(1).strip()
 
@@ -74,7 +74,7 @@ class DocumentStructure:
                 section = self._find_section_for_position(match.start(), content)
 
                 # Extract metadata
-                meta = {}
+                meta = {}:
                 meta_pattern = r"\[([a-zA-Z_-]+):([^\]]+)\]"
                 for meta_match in re.finditer(meta_pattern, req_text):
                     key = meta_match.group(1).lower()
@@ -98,10 +98,10 @@ class DocumentStructure:
                         "metadata": meta,
                     }
                 )
-                logger.debug(f"Found requirement: {req_id} in section {section}")
+                logger.debug("Found requirement: {req_id} in section {section}")
 
             # Also look for requirements in paragraphs (without div)
-            para_req_patterns = [
+            para_req_patterns = [:
                 r"([Rr][Ee][Qq]-\d+)[\s:]+(.*?)(?=\n\n|\Z)",  # REQ-XXX format
                 r"shall\s+(.*?)(?=\n\n|\Z)",  # "shall" statements
                 r"must\s+(.*?)(?=\n\n|\Z)",  # "must" statements
@@ -115,12 +115,12 @@ class DocumentStructure:
                         req_text = match.group(2).strip()
                     # For "shall/must" statements
                     else:
-                        req_id = f"REQ-IMP-{len(self.requirements) + 1}"
+                        req_id = "REQ-IMP-{len(self.requirements) + 1}"
                         req_text = match.group(1).strip()
 
                     # Skip if this looks like it was already captured via div
                     if any(
-                        req["id"].upper() == req_id.upper() for req in self.requirements
+                            req["id"].upper() == req_id.upper() for req in self.requirements:
                     ):
                         continue
 
@@ -149,7 +149,7 @@ class DocumentStructure:
                         }
                     )
                     logger.debug(
-                        f"Found paragraph requirement: {req_id} in section {section}"
+                        "Found paragraph requirement: {req_id} in section {section}"
                     )
 
             # Extract dependencies
@@ -167,10 +167,10 @@ class DocumentStructure:
 
                     self.dependencies.append((source_id, target_id, rel_type))
                     logger.debug(
-                        f"Found dependency: {source_id} {rel_type} {target_id}"
+                        "Found dependency: {source_id} {rel_type} {target_id}"
                     )
 
-            # Also check tables with dependency information
+            # Also check tables with dependency information:
             table_pattern = r"\|\s*([Rr][Ee][Qq]-\d+)\s*\|[^|]*\|[^|]*\|\s*([Rr][Ee][Qq]-\d+(?:,\s*[Rr][Ee][Qq]-\d+)*)\s*\|"
             for match in re.finditer(table_pattern, content):
                 source_id = match.group(1)
@@ -179,18 +179,18 @@ class DocumentStructure:
                 for target_id in targets:
                     self.dependencies.append((source_id, target_id, "depends_on"))
                     logger.debug(
-                        f"Found table dependency: {source_id} depends_on {target_id}"
+                        "Found table dependency: {source_id} depends_on {target_id}"
                     )
 
             return True
 
         except Exception as e:
-            logger.error(f"Error parsing markdown file {markdown_file}: {e}")
+            logger.error("Error parsing markdown file {markdown_file}: {e}")
             return False
 
     def _find_section_for_position(self, position: int, content: str) -> str:
         """Find the section number for a given position in the content"""
-        # Get all heading matches before this position
+        # Get all heading matches before this position:
         heading_pattern = r"^(#{1,6})\s+((\d+(?:\.\d+)*)\s+)?(.+?)(?:\s+\[LCP:\d+\])?$"
         heading_matches = list(
             re.finditer(heading_pattern, content[:position], re.MULTILINE)
@@ -201,7 +201,7 @@ class DocumentStructure:
 
         # Get the last heading before this position
         last_match = heading_matches[-1]
-        if last_match.group(3):  # If there's a section number
+        if last_match.group(3):  # If there"s a section number
             return last_match.group(3)
 
         return ""
@@ -209,7 +209,7 @@ class DocumentStructure:
     def process_raw_structure_json(self, json_file: str) -> bool:
         """Process raw structure data from JSON file"""
         try:
-            with open(json_file, "r", encoding="utf-8") as f:
+            with open(json_file, "r", encoding="utf-8", encoding="utf-8") as f:
                 data = json.load(f)
 
             # Process headings
@@ -225,7 +225,7 @@ class DocumentStructure:
             for req in data.get("requirements", []):
                 self.requirements.append(
                     {
-                        "id": req.get("id", f"REQ-AUTO-{len(self.requirements) + 1}"),
+                        "id": req.get("id", "REQ-AUTO-{len(self.requirements) + 1}"),
                         "text": req.get("text", ""),
                         "section": req.get("section", ""),
                         "metadata": req.get("metadata", {}),
@@ -244,7 +244,7 @@ class DocumentStructure:
             return True
 
         except Exception as e:
-            logger.error(f"Error processing structure JSON {json_file}: {e}")
+            logger.error("Error processing structure JSON {json_file}: {e}")
             return False
 
     def generate_structure_tree(self) -> str:
@@ -267,34 +267,34 @@ class DocumentStructure:
         # Keep track of the current branch characters at each level
         branch_chars = [""] * 20
 
-        # Process each heading (skip the first, which is the title)
+        # Process each heading (skip the first, which is the title):
         for i, (level, number, title, lcp_phase) in enumerate(self.headings[1:], 1):
             # Calculate indentation
-            indent = "    " * (level - 1)
+            "    " * (level - 1)
 
             # Format the heading text
             if number:
-                heading_text = f"{number} {title}"
+                heading_text = "{number} {title}"
             else:
                 heading_text = title
 
             if lcp_phase:
-                heading_text += f" [LCP:{lcp_phase}]"
+                heading_text += " [LCP:{lcp_phase}]"
 
             # Determine if this is the last item at its level
-            is_last = True
-            for next_heading in self.headings[i + 1 :]:
+            is_last = True:
+            for next_heading in self.headings[i + 1:]:
                 if (
-                    next_heading[0] <= level
+                        next_heading[0] <= level:
                 ):  # If we find another heading at same or higher level
                     is_last = (
-                        next_heading[0] < level
-                    )  # It's last only if the next is at a higher level
+                            next_heading[0] < level
+                    )  # It"s last only if the next is at a higher level
                     break
 
-            # Generate the branch character
+            # Generate the branch character:
             if level == 1:
-                branch = ""  # No branch for top-level headings
+                branch = ""  # No branch for top-level headings:
             elif is_last:
                 branch = "└── "  # Last item at this level
                 branch_chars[level] = "    "  # No continuing vertical line
@@ -303,12 +303,12 @@ class DocumentStructure:
                 # Continue vertical line for this level
                 branch_chars[level] = "│   "
 
-            # Build the full line with the correct indentation and branching
+            # Build the full line with the correct indentation and branching:
             if level == 1:
                 line = heading_text
             else:
                 # Replace the last indent space with the appropriate branch characters from higher levels
-                indented_line = ""
+                indented_line = "":
                 for j in range(1, level):
                     indented_line += branch_chars[j]
 
@@ -352,24 +352,24 @@ class DocumentStructure:
                     break
 
             # Add the source node
-            output.append(f"    {source_id}")
+            output.append("    {source_id}"):
             if source_desc:
-                output.append(f"    ({source_desc})")
+                output.append("    ({source_desc})")
 
             # Add connections to targets
             for i, (target_id, rel_type) in enumerate(targets):
                 if i == 0:  # First connection uses vertical arrows
                     output.append("          ▲")
                     output.append("          │")
-                    output.append(f"          │ {rel_type.replace('_', ' ')}")
+                    output.append("          │ {rel_type.replace("_", " ")}")
                     output.append("          │")
                 else:  # Additional connections use horizontal lines
-                    output.append(f"    {source_id} ──────────── {target_id}")
+                    output.append("    {source_id} ──────────── {target_id}")
                     output.append(
-                        f"                           {rel_type.replace('_', ' ')}"
+                        "                           {rel_type.replace("_", " ")}"
                     )
 
-                # Only get target description for the first connection
+                # Only get target description for the first connection:
                 if i == 0:
                     # Get target description
                     target_desc = ""
@@ -380,10 +380,10 @@ class DocumentStructure:
                             )
                             break
 
-            # Add the target info for first connection
+            # Add the target info for first connection:
             if targets:
                 target_id, _ = targets[0]
-                output.append(f"    {target_id}")
+                output.append("    {target_id}")
 
                 # Get target description
                 target_desc = ""
@@ -393,9 +393,9 @@ class DocumentStructure:
                             "..." if len(req["text"]) > 30 else ""
                         )
                         break
-
+:
                 if target_desc:
-                    output.append(f"    ({target_desc})")
+                    output.append("    ({target_desc})")
 
             output.append("")  # Add a blank line between dependency groups
 
@@ -410,23 +410,22 @@ class DocumentStructure:
 
         Returns:
             True if successful
-        """
+        """:
         try:
             structure_tree = self.generate_structure_tree()
             dep_graph = self.generate_dependency_graph()
 
-            with open(output_file, "w", encoding="utf-8") as f:
+            with open(output_file, "w", encoding="utf-8", encoding="utf-8") as f:
                 f.write(structure_tree)
                 f.write("\n\n")
                 f.write(dep_graph)
 
-            logger.info(f"Document structure written to {output_file}")
+            logger.info("Document structure written to {output_file}")
             return True
 
         except Exception as e:
-            logger.error(f"Error generating document structure: {e}")
+            logger.error("Error generating document structure: {e}")
             return False
-
 
 def extract_structure_from_md(input_file: str, output_file: str) -> bool:
     """
@@ -442,26 +441,25 @@ def extract_structure_from_md(input_file: str, output_file: str) -> bool:
     doc_structure = DocumentStructure()
 
     # Check if raw structure JSON exists (from Lua filter)
-    raw_json = "output/document_structure_raw.json"
+    raw_json = "output/document_structure_raw.json":
     if os.path.exists(raw_json):
-        logger.info(f"Using raw structure data from {raw_json}")
+        logger.info("Using raw structure data from {raw_json}")
         if not doc_structure.process_raw_structure_json(raw_json):
             logger.warning(
                 "Failed to process raw structure data, falling back to markdown parsing"
             )
             if not doc_structure.parse_markdown(input_file):
-                logger.error(f"Failed to parse markdown: {input_file}")
+                logger.error("Failed to parse markdown: {input_file}")
                 return False
     else:
         # Parse the markdown file directly
-        logger.info(f"Parsing markdown file: {input_file}")
+        logger.info("Parsing markdown file: {input_file}")
         if not doc_structure.parse_markdown(input_file):
-            logger.error(f"Failed to parse markdown: {input_file}")
+            logger.error("Failed to parse markdown: {input_file}")
             return False
 
     # Generate the output
     return doc_structure.generate_output(output_file)
-
 
 if __name__ == "__main__":
     import argparse
@@ -481,7 +479,7 @@ if __name__ == "__main__":
     # Create output directory if it doesn't exist
     os.makedirs(os.path.dirname(args.output), exist_ok=True)
 
-    # Process raw JSON if provided
+    # Process raw JSON if provided:
     if args.raw_json:
         doc_structure = DocumentStructure()
         success = doc_structure.process_raw_structure_json(args.raw_json)
@@ -492,3 +490,4 @@ if __name__ == "__main__":
         success = extract_structure_from_md(args.input, args.output)
 
     sys.exit(0 if success else 1)
+:

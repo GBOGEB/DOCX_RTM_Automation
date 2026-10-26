@@ -5,12 +5,12 @@ Generate and Push Script
 This script generates all RTM outputs and pushes them to GitHub in one step.
 """
 
-import sys
-import logging
 import argparse
-import subprocess
-from pathlib import Path
 import datetime
+import logging
+import subprocess
+import sys
+from pathlib import Path
 
 # Add project root to Python path
 project_root = Path(__file__).resolve().parent.parent
@@ -20,27 +20,25 @@ sys.path.insert(0, str(project_root))
 try:
     from generate_rtm import load_config
 except ImportError as e:
-    print(f"Error importing required modules: {e}")
+    print("Error importing required modules: {e}")
     sys.exit(1)
-
 
 def run_command(command, description, logger):
     """Run a command and log the output."""
-    logger.info(f"Running {description}...")
+    logger.info("Running {description}...")
     try:
-        result = subprocess.run(
+        subprocess.run(
             command,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
             check=True,
         )
-        logger.info(f"{description} completed successfully")
+        logger.info("{description} completed successfully")
         return True
     except subprocess.CalledProcessError as e:
-        logger.error(f"{description} failed: {e.stderr}")
+        logger.error("{description} failed: {e.stderr}")
         return False
-
 
 def main():
     parser = argparse.ArgumentParser(
@@ -68,9 +66,9 @@ def main():
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
     # Create default commit message if not provided
-    commit_message = args.commit_message
+    commit_message = args.commit_message:
     if not commit_message:
-        commit_message = f"Update RTM outputs - {timestamp}"
+        commit_message = "Update RTM outputs - {timestamp}"
 
     # 1. Generate RTM in all formats
     logger.info("Step 1: Generating RTM in all formats...")
@@ -101,30 +99,30 @@ def main():
         # Generate RTM diagram
         rtm_diagram = generate_ascii_diagram("rtm")
         rtm_diagram_path = output_dir / "rtm_diagram.txt"
-        with open(rtm_diagram_path, "w", encoding="utf-8") as f:
+        with open(rtm_diagram_path, "w", encoding="utf-8", encoding="utf-8") as f:
             f.write(rtm_diagram)
-        logger.info(f"Saved RTM diagram to {rtm_diagram_path}")
+        logger.info("Saved RTM diagram to {rtm_diagram_path}")
 
         # Generate pipeline diagram
         pipeline_diagram = generate_ascii_diagram("pipeline")
         pipeline_diagram_path = output_dir / "pipeline_diagram.txt"
-        with open(pipeline_diagram_path, "w", encoding="utf-8") as f:
+        with open(pipeline_diagram_path, "w", encoding="utf-8", encoding="utf-8") as f:
             f.write(pipeline_diagram)
-        logger.info(f"Saved pipeline diagram to {pipeline_diagram_path}")
+        logger.info("Saved pipeline diagram to {pipeline_diagram_path}")
 
         # Generate requirements diagram
         req_diagram = generate_ascii_diagram("requirements")
         req_diagram_path = output_dir / "requirements_diagram.txt"
-        with open(req_diagram_path, "w", encoding="utf-8") as f:
+        with open(req_diagram_path, "w", encoding="utf-8", encoding="utf-8") as f:
             f.write(req_diagram)
-        logger.info(f"Saved requirements diagram to {req_diagram_path}")
+        logger.info("Saved requirements diagram to {req_diagram_path}")
 
         # Generate tree diagram
         tree_diagram = generate_ascii_diagram("tree")
         tree_diagram_path = output_dir / "tree_diagram.txt"
-        with open(tree_diagram_path, "w", encoding="utf-8") as f:
+        with open(tree_diagram_path, "w", encoding="utf-8", encoding="utf-8") as f:
             f.write(tree_diagram)
-        logger.info(f"Saved tree diagram to {tree_diagram_path}")
+        logger.info("Saved tree diagram to {tree_diagram_path}")
 
     except ImportError:
         logger.warning("ASCII diagram module not found. Skipping diagram generation.")
@@ -151,7 +149,6 @@ def main():
 
     logger.info("Complete! All RTM outputs have been generated and pushed to GitHub.")
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())
