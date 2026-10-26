@@ -1,0 +1,31 @@
+name: JADE H08 effective-ruleset evidence contract
+on:
+  pull_request:
+    paths:
+      - "scripts/jade_h08_effective.py"
+      - "tests/test_jade_h08_effective.py"
+      - "configs/repository_admission_policy.json"
+      - ".github/workflows/jade-h08-evidence.yml"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/jade_h08_effective.py"
+      - "tests/test_jade_h08_effective.py"
+      - "configs/repository_admission_policy.json"
+      - ".github/workflows/jade-h08-evidence.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  h08-evidence-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Strict evaluator and fail-closed negative tests
+        run: python tests/test_jade_h08_effective.py
