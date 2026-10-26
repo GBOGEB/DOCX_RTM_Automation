@@ -3,7 +3,6 @@
 Compare JSON and YAML output files to ensure consistency between formats
 """
 
-import os
 import json
 import yaml
 import sys
@@ -134,8 +133,10 @@ def main():
         # Compare specific files
         json_file = Path(args[0])
         yaml_file = Path(args[1])
-        if not json_file.suffix == ".json" or not yaml_file.suffix in [".yaml", ".yml"]:
-            print("Error: Please provide a .json file as the first argument and a .yaml/.yml file as the second.")
+        if not json_file.suffix == ".json" or yaml_file.suffix not in [".yaml", ".yml"]:
+            print(
+                "Error: Please provide a .json file as the first argument and a .yaml/.yml file as the second."
+            )
             sys.exit(1)
         all_success = compare_files(json_file, yaml_file)
     elif num_args == 1:
@@ -161,14 +162,20 @@ def main():
         output_dir = DEFAULT_OUTPUT_DIR
         if not output_dir.exists():
             print(f"Default output directory not found: {output_dir}")
-            print("Please run the pipeline to generate output files first or specify a directory.")
+            print(
+                "Please run the pipeline to generate output files first or specify a directory."
+            )
             sys.exit(1)
 
         paired_files = find_paired_files(output_dir)
 
         if not paired_files:
-            print(f"No paired JSON/YAML files found in default output directory: {output_dir}")
-            print("Please run the pipeline to generate both formats first or specify a directory.")
+            print(
+                f"No paired JSON/YAML files found in default output directory: {output_dir}"
+            )
+            print(
+                "Please run the pipeline to generate both formats first or specify a directory."
+            )
             all_success = False
         else:
             print(f"Found {len(paired_files)} paired files to compare in {output_dir}")
@@ -180,12 +187,20 @@ def main():
     else:
         print("Usage:")
         print(f"  {sys.argv[0]} <json_file> <yaml_file>  (to compare specific files)")
-        print(f"  {sys.argv[0]} <directory>             (to compare all pairs in a directory)")
-        print(f"  {sys.argv[0]}                         (to compare all pairs in default '{DEFAULT_OUTPUT_DIR}')")
+        print(
+            f"  {sys.argv[0]} <directory>             (to compare all pairs in a directory)"
+        )
+        print(
+            f"  {sys.argv[0]}                         (to compare all pairs in default '{DEFAULT_OUTPUT_DIR}')"
+        )
         sys.exit(1)
 
     if all_success:
-        print("\nAll comparisons completed successfully!" if num_args != 2 else "\nComparison successful!")
+        print(
+            "\nAll comparisons completed successfully!"
+            if num_args != 2
+            else "\nComparison successful!"
+        )
     else:
         print("\nSome comparisons failed!" if num_args != 2 else "\nComparison failed!")
 

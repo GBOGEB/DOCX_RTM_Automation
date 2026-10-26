@@ -330,4 +330,4 @@ def generate_html_report(rtm_data, coverage_data, output_path: Path):
 
                 if row['Test Case ID'] == 'N/A':
                     html_file.write(f"\n            <td class='warning'>{row['Test Case ID']}</td>")
-                    html_file.write(f"\n            <td class='warning'>{
+                    html_file.write(f"\n            <td class='warning'>Not implemented</td>)

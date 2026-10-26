@@ -8,7 +8,7 @@ from .agent_common import (
     AgentCapability,
     StandardAgentResponse,
     validate_input,
-    log_message
+    log_message,
 )
 from .agent_orchestrator import AgentOrchestrator
 from .copilot_agent import CopilotAgent, FileType, ConversionType

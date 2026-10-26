@@ -8,10 +8,8 @@ class TestDocumentationAndFiles(unittest.TestCase):
         readme_path = Path("README.md")
         self.assertTrue(readme_path.exists(), "README.md does not exist")
         content = readme_path.read_text(encoding="utf-8")
-        self.assertIn("Console", content,
-                      "README.md should reference 'Console'")
-        self.assertIn("Progress", content,
-                      "README.md should reference 'Progress'")
+        self.assertIn("Console", content, "README.md should reference 'Console'")
+        self.assertIn("Progress", content, "README.md should reference 'Progress'")
 
     def test_markup_py_updated(self):
         # Check that markup.py has changes reflecting the master document updates.

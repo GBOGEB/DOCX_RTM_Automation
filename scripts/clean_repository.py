@@ -9,9 +9,7 @@ This script cleans up the repository by:
 4. Creating consistent directory structure
 """
 
-import os
 import sys
-import shutil
 from pathlib import Path
 import re
 import hashlib
@@ -64,12 +62,25 @@ def find_empty_files(root_dir: Path = Path(".")):
     """Find all empty files in the repository"""
     print_header("Finding Empty Files")
     empty_files = []
-    skip_dirs = {".git", ".idea", ".vscode", "venv", "__pycache__", "external", "node_modules"}
+    skip_dirs = {
+        ".git",
+        ".idea",
+        ".vscode",
+        "venv",
+        "__pycache__",
+        "external",
+        "node_modules",
+    }
 
     for file_path in root_dir.rglob("*"):
         if file_path.is_file():
-            if any(part.startswith(".") or part in skip_dirs for part in file_path.parts):
-                if not (file_path.name == ".gitkeep" and file_path.parent.name in {"input", "output"}):
+            if any(
+                part.startswith(".") or part in skip_dirs for part in file_path.parts
+            ):
+                if not (
+                    file_path.name == ".gitkeep"
+                    and file_path.parent.name in {"input", "output"}
+                ):
                     continue
 
             try:
@@ -88,9 +99,19 @@ def find_empty_directories(root_dir: Path = Path(".")):
     """Find all empty directories in the repository"""
     print_header("Finding Empty Directories")
     empty_dirs = []
-    skip_dirs = {".git", ".idea", ".vscode", "venv", "__pycache__", "external", "node_modules"}
+    skip_dirs = {
+        ".git",
+        ".idea",
+        ".vscode",
+        "venv",
+        "__pycache__",
+        "external",
+        "node_modules",
+    }
 
-    for dir_path in sorted(list(root_dir.rglob("*/")), key=lambda p: len(p.parts), reverse=True):
+    for dir_path in sorted(
+        list(root_dir.rglob("*/")), key=lambda p: len(p.parts), reverse=True
+    ):
         if not dir_path.is_dir():
             continue
 
@@ -111,13 +132,23 @@ def find_duplicate_files(root_dir: Path = Path(".")):
     print_header("Finding Duplicate Files")
     file_hashes = {}
     duplicates = []
-    skip_dirs = {".git", ".idea", ".vscode", "venv", "__pycache__", "external", "node_modules"}
+    skip_dirs = {
+        ".git",
+        ".idea",
+        ".vscode",
+        "venv",
+        "__pycache__",
+        "external",
+        "node_modules",
+    }
 
     for file_path in root_dir.rglob("*"):
         if file_path.is_file():
-            if any(part.startswith(".") or part in skip_dirs for part in file_path.parts):
+            if any(
+                part.startswith(".") or part in skip_dirs for part in file_path.parts
+            ):
                 if file_path.name != ".gitkeep":
-                     continue
+                    continue
 
             file_hash = get_file_hash(file_path)
             if file_hash:
@@ -164,8 +195,13 @@ def create_directory_structure():
         except Exception as e:
             print_status("ERROR", f"Failed to create {directory}: {e}")
 
-    init_dirs = [Path("src"), Path("src/core"), Path("src/modules"),
-                 Path("src/extractors"), Path("src/utils")]
+    init_dirs = [
+        Path("src"),
+        Path("src/core"),
+        Path("src/modules"),
+        Path("src/extractors"),
+        Path("src/utils"),
+    ]
 
     for directory in init_dirs:
         init_file = directory / "__init__.py"
@@ -212,7 +248,7 @@ def organize_files(root_dir: Path = Path(".")):
         "CONTRIBUTING.md",
         "docker-compose.yml",
         "package.json",
-        "tsconfig.json"
+        "tsconfig.json",
     }
 
     ignore_files = {".gitkeep"}
@@ -238,9 +274,14 @@ def organize_files(root_dir: Path = Path(".")):
                 target_path = target_dir / file_path.name
 
                 if target_path.exists():
-                    print_status("SKIP", f"{file_path.name} already exists in {target_dir_relative}")
+                    print_status(
+                        "SKIP",
+                        f"{file_path.name} already exists in {target_dir_relative}",
+                    )
                 else:
-                    print_status("SUGGEST", f"Move {file_path.name} to {target_dir_relative}/")
+                    print_status(
+                        "SUGGEST", f"Move {file_path.name} to {target_dir_relative}/"
+                    )
                 moved = True
                 break
 
@@ -296,8 +337,7 @@ def clean_empty_dirs(dirs: list[Path], simulate=True):
             else:
                 print_status("SKIP", f"Directory {dir_path} is no longer empty.")
         except Exception as e:
-            print_status(
-                "ERROR", f"Failed to remove directory {dir_path}: {e}")
+            print_status("ERROR", f"Failed to remove directory {dir_path}: {e}")
 
 
 def create_gitkeep_files(root_dir: Path = Path(".")):
@@ -319,11 +359,16 @@ def create_gitkeep_files(root_dir: Path = Path(".")):
 
     for directory in important_dirs:
         if not directory.exists():
-            print_status("INFO", f"Directory {directory} does not exist, skipping .gitkeep creation.")
+            print_status(
+                "INFO",
+                f"Directory {directory} does not exist, skipping .gitkeep creation.",
+            )
             continue
 
         contents = list(directory.iterdir())
-        is_empty_or_only_gitkeep = not contents or (len(contents) == 1 and contents[0].name == ".gitkeep")
+        is_empty_or_only_gitkeep = not contents or (
+            len(contents) == 1 and contents[0].name == ".gitkeep"
+        )
 
         if is_empty_or_only_gitkeep:
             gitkeep_path = directory / ".gitkeep"
@@ -331,7 +376,8 @@ def create_gitkeep_files(root_dir: Path = Path(".")):
                 try:
                     with open(gitkeep_path, "w", encoding="utf-8") as f:
                         f.write(
-                            "# This file ensures the directory is tracked by Git.\n")
+                            "# This file ensures the directory is tracked by Git.\n"
+                        )
                     print_status("DONE", f"Created .gitkeep in {directory}")
                 except IOError as e:
                     print_status(
@@ -354,7 +400,8 @@ def integrate_with_pipeline(root_dir: Path = Path(".")):
     config_path = root_dir / "config/paths.yaml"
     if not config_path.exists():
         print_status(
-            "INFO", f"Pipeline configuration file not found: {config_path}. Skipping integration."
+            "INFO",
+            f"Pipeline configuration file not found: {config_path}. Skipping integration.",
         )
         return
 
@@ -362,12 +409,16 @@ def integrate_with_pipeline(root_dir: Path = Path(".")):
         with open(config_path, "r", encoding="utf-8") as f:
             config = yaml.safe_load(f)
         if not isinstance(config, dict):
-            print_status("ERROR", f"Invalid YAML format in {config_path}. Expected a dictionary.")
+            print_status(
+                "ERROR", f"Invalid YAML format in {config_path}. Expected a dictionary."
+            )
             return
 
         if "pipeline" not in config:
             config["pipeline"] = {}
-        if "steps" not in config["pipeline"] or not isinstance(config["pipeline"]["steps"], list):
+        if "steps" not in config["pipeline"] or not isinstance(
+            config["pipeline"]["steps"], list
+        ):
             config["pipeline"]["steps"] = []
 
         step_exists = any(
@@ -391,7 +442,10 @@ def integrate_with_pipeline(root_dir: Path = Path(".")):
                     "DONE", "Added clean_repository step to pipeline configuration"
                 )
             except IOError as e:
-                print_status("ERROR", f"Failed to write updated pipeline configuration to {config_path}: {e}")
+                print_status(
+                    "ERROR",
+                    f"Failed to write updated pipeline configuration to {config_path}: {e}",
+                )
         else:
             print_status(
                 "SKIP",

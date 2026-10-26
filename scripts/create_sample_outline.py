@@ -1,5 +1,4 @@
 import yaml
-import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -80,7 +79,7 @@ def create_sample_outline():
 
     # Write the outline to a YAML file
     output_file_path = BASE_DIR / "sample_outline.yaml"
-    with open(output_file_path, "w", encoding='utf-8') as f:
+    with open(output_file_path, "w", encoding="utf-8") as f:
         yaml.dump(sample_outline, f, default_flow_style=False, sort_keys=False)
 
     print(f"Sample outline created in {output_file_path.resolve()}")

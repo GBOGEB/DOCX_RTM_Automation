@@ -14,7 +14,7 @@ import yaml
 import json
 import argparse
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Union
+from typing import Dict, List, Any, Union
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -50,8 +50,7 @@ class PandocConverter:
 
         # Check if Pandoc is available
         if not self._check_pandoc_available():
-            logger.warning(
-                "Pandoc not found in PATH. Some features may be limited.")
+            logger.warning("Pandoc not found in PATH. Some features may be limited.")
 
     def load_config(self, config_path: Union[str, Path]):
         """
@@ -118,8 +117,7 @@ class PandocConverter:
             return False
 
         # Create output directory if it doesn't exist
-        os.makedirs(os.path.dirname(
-            os.path.abspath(output_file)), exist_ok=True)
+        os.makedirs(os.path.dirname(os.path.abspath(output_file)), exist_ok=True)
 
         # Determine formats if not specified
         if not from_format:
@@ -169,8 +167,7 @@ class PandocConverter:
 
         # Run the conversion
         try:
-            result = subprocess.run(
-                cmd, check=True, capture_output=True, text=True)
+            result = subprocess.run(cmd, check=True, capture_output=True, text=True)
             logger.info(f"Conversion successful: {output_file}")
             return True
         except subprocess.CalledProcessError as e:
@@ -349,8 +346,7 @@ if __name__ == "__main__":
     parser.add_argument("--from", dest="from_format", help="Source format")
     parser.add_argument("--to", dest="to_format", help="Target format")
     parser.add_argument("--lua-filter", help="Path to Lua filter")
-    parser.add_argument("--extract-rtm", action="store_true",
-                        help="Extract RTM data")
+    parser.add_argument("--extract-rtm", action="store_true", help="Extract RTM data")
     parser.add_argument("--rtm-output", help="RTM data output file")
 
     args = parser.parse_args()
@@ -358,8 +354,7 @@ if __name__ == "__main__":
     if args.extract_rtm:
         # Extract RTM data
         rtm_data = extract_rtm(args.input, args.rtm_output, args.config)
-        print(
-            f"Extracted {len(rtm_data.get('requirements', []))} requirements")
+        print(f"Extracted {len(rtm_data.get('requirements', []))} requirements")
     else:
         # Convert document
         success = convert_document(

@@ -12,7 +12,6 @@ This script addresses common errors in the RTM pipeline:
 """
 
 import os
-import sys
 import yaml
 import re
 from pathlib import Path
@@ -24,12 +23,12 @@ BASE_DIR = Path(__file__).resolve().parent
 
 
 class Colors:
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BLUE = '\033[94m'
-    BOLD = '\033[1m'
-    ENDC = '\033[0m'
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    BLUE = "\033[94m"
+    BOLD = "\033[1m"
+    ENDC = "\033[0m"
 
 
 def print_header(text):
@@ -76,7 +75,8 @@ def create_missing_directories():
                 print_status("FIXED", f"Created directory: {directory_path}")
             except Exception as e:
                 print_status(
-                    "ERROR", f"Failed to create directory {directory_path}: {e}")
+                    "ERROR", f"Failed to create directory {directory_path}: {e}"
+                )
         else:
             print_status("SKIPPED", f"Directory already exists: {directory_path}")
 
@@ -100,13 +100,13 @@ def fix_main_py():
             print_status("INFO", f"Created backup: {backup_path}")
 
         # Read file
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Add logs directory creation before logging setup
         if "def setup_logging():" in content:
             # Find the function and add directory creation
-            lines = content.split('\n')
+            lines = content.split("\n")
             new_lines = []
 
             for i, line in enumerate(lines):
@@ -114,21 +114,24 @@ def fix_main_py():
                 if line.strip() == "def setup_logging():":
                     # Add directory creation after function definition
                     new_lines.append(
-                        '    """Setup logging with automatic directory creation"""')
-                    new_lines.append('    # Ensure logs directory exists')
+                        '    """Setup logging with automatic directory creation"""'
+                    )
+                    new_lines.append("    # Ensure logs directory exists")
                     new_lines.append('    logs_dir = Path("logs")')
-                    new_lines.append('    logs_dir.mkdir(exist_ok=True)')
-                    new_lines.append('')
+                    new_lines.append("    logs_dir.mkdir(exist_ok=True)")
+                    new_lines.append("")
 
             # Write the updated content
-            with open(file_path, 'w', encoding='utf-8') as f:
-                f.write('\n'.join(new_lines))
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write("\n".join(new_lines))
 
             print_status(
-                "FIXED", "Added logs directory creation to setup_logging function")
+                "FIXED", "Added logs directory creation to setup_logging function"
+            )
         else:
             print_status(
-                "SKIPPED", "setup_logging function not found or already modified")
+                "SKIPPED", "setup_logging function not found or already modified"
+            )
 
         return True
     except Exception as e:
@@ -152,25 +155,27 @@ def fix_paths_yaml():
         print_status("INFO", f"Created backup: {backup_path}")
 
         # Load config
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             config = yaml.safe_load(f)
 
         # Fix toc-depth if needed
-        if 'pandoc_options' in config and 'toc_depth' in config['pandoc_options']:
-            toc_depth = config['pandoc_options']['toc_depth']
+        if "pandoc_options" in config and "toc_depth" in config["pandoc_options"]:
+            toc_depth = config["pandoc_options"]["toc_depth"]
             if toc_depth > 6:
-                config['pandoc_options']['toc_depth'] = 6
+                config["pandoc_options"]["toc_depth"] = 6
                 print_status(
-                    "FIXED", f"Changed toc_depth from {toc_depth} to 6 (maximum allowed by pandoc)")
+                    "FIXED",
+                    f"Changed toc_depth from {toc_depth} to 6 (maximum allowed by pandoc)",
+                )
             else:
                 print_status(
-                    "SKIPPED", f"toc_depth already set to valid value: {toc_depth}")
+                    "SKIPPED", f"toc_depth already set to valid value: {toc_depth}"
+                )
         else:
-            print_status(
-                "SKIPPED", "pandoc_options.toc_depth not found in config")
+            print_status("SKIPPED", "pandoc_options.toc_depth not found in config")
 
         # Save changes
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             yaml.dump(config, f, default_flow_style=False, sort_keys=False)
 
         return True
@@ -239,7 +244,7 @@ if __name__ == "__main__":
         code_dir.mkdir(parents=True, exist_ok=True)
 
         # Write the sample file
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             f.write(sample_content)
 
         print_status("FIXED", f"Created working {file_path}")
@@ -256,7 +261,7 @@ def fix_toc_depth_in_code():
     files_to_fix_relative = [
         "code/main.py",
         "src/modules/pandoc_integration.py",
-        "scripts/docx_to_md_with_structure.py"
+        "scripts/docx_to_md_with_structure.py",
     ]
 
     for rel_file_path in files_to_fix_relative:
@@ -272,7 +277,7 @@ def fix_toc_depth_in_code():
             print_status("INFO", f"Created backup: {backup_path}")
 
             # Read content
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             original_content = content
@@ -280,12 +285,14 @@ def fix_toc_depth_in_code():
             # Define patterns to find toc-depth=N where N > 6 and replace N with 6
             patterns_to_fix = []
             for i in range(7, 21):  # Check for depths 7 through 20
-                patterns_to_fix.extend([
-                    (rf'--toc-depth={i}(?!\d)', r'--toc-depth=6'),
-                    (rf'toc_depth={i}(?!\d)', r'toc_depth=6'),
-                    (rf'"toc-depth":\s*{i}(?!\d)', r'"toc-depth": 6'),
-                    (rf'toc_depth:\s*{i}(?!\d)', r'toc_depth: 6'),
-                ])
+                patterns_to_fix.extend(
+                    [
+                        (rf"--toc-depth={i}(?!\d)", r"--toc-depth=6"),
+                        (rf"toc_depth={i}(?!\d)", r"toc_depth=6"),
+                        (rf'"toc-depth":\s*{i}(?!\d)', r'"toc-depth": 6'),
+                        (rf"toc_depth:\s*{i}(?!\d)", r"toc_depth: 6"),
+                    ]
+                )
 
             current_fixed_count = 0
             for pattern, replacement in patterns_to_fix:
@@ -295,13 +302,17 @@ def fix_toc_depth_in_code():
 
             if content != original_content:
                 # Write fixed content
-                with open(file_path, 'w', encoding='utf-8') as f:
+                with open(file_path, "w", encoding="utf-8") as f:
                     f.write(content)
                 print_status(
-                    "FIXED", f"Corrected {current_fixed_count} toc-depth issues in {file_path}")
+                    "FIXED",
+                    f"Corrected {current_fixed_count} toc-depth issues in {file_path}",
+                )
             else:
                 print_status(
-                    "SKIPPED", f"No toc-depth values > 6 found or needing correction in {file_path}")
+                    "SKIPPED",
+                    f"No toc-depth values > 6 found or needing correction in {file_path}",
+                )
                 # Remove backup if no changes were made
                 if backup_path.exists():
                     os.remove(backup_path)
@@ -321,21 +332,26 @@ def fix_repository_url(file_path_obj: Path):
         return
 
     try:
-        with open(file_path_obj, 'r', encoding='utf-8') as f:
+        with open(file_path_obj, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Example pattern to fix repository URLs.
-        pattern = r'https://old-example-repo.com/project/some-repo'
-        replacement = 'https://new-correct-repo.com/project/some-repo'
+        pattern = r"https://old-example-repo.com/project/some-repo"
+        replacement = "https://new-correct-repo.com/project/some-repo"
 
         new_content, num_subs = re.subn(pattern, replacement, content)
 
         if num_subs > 0:
-            with open(file_path_obj, 'w', encoding='utf-8') as f:
+            with open(file_path_obj, "w", encoding="utf-8") as f:
                 f.write(new_content)
-            print_status("FIXED", f"Corrected {num_subs} repository URL(s) in {file_path_obj}")
+            print_status(
+                "FIXED", f"Corrected {num_subs} repository URL(s) in {file_path_obj}"
+            )
         else:
-            print_status("SKIPPED", f"No incorrect repository URL matching pattern found in {file_path_obj}")
+            print_status(
+                "SKIPPED",
+                f"No incorrect repository URL matching pattern found in {file_path_obj}",
+            )
     except Exception as e:
         print_status("ERROR", f"Failed to fix repository URL in {file_path_obj}: {e}")
 

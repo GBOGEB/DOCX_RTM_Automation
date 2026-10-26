@@ -10,10 +10,8 @@ requirements dependency graph.
 import os
 import re
 import logging
-from pathlib import Path
 import json
 from collections import defaultdict
-from typing import Dict, List, Tuple, Set, Optional
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -69,12 +67,11 @@ class DocumentStructure:
                 req_id = (
                     req_id_match.group(1)
                     if req_id_match
-                    else f"REQ-AUTO-{len(self.requirements)+1}"
+                    else f"REQ-AUTO-{len(self.requirements) + 1}"
                 )
 
                 # Get current section from the nearest heading above
-                section = self._find_section_for_position(
-                    match.start(), content)
+                section = self._find_section_for_position(match.start(), content)
 
                 # Extract metadata
                 meta = {}
@@ -86,13 +83,11 @@ class DocumentStructure:
 
                 # Clean the text (remove metadata)
                 for meta_match in re.finditer(meta_pattern, req_text):
-                    req_text = req_text.replace(
-                        meta_match.group(0), "").strip()
+                    req_text = req_text.replace(meta_match.group(0), "").strip()
 
                 # Remove the requirement ID from the text
                 if req_id_match:
-                    req_text = req_text.replace(
-                        req_id_match.group(1), "", 1).strip()
+                    req_text = req_text.replace(req_id_match.group(1), "", 1).strip()
 
                 # Add the requirement
                 self.requirements.append(
@@ -103,8 +98,7 @@ class DocumentStructure:
                         "metadata": meta,
                     }
                 )
-                logger.debug(
-                    f"Found requirement: {req_id} in section {section}")
+                logger.debug(f"Found requirement: {req_id} in section {section}")
 
             # Also look for requirements in paragraphs (without div)
             para_req_patterns = [
@@ -121,7 +115,7 @@ class DocumentStructure:
                         req_text = match.group(2).strip()
                     # For "shall/must" statements
                     else:
-                        req_id = f"REQ-IMP-{len(self.requirements)+1}"
+                        req_id = f"REQ-IMP-{len(self.requirements) + 1}"
                         req_text = match.group(1).strip()
 
                     # Skip if this looks like it was already captured via div
@@ -131,8 +125,7 @@ class DocumentStructure:
                         continue
 
                     # Get current section from the nearest heading above
-                    section = self._find_section_for_position(
-                        match.start(), content)
+                    section = self._find_section_for_position(match.start(), content)
 
                     # Extract metadata
                     meta = {}
@@ -144,8 +137,7 @@ class DocumentStructure:
 
                     # Clean the text (remove metadata)
                     for meta_match in re.finditer(meta_pattern, req_text):
-                        req_text = req_text.replace(
-                            meta_match.group(0), "").strip()
+                        req_text = req_text.replace(meta_match.group(0), "").strip()
 
                     # Add the requirement
                     self.requirements.append(
@@ -185,8 +177,7 @@ class DocumentStructure:
                 targets = re.findall(r"[Rr][Ee][Qq]-\d+", match.group(2))
 
                 for target_id in targets:
-                    self.dependencies.append(
-                        (source_id, target_id, "depends_on"))
+                    self.dependencies.append((source_id, target_id, "depends_on"))
                     logger.debug(
                         f"Found table dependency: {source_id} depends_on {target_id}"
                     )
@@ -234,7 +225,7 @@ class DocumentStructure:
             for req in data.get("requirements", []):
                 self.requirements.append(
                     {
-                        "id": req.get("id", f"REQ-AUTO-{len(self.requirements)+1}"),
+                        "id": req.get("id", f"REQ-AUTO-{len(self.requirements) + 1}"),
                         "text": req.get("text", ""),
                         "section": req.get("section", ""),
                         "metadata": req.get("metadata", {}),
@@ -292,7 +283,7 @@ class DocumentStructure:
 
             # Determine if this is the last item at its level
             is_last = True
-            for next_heading in self.headings[i + 1:]:
+            for next_heading in self.headings[i + 1 :]:
                 if (
                     next_heading[0] <= level
                 ):  # If we find another heading at same or higher level
