@@ -1,0 +1,34 @@
+name: H07 OSV triage scan (temporary)
+
+# Temporary, branch-only: queries OSV for pinned deps and runs npm audit,
+# commits the JSON results back to this branch. Never merged.
+on:
+  push:
+    branches: [tmp/h07-osv-scan-20261027]
+
+permissions:
+  contents: write
+
+jobs:
+  scan:
+    if: ${{ !contains(github.event.head_commit.message, '[h07-scan-output]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Scan
+        shell: bash
+        run: |
+          set -uo pipefail
+          python tmp_h07/osv_scan.py || { echo "::error title=osv::osv scan failed"; exit 1; }
+          (cd orchestration_ts && npm audit --package-lock-only --json > ../tmp_h07/npm_audit.json) || true
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tmp_h07/osv_results.json tmp_h07/npm_audit.json
+          git commit -m "chore: H07 OSV scan output [h07-scan-output]"
+          git push || { echo "::error title=push::push failed"; exit 1; }
