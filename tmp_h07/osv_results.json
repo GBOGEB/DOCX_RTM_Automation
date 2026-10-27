@@ -1,0 +1,6323 @@
+{
+ "scanned": 559,
+ "findings": [
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-2fqr-mr3j-6wp8",
+   "ghsa": [
+    "GHSA-2fqr-mr3j-6wp8"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "3.14.1"
+   ],
+   "summary": "aiohttp: Host-Only Cookies Become Domain Cookies After CookieJar Persistence",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-2g87-pp6c-29x5",
+   "ghsa": [
+    "GHSA-2g87-pp6c-29x5"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.14.4"
+   ],
+   "summary": "aiohttp: Multiple instances of excessive or unbounded memory/CPU use",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-2vrm-gr82-f7m5",
+   "ghsa": [
+    "GHSA-2vrm-gr82-f7m5"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "AIOHTTP has CRLF injection through multipart part content type header construction",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-3wq7-rqq7-wx6j",
+   "ghsa": [
+    "GHSA-3wq7-rqq7-wx6j"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "AIOHTTP has late size enforcement for non-file multipart fields causes memory DoS",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-494j-54xm-rwp3",
+   "ghsa": [
+    "GHSA-494j-54xm-rwp3"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.14.4"
+   ],
+   "summary": "AIOHTTP: Secure attribute not enforced for shared cookie",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-4fvr-rgm6-gqmc",
+   "ghsa": [
+    "GHSA-4fvr-rgm6-gqmc"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.14.1"
+   ],
+   "summary": "aiohttp: HTTP/1 Pipelined Requests Queue Without Limit",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-4m7w-qmgq-4wj5",
+   "ghsa": [
+    "GHSA-4m7w-qmgq-4wj5"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "3.14.1"
+   ],
+   "summary": "aiohttp: TLS Server Hostname Override Is Ignored When Reusing HTTPS Connections",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-54jq-c3m8-4m76",
+   "ghsa": [
+    "GHSA-54jq-c3m8-4m76"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "3.13.3"
+   ],
+   "summary": "AIOHTTP vulnerable to brute-force leak of internal static \ufb01le path components",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-5wr8-gcqf-gqf3",
+   "ghsa": [
+    "GHSA-5wr8-gcqf-gqf3"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.14.4"
+   ],
+   "summary": "aiohttp server lacks an initial request/header timeout",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-63hf-3vf5-4wqf",
+   "ghsa": [
+    "GHSA-63hf-3vf5-4wqf"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "AIOHTTP's C parser (llhttp) accepts null bytes and control characters in response header values - header injection/security bypass",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-63hw-fmq6-xxg2",
+   "ghsa": [
+    "GHSA-63hw-fmq6-xxg2"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.14.1"
+   ],
+   "summary": "aiohttp: C HTTP Parser Bypasses max_line_size for Fragmented Lines",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-69f9-5gxw-wvc2",
+   "ghsa": [
+    "GHSA-69f9-5gxw-wvc2"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "3.13.3"
+   ],
+   "summary": "AIOHTTP's unicode processing of header values could cause parsing discrepancies",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-6cjc-53gc-5rqm",
+   "ghsa": [
+    "GHSA-6cjc-53gc-5rqm"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.14.4"
+   ],
+   "summary": "AIOHTTP: Connector pool exhaustion via Max-Age overflow",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-6jhg-hg63-jvvf",
+   "ghsa": [
+    "GHSA-6jhg-hg63-jvvf"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.13.3"
+   ],
+   "summary": "AIOHTTP vulnerable to  denial of service through large payloads",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-6mq8-rvhq-8wgg",
+   "ghsa": [
+    "GHSA-6mq8-rvhq-8wgg"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.13.3"
+   ],
+   "summary": "AIOHTTP's HTTP Parser auto_decompress feature is vulnerable to zip bomb",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-966j-vmvw-g2g9",
+   "ghsa": [
+    "GHSA-966j-vmvw-g2g9"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "AIOHTTP leaks Cookie and Proxy-Authorization headers on cross-origin redirect",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-9x8q-7h8h-wcw9",
+   "ghsa": [
+    "GHSA-9x8q-7h8h-wcw9"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "3.14.1"
+   ],
+   "summary": "aiohttp: Payload Response Resources Are Not Closed After Mid-Body Disconnect",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-9xw5-w5jj-pvcg",
+   "ghsa": [
+    "GHSA-9xw5-w5jj-pvcg"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.14.4"
+   ],
+   "summary": "AIOHTTP: File descriptor exhaustion in multipart requests",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-c427-h43c-vf67",
+   "ghsa": [
+    "GHSA-c427-h43c-vf67"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "AIOHTTP accepts duplicate Host headers",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-cq5v-8q36-5273",
+   "ghsa": [
+    "GHSA-cq5v-8q36-5273"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.14.3"
+   ],
+   "summary": "AIOHTTP: Out-of-bounds heap read in C HTTP response parser error path (malformed chunked response)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-f9xw-jh8m-3mwq",
+   "ghsa": [
+    "GHSA-f9xw-jh8m-3mwq"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.14.4"
+   ],
+   "summary": "AIOHTTP: Absolute-form request targets can spoof Request.scheme",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-fh55-r93g-j68g",
+   "ghsa": [
+    "GHSA-fh55-r93g-j68g"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "3.13.3"
+   ],
+   "summary": "AIOHTTP Vulnerable to Cookie Parser Warning Storm",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-g3cq-j2xw-wf74",
+   "ghsa": [
+    "GHSA-g3cq-j2xw-wf74"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.14.1"
+   ],
+   "summary": "aiohttp: Unread Compressed Request Bodies Bypass client_max_size During Cleanup",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-g84x-mcqj-x9qq",
+   "ghsa": [
+    "GHSA-g84x-mcqj-x9qq"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.13.3"
+   ],
+   "summary": "AIOHTTP vulnerable to DoS through chunked messages",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-gx76-c99x-2c96",
+   "ghsa": [
+    "GHSA-gx76-c99x-2c96"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "3.14.4"
+   ],
+   "summary": "AIOHTTP: Cookie from subdomain can remove Host-Only Scope from existing cookies",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-hcc4-c3v8-rx92",
+   "ghsa": [
+    "GHSA-hcc4-c3v8-rx92"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "AIOHTTP Affected by Denial of Service (DoS) via Unbounded DNS Cache in TCPConnector",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-hg6j-4rv6-33pg",
+   "ghsa": [
+    "GHSA-hg6j-4rv6-33pg"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.14.0"
+   ],
+   "summary": "AIOHTTP is vulnerable to cross-origin redirect with per-request cookies",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-hpj7-wq8m-9hgp",
+   "ghsa": [
+    "GHSA-hpj7-wq8m-9hgp"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.14.1"
+   ],
+   "summary": "aiohttp: DigestAuthMiddleware Applies Credentials to Cross-Origin Redirect Challenges",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-jg22-mg44-37j8",
+   "ghsa": [
+    "GHSA-jg22-mg44-37j8"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.14.0"
+   ],
+   "summary": "AIOHTTP is Vulnerable to Deserialization of Untrusted Data",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-jj3x-wxrx-4x23",
+   "ghsa": [
+    "GHSA-jj3x-wxrx-4x23"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.13.3"
+   ],
+   "summary": "AIOHTTP vulnerable to DoS when bypassing asserts",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-m5qp-6w8w-w647",
+   "ghsa": [
+    "GHSA-m5qp-6w8w-w647"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "AIOHTTP has a Multipart Header Size Bypass",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-m6qw-4cw2-hm4m",
+   "ghsa": [
+    "GHSA-m6qw-4cw2-hm4m"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "3.14.0"
+   ],
+   "summary": "aiohttp: CRLF injection in multipart headers",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-mfx4-hv73-q22v",
+   "ghsa": [
+    "GHSA-mfx4-hv73-q22v"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.14.2"
+   ],
+   "summary": "AIOHTTP: HTTP request smuggling via WebSocket upgrade",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-mq44-7p77-q5h7",
+   "ghsa": [
+    "GHSA-mq44-7p77-q5h7"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.14.2"
+   ],
+   "summary": "AIOHTTP: WebSocket client accepts compressed frames without negotiated permessage-deflate",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-mqqc-3gqh-h2x8",
+   "ghsa": [
+    "GHSA-mqqc-3gqh-h2x8"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "3.13.3"
+   ],
+   "summary": "AIOHTTP has unicode match groups in regexes for ASCII protocol elements",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-mwh4-6h8g-pg8w",
+   "ghsa": [
+    "GHSA-mwh4-6h8g-pg8w"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "AIOHTTP has HTTP response splitting via \\r in reason phrase",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-p998-jp59-783m",
+   "ghsa": [
+    "GHSA-p998-jp59-783m"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "AIOHTTP affected by UNC SSRF/NTLMv2 Credential Theft/Local File Read in static resource handler on Windows",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-pqxq-w44r-73xw",
+   "ghsa": [
+    "GHSA-pqxq-w44r-73xw"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.14.4"
+   ],
+   "summary": "AIOHTTP: Pure-Python parser request smuggling",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-w2fm-2cpv-w7v5",
+   "ghsa": [
+    "GHSA-w2fm-2cpv-w7v5"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "aiohttp allows unlimited trailer headers, leading to possible uncapped memory usage",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "GHSA-xcgm-r5h9-7989",
+   "ghsa": [
+    "GHSA-xcgm-r5h9-7989"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.14.1"
+   ],
+   "summary": "aiohttp: Incomplete websocket frame payloads bypass memory limits",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-1097",
+   "ghsa": [
+    "GHSA-54jq-c3m8-4m76"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.13.3"
+   ],
+   "summary": "AIOHTTP vulnerable to brute-force leak of internal static \ufb01le path components",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-1099",
+   "ghsa": [
+    "GHSA-69f9-5gxw-wvc2"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.13.3"
+   ],
+   "summary": "AIOHTTP's unicode processing of header values could cause parsing discrepancies",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-1100",
+   "ghsa": [
+    "GHSA-6jhg-hg63-jvvf"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.13.3"
+   ],
+   "summary": "AIOHTTP vulnerable to  denial of service through large payloads",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-1101",
+   "ghsa": [
+    "GHSA-6mq8-rvhq-8wgg"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.13.3"
+   ],
+   "summary": "AIOHTTP's HTTP Parser auto_decompress feature is vulnerable to zip bomb",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-1105",
+   "ghsa": [
+    "GHSA-fh55-r93g-j68g"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.13.3"
+   ],
+   "summary": "AIOHTTP Vulnerable to Cookie Parser Warning Storm",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-1106",
+   "ghsa": [
+    "GHSA-g84x-mcqj-x9qq"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.13.3"
+   ],
+   "summary": "AIOHTTP vulnerable to DoS through chunked messages",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-1107",
+   "ghsa": [
+    "GHSA-jj3x-wxrx-4x23"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.13.3"
+   ],
+   "summary": "AIOHTTP vulnerable to DoS when bypassing asserts",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-1109",
+   "ghsa": [
+    "GHSA-mqqc-3gqh-h2x8"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.13.3"
+   ],
+   "summary": "AIOHTTP has unicode match groups in regexes for ASCII protocol elements",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2094",
+   "ghsa": [
+    "GHSA-w2fm-2cpv-w7v5"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2095",
+   "ghsa": [
+    "GHSA-hcc4-c3v8-rx92"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2096",
+   "ghsa": [
+    "GHSA-2vrm-gr82-f7m5"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2097",
+   "ghsa": [
+    "GHSA-p998-jp59-783m"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2098",
+   "ghsa": [
+    "GHSA-m5qp-6w8w-w647"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2099",
+   "ghsa": [
+    "GHSA-3wq7-rqq7-wx6j"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2100",
+   "ghsa": [
+    "GHSA-966j-vmvw-g2g9"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2101",
+   "ghsa": [
+    "GHSA-mwh4-6h8g-pg8w"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2102",
+   "ghsa": [
+    "GHSA-63hf-3vf5-4wqf"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2103",
+   "ghsa": [
+    "GHSA-c427-h43c-vf67"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.13.4"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2104",
+   "ghsa": [
+    "GHSA-jg22-mg44-37j8"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.14.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2105",
+   "ghsa": [
+    "GHSA-hg6j-4rv6-33pg"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.14.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2106",
+   "ghsa": [
+    "GHSA-m6qw-4cw2-hm4m"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.14.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2107",
+   "ghsa": [
+    "GHSA-4fvr-rgm6-gqmc"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.14.1"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2108",
+   "ghsa": [
+    "GHSA-xcgm-r5h9-7989"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.14.1"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2109",
+   "ghsa": [
+    "GHSA-hpj7-wq8m-9hgp"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.14.1"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2110",
+   "ghsa": [
+    "GHSA-63hw-fmq6-xxg2"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.14.1"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2111",
+   "ghsa": [
+    "GHSA-g3cq-j2xw-wf74"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.14.1"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2112",
+   "ghsa": [
+    "GHSA-2fqr-mr3j-6wp8"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.14.1"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-2113",
+   "ghsa": [
+    "GHSA-9x8q-7h8h-wcw9"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.14.1"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-237",
+   "ghsa": [
+    "GHSA-4m7w-qmgq-4wj5"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.14.1"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-3545",
+   "ghsa": [
+    "GHSA-cq5v-8q36-5273"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.14.3"
+   ],
+   "summary": "AIOHTTP: Out-of-bounds heap read in C HTTP response parser error path (malformed chunked response)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-3546",
+   "ghsa": [
+    "GHSA-mfx4-hv73-q22v"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.14.2"
+   ],
+   "summary": "AIOHTTP: HTTP request smuggling via WebSocket upgrade",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "aiohttp",
+   "version": "3.13.2",
+   "id": "PYSEC-2026-3547",
+   "ghsa": [
+    "GHSA-mq44-7p77-q5h7"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.14.2"
+   ],
+   "summary": "AIOHTTP: WebSocket client accepts compressed frames without negotiated permessage-deflate",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "black",
+   "version": "25.11.0",
+   "id": "GHSA-3936-cmfr-pm3m",
+   "ghsa": [
+    "GHSA-3936-cmfr-pm3m"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "26.3.1"
+   ],
+   "summary": "Black: Arbitrary file writes from unsanitized user input in cache file name",
+   "manifests": [
+    "requirements-dev.txt",
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "black",
+   "version": "25.11.0",
+   "id": "GHSA-cg8m-r9f2-5wm2",
+   "ghsa": [
+    "GHSA-cg8m-r9f2-5wm2"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "26.10.1"
+   ],
+   "summary": "Black: GitHub Action installs unvalidated required-version from pyproject.toml",
+   "manifests": [
+    "requirements-dev.txt",
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "black",
+   "version": "25.11.0",
+   "id": "PYSEC-2026-2120",
+   "ghsa": [
+    "GHSA-v53h-f6m7-xcgm"
+   ],
+   "severity": null,
+   "fixed": [
+    "26.3.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements-dev.txt",
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "black",
+   "version": "25.11.0",
+   "id": "PYSEC-2026-2121",
+   "ghsa": [
+    "GHSA-3936-cmfr-pm3m"
+   ],
+   "severity": null,
+   "fixed": [
+    "26.3.1"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements-dev.txt",
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "bokeh",
+   "version": "3.6.3",
+   "id": "GHSA-793v-589g-574v",
+   "ghsa": [
+    "GHSA-793v-589g-574v"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.8.2"
+   ],
+   "summary": "Bokeh server applications have Incomplete Origin Validation in WebSockets",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "bokeh",
+   "version": "3.6.3",
+   "id": "PYSEC-2026-1223",
+   "ghsa": [
+    "GHSA-793v-589g-574v"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.8.2"
+   ],
+   "summary": "Bokeh server applications have Incomplete Origin Validation in WebSockets",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "cryptography",
+   "version": "46.0.3",
+   "id": "GHSA-537c-gmf6-5ccf",
+   "ghsa": [
+    "GHSA-537c-gmf6-5ccf"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "48.0.1"
+   ],
+   "summary": "Vulnerable OpenSSL included in cryptography wheels",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "cryptography",
+   "version": "46.0.3",
+   "id": "GHSA-g6cj-pr64-35w5",
+   "ghsa": [
+    "GHSA-g6cj-pr64-35w5"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "50.0.0"
+   ],
+   "summary": "cryptography: PKCS#7 EnvelopedData decryption exposes a Bleichenbacher oracle through distinguishable errors and timing",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "cryptography",
+   "version": "46.0.3",
+   "id": "GHSA-jwv3-5hgf-82ww",
+   "ghsa": [
+    "GHSA-jwv3-5hgf-82ww"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "49.0.0"
+   ],
+   "summary": "python-cryptography: Duplicate self-signed intermediates can cause exponential path-building",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "cryptography",
+   "version": "46.0.3",
+   "id": "GHSA-m2h6-j472-rp4c",
+   "ghsa": [
+    "GHSA-m2h6-j472-rp4c"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "49.0.0"
+   ],
+   "summary": "python-cryptography verifier accepts wildcard DNS names allowing escape from permittedSubtrees",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "cryptography",
+   "version": "46.0.3",
+   "id": "GHSA-m959-cc7f-wv43",
+   "ghsa": [
+    "GHSA-m959-cc7f-wv43"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "46.0.6"
+   ],
+   "summary": "cryptography has incomplete DNS name constraint enforcement on peer names",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "cryptography",
+   "version": "46.0.3",
+   "id": "GHSA-p423-j2cm-9vmq",
+   "ghsa": [
+    "GHSA-p423-j2cm-9vmq"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "46.0.7"
+   ],
+   "summary": "Cryptography vulnerable to buffer overflow if non-contiguous buffers were passed to APIs",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "cryptography",
+   "version": "46.0.3",
+   "id": "GHSA-r6ph-v2qm-q3c2",
+   "ghsa": [
+    "GHSA-r6ph-v2qm-q3c2"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "46.0.5"
+   ],
+   "summary": "cryptography Vulnerable to a Subgroup Attack Due to Missing Subgroup Validation for SECT Curves",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "cryptography",
+   "version": "46.0.3",
+   "id": "PYSEC-2026-2141",
+   "ghsa": [
+    "GHSA-r6ph-v2qm-q3c2"
+   ],
+   "severity": null,
+   "fixed": [
+    "46.0.5"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "cryptography",
+   "version": "46.0.3",
+   "id": "PYSEC-2026-35",
+   "ghsa": [
+    "GHSA-m959-cc7f-wv43"
+   ],
+   "severity": null,
+   "fixed": [
+    "46.0.6"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "cryptography",
+   "version": "46.0.3",
+   "id": "PYSEC-2026-3552",
+   "ghsa": [
+    "GHSA-g6cj-pr64-35w5"
+   ],
+   "severity": null,
+   "fixed": [
+    "50.0.0"
+   ],
+   "summary": "cryptography: PKCS#7 EnvelopedData decryption exposes a Bleichenbacher oracle through distinguishable errors and timing",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "cryptography",
+   "version": "46.0.3",
+   "id": "PYSEC-2026-3553",
+   "ghsa": [
+    "GHSA-jwv3-5hgf-82ww"
+   ],
+   "severity": null,
+   "fixed": [
+    "49.0.0"
+   ],
+   "summary": "python-cryptography: Duplicate self-signed intermediates can cause exponential path-building",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "cryptography",
+   "version": "46.0.3",
+   "id": "PYSEC-2026-3554",
+   "ghsa": [
+    "GHSA-m2h6-j472-rp4c"
+   ],
+   "severity": null,
+   "fixed": [
+    "49.0.0"
+   ],
+   "summary": "python-cryptography verifier accepts wildcard DNS names allowing escape from permittedSubtrees",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "cryptography",
+   "version": "46.0.3",
+   "id": "PYSEC-2026-36",
+   "ghsa": [
+    "GHSA-p423-j2cm-9vmq"
+   ],
+   "severity": null,
+   "fixed": [
+    "46.0.7"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "flask",
+   "version": "3.1.2",
+   "id": "GHSA-68rp-wp8r-4726",
+   "ghsa": [
+    "GHSA-68rp-wp8r-4726"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "3.1.3"
+   ],
+   "summary": "Flask session does not add `Vary: Cookie` header when accessed in some ways",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "flask",
+   "version": "3.1.2",
+   "id": "PYSEC-2026-2151",
+   "ghsa": [
+    "GHSA-68rp-wp8r-4726"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.3"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "fpdf2",
+   "version": "2.8.3",
+   "id": "GHSA-rw7v-4hrq-x6r9",
+   "ghsa": [
+    "GHSA-rw7v-4hrq-x6r9"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "2.8.8"
+   ],
+   "summary": "fpdf2 implicitly loads external URLs and local image paths when rendering attacker-controlled content",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "fpdf2",
+   "version": "2.8.3",
+   "id": "GHSA-wqw6-wpr3-45rh",
+   "ghsa": [
+    "GHSA-wqw6-wpr3-45rh"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "2.8.8"
+   ],
+   "summary": "fpdf2: Exponential SVG '<use>' expansion causes CPU and memory exhaustion in 'FPDF.image()'",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-239g-whfq-7xj9",
+   "ghsa": [
+    "GHSA-239g-whfq-7xj9"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.60"
+   ],
+   "summary": "GitPython: Repository content can impersonate the git directory, leading to arbitrary code execution",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-23mf-xhv8-69c2",
+   "ghsa": [
+    "GHSA-23mf-xhv8-69c2"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.2.0"
+   ],
+   "summary": "GitPython: arbitrary file read via attacker-controlled branch name in `Head.checkout()` (incomplete fix of CVE-2026-78679)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-284h-m62q-gf8w",
+   "ghsa": [
+    "GHSA-284h-m62q-gf8w"
+   ],
+   "severity": "CRITICAL",
+   "fixed": [
+    "3.1.59"
+   ],
+   "summary": "GitPython: Dormant multi-line git-config values are corrupted into live injected directives (e.g. core.hooksPath) on any unrelated GitConfigParser write, enabling RCE",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-2f96-g7mh-g2hx",
+   "ghsa": [
+    "GHSA-2f96-g7mh-g2hx"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.51"
+   ],
+   "summary": "GitPython: Command Injection via git long-option prefix abbreviation bypass of CVE-2026-42215 blocklist",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-3f7w-8rr8-f37f",
+   "ghsa": [
+    "GHSA-3f7w-8rr8-f37f"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.57"
+   ],
+   "summary": "GitPython: Unguarded git option forwarding in IndexFile.checkout() and TagReference.create() enables arbitrary file overwrite and arbitrary file read",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-3rp5-jjmw-4wv2",
+   "ghsa": [
+    "GHSA-3rp5-jjmw-4wv2"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.53"
+   ],
+   "summary": "GitPython: git-config section-name injection enables arbitrary config directives (core.sshCommand RCE)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-3wxw-xv34-2frg",
+   "ghsa": [
+    "GHSA-3wxw-xv34-2frg"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.1.59"
+   ],
+   "summary": "GitPython: TagReference.create positional reference bypasses kwargs-only --file guard, enabling arbitrary file read (incomplete fix of 3af0c251)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-4gmw-gg2m-w46p",
+   "ghsa": [
+    "GHSA-4gmw-gg2m-w46p"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.58"
+   ],
+   "summary": "GitPython: Unguarded git read-tree option forwarding in IndexFile.from_tree/reset/merge_tree enables arbitrary file overwrite",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-539m-9xh6-q6rr",
+   "ghsa": [
+    "GHSA-539m-9xh6-q6rr"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.1.57"
+   ],
+   "summary": "GitPython: Incomplete unsafe_git_archive_options denylist omits --add-file / --add-virtual-file, enabling arbitrary file read via Repo.archive()",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-59cr-6r3x-644w",
+   "ghsa": [
+    "GHSA-59cr-6r3x-644w"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.1.62"
+   ],
+   "summary": "GitPython submodule update path traversal can write outside the repository",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-5xxx-qhh7-9287",
+   "ghsa": [
+    "GHSA-5xxx-qhh7-9287"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.1.59"
+   ],
+   "summary": "GitPython: Incomplete unsafe_git_revision_options denylist omits --contents/-S, enabling arbitrary file read via Repo.blame()",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-6p8h-3wgx-97gf",
+   "ghsa": [
+    "GHSA-6p8h-3wgx-97gf"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.54"
+   ],
+   "summary": "GitPython: Incomplete unsafe_git_clone_options denylist omits --template enabling arbitrary command execution via clone hooks",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-7545-fcxq-7j24",
+   "ghsa": [
+    "GHSA-7545-fcxq-7j24"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.48"
+   ],
+   "summary": "GitPython reference APIs has a path traversal vulnerability that allows arbitrary file write and delete outside the repository",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-7833-fr7j-v32q",
+   "ghsa": [
+    "GHSA-7833-fr7j-v32q"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.59"
+   ],
+   "summary": "GitPython: Arbitrary local file content disclosure via [include] directive in untrusted .gitmodules (SubmoduleConfigParser never disables merge_includes)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-83vg-56qc-22m7",
+   "ghsa": [
+    "GHSA-83vg-56qc-22m7"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.2.1"
+   ],
+   "summary": "GitPython validates a submodule's \".git\" path only after cloning into it (RCE)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-8mcc-hrx5-hvxc",
+   "ghsa": [
+    "GHSA-8mcc-hrx5-hvxc"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.59"
+   ],
+   "summary": "GitPython: clone_from()/clone() omit --separate-git-dir from unsafe_git_clone_options, enabling arbitrary git-directory creation outside the destination",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-94p4-4cq8-9g67",
+   "ghsa": [
+    "GHSA-94p4-4cq8-9g67"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.55"
+   ],
+   "summary": "GitPython: Environment-variable exfiltration via Repo.create_remote() / Remote.add() URL (incomplete fix of GHSA-rwj8-pgh3-r573)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-956x-8gvw-wg5v",
+   "ghsa": [
+    "GHSA-956x-8gvw-wg5v"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.51"
+   ],
+   "summary": "GitPython: command injection via unguarded Git options in `Repo.archive()`, `git.ls_remote()`, and arbitrary file overwrite via `Repo.iter_commits()` / `Repo.blame()`",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-9rj7-rf2p-w77r",
+   "ghsa": [
+    "GHSA-9rj7-rf2p-w77r"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.58"
+   ],
+   "summary": "GitPython: Unguarded git option forwarding in Repo.init enables arbitrary command execution via --template clone hooks",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-f9j4-qggq-h239",
+   "ghsa": [
+    "GHSA-f9j4-qggq-h239"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.2.0"
+   ],
+   "summary": "GitPython Remote.pull() refspec bypasses the --upload-pack unsafe-option guard, enabling arbitrary command execution",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-fjr4-x663-mwxc",
+   "ghsa": [
+    "GHSA-fjr4-x663-mwxc"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.54"
+   ],
+   "summary": "GitPython: Arbitrary file overwrite via git diff --output argument injection in Diffable.diff (key- and value-controlled)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-fx3j-rwgx-fr94",
+   "ghsa": [
+    "GHSA-fx3j-rwgx-fr94"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.2.0"
+   ],
+   "summary": "GitPython: separate_git_dir leaks env vars via crafted .gitmodules submodule name",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-g5vv-9gxw-82hx",
+   "ghsa": [
+    "GHSA-g5vv-9gxw-82hx"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.60"
+   ],
+   "summary": "GitPython: Denial of Service via catastrophic backtracking (ReDoS) in Actor.name_email_regex \u2014 commit author/committer field parsing",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-gq48-pqfc-9p58",
+   "ghsa": [
+    "GHSA-gq48-pqfc-9p58"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.2.0"
+   ],
+   "summary": "GitPython: Submodule.move() follows an attacker-committed intermediate symlink outside the worktree",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-hh9p-6wh2-4mfc",
+   "ghsa": [
+    "GHSA-hh9p-6wh2-4mfc"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.1.58"
+   ],
+   "summary": "GitPython: Arbitrary file read via --pathspec-from-file in IndexFile.remove() and Head.checkout()",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-hmq2-w58f-27jc",
+   "ghsa": [
+    "GHSA-hmq2-w58f-27jc"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.58"
+   ],
+   "summary": "GitPython: Arbitrary Git Repository Creation Outside the Working Tree via Unvalidated .gitmodules Submodule Name in GitPython",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-jm78-9fvv-mhgr",
+   "ghsa": [
+    "GHSA-jm78-9fvv-mhgr"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.58"
+   ],
+   "summary": "GitPython: git-config OPTION-name injection via =/#/whitespace bypasses name validator, enabling forged core.sshCommand/hooksPath (RCE)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-m64x-33q8-m5h7",
+   "ghsa": [
+    "GHSA-m64x-33q8-m5h7"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.2.0"
+   ],
+   "summary": "GitPython parse_actor_and_date() is vulnerable to quadratic backtracking on malformed identity lines",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-mv93-w799-cj2w",
+   "ghsa": [
+    "GHSA-mv93-w799-cj2w"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.50"
+   ],
+   "summary": "GitPython: Newline injection in config_writer() section parameter bypasses CVE-2026-42215 patch, enabling RCE via core.hooksPath",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-p538-c434-8v24",
+   "ghsa": [
+    "GHSA-p538-c434-8v24"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.1.56"
+   ],
+   "summary": "GitPython: Arbitrary file truncation via git rev-list --output argument injection in unguarded Commit.count",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-r9mr-m37c-5fr3",
+   "ghsa": [
+    "GHSA-r9mr-m37c-5fr3"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.54"
+   ],
+   "summary": "GitPython: Unsafe git option guard bypass via single-character kwarg value token smuggling enables arbitrary command execution",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-rpm5-65cw-6hj4",
+   "ghsa": [
+    "GHSA-rpm5-65cw-6hj4"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.47"
+   ],
+   "summary": "GitPython has Command Injection via Git options bypass",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-rwj8-pgh3-r573",
+   "ghsa": [
+    "GHSA-rwj8-pgh3-r573"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.52"
+   ],
+   "summary": "GitPython: Environment-variable exfiltration via os.path.expandvars() on Repo.clone_from() URL",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-v87r-6q3f-2j67",
+   "ghsa": [
+    "GHSA-v87r-6q3f-2j67"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.49"
+   ],
+   "summary": "GitPython: Newline injection in config_writer().set_value() enables RCE via core.hooksPath",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-w8jc-g24h-crhw",
+   "ghsa": [
+    "GHSA-w8jc-g24h-crhw"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.2.0"
+   ],
+   "summary": "GitPython command wrappers omit unsafe protocol and option checks",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-wvpp-8hx9-p66j",
+   "ghsa": [
+    "GHSA-wvpp-8hx9-p66j"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.58"
+   ],
+   "summary": "GitPython: Unsafe git option guard bypass via split_single_char_options=False short-option token smuggling enables command execution",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "GHSA-x2qx-6953-8485",
+   "ghsa": [
+    "GHSA-x2qx-6953-8485"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.1.47"
+   ],
+   "summary": "GitPython: Unsafe option check validates multi_options before shlex.split transformation",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-2160",
+   "ghsa": [
+    "GHSA-rpm5-65cw-6hj4"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.47"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-2161",
+   "ghsa": [
+    "GHSA-x2qx-6953-8485"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.47"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-2162",
+   "ghsa": [
+    "GHSA-7545-fcxq-7j24"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.48"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-2163",
+   "ghsa": [
+    "GHSA-v87r-6q3f-2j67"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.49"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3783",
+   "ghsa": [
+    "GHSA-jm78-9fvv-mhgr"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.58"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3784",
+   "ghsa": [
+    "GHSA-hmq2-w58f-27jc"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.58"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3785",
+   "ghsa": [
+    "GHSA-7833-fr7j-v32q"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.59"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3786",
+   "ghsa": [
+    "GHSA-284h-m62q-gf8w"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.59"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3787",
+   "ghsa": [
+    "GHSA-8mcc-hrx5-hvxc"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.59"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3788",
+   "ghsa": [
+    "GHSA-5xxx-qhh7-9287"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.59"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3836",
+   "ghsa": [
+    "GHSA-2f96-g7mh-g2hx"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.51"
+   ],
+   "summary": "GitPython: Command Injection via git long-option prefix abbreviation bypass of CVE-2026-42215 blocklist",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3837",
+   "ghsa": [
+    "GHSA-3wxw-xv34-2frg"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.59"
+   ],
+   "summary": "GitPython: TagReference.create positional reference bypasses kwargs-only --file guard, enabling arbitrary file read (incomplete fix of 3af0c251)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3838",
+   "ghsa": [
+    "GHSA-4gmw-gg2m-w46p"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.58"
+   ],
+   "summary": "GitPython: Unguarded git read-tree option forwarding in IndexFile.from_tree/reset/merge_tree enables arbitrary file overwrite",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3839",
+   "ghsa": [
+    "GHSA-956x-8gvw-wg5v"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.51"
+   ],
+   "summary": "GitPython: command injection via unguarded Git options in `Repo.archive()`, `git.ls_remote()`, and arbitrary file overwrite via `Repo.iter_commits()` / `Repo.blame()`",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3840",
+   "ghsa": [
+    "GHSA-9rj7-rf2p-w77r"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.58"
+   ],
+   "summary": "GitPython: Unguarded git option forwarding in Repo.init enables arbitrary command execution via --template clone hooks",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3841",
+   "ghsa": [
+    "GHSA-hh9p-6wh2-4mfc"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.58"
+   ],
+   "summary": "GitPython: Arbitrary file read via --pathspec-from-file in IndexFile.remove() and Head.checkout()",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3842",
+   "ghsa": [
+    "GHSA-rwj8-pgh3-r573"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.52"
+   ],
+   "summary": "GitPython: Environment-variable exfiltration via os.path.expandvars() on Repo.clone_from() URL",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3843",
+   "ghsa": [
+    "GHSA-wvpp-8hx9-p66j"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.58"
+   ],
+   "summary": "GitPython: Unsafe git option guard bypass via split_single_char_options=False short-option token smuggling enables command execution",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3948",
+   "ghsa": [
+    "GHSA-539m-9xh6-q6rr"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.57"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3949",
+   "ghsa": [
+    "GHSA-3f7w-8rr8-f37f"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.57"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3950",
+   "ghsa": [
+    "GHSA-p538-c434-8v24"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.56"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3951",
+   "ghsa": [
+    "GHSA-94p4-4cq8-9g67"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.55"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3952",
+   "ghsa": [
+    "GHSA-6p8h-3wgx-97gf"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.54"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3953",
+   "ghsa": [
+    "GHSA-r9mr-m37c-5fr3"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.54"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3980",
+   "ghsa": [
+    "GHSA-mv93-w799-cj2w"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.50"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3981",
+   "ghsa": [
+    "GHSA-3rp5-jjmw-4wv2"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.53"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3982",
+   "ghsa": [
+    "GHSA-239g-whfq-7xj9"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.60"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3984",
+   "ghsa": [
+    "GHSA-g5vv-9gxw-82hx"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.60"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "gitpython",
+   "version": "3.1.44",
+   "id": "PYSEC-2026-3995",
+   "ghsa": [
+    "GHSA-fjr4-x663-mwxc"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.1.54"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "lxml",
+   "version": "6.0.2",
+   "id": "GHSA-vfmq-68hx-4jfw",
+   "ghsa": [
+    "GHSA-vfmq-68hx-4jfw"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "6.1.0"
+   ],
+   "summary": "lxml: Default configuration of iterparse() and ETCompatXMLParser() allows XXE to local files",
+   "manifests": [
+    "requirements-dev.txt",
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "lxml",
+   "version": "6.0.2",
+   "id": "PYSEC-2026-87",
+   "ghsa": [
+    "GHSA-vfmq-68hx-4jfw"
+   ],
+   "severity": null,
+   "fixed": [
+    "6.1.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements-dev.txt",
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-2jhm-w3mp-jcwr",
+   "ghsa": [
+    "GHSA-2jhm-w3mp-jcwr"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "NLTK network URL validation permits SSRF to RFC 6598 shared-address-space hosts",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-3gq4-3j92-5w49",
+   "ghsa": [
+    "GHSA-3gq4-3j92-5w49"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "NLTK: Corpus Reader Sandbox Bypass",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-3gqm-fcw5-w839",
+   "ghsa": [
+    "GHSA-3gqm-fcw5-w839"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "NLTK: SSRF Fail-Open in validate_network_url() via DNS Resolution Failure",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-469j-vmhf-r6v7",
+   "ghsa": [
+    "GHSA-469j-vmhf-r6v7"
+   ],
+   "severity": "HIGH",
+   "fixed": [],
+   "summary": "NLTK has a Downloader Path Traversal Vulnerability (AFO) - Arbitrary File Overwrite",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-568f-pv23-39p4",
+   "ghsa": [
+    "GHSA-568f-pv23-39p4"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "NLTK: Stable FrameNet and NKJP readers parse outside-root XML",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-5wp5-5229-5g6q",
+   "ghsa": [
+    "GHSA-5wp5-5229-5g6q",
+    "GHSA-gf32-cmjh-8m9v"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.9.3"
+   ],
+   "summary": "NLTK: Missing Post-Download Integrity Verification Allows Malicious Package Injection",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-68j8-pq59-fqgm",
+   "ghsa": [
+    "GHSA-68j8-pq59-fqgm"
+   ],
+   "severity": "HIGH",
+   "fixed": [],
+   "summary": "NLTK has a Path Traversal issue",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-6hm5-jgcp-p838",
+   "ghsa": [
+    "GHSA-6hm5-jgcp-p838"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "Natural Language Toolkit (NLTK): Path Traversal in NKJPCorpusReader leads to Arbitrary File Read and bypasses the nltk.pathsec sandbox (ENFORCE=True)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-6hwm-xvph-95vm",
+   "ghsa": [
+    "GHSA-6hwm-xvph-95vm"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "NLTK: Uncontrolled search path when invoking the Graphviz 'dot' binary",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-6ww7-3frv-cqxh",
+   "ghsa": [
+    "GHSA-6ww7-3frv-cqxh"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "NLTK: pathsec SSRF protection can be bypassed when a proxy is configured",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-72r2-7mfr-5xr9",
+   "ghsa": [
+    "GHSA-72r2-7mfr-5xr9"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "NLTK: FileSystemPathPointer.open() sandbox check is dead code \u2014 arbitrary file read via file:// protocol",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-7p94-766c-hgjp",
+   "ghsa": [
+    "GHSA-7p94-766c-hgjp"
+   ],
+   "severity": "CRITICAL",
+   "fixed": [
+    "3.9.3"
+   ],
+   "summary": "NLTK has a Zip Slip Vulnerability",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-848c-c2cx-j7qx",
+   "ghsa": [
+    "GHSA-848c-c2cx-j7qx"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.9.3"
+   ],
+   "summary": "NLTK vulnerable to Eval Injection via collocations CLI arguments",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-8mgp-746c-j5xp",
+   "ghsa": [
+    "GHSA-8mgp-746c-j5xp"
+   ],
+   "severity": "HIGH",
+   "fixed": [],
+   "summary": "NLTK: Model-artifact APIs bypass pathsec and touch files outside allowed roots",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-8mpw-7fpc-4gqj",
+   "ghsa": [
+    "GHSA-8mpw-7fpc-4gqj"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "NLTK: Pl196xCorpusReader has quadratic ReDoS on malformed TEI blocks",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-97qj-x29f-37w7",
+   "ghsa": [
+    "GHSA-97qj-x29f-37w7"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "NLTK: Entity-expansion DoS (billion laughs) via remaining raw ElementTree parses",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-9r6g-266r-89x4",
+   "ghsa": [
+    "GHSA-9r6g-266r-89x4"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.9.4"
+   ],
+   "summary": "NLTK Stanford wrapper classes execute untrusted JAR files without verification",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-cw6x-m8jw-qmrh",
+   "ghsa": [
+    "GHSA-cw6x-m8jw-qmrh"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "NLTK: Uncontrolled recursion in nltk.featstruct.FeatStructReader causes unhandled RecursionError (DoS) via deeply nested feature-structure input",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-f794-5jv7-7672",
+   "ghsa": [
+    "GHSA-f794-5jv7-7672"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "NLTK: Downloader.download follows hardlinks and overwrites outside-root files",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-ff5c-cp5c-9wjf",
+   "ghsa": [
+    "GHSA-ff5c-cp5c-9wjf"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "NLTK: Uncontrolled resource consumption in RecursiveDescentParser via ambiguous or left-recursive grammars",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-ffj6-66c4-86gw",
+   "ghsa": [
+    "GHSA-ffj6-66c4-86gw"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "NLTK downloader allows cross-package resource and model poisoning",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-fg7f-2386-8897",
+   "ghsa": [
+    "GHSA-fg7f-2386-8897"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "Natural Language Toolkit (NLTK): ReDoS in NLTK ReviewsCorpusReader FEATURES regex",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-gfwx-w7gr-fvh7",
+   "ghsa": [
+    "GHSA-gfwx-w7gr-fvh7"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.9.4"
+   ],
+   "summary": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting') in nltk",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-h8wq-7xc4-p3qx",
+   "ghsa": [
+    "GHSA-h8wq-7xc4-p3qx"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.9.3"
+   ],
+   "summary": "NLTK has Arbitrary File Read via Absolute Path Input in nltk.util.filestring()",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-j456-xh4h-cpf2",
+   "ghsa": [
+    "GHSA-j456-xh4h-cpf2"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.10.4"
+   ],
+   "summary": "NLTK: WekaClassifier passes an unvalidated caller-controlled model path to the weka JVM, bypassing nltk.pathsec containment",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-jm6w-m3j8-898g",
+   "ghsa": [
+    "GHSA-jm6w-m3j8-898g"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.9.4"
+   ],
+   "summary": "Unauthenticated remote shutdown in nltk.app.wordnet_app",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-m42h-3232-vpv3",
+   "ghsa": [
+    "GHSA-m42h-3232-vpv3"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "nltk: Arbitrary File Read via Path Traversal in nltk.data.load() through Percent-Encoded Sequences",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-m4rf-3fr8-xwx3",
+   "ghsa": [
+    "GHSA-m4rf-3fr8-xwx3"
+   ],
+   "severity": "CRITICAL",
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "NLTK: JVM argument injection bypass via per-call options in the NLTK Stanford wrappers (incomplete fix of CVE-2026-12841)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-p3m8-78j2-g5p3",
+   "ghsa": [
+    "GHSA-p3m8-78j2-g5p3"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "NLTK: Default ENFORCE=False Disables All pathsec Security Controls",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-p4gq-832x-fm9v",
+   "ghsa": [
+    "GHSA-p4gq-832x-fm9v"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "Natural Language Toolkit (NLTK): URL-Encoded Path Traversal in nltk.data.load() Allows Arbitrary Local File Read",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-p4rw-rvv2-7xwr",
+   "ghsa": [
+    "GHSA-p4rw-rvv2-7xwr"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "NLTK: Corpus readers follow symlinks outside trusted roots despite pathsec enforcement",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-qvv7-cg9c-w4x3",
+   "ghsa": [
+    "GHSA-qvv7-cg9c-w4x3"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "Natural Language Toolkit (NLTK): DNS-rebinding SSRF filter bypass in nltk.pathsec.urlopen (nltk.download / nltk.data.load) defeats ENFORCE mode",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-qx2g-xrx7-vfh8",
+   "ghsa": [
+    "GHSA-qx2g-xrx7-vfh8"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.10.1"
+   ],
+   "summary": " NLTK TweetTokenizer vulnerable to denial of service through catastrophic regex backtracking",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-r6gq-whwq-mvg9",
+   "ghsa": [
+    "GHSA-r6gq-whwq-mvg9"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.9.4"
+   ],
+   "summary": "NLTK: Symlink escape in CorpusReader allows arbitrary local file read outside the corpus root",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-rf74-v2fm-23pw",
+   "ghsa": [
+    "GHSA-rf74-v2fm-23pw"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.9.4"
+   ],
+   "summary": "Natural Language Toolkit (NLTK) has unbounded recursion in JSONTaggedDecoder.decode_obj() may cause DoS",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-rhp5-r9x4-f5g2",
+   "ghsa": [
+    "GHSA-rhp5-r9x4-f5g2"
+   ],
+   "severity": "CRITICAL",
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "NLTK: Unsafe Pickle Deserialization in TransitionParser Allows Remote Code Execution",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-rrv8-h7p8-rx55",
+   "ghsa": [
+    "GHSA-rrv8-h7p8-rx55"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": " NLTK: ReDoS in nltk.text.Text.findall() via unvalidated user-supplied regular expressions",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-vp2x-qp44-57v7",
+   "ghsa": [
+    "GHSA-vp2x-qp44-57v7"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "NLTK: Quadratic CPU Exhaustion in `XMLCorpusView._read_xml_fragment()`",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-w3v8-gmh9-3wv7",
+   "ghsa": [
+    "GHSA-w3v8-gmh9-3wv7"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "NLTK: ReDoS in nltk.tgrep via unvalidated user-supplied regular expressions",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-ww6m-cw3f-q94g",
+   "ghsa": [
+    "GHSA-ww6m-cw3f-q94g"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "NLTK: Quadratic-time DoS in PorterStemmer via long runs of 'y'",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-x5ph-mj9p-rfr8",
+   "ghsa": [
+    "GHSA-x5ph-mj9p-rfr8"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "NLTK: StreamBackedCorpusView Bypasses pathsec.ENFORCE - Arbitrary Local File Read",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-x99w-6fgc-pmfw",
+   "ghsa": [
+    "GHSA-x99w-6fgc-pmfw"
+   ],
+   "severity": "CRITICAL",
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "NLTK: Allowlisted pickle loaders still permit code execution in current source",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "GHSA-xh95-f55m-82fw",
+   "ghsa": [
+    "GHSA-xh95-f55m-82fw"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "Natural Language Toolkit (NLTK) has path traversal in FramenetCorpusReader.frame() that allows arbitrary XML file read, bypassing the nltk.pathsec sandbox (ENFORCE=True)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-2078",
+   "ghsa": [
+    "GHSA-p4gq-832x-fm9v"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-2085",
+   "ghsa": [
+    "GHSA-9r6g-266r-89x4"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.9.4"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-2235",
+   "ghsa": [
+    "GHSA-gfwx-w7gr-fvh7"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.9.4"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-2236",
+   "ghsa": [
+    "GHSA-jm6w-m3j8-898g"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.9.4"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-2237",
+   "ghsa": [
+    "GHSA-469j-vmhf-r6v7"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.9.4"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3581",
+   "ghsa": [
+    "GHSA-6hm5-jgcp-p838"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "Natural Language Toolkit (NLTK): Path Traversal in NKJPCorpusReader leads to Arbitrary File Read and bypasses the nltk.pathsec sandbox (ENFORCE=True)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3582",
+   "ghsa": [
+    "GHSA-fg7f-2386-8897"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "Natural Language Toolkit (NLTK): ReDoS in NLTK ReviewsCorpusReader FEATURES regex",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3583",
+   "ghsa": [
+    "GHSA-qvv7-cg9c-w4x3"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "Natural Language Toolkit (NLTK): DNS-rebinding SSRF filter bypass in nltk.pathsec.urlopen (nltk.download / nltk.data.load) defeats ENFORCE mode",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3584",
+   "ghsa": [
+    "GHSA-xh95-f55m-82fw"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "Natural Language Toolkit (NLTK) has path traversal in FramenetCorpusReader.frame() that allows arbitrary XML file read, bypassing the nltk.pathsec sandbox (ENFORCE=True)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3657",
+   "ghsa": [
+    "GHSA-848c-c2cx-j7qx"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.9.3"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3722",
+   "ghsa": [
+    "GHSA-p3m8-78j2-g5p3"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3723",
+   "ghsa": [
+    "GHSA-3gqm-fcw5-w839"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3724",
+   "ghsa": [
+    "GHSA-rf74-v2fm-23pw"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.9.4"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3728",
+   "ghsa": [
+    "GHSA-568f-pv23-39p4"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3729",
+   "ghsa": [
+    "GHSA-5wp5-5229-5g6q",
+    "GHSA-gf32-cmjh-8m9v"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.9.3"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3730",
+   "ghsa": [
+    "GHSA-x5ph-mj9p-rfr8"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3731",
+   "ghsa": [
+    "GHSA-72r2-7mfr-5xr9"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3732",
+   "ghsa": [
+    "GHSA-r6gq-whwq-mvg9"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.9.4"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3733",
+   "ghsa": [
+    "GHSA-6ww7-3frv-cqxh"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3734",
+   "ghsa": [
+    "GHSA-rhp5-r9x4-f5g2"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3735",
+   "ghsa": [
+    "GHSA-x99w-6fgc-pmfw"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3736",
+   "ghsa": [
+    "GHSA-3gq4-3j92-5w49"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3737",
+   "ghsa": [
+    "GHSA-p4rw-rvv2-7xwr"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3738",
+   "ghsa": [
+    "GHSA-ww6m-cw3f-q94g"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3739",
+   "ghsa": [
+    "GHSA-cw6x-m8jw-qmrh"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3740",
+   "ghsa": [
+    "GHSA-8mgp-746c-j5xp"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3741",
+   "ghsa": [
+    "GHSA-f794-5jv7-7672"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3748",
+   "ghsa": [
+    "GHSA-97qj-x29f-37w7"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3749",
+   "ghsa": [
+    "GHSA-m4rf-3fr8-xwx3"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3750",
+   "ghsa": [
+    "GHSA-rrv8-h7p8-rx55"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3751",
+   "ghsa": [
+    "GHSA-w3v8-gmh9-3wv7"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3752",
+   "ghsa": [
+    "GHSA-8mpw-7fpc-4gqj"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3868",
+   "ghsa": [
+    "GHSA-6hwm-xvph-95vm"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "NLTK: Uncontrolled search path when invoking the Graphviz 'dot' binary",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3869",
+   "ghsa": [
+    "GHSA-ff5c-cp5c-9wjf"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "NLTK: Uncontrolled resource consumption in RecursiveDescentParser via ambiguous or left-recursive grammars",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3870",
+   "ghsa": [
+    "GHSA-qx2g-xrx7-vfh8"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.1"
+   ],
+   "summary": " NLTK TweetTokenizer vulnerable to denial of service through catastrophic regex backtracking",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3871",
+   "ghsa": [
+    "GHSA-vp2x-qp44-57v7"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.3"
+   ],
+   "summary": "NLTK: Quadratic CPU Exhaustion in `XMLCorpusView._read_xml_fragment()`",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3954",
+   "ghsa": [
+    "GHSA-ffj6-66c4-86gw"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.10.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-3955",
+   "ghsa": [
+    "GHSA-2jhm-w3mp-jcwr"
+   ],
+   "severity": null,
+   "fixed": [],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-4318",
+   "ghsa": [
+    "GHSA-5wp5-5229-5g6q",
+    "GHSA-gf32-cmjh-8m9v"
+   ],
+   "severity": null,
+   "fixed": [],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-597",
+   "ghsa": [
+    "GHSA-m42h-3232-vpv3"
+   ],
+   "severity": null,
+   "fixed": [],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-96",
+   "ghsa": [
+    "GHSA-7p94-766c-hgjp"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.9.3"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-97",
+   "ghsa": [
+    "GHSA-h8wq-7xc4-p3qx"
+   ],
+   "severity": null,
+   "fixed": [],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-98",
+   "ghsa": [
+    "GHSA-68j8-pq59-fqgm"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.9.3"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "nltk",
+   "version": "3.9.2",
+   "id": "PYSEC-2026-99",
+   "ghsa": [],
+   "severity": null,
+   "fixed": [
+    "3.9.3"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "notebook",
+   "version": "7.3.4",
+   "id": "GHSA-mqcg-5x36-vfcg",
+   "ghsa": [
+    "GHSA-mqcg-5x36-vfcg"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "7.5.6"
+   ],
+   "summary": "JupyterLab's command linker attributes in HTML enable one-click command execution from untrusted content",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "notebook",
+   "version": "7.3.4",
+   "id": "GHSA-rch3-82jr-f9w9",
+   "ghsa": [
+    "GHSA-rch3-82jr-f9w9"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "7.5.6"
+   ],
+   "summary": "Jupyter Notebook Vulnerable to Authentication Token Theft via CommandLinker XSS",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "notebook",
+   "version": "7.3.4",
+   "id": "PYSEC-2026-2681",
+   "ghsa": [
+    "GHSA-mqcg-5x36-vfcg"
+   ],
+   "severity": null,
+   "fixed": [
+    "7.5.6"
+   ],
+   "summary": "JupyterLab's command linker attributes in HTML enable one-click command execution from untrusted content",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "notebook",
+   "version": "7.3.4",
+   "id": "PYSEC-2026-2682",
+   "ghsa": [
+    "GHSA-rch3-82jr-f9w9"
+   ],
+   "severity": null,
+   "fixed": [
+    "7.5.6"
+   ],
+   "summary": "Jupyter Notebook Vulnerable to Authentication Token Theft via CommandLinker XSS",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pdfminer-six",
+   "version": "20231228",
+   "id": "GHSA-f83h-ghpp-7wcc",
+   "ghsa": [
+    "GHSA-f83h-ghpp-7wcc"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "20251230"
+   ],
+   "summary": "Insecure Deserialization (pickle) in pdfminer.six CMap Loader \u2014 Local Privesc",
+   "manifests": [
+    "requirements/requirements.lock"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pdfminer-six",
+   "version": "20231228",
+   "id": "GHSA-wf5f-4jwr-ppcp",
+   "ghsa": [
+    "GHSA-wf5f-4jwr-ppcp"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "20251107"
+   ],
+   "summary": "Arbitrary Code Execution in pdfminer.six via Crafted PDF Input",
+   "manifests": [
+    "requirements/requirements.lock"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pdfminer-six",
+   "version": "20231228",
+   "id": "PYSEC-2026-1761",
+   "ghsa": [
+    "GHSA-f83h-ghpp-7wcc"
+   ],
+   "severity": null,
+   "fixed": [
+    "20251230"
+   ],
+   "summary": "Insecure Deserialization (pickle) in pdfminer.six CMap Loader \u2014 Local Privesc",
+   "manifests": [
+    "requirements/requirements.lock"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pdfminer-six",
+   "version": "20231228",
+   "id": "PYSEC-2026-1762",
+   "ghsa": [
+    "GHSA-wf5f-4jwr-ppcp"
+   ],
+   "severity": null,
+   "fixed": [
+    "20251107"
+   ],
+   "summary": "Arbitrary Code Execution in pdfminer.six via Crafted PDF Input",
+   "manifests": [
+    "requirements/requirements.lock"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-22hg-r758-rrw9",
+   "ghsa": [
+    "GHSA-22hg-r758-rrw9"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Infinite loop in MIC n_frames when the embedded TIFF",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-24rc-8hj2-v98c",
+   "ghsa": [
+    "GHSA-24rc-8hj2-v98c"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: BMP RLE decoder memory-amplification DoS via unbounded delta escape / absolute mode",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-254f-3936-288h",
+   "ghsa": [
+    "GHSA-254f-3936-288h"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: PdfParser can recurse without limit in get_value() and linearize_page_tree()",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-27h8-gf7j-v5hc",
+   "ghsa": [
+    "GHSA-27h8-gf7j-v5hc"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: NULL dereference in ImagingExpand via rank filters on zero-size images",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-332p-7hrc-92wf",
+   "ghsa": [
+    "GHSA-332p-7hrc-92wf"
+   ],
+   "severity": "CRITICAL",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Heap buffer overflow in _tiffWriteProc when saving TIFF to BytesIO",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-3j72-p6qg-6xp7",
+   "ghsa": [
+    "GHSA-3j72-p6qg-6xp7"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: TarIO negative size field causes infinite CPU-spin loop",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-4558-3h8r-v8xp",
+   "ghsa": [
+    "GHSA-4558-3h8r-v8xp"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: P;2L and P;4L decoders may read 1 to 3 bytes past the passed buffer size",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-45hq-cxwh-f6vc",
+   "ghsa": [
+    "GHSA-45hq-cxwh-f6vc"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "Pillow `BdfFontFile`: `Image.new()` called without `_decompression_bomb_check()` \u2014 bomb protection bypass via font loading",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-462x-pgg6-55fp",
+   "ghsa": [
+    "GHSA-462x-pgg6-55fp"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow tiled-TIFF decoder reads past tile buffer in copy4 (Unpack.c:1290)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-4rm8-3hmm-39fg",
+   "ghsa": [
+    "GHSA-4rm8-3hmm-39fg"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Reachable undefined behavior in native integer operations, potentially leading to denial of service or logic integrity compromise",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-4rr5-89j8-mwwm",
+   "ghsa": [
+    "GHSA-4rr5-89j8-mwwm"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Heap use-after-free when encoding TIFF to an in-memory buffer",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-4x4j-2g7c-83w6",
+   "ghsa": [
+    "GHSA-4x4j-2g7c-83w6"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "Pillow: WindowsViewer.get_command() OS command injection via unescaped shell path",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-58r4-6rv3-gfh8",
+   "ghsa": [
+    "GHSA-58r4-6rv3-gfh8"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Out-of-bounds access in _imagingmorph on a zero-width image",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-5x8w-8jj5-q52h",
+   "ghsa": [
+    "GHSA-5x8w-8jj5-q52h"
+   ],
+   "severity": "CRITICAL",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Heap buffer overflow in FlashPix (FPX) JPEG decoding leads to code execution",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-5x94-69rx-g8h2",
+   "ghsa": [
+    "GHSA-5x94-69rx-g8h2"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "Pillow: `FontFile.compile()`: `Image.new()` called without `_decompression_bomb_check()`",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-5xm2-6676-qcp9",
+   "ghsa": [
+    "GHSA-5xm2-6676-qcp9"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: APNG background disposal allocates full canvas before decompression bomb check",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-5xmw-vc9v-4wf2",
+   "ghsa": [
+    "GHSA-5xmw-vc9v-4wf2"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "12.2.0"
+   ],
+   "summary": "Pillow has a heap buffer overflow with nested list coordinates",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-62p4-gmf7-7g93",
+   "ghsa": [
+    "GHSA-62p4-gmf7-7g93"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "Pillow: Out-of-bounds read via attacker-controlled row stride on Pillow's mmap path (McIdas AREA files)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-654x-cwwv-5j9c",
+   "ghsa": [
+    "GHSA-654x-cwwv-5j9c"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Arrow export leaks stale heap memory when PILLOW_ALIGNMENT > 1",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-65qm-jvmh-6pqg",
+   "ghsa": [
+    "GHSA-65qm-jvmh-6pqg"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: GIF seek keeps rejected size after DecompressionBombError, allowing DoS",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-6r8x-57c9-28j4",
+   "ghsa": [
+    "GHSA-6r8x-57c9-28j4"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "Pillow: Heap out-of-bounds write `Image.paste()` / `Image.crop()` via signed coordinate overflow",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-74r2-7ff9-mjj2",
+   "ghsa": [
+    "GHSA-74r2-7ff9-mjj2"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Quadratic GIF comment concatenation allows DoS in Image.open()",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-78g4-xqwv-q3g8",
+   "ghsa": [
+    "GHSA-78g4-xqwv-q3g8"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Bundled libopenjp2 2.5.4 in all wheels since 11.1.0 carries OSV-2025-219 heap-buffer-overflow write reachable from Image.open().load()",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-7mwm-ghpf-9vrm",
+   "ghsa": [
+    "GHSA-7mwm-ghpf-9vrm"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Double free in ImagingScaleAffine on calloc failure via Image.transform",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-8g5g-8vmr-9782",
+   "ghsa": [
+    "GHSA-8g5g-8vmr-9782"
+   ],
+   "severity": "CRITICAL",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Heap buffer overflow in ImagingJpegDecode",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-8v84-f9pq-wr9x",
+   "ghsa": [
+    "GHSA-8v84-f9pq-wr9x"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "Pillow `PcfFontFile._load_bitmaps()`: `Image.frombytes()` called without `_decompression_bomb_check()` \u2014 bomb protection bypass via PCF font loading",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-9hw9-ch79-4vh6",
+   "ghsa": [
+    "GHSA-9hw9-ch79-4vh6"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "Pillow: Controlled heap out-of-bounds write in Pillow `ImageCmsTransform.apply()` via output mode mismatch",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-9v9v-9qvf-h2hj",
+   "ghsa": [
+    "GHSA-9v9v-9qvf-h2hj"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Heap over-read in WMF/EMF rendering via 16-bit dimension truncation (Windows builds)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-c6hw-5grf-ff96",
+   "ghsa": [
+    "GHSA-c6hw-5grf-ff96"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: OOB read in TiffDecode.c tile and RGBA paths leaks heap memory into pixels",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-cfh3-3jmp-rvhc",
+   "ghsa": [
+    "GHSA-cfh3-3jmp-rvhc"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "12.1.1"
+   ],
+   "summary": "Pillow affected by out-of-bounds write when loading PSD images",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-cp9v-662q-vvx9",
+   "ghsa": [
+    "GHSA-cp9v-662q-vvx9"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: NULL pointer dereference in Image.merge via an unvalidated band 0",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-f2g6-542v-9j58",
+   "ghsa": [
+    "GHSA-f2g6-542v-9j58"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Infinite loop in PdfParser.rewrite_pages on page tree Parent cycle",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-fc9g-5qg7-mf45",
+   "ghsa": [
+    "GHSA-fc9g-5qg7-mf45"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Quadratic GIF comment copying during save",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-fj7v-r99m-22gq",
+   "ghsa": [
+    "GHSA-fj7v-r99m-22gq"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "Pillow TGA RLE encoder can serialize up to ~57 KB of adjacent heap data into generated images",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-g4qv-2jxx-769h",
+   "ghsa": [
+    "GHSA-g4qv-2jxx-769h"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: PNG eXIf chunk makes EXIF parsing run in quadratic time",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-g7cr-3p24-7wf7",
+   "ghsa": [
+    "GHSA-g7cr-3p24-7wf7"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Heap buffer overflow writing JPEG comment after ICC profile fills buffer",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-g842-9rc4-69pw",
+   "ghsa": [
+    "GHSA-g842-9rc4-69pw"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Decompression bomb check bypass in SpiderImagePlugin.seek() leads to unbounded allocation DoS",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-gg2r-wvfm-q9rx",
+   "ghsa": [
+    "GHSA-gg2r-wvfm-q9rx"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: MSP RLE decoder expands a tiny file into unbounded memory",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-j4m9-6w36-pw47",
+   "ghsa": [
+    "GHSA-j4m9-6w36-pw47"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Invalid free in FreeType glyph rendering when a stroker is active",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-jg86-v3jv-hrpm",
+   "ghsa": [
+    "GHSA-jg86-v3jv-hrpm"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Quadratic-time DoS in PDF save_all (PdfParser.next_object_id)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-jjj6-mw9f-p565",
+   "ghsa": [
+    "GHSA-jjj6-mw9f-p565"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "Pillow: Decompression Bomb DoS via PdfParser.PdfStream.decode()",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-mrfp-p49p-3hf2",
+   "ghsa": [
+    "GHSA-mrfp-p49p-3hf2"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow PDF append accepts malformed shared page-tree DAG causing resource exhaustion",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-p4wg-p73j-c528",
+   "ghsa": [
+    "GHSA-p4wg-p73j-c528"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Unbounded recursion parsing a PDF page tree or trailer chain (incomplete fix for CVE-2026-42310)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-p8hx-v2p6-rp84",
+   "ghsa": [
+    "GHSA-p8hx-v2p6-rp84"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Decompression-bomb protection bypass via multi-frame seek() in MPO and DCX (MpoImageFile.seek / DcxImageFile.seek)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-pchr-8j38-3x4p",
+   "ghsa": [
+    "GHSA-pchr-8j38-3x4p"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: TIFF encoder ColorMap plane-size mismatch causes a heap out-of-bounds read",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-pg7v-jwj7-p798",
+   "ghsa": [
+    "GHSA-pg7v-jwj7-p798"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "Pillow EpsImagePlugin negative %%BeginBinary byte count causes infinite loop denial of service",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-phj9-mv4w-65pm",
+   "ghsa": [
+    "GHSA-phj9-mv4w-65pm"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "Pillow `GdImageFile._open()`: image dimensions accepted without `_decompression_bomb_check()`",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-pwv6-vv43-88gr",
+   "ghsa": [
+    "GHSA-pwv6-vv43-88gr"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "12.2.0"
+   ],
+   "summary": "Pillow has an OOB Write with Invalid PSD Tile Extents (Integer Overflow)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-q45j-58j2-45rg",
+   "ghsa": [
+    "GHSA-q45j-58j2-45rg"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: TiffDecode returns uninitialized memory as pixels for short JPEG strips",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-r73j-pqj5-w3x7",
+   "ghsa": [
+    "GHSA-r73j-pqj5-w3x7"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "12.2.0"
+   ],
+   "summary": "Pillow has a PDF Parsing Trailer Infinite Loop (DoS)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-rfgq-q3w2-pmv2",
+   "ghsa": [
+    "GHSA-rfgq-q3w2-pmv2"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Image.quantize() with empty palette leaks uninitialized stack memory",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-v9pv-5gc8-w2m6",
+   "ghsa": [
+    "GHSA-v9pv-5gc8-w2m6"
+   ],
+   "severity": "CRITICAL",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow multi-frame loaders can reuse stale native image storage after mode transitions",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-vjc4-5qp5-m44j",
+   "ghsa": [
+    "GHSA-vjc4-5qp5-m44j"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "Pillow JPEG2000 tiled decode retains a growing scratch buffer and can be used for denial of service",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-vx6w-vv9f-6gvg",
+   "ghsa": [
+    "GHSA-vx6w-vv9f-6gvg"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: EPS load(scale) lets Ghostscript render past the decompression bomb limit",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-w889-685w-c8fh",
+   "ghsa": [
+    "GHSA-w889-685w-c8fh"
+   ],
+   "severity": "CRITICAL",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: Argument Injection in Ghostscript call, potentially leading into RCE",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-whj4-6x5x-4v2j",
+   "ghsa": [
+    "GHSA-whj4-6x5x-4v2j"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "12.2.0"
+   ],
+   "summary": "FITS GZIP decompression bomb in Pillow",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-wjx4-4jcj-g98j",
+   "ghsa": [
+    "GHSA-wjx4-4jcj-g98j"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "12.2.0"
+   ],
+   "summary": "Pillow has an integer overflow when processing fonts",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-xgh8-jp6q-p5x8",
+   "ghsa": [
+    "GHSA-xgh8-jp6q-p5x8"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "Pillow: ReDoS in XbmImagePlugin: 512-byte file stalls Image.open() for minutes",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-xj96-63gp-2gmr",
+   "ghsa": [
+    "GHSA-xj96-63gp-2gmr"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "Pillow: Heap out-of-bounds write in `ImageFilter.RankFilter` via integer overflow in `ImagingExpand`",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "GHSA-xvh5-g6gv-559v",
+   "ghsa": [
+    "GHSA-xvh5-g6gv-559v"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": " Pillow: Memory disclosure and segfault in libtiff encoder via crafted TIFF tags",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-165",
+   "ghsa": [
+    "GHSA-wjx4-4jcj-g98j"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.2.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-2249",
+   "ghsa": [
+    "GHSA-cfh3-3jmp-rvhc"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.1.1"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-2250",
+   "ghsa": [
+    "GHSA-whj4-6x5x-4v2j"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.2.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-2251",
+   "ghsa": [
+    "GHSA-5xmw-vc9v-4wf2"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.2.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-2252",
+   "ghsa": [
+    "GHSA-pwv6-vv43-88gr"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.2.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-2253",
+   "ghsa": [
+    "GHSA-8v84-f9pq-wr9x"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-2254",
+   "ghsa": [
+    "GHSA-5x94-69rx-g8h2"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-2255",
+   "ghsa": [
+    "GHSA-45hq-cxwh-f6vc"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-2256",
+   "ghsa": [
+    "GHSA-phj9-mv4w-65pm"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-2257",
+   "ghsa": [
+    "GHSA-4x4j-2g7c-83w6"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-2874",
+   "ghsa": [
+    "GHSA-r73j-pqj5-w3x7"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.2.0"
+   ],
+   "summary": "Pillow has a PDF Parsing Trailer Infinite Loop (DoS)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-3451",
+   "ghsa": [
+    "GHSA-6r8x-57c9-28j4"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-3452",
+   "ghsa": [
+    "GHSA-pg7v-jwj7-p798"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-3453",
+   "ghsa": [
+    "GHSA-9hw9-ch79-4vh6"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-3454",
+   "ghsa": [
+    "GHSA-xj96-63gp-2gmr"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-3493",
+   "ghsa": [
+    "GHSA-62p4-gmf7-7g93"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "Pillow: Out-of-bounds read via attacker-controlled row stride on Pillow's mmap path (McIdas AREA files)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-3494",
+   "ghsa": [
+    "GHSA-fj7v-r99m-22gq"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "Pillow TGA RLE encoder can serialize up to ~57 KB of adjacent heap data into generated images",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-3495",
+   "ghsa": [
+    "GHSA-jjj6-mw9f-p565"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "Pillow: Decompression Bomb DoS via PdfParser.PdfStream.decode()",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-3496",
+   "ghsa": [
+    "GHSA-vjc4-5qp5-m44j"
+   ],
+   "severity": null,
+   "fixed": [
+    "12.3.0"
+   ],
+   "summary": "Pillow JPEG2000 tiled decode retains a growing scratch buffer and can be used for denial of service",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-4326",
+   "ghsa": [
+    "GHSA-27h8-gf7j-v5hc"
+   ],
+   "severity": null,
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-4327",
+   "ghsa": [
+    "GHSA-4558-3h8r-v8xp"
+   ],
+   "severity": null,
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pillow",
+   "version": "12.0.0",
+   "id": "PYSEC-2026-4328",
+   "ghsa": [
+    "GHSA-4rr5-89j8-mwwm"
+   ],
+   "severity": null,
+   "fixed": [
+    "13.0.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pypdf2",
+   "version": "3.0.1",
+   "id": "GHSA-4vvm-4w3v-6mr8",
+   "ghsa": [
+    "GHSA-4vvm-4w3v-6mr8"
+   ],
+   "severity": "MODERATE",
+   "fixed": [],
+   "summary": "pypdf and PyPDF2 possible Infinite Loop when a comment isn't followed by a character",
+   "manifests": [
+    "requirements-dev.txt",
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pypdf2",
+   "version": "3.0.1",
+   "id": "PYSEC-2026-1835",
+   "ghsa": [
+    "GHSA-4vvm-4w3v-6mr8"
+   ],
+   "severity": null,
+   "fixed": [
+    "3.9.0"
+   ],
+   "summary": "pypdf and PyPDF2 possible Infinite Loop when a comment isn't followed by a character",
+   "manifests": [
+    "requirements-dev.txt",
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pytest",
+   "version": "9.0.1",
+   "id": "GHSA-6w46-j5rx-g56g",
+   "ghsa": [
+    "GHSA-6w46-j5rx-g56g"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "9.0.3"
+   ],
+   "summary": "pytest has vulnerable tmpdir handling",
+   "manifests": [
+    "config/requirements.txt",
+    "config/requirements_minimal.txt",
+    "requirements-dev.txt",
+    "requirements.txt",
+    "requirements/requirements.lock",
+    "requirements/requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "pytest",
+   "version": "9.0.1",
+   "id": "PYSEC-2026-1845",
+   "ghsa": [
+    "GHSA-6w46-j5rx-g56g"
+   ],
+   "severity": null,
+   "fixed": [
+    "9.0.3"
+   ],
+   "summary": "pytest has vulnerable tmpdir handling",
+   "manifests": [
+    "config/requirements.txt",
+    "config/requirements_minimal.txt",
+    "requirements-dev.txt",
+    "requirements.txt",
+    "requirements/requirements.lock",
+    "requirements/requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "python-dotenv",
+   "version": "1.0.1",
+   "id": "GHSA-mf9w-mj56-hr94",
+   "ghsa": [
+    "GHSA-mf9w-mj56-hr94"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "1.2.2"
+   ],
+   "summary": "python-dotenv: Symlink following in set_key allows arbitrary file overwrite via cross-device rename fallback",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "python-dotenv",
+   "version": "1.0.1",
+   "id": "PYSEC-2026-2270",
+   "ghsa": [
+    "GHSA-mf9w-mj56-hr94"
+   ],
+   "severity": null,
+   "fixed": [
+    "1.2.2"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "requests",
+   "version": "2.32.5",
+   "id": "GHSA-gc5v-m9x4-r6x2",
+   "ghsa": [
+    "GHSA-gc5v-m9x4-r6x2"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "2.33.0"
+   ],
+   "summary": "Requests has Insecure Temp File Reuse in its extract_zipped_paths() utility function",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "requests",
+   "version": "2.32.5",
+   "id": "PYSEC-2026-2275",
+   "ghsa": [
+    "GHSA-gc5v-m9x4-r6x2"
+   ],
+   "severity": null,
+   "fixed": [
+    "2.33.0"
+   ],
+   "summary": "",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "weasyprint",
+   "version": "64.1",
+   "id": "GHSA-983w-rhvv-gwmv",
+   "ghsa": [
+    "GHSA-983w-rhvv-gwmv"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "68.0"
+   ],
+   "summary": "WeasyPrint has a Server-Side Request Forgery (SSRF) Protection Bypass via HTTP Redirect",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "weasyprint",
+   "version": "64.1",
+   "id": "GHSA-jf6q-chmf-3h3v",
+   "ghsa": [
+    "GHSA-jf6q-chmf-3h3v"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "70.0"
+   ],
+   "summary": "weasyprint Has Server-Side Request Forgery (SSRF)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "weasyprint",
+   "version": "64.1",
+   "id": "GHSA-jhhc-3hcp-qhm5",
+   "ghsa": [
+    "GHSA-jhhc-3hcp-qhm5"
+   ],
+   "severity": "MODERATE",
+   "fixed": [],
+   "summary": "WeasyPrint has CSS Injection via Presentational Hints",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "weasyprint",
+   "version": "64.1",
+   "id": "GHSA-r543-q48m-4c9j",
+   "ghsa": [
+    "GHSA-r543-q48m-4c9j"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "70.0"
+   ],
+   "summary": "WeasyPrint: EPS images reach the Ghostscript interpreter resulting in RCE",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "weasyprint",
+   "version": "64.1",
+   "id": "PYSEC-2026-2034",
+   "ghsa": [
+    "GHSA-983w-rhvv-gwmv"
+   ],
+   "severity": null,
+   "fixed": [
+    "68.0"
+   ],
+   "summary": "WeasyPrint has a Server-Side Request Forgery (SSRF) Protection Bypass via HTTP Redirect",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "weasyprint",
+   "version": "64.1",
+   "id": "PYSEC-2026-3412",
+   "ghsa": [
+    "GHSA-jhhc-3hcp-qhm5"
+   ],
+   "severity": null,
+   "fixed": [],
+   "summary": "WeasyPrint has CSS Injection via Presentational Hints",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "weasyprint",
+   "version": "64.1",
+   "id": "PYSEC-2026-3940",
+   "ghsa": [
+    "GHSA-jf6q-chmf-3h3v"
+   ],
+   "severity": null,
+   "fixed": [
+    "70.0"
+   ],
+   "summary": "weasyprint Has Server-Side Request Forgery (SSRF)",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "PyPI",
+   "package": "weasyprint",
+   "version": "64.1",
+   "id": "PYSEC-2026-4311",
+   "ghsa": [
+    "GHSA-r543-q48m-4c9j"
+   ],
+   "severity": null,
+   "fixed": [
+    "70.0"
+   ],
+   "summary": "WeasyPrint: EPS images reach the Ghostscript interpreter resulting in RCE",
+   "manifests": [
+    "requirements.txt"
+   ]
+  },
+  {
+   "ecosystem": "npm",
+   "package": "esbuild",
+   "version": "0.21.5",
+   "id": "GHSA-67mh-4wv8-2f99",
+   "ghsa": [
+    "GHSA-67mh-4wv8-2f99"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "0.25.0"
+   ],
+   "summary": "esbuild enables any website to send any requests to the development server and read the response",
+   "manifests": [
+    "orchestration_ts/package-lock.json"
+   ]
+  },
+  {
+   "ecosystem": "npm",
+   "package": "tinypool",
+   "version": "0.8.4",
+   "id": "GHSA-5gmw-xhrv-c9v3",
+   "ghsa": [
+    "GHSA-5gmw-xhrv-c9v3"
+   ],
+   "severity": "CRITICAL",
+   "fixed": [
+    "2.1.1"
+   ],
+   "summary": "Tinypool: Prototype Pollution gadget in worker options leads to Remote Code Execution",
+   "manifests": [
+    "orchestration_ts/package-lock.json"
+   ]
+  },
+  {
+   "ecosystem": "npm",
+   "package": "tinypool",
+   "version": "0.8.4",
+   "id": "GHSA-85c8-ppgw-ccpr",
+   "ghsa": [
+    "GHSA-85c8-ppgw-ccpr"
+   ],
+   "severity": "CRITICAL",
+   "fixed": [
+    "2.1.2"
+   ],
+   "summary": "Tinypool: Prototype Pollution Gadget to RCE in run() options",
+   "manifests": [
+    "orchestration_ts/package-lock.json"
+   ]
+  },
+  {
+   "ecosystem": "npm",
+   "package": "uuid",
+   "version": "10.0.0",
+   "id": "GHSA-w5hq-g745-h8pq",
+   "ghsa": [
+    "GHSA-w5hq-g745-h8pq"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "11.1.1",
+    "12.0.1",
+    "13.0.1"
+   ],
+   "summary": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+   "manifests": [
+    "orchestration_ts/package-lock.json"
+   ]
+  },
+  {
+   "ecosystem": "npm",
+   "package": "vite",
+   "version": "5.4.21",
+   "id": "GHSA-4w7w-66w2-5vf9",
+   "ghsa": [
+    "GHSA-4w7w-66w2-5vf9"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "6.4.2",
+    "7.3.2",
+    "8.0.5"
+   ],
+   "summary": "Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling",
+   "manifests": [
+    "orchestration_ts/package-lock.json"
+   ]
+  },
+  {
+   "ecosystem": "npm",
+   "package": "vite",
+   "version": "5.4.21",
+   "id": "GHSA-587h-7wmj-h5pm",
+   "ghsa": [
+    "GHSA-587h-7wmj-h5pm"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "6.4.4",
+    "7.3.7",
+    "8.1.6",
+    "8.2.4",
+    "8.3.3"
+   ],
+   "summary": "launch-editor: `fs.existsSync()` existence check can be bypassed on Windows",
+   "manifests": [
+    "orchestration_ts/package-lock.json"
+   ]
+  },
+  {
+   "ecosystem": "npm",
+   "package": "vite",
+   "version": "5.4.21",
+   "id": "GHSA-698v-4r3x-3vcv",
+   "ghsa": [
+    "GHSA-698v-4r3x-3vcv"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "6.4.4",
+    "7.3.7",
+    "8.1.6",
+    "8.2.4",
+    "8.3.3"
+   ],
+   "summary": "launch-editor: escapeCmdArgs() omits % escaping on Windows",
+   "manifests": [
+    "orchestration_ts/package-lock.json"
+   ]
+  },
+  {
+   "ecosystem": "npm",
+   "package": "vite",
+   "version": "5.4.21",
+   "id": "GHSA-9jrq-w75r-8gcw",
+   "ghsa": [
+    "GHSA-9jrq-w75r-8gcw"
+   ],
+   "severity": "LOW",
+   "fixed": [
+    "6.4.4",
+    "7.3.7",
+    "8.1.6",
+    "8.2.4",
+    "8.3.3"
+   ],
+   "summary": "Vite: Cross origin script execution through Vite custom middleware",
+   "manifests": [
+    "orchestration_ts/package-lock.json"
+   ]
+  },
+  {
+   "ecosystem": "npm",
+   "package": "vite",
+   "version": "5.4.21",
+   "id": "GHSA-fx2h-pf6j-xcff",
+   "ghsa": [
+    "GHSA-fx2h-pf6j-xcff"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "6.4.3",
+    "7.3.5",
+    "8.0.16"
+   ],
+   "summary": "vite: `server.fs.deny` bypass on Windows alternate paths",
+   "manifests": [
+    "orchestration_ts/package-lock.json"
+   ]
+  },
+  {
+   "ecosystem": "npm",
+   "package": "vite",
+   "version": "5.4.21",
+   "id": "GHSA-r825-w8mm-5pxw",
+   "ghsa": [
+    "GHSA-r825-w8mm-5pxw"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "6.4.4",
+    "7.3.7",
+    "8.1.6",
+    "8.2.4",
+    "8.3.3"
+   ],
+   "summary": "launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors",
+   "manifests": [
+    "orchestration_ts/package-lock.json"
+   ]
+  },
+  {
+   "ecosystem": "npm",
+   "package": "vite",
+   "version": "5.4.21",
+   "id": "GHSA-rq7h-c2jc-7f22",
+   "ghsa": [
+    "GHSA-rq7h-c2jc-7f22"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "6.4.4",
+    "7.3.7",
+    "8.1.6",
+    "8.2.4",
+    "8.3.3"
+   ],
+   "summary": "Vite: Files outside `server.fs.allow` could be served when project paths match system paths on non-Windows machine",
+   "manifests": [
+    "orchestration_ts/package-lock.json"
+   ]
+  },
+  {
+   "ecosystem": "npm",
+   "package": "vite",
+   "version": "5.4.21",
+   "id": "GHSA-v6wh-96g9-6wx3",
+   "ghsa": [
+    "GHSA-v6wh-96g9-6wx3"
+   ],
+   "severity": "MODERATE",
+   "fixed": [
+    "6.4.3",
+    "7.3.5",
+    "8.0.16"
+   ],
+   "summary": "launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows",
+   "manifests": [
+    "orchestration_ts/package-lock.json"
+   ]
+  },
+  {
+   "ecosystem": "npm",
+   "package": "vitest",
+   "version": "1.6.1",
+   "id": "GHSA-5xrq-8626-4rwp",
+   "ghsa": [
+    "GHSA-5xrq-8626-4rwp"
+   ],
+   "severity": "CRITICAL",
+   "fixed": [
+    "3.2.6",
+    "4.1.0"
+   ],
+   "summary": "When Vitest UI server is listening, arbitrary file can be read and executed",
+   "manifests": [
+    "orchestration_ts/package-lock.json"
+   ]
+  },
+  {
+   "ecosystem": "npm",
+   "package": "zod",
+   "version": "3.25.76",
+   "id": "GHSA-mrhx-c7xc-m3w5",
+   "ghsa": [
+    "GHSA-mrhx-c7xc-m3w5"
+   ],
+   "severity": "HIGH",
+   "fixed": [
+    "4.6.6"
+   ],
+   "summary": "Zod can exhaust memory while validating oversized constrained collections",
+   "manifests": [
+    "orchestration_ts/package-lock.json"
+   ]
+  }
+ ]
+}
