@@ -36,7 +36,7 @@ jobs:
           run uv-install python -m pip install uv==0.9.0
           # Find the oldest pdfplumber whose pdfminer.six pin is >= 20251230 (GHSA-f83h-ghpp-7wcc, GHSA-wf5f-4jwr-ppcp).
           sed '/^pdfplumber==/d' requirements/requirements.txt > "$RUNNER_TEMP/probe.in"
-          printf 'pdfplumber\npdfminer.six>=20251230\n' >> "$RUNNER_TEMP/probe.in"
+          printf 'pdfplumber>=0.11.5\npdfminer.six>=20251230\n' >> "$RUNNER_TEMP/probe.in"
           run uv-probe uv pip compile "$RUNNER_TEMP/probe.in" --universal --python-version 3.12 \
             --resolution lowest-direct --no-header -o "$RUNNER_TEMP/probe.lock"
           ver=$(grep -E '^pdfplumber==' "$RUNNER_TEMP/probe.lock" | cut -d= -f3)
