@@ -24,13 +24,23 @@ jobs:
       - name: Generate locks
         shell: bash
         run: |
-          set -euo pipefail
-          python -m pip install uv==0.9.0
-          uv pip compile requirements/requirements.txt --universal --python-version 3.12 \
+          set -uo pipefail
+          run() {
+            local label="$1"; shift
+            if ! "$@" > "$RUNNER_TEMP/out.log" 2>&1; then
+              msg=$(tail -c 3500 "$RUNNER_TEMP/out.log" | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+              echo "::error title=${label}::${msg}"
+              exit 1
+            fi
+          }
+          run uv-install python -m pip install uv==0.9.0
+          run uv-compile uv pip compile requirements/requirements.txt --universal --python-version 3.12 \
             --generate-hashes --no-header -o requirements/requirements.lock
-          (cd orchestration_ts && npm install --package-lock-only --ignore-scripts --no-audit --no-fund)
+          cd orchestration_ts
+          run npm-lock npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          cd ..
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add requirements/requirements.lock orchestration_ts/package-lock.json
           git commit -m "build(deps): generate lock files on clean runner [lock-bootstrap-output]"
-          git push
+          run git-push git push
