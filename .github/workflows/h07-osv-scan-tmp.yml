@@ -38,6 +38,6 @@ jobs:
           (cd orchestration_ts && npm audit --package-lock-only --json > ../tmp_h07/npm_audit.json) || true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          run git-add git add tmp_h07/osv_results.json tmp_h07/npm_audit.json
+          run git-add git add -f tmp_h07/osv_results.json tmp_h07/npm_audit.json
           run git-commit git commit -m "chore: H07 OSV scan output [h07-scan-output]"
           run git-push git push
