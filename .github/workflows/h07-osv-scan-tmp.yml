@@ -25,10 +25,19 @@ jobs:
         shell: bash
         run: |
           set -uo pipefail
-          python tmp_h07/osv_scan.py || { echo "::error title=osv::osv scan failed"; exit 1; }
+          run() {
+            local label="$1"; shift
+            if ! "$@" > "$RUNNER_TEMP/out.log" 2>&1; then
+              msg=$(tail -c 3500 "$RUNNER_TEMP/out.log" | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
+              echo "::error title=${label}::${msg}"
+              exit 1
+            fi
+            echo "::notice title=${label}::ok $(tail -c 300 "$RUNNER_TEMP/out.log" | tr '\n' ' ')"
+          }
+          run osv python tmp_h07/osv_scan.py
           (cd orchestration_ts && npm audit --package-lock-only --json > ../tmp_h07/npm_audit.json) || true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tmp_h07/osv_results.json tmp_h07/npm_audit.json
-          git commit -m "chore: H07 OSV scan output [h07-scan-output]"
-          git push || { echo "::error title=push::push failed"; exit 1; }
+          run git-add git add tmp_h07/osv_results.json tmp_h07/npm_audit.json
+          run git-commit git commit -m "chore: H07 OSV scan output [h07-scan-output]"
+          run git-push git push
