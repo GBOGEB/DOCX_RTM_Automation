@@ -1,0 +1,168 @@
+name: Dependency lock contract
+
+# JADE H04: reproducible dependency/build contract for both stacks.
+# Fails when a declared dependency is unpinned, when a lock file no longer
+# matches its manifest, or when a clean-runner install from the lock resolves
+# to anything other than exactly what the lock records.
+#
+# Regenerate the locks after changing a manifest:
+#   python -m pip install uv==0.9.0
+#   uv pip compile requirements/requirements.txt --universal --python-version 3.12 \
+#     --generate-hashes --no-header -o requirements/requirements.lock
+#   (cd orchestration_ts && npm install --package-lock-only --ignore-scripts)
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python-lock:
+    name: python-lock
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Every declared requirement is exactly pinned
+        shell: bash
+        run: |
+          set -euo pipefail
+          bad=$(grep -vE '^\s*(#|$)' requirements/requirements.txt \
+                | sed 's/#.*//; s/[[:space:]]*$//' \
+                | grep -vE '^[][A-Za-z0-9._,-]+==[A-Za-z0-9.+!-]+$' || true)
+          if [ -n "$bad" ]; then
+            while IFS= read -r line; do
+              echo "::error file=requirements/requirements.txt::unpinned requirement (must be name==version): $line"
+            done <<< "$bad"
+            exit 1
+          fi
+          echo "all requirements in requirements/requirements.txt are pinned with =="
+
+      - name: Lock matches manifest (no drift)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f requirements/requirements.lock || { echo "::error file=requirements/requirements.lock::lock file missing"; exit 1; }
+          python -m pip install uv==0.9.0
+          cp requirements/requirements.lock "$RUNNER_TEMP/recompiled.lock"
+          # uv reuses the pins already in the output file, so recompiling an
+          # in-sync lock is a no-op; any diff means the manifest changed
+          # without regenerating the lock.
+          uv pip compile requirements/requirements.txt --universal --python-version 3.12 \
+            --generate-hashes --no-header -o "$RUNNER_TEMP/recompiled.lock"
+          if ! diff -u requirements/requirements.lock "$RUNNER_TEMP/recompiled.lock" > "$RUNNER_TEMP/lock.diff"; then
+            cat "$RUNNER_TEMP/lock.diff"
+            summary=$(grep -E '^[-+][A-Za-z0-9]' "$RUNNER_TEMP/lock.diff" | head -20 | tr '\n' ' ')
+            echo "::error file=requirements/requirements.lock::lock drift vs requirements/requirements.txt; regenerate the lock. Changed pins: $summary"
+            exit 1
+          fi
+          echo "requirements/requirements.lock is in sync with requirements/requirements.txt"
+
+      - name: Clean-runner hash-verified install from the lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/python" -m pip install --upgrade pip
+          "$RUNNER_TEMP/venv/bin/python" -m pip install --require-hashes \
+            -r requirements/requirements.lock
+          "$RUNNER_TEMP/venv/bin/python" -m pip check
+
+      - name: Installed set equals the lock exactly
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/venv/bin/python" - <<'PY'
+          import re
+          import sys
+          from importlib import metadata
+          from pathlib import Path
+
+          from packaging.markers import Marker
+          from packaging.utils import canonicalize_name
+
+          locked = {}
+          for raw in Path("requirements/requirements.lock").read_text(encoding="utf-8").splitlines():
+              line = raw.strip()
+              if not line or line.startswith(("#", "--hash")):
+                  continue
+              req = line.rstrip("\\").strip()
+              m = re.match(r"^([A-Za-z0-9._-]+)(?:\[[^\]]*\])?==([^\s;]+)\s*(?:;\s*(.+))?$", req)
+              if not m:
+                  print(f"::error file=requirements/requirements.lock::unparseable lock line: {req}")
+                  sys.exit(1)
+              name, version, marker = m.groups()
+              if marker and not Marker(marker).evaluate():
+                  continue
+              locked[canonicalize_name(name)] = version
+
+          ignore = {"pip", "setuptools", "wheel"}
+          installed = {
+              canonicalize_name(d.metadata["Name"]): d.version
+              for d in metadata.distributions()
+          }
+          errors = []
+          for name, version in sorted(locked.items()):
+              got = installed.get(name)
+              if got != version:
+                  errors.append(f"{name}: lock={version} installed={got}")
+          for name in sorted(set(installed) - set(locked) - ignore):
+              errors.append(f"{name}: installed {installed[name]} but not in lock")
+          for e in errors:
+              print(f"::error file=requirements/requirements.lock::install drift: {e}")
+          if errors:
+              sys.exit(1)
+          print(f"installed set matches lock exactly: {len(locked)} packages")
+          PY
+
+  node-lock:
+    name: node-lock
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: orchestration_ts
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Lock file present
+        run: |
+          test -f package-lock.json || { echo "::error file=orchestration_ts/package-lock.json::package-lock.json missing"; exit 1; }
+
+      - name: Clean install strictly from the lock (npm ci)
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund || {
+            echo "::error file=orchestration_ts/package-lock.json::npm ci failed: package.json and package-lock.json are out of sync (or the lock is invalid)"
+            exit 1
+          }
+
+      - name: Installed tree is consistent
+        run: |
+          npm ls --all > /dev/null || {
+            echo "::error file=orchestration_ts/package-lock.json::npm ls reports an invalid/extraneous/missing dependency tree"
+            exit 1
+          }
+
+      - name: Lock matches manifest (no drift)
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          if ! git diff --exit-code -- package-lock.json; then
+            echo "::error file=orchestration_ts/package-lock.json::lock drift: npm would rewrite package-lock.json for the current package.json; regenerate and commit it"
+            exit 1
+          fi

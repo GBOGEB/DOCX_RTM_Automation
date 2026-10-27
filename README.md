@@ -26,7 +26,7 @@ The repository currently acts as an **OUTPUT/rendering** member of the `RTM_Docu
 ### Python
 
 ```bash
-python -m pip install -r requirements/requirements.txt
+python -m pip install --require-hashes -r requirements/requirements.lock
 python main.py
 ```
 
@@ -41,7 +41,7 @@ python scripts/verify_canonical.py
 
 ```bash
 cd orchestration_ts
-npm install
+npm ci
 npm run build
 npm test
 ```
