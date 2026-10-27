@@ -14,12 +14,12 @@
   },
   "dependencies": {
     "express": "^4.19.2",
-    "zod": "^3.23.8",
+    "zod": "^4.6.6",
     "pino": "^9.2.0",
     "pino-http": "^10.2.0",
     "uuid": "^10.0.0",
     "@anthropic-ai/sdk": "^0.24.3",
-    "openai": "^4.53.0",
+    "openai": "^6.0.0",
     "@google/generative-ai": "^0.15.0",
     "@octokit/rest": "^21.0.2",
     "ws": "^8.18.0"
@@ -31,7 +31,7 @@
     "@types/ws": "^8.5.11",
     "tsx": "^4.16.2",
     "typescript": "^5.5.3",
-    "vitest": "^1.6.0",
+    "vitest": "^4.1.12",
     "supertest": "^7.0.0",
     "@types/supertest": "^6.0.2",
     "eslint": "^8.57.1",
