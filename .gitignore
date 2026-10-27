@@ -117,6 +117,7 @@ temp_processing/
 *.json
 !config/recursive_alignment_manifest.json
 !config/recursive_alignment_index.json
+!orchestration_ts/package-lock.json
 .vscode/
 __pycache__/
 *.pyc
