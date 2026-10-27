@@ -55,16 +55,21 @@ jobs:
           set -euo pipefail
           test -f requirements/requirements.lock || { echo "::error file=requirements/requirements.lock::lock file missing"; exit 1; }
           python -m pip install uv==0.9.0
-          cp requirements/requirements.lock "$RUNNER_TEMP/recompiled.lock"
-          # uv reuses the pins already in the output file, so recompiling an
-          # in-sync lock is a no-op; any diff means the manifest changed
-          # without regenerating the lock.
+          # Seed uv with the committed pins but NOT the committed hashes: uv
+          # reuses whatever hashes it finds in the output file, so seeding
+          # them would let a corrupted/substituted hash pass unnoticed (RED
+          # canary c on #97). Stripping them forces uv to re-fetch the
+          # registry's hashes for every pinned version, while the reused pins
+          # keep an in-sync lock a no-op. Any diff therefore means the
+          # manifest changed without re-locking, or a hash was altered.
+          sed -E '/^[[:space:]]*--hash=/d; s/[[:space:]]+\\$//' \
+            requirements/requirements.lock > "$RUNNER_TEMP/recompiled.lock"
           uv pip compile requirements/requirements.txt --universal --python-version 3.12 \
             --generate-hashes --no-header -o "$RUNNER_TEMP/recompiled.lock"
           if ! diff -u requirements/requirements.lock "$RUNNER_TEMP/recompiled.lock" > "$RUNNER_TEMP/lock.diff"; then
             cat "$RUNNER_TEMP/lock.diff"
-            summary=$(grep -E '^[-+][A-Za-z0-9]' "$RUNNER_TEMP/lock.diff" | head -20 | tr '\n' ' ')
-            echo "::error file=requirements/requirements.lock::lock drift vs requirements/requirements.txt; regenerate the lock. Changed pins: $summary"
+            summary=$(grep -E '^[-+][[:space:]]*(--hash=|[A-Za-z0-9])' "$RUNNER_TEMP/lock.diff" | sed -E 's/[[:space:]]+/ /g; s/ \\$//' | head -20 | tr '\n' ' ')
+            echo "::error file=requirements/requirements.lock::lock drift vs requirements/requirements.txt or registry hashes; regenerate the lock. Changed lines: $summary"
             exit 1
           fi
           echo "requirements/requirements.lock is in sync with requirements/requirements.txt"
