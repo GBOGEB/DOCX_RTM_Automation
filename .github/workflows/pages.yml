@@ -16,6 +16,9 @@ permissions:
 
 jobs:
   ci:
+    permissions:
+      contents: read
+      pages: read
     uses: GBOGEB/pipeline-automation-hub/.github/workflows/jade-reusable-ci.yml@77bac410de6b34afa5df665608611ad9e8db5c84
     with:
       python-version: '3.12'
@@ -24,22 +27,22 @@ jobs:
       # -o addopts= drops pyproject's --cov/--cov-fail-under addopts (pytest-cov is not installed here).
       test-args: -q -p no:cacheprovider -o addopts= tests/test_pages_bundle.py
       min-tests: 3
-      # The image's /entrypoint.sh exports JEKYLL_GITHUB_TOKEN=$INPUT_TOKEN unconditionally, and
-      # jekyll-github-metadata rejects an empty token ("credentials ... aren't valid"). No token is
-      # passed into the bundle build, so run the unchanged entrypoint minus that one export
-      # (metadata then uses the public, unauthenticated API for this public repo).
+      # Same token input actions/jekyll-build-pages@v1 gets by default (github.token). Without it
+      # jekyll-github-metadata cannot read the Pages API: an empty token fails the build, and no
+      # token falls back to github.com/pages/<owner>/<repo> as site URL, breaking every page's CSS
+      # and canonical links. Read-only here (contents + pages read); GitHub masks it in logs.
       build-command: |
         docker run --rm -v "$PWD:/github/workspace" -w /github/workspace \
           -e GITHUB_WORKSPACE=/github/workspace -e INPUT_SOURCE=./ -e INPUT_DESTINATION=_site \
-          -e INPUT_BUILD_REVISION="$GITHUB_SHA" -e INPUT_VERBOSE=false -e INPUT_FUTURE=false -e INPUT_TOKEN="" \
+          -e INPUT_BUILD_REVISION="$GITHUB_SHA" -e INPUT_VERBOSE=false -e INPUT_FUTURE=false \
+          -e INPUT_TOKEN="${{ github.token }}" \
           -e GITHUB_REPOSITORY="$GITHUB_REPOSITORY" -e GITHUB_API_URL="$GITHUB_API_URL" \
-          --entrypoint /bin/bash \
-          ghcr.io/actions/jekyll-build-pages@sha256:6791ebfd912185ed59bfb5fb102664fa872496b79f87ff8b9cfba292a7345041 \
-          -c 'sed "/^export JEKYLL_GITHUB_TOKEN=/d" /entrypoint.sh > /tmp/entrypoint.sh && exec bash /tmp/entrypoint.sh'
+          ghcr.io/actions/jekyll-build-pages@sha256:6791ebfd912185ed59bfb5fb102664fa872496b79f87ff8b9cfba292a7345041
         sudo chown -R "$(id -u):$(id -g)" _site
         find _site -name '.*' -prune -exec rm -rf {} +
         test -s _site/index.html
         grep -q '<h1 id="docx-rtm-automation">DOCX RTM Automation</h1>' _site/index.html
+        grep -q 'href="/DOCX_RTM_Automation/assets/css/style.css' _site/index.html
       artifact-path: _site
       artifact-name: docx-rtm-automation-pages
 
