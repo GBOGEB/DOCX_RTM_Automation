@@ -1,0 +1,53 @@
+# GitHub Pages on the JADE deploy contract (DP1-DP6, DP9, DP10).
+# Replaces the two racing starters (jekyll-gh-pages.yml, static.yml). The site stays the
+# Jekyll build of the repo root that is live today: same image as actions/jekyll-build-pages@v1
+# (v1.0.13), pinned by digest, source ./ . The hub reusable CI builds and hashes the bundle once;
+# the hub reusable deploy verifies every digest, promotes it byte for byte and reads it back.
+name: pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: GBOGEB/pipeline-automation-hub/.github/workflows/jade-reusable-ci.yml@77bac410de6b34afa5df665608611ad9e8db5c84
+    with:
+      python-version: '3.12'
+      install: python -m pip install --disable-pip-version-check pytest
+      test-runner: pytest
+      # -o addopts= drops pyproject's --cov/--cov-fail-under addopts (pytest-cov is not installed here).
+      test-args: -q -p no:cacheprovider -o addopts= tests/test_pages_bundle.py
+      min-tests: 3
+      build-command: |
+        docker run --rm -v "$PWD:/github/workspace" -w /github/workspace \
+          -e GITHUB_WORKSPACE=/github/workspace -e INPUT_SOURCE=./ -e INPUT_DESTINATION=_site \
+          -e INPUT_BUILD_REVISION="$GITHUB_SHA" -e INPUT_VERBOSE=false -e INPUT_FUTURE=false -e INPUT_TOKEN="" \
+          -e GITHUB_REPOSITORY="$GITHUB_REPOSITORY" -e GITHUB_API_URL="$GITHUB_API_URL" \
+          ghcr.io/actions/jekyll-build-pages@sha256:6791ebfd912185ed59bfb5fb102664fa872496b79f87ff8b9cfba292a7345041
+        sudo chown -R "$(id -u):$(id -g)" _site
+        find _site -name '.*' -prune -exec rm -rf {} +
+        test -s _site/index.html
+        grep -q '<h1 id="docx-rtm-automation">DOCX RTM Automation</h1>' _site/index.html
+      artifact-path: _site
+      artifact-name: docx-rtm-automation-pages
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: ci
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: GBOGEB/pipeline-automation-hub/.github/workflows/jade-reusable-deploy.yml@77bac410de6b34afa5df665608611ad9e8db5c84
+    with:
+      environment: production
+      target: pages
+      artifact-name: ${{ needs.ci.outputs.artifact-name }}
+      manifest-sha256: ${{ needs.ci.outputs.manifest-sha256 }}
+      tests-ran: ${{ fromJSON(needs.ci.outputs.tests-ran) }}
