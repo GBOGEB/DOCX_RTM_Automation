@@ -44,7 +44,7 @@ def test_single_pages_workflow_builds_repo_root_with_pinned_jekyll_image():
     assert "INPUT_SOURCE=./ " in text
     assert "INPUT_DESTINATION=_site" in text
     assert f"ghcr.io/actions/jekyll-build-pages@{JEKYLL_IMAGE_DIGEST}" in text
-    assert "artifact-path: _site" in text
+    assert "path: _site" in text
     assert "environment: production" in text
 
 
