@@ -1,0 +1,128 @@
+# GitHub Pages on the JADE deploy contract (DP1-DP6, DP9, DP10).
+# Replaces the two racing starters (jekyll-gh-pages.yml, static.yml). The site stays the
+# Jekyll build of the repo root that is live today: same image as actions/jekyll-build-pages@v1
+# (v1.0.13), pinned by digest, source ./, with the same github.token input.
+#
+# Option B (own tests + build jobs, hub reusable deploy): the hub reusable CI's build step gets no
+# token, and without one jekyll-github-metadata cannot read the Pages API (404 unauthenticated),
+# so site.url falls back to github.com/pages/GBOGEB/DOCX_RTM_Automation and every page's
+# stylesheet/canonical link breaks. The build job below writes jade-manifest.json exactly as
+# jade-reusable-ci.yml@77bac410 does (schema jade.devops.artifact_manifest.v1).
+name: pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      tests-ran: ${{ steps.pytest.outputs.tests-ran }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+      - name: Pages source contract tests (fail closed below three tests)
+        id: pytest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check -q "pytest>=8,<9"
+          # -o addopts= drops pyproject's --cov/--cov-fail-under addopts (pytest-cov is not installed here).
+          python -m pytest -q -p no:cacheprovider -o addopts= tests/test_pages_bundle.py --junitxml="$RUNNER_TEMP/pytest.xml"
+          ran="$(python -c "import sys, xml.etree.ElementTree as E; r=E.parse(sys.argv[1]).getroot(); s=r if r.tag=='testsuite' else r[0]; print(int(s.get('tests'))-int(s.get('skipped',0)))" "$RUNNER_TEMP/pytest.xml")"
+          test "$ran" -ge 3
+          echo "tests-ran=$ran" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pages: read
+    outputs:
+      artifact-name: ${{ steps.manifest.outputs.artifact-name }}
+      manifest-sha256: ${{ steps.manifest.outputs.manifest-sha256 }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Jekyll build (image of actions/jekyll-build-pages v1.0.13, by digest)
+        env:
+          INPUT_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          docker run --rm -v "$PWD:/github/workspace" -w /github/workspace \
+            -e GITHUB_WORKSPACE=/github/workspace -e INPUT_SOURCE=./ -e INPUT_DESTINATION=_site \
+            -e INPUT_BUILD_REVISION="$GITHUB_SHA" -e INPUT_VERBOSE=false -e INPUT_FUTURE=false -e INPUT_TOKEN \
+            -e GITHUB_REPOSITORY="$GITHUB_REPOSITORY" -e GITHUB_API_URL="$GITHUB_API_URL" \
+            ghcr.io/actions/jekyll-build-pages@sha256:6791ebfd912185ed59bfb5fb102664fa872496b79f87ff8b9cfba292a7345041
+          sudo chown -R "$(id -u):$(id -g)" _site
+          find _site -name '.*' -prune -exec rm -rf {} +
+          test -s _site/index.html
+          grep -q '<title>DOCX RTM Automation | DOCX_RTM_Automation</title>' _site/index.html
+          grep -q '<h1 id="docx-rtm-automation">DOCX RTM Automation</h1>' _site/index.html
+          grep -q 'href="/DOCX_RTM_Automation/assets/css/style.css' _site/index.html
+      - name: sha256 manifest (jade-manifest.json, as jade-reusable-ci writes it)
+        id: manifest
+        env:
+          ARTIFACT_PATH: _site
+          NAME: docx-rtm-automation-pages
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          root = Path(os.environ["ARTIFACT_PATH"]).resolve()
+          if not root.is_dir():
+              raise SystemExit(f"::error title=JADE_BUILD_FIRST_RED::artifact-path {root} is not a directory")
+          files = {}
+          for p in sorted(root.rglob("*")):
+              if p.is_file() and not p.is_symlink() and p.name != "jade-manifest.json":
+                  files[p.relative_to(root).as_posix()] = hashlib.sha256(p.read_bytes()).hexdigest()
+          if not files:
+              raise SystemExit("::error title=JADE_BUILD_FIRST_RED::empty artefact")
+          manifest = {"schema": "jade.devops.artifact_manifest.v1", "repository": os.environ["GITHUB_REPOSITORY"],
+                      "source_git_sha": os.environ["SHA"], "files": files, "count": len(files),
+                      "merge_authorized": False}
+          body = (json.dumps(manifest, indent=1, sort_keys=True) + "\n").encode()
+          (root / "jade-manifest.json").write_bytes(body)
+          digest = hashlib.sha256(body).hexdigest()
+          name = f'{os.environ["NAME"]}-{os.environ["SHA"]}'
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+              fh.write(f"manifest-sha256={digest}\nartifact-name={name}\n")
+          print(f"JADE_ARTIFACT={name} files={len(files)} manifest_sha256={digest}")
+          PY
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.manifest.outputs.artifact-name }}
+          path: _site
+          retention-days: 30
+          if-no-files-found: error
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: [tests, build]
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: GBOGEB/pipeline-automation-hub/.github/workflows/jade-reusable-deploy.yml@77bac410de6b34afa5df665608611ad9e8db5c84
+    with:
+      environment: production
+      target: pages
+      artifact-name: ${{ needs.build.outputs.artifact-name }}
+      manifest-sha256: ${{ needs.build.outputs.manifest-sha256 }}
+      tests-ran: ${{ fromJSON(needs.tests.outputs.tests-ran) }}
