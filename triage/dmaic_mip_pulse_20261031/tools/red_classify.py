@@ -22,15 +22,37 @@ def gh(path):
 
 
 def probe(run, repo):
-    jobs = gh(f"repos/GBOGEB/{repo}/actions/runs/{run['id']}/jobs?per_page=20") or {}
-    jl = jobs.get("jobs", [])
+    jl = []
+    api_calls = 0
+    page = 1
+    while True:
+        jobs = gh(f"repos/GBOGEB/{repo}/actions/runs/{run['id']}/jobs?per_page=100&page={page}")
+        api_calls += 1
+        if not jobs:
+            break
+        page_jobs = jobs.get("jobs", [])
+        jl.extend(page_jobs)
+        if len(page_jobs) < 100:
+            break
+        page += 1
     steps = sum(len(j.get("steps") or []) for j in jl)
-    msg = ""
-    if jl and steps == 0:
-        ann = gh(f"repos/GBOGEB/{repo}/check-runs/{jl[0]['id']}/annotations") or []
-        msg = " | ".join(a.get("message", "") for a in ann)[:400]
+    messages = []
+    for job in jl:
+        if job.get("conclusion") != "failure" or job.get("steps"):
+            continue
+        page = 1
+        while True:
+            ann = gh(f"repos/GBOGEB/{repo}/check-runs/{job['id']}/annotations?per_page=100&page={page}")
+            api_calls += 1
+            if not isinstance(ann, list) or not ann:
+                break
+            messages.extend(a.get("message", "") for a in ann)
+            if len(ann) < 100:
+                break
+            page += 1
+    msg = " | ".join(messages)[:400]
     return {"id": run["id"], "name": run["name"], "branch": run["head_branch"], "created": run["created_at"],
-            "jobs": len(jl), "steps": steps, "annotation": msg}
+            "jobs": len(jl), "steps": steps, "annotation": msg, "api_calls": api_calls}
 
 
 if __name__ == "__main__":
@@ -45,7 +67,7 @@ if __name__ == "__main__":
     wall = time.perf_counter() - t0
     # base-side evidence per workflow (default branch, non-external outcomes)
     base = collections.defaultdict(collections.Counter)
-    ext_ids = {p["id"] for p in probes if p["steps"] == 0 and EXT.search(p["annotation"] or "")}
+    ext_ids = {p["id"] for p in probes if EXT.search(p["annotation"] or "")}
     for r in runs:
         if r["head_branch"] == a.default_branch and r["conclusion"] in ("success", "failure") and r["id"] not in ext_ids:
             base[r["name"]][r["conclusion"]] += 1
@@ -71,7 +93,7 @@ if __name__ == "__main__":
                "evidence_backed_pct": round(100 * c["EXTERNAL"] / max(1, len(reds)), 1),
                "raw_red_rate_pct": round(100 * len(reds) / max(1, sum(r["conclusion"] in ("success", "failure") for r in runs)), 1),
                "code_red_rate_pct": round(100 * code_red / max(1, len(nonext)), 1),
-               "api_calls": len(reds) + sum(1 for p in probes if p["steps"] == 0), "workers": a.workers,
+               "api_calls": sum(p["api_calls"] for p in probes), "workers": a.workers,
                "wall_s": round(wall, 1),
                "top_nonexternal": collections.Counter((p["name"], p["class"]) for p in out if p["class"] != "EXTERNAL").most_common(8),
                "external_samples": list({p["annotation"][:140] for p in out if p["class"] == "EXTERNAL"})[:3]}

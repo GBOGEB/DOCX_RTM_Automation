@@ -80,7 +80,7 @@ def analyze_repo(path):
             rec["permissions_top"] = "permissions" in doc
             jobs = doc.get("jobs") or {}
             rec["jobs"] = len(jobs) if isinstance(jobs, dict) else 0
-            jt = 0; jperm = 0; runs_on = []; matrix = 0
+            jt = 0; runner_jobs = 0; runner_timeouts = 0; jperm = 0; runs_on = []; matrix = 0
             if isinstance(jobs, dict):
                 for j in jobs.values():
                     if not isinstance(j, dict):
@@ -91,9 +91,14 @@ def analyze_repo(path):
                         rec["concurrency"] = True
                     ro = j.get("runs-on")
                     runs_on.append(json.dumps(ro) if not isinstance(ro, str) else ro)
+                    if "runs-on" in j:
+                        runner_jobs += 1
+                        runner_timeouts += 1 if "timeout-minutes" in j else 0
                     if isinstance(j.get("strategy"), dict) and "matrix" in j["strategy"]:
                         matrix += 1
             rec["jobs_with_timeout"] = jt
+            rec["runner_jobs"] = runner_jobs
+            rec["runner_jobs_with_timeout"] = runner_timeouts
             rec["jobs_with_perm"] = jperm
             rec["runs_on"] = runs_on
             rec["matrix_jobs"] = matrix
@@ -138,7 +143,8 @@ def summarize(rep):
     wfs = rep["workflows"]
     ok = [w for w in wfs if w.get("parse_ok")]
     n = len(wfs) or 1
-    jobs = sum(w.get("jobs", 0) for w in ok) or 1
+    jobs = sum(w.get("jobs", 0) for w in ok)
+    runner_jobs = sum(w.get("runner_jobs", 0) for w in ok)
     uses = sum(len(w["uses"]) for w in wfs)
     ext_uses = sum(len(w["uses"]) - w["uses_local"] for w in wfs) or 1
     trig = collections.Counter(t for w in ok for t in w.get("triggers", []))
@@ -155,7 +161,9 @@ def summarize(rep):
         "parse_fail": len(wfs) - len(ok),
         "jobs": jobs,
         "pct_concurrency": round(100 * sum(w.get("concurrency", False) for w in ok) / n, 1),
-        "pct_jobs_timeout": round(100 * sum(w.get("jobs_with_timeout", 0) for w in ok) / jobs, 1),
+        "runner_jobs": runner_jobs,
+        "pct_jobs_timeout": round(100 * sum(w.get("runner_jobs_with_timeout", 0) for w in ok) / runner_jobs, 1) if runner_jobs else None,
+        "runner_jobs_without_timeout": runner_jobs - sum(w.get("runner_jobs_with_timeout", 0) for w in ok),
         "pct_permissions": round(100 * sum(1 for w in ok if w.get("permissions_top") or w.get("jobs_with_perm")) / n, 1),
         "pct_ext_actions_sha_pinned": round(100 * sum(w["uses_sha_pinned"] for w in wfs) / ext_uses, 1),
         "uses_total": uses,

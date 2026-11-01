@@ -56,7 +56,8 @@ def test_filters_extend_headings_numbering_variant(tmp_path):
     assert p.returncode == 0, p.stderr
     # This variant prefixes literal numbers; consumer_contract.yaml forbids it
     # for the data-rich path because it double-numbers with --number-sections.
-    assert "Introduction" in p.stdout
+    assert "1 Introduction" in p.stdout
+    assert "1.1 Scope" in p.stdout
 
 
 def test_extract_rtm_writes_side_file(tmp_path):
@@ -76,18 +77,16 @@ def test_structure_extraction_writes_side_file(tmp_path):
     assert json.loads(out.read_text(encoding="utf-8"))
 
 
+@pytest.mark.xfail(
+    strict=True,
+    reason="rtm_filter.lua currently returns bare functions instead of filter tables",
+)
 def test_rtm_filter_wraps_requirements(tmp_path):
     """rtm_filter.lua returns bare functions instead of {Para=...} tables.
 
-    Marked xfail(strict) to record the observed defect: if pandoc applies it,
-    requirement paragraphs would be wrapped in Div.requirement. Fixing the
-    filter turns this into an XPASS, which fails the run and forces removing
-    the marker.
+    Fixing the filter makes this a strict XPASS and forces removing the marker.
     """
     p = run("config/filters/rtm_filter.lua", tmp_path)
-    if p.returncode != 0:
-        pytest.xfail(f"pandoc rejects filter: {p.stderr.strip()[:200]}")
+    assert p.returncode == 0, p.stderr
     divs = [b for b in json.loads(p.stdout)["blocks"] if b["t"] == "Div"]
-    if not divs:
-        pytest.xfail("filter loads but is a no-op: no Div.requirement produced")
     assert any("requirement" in d["c"][0][1] for d in divs)

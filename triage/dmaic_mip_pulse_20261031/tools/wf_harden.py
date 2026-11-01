@@ -42,8 +42,9 @@ def harden(text, timeout):
             cur = m.group(2); continue
         m = re.match(r"^(\s+)runs-on:", ln)
         if m and cur in need and len(m.group(1)) > (job_indent or 0):
-            # insert after runs-on (and its continuation lines, if a block value follows we still insert at same indent)
-            out.append(f"{m.group(1)}timeout-minutes: {timeout}\n"); added_t += 1; need.discard(cur)
+            # Place the timeout before runs-on so any block value stays attached.
+            out.insert(len(out) - 1, f"{m.group(1)}timeout-minutes: {timeout}\n")
+            added_t += 1; need.discard(cur)
     text2 = "".join(out)
     on = doc.get("on")
     trig = set(on.keys()) if isinstance(on, dict) else set(on if isinstance(on, list) else [on])

@@ -73,8 +73,31 @@ def usl_fit(points):
     mean = statistics.mean(xs)
     ss_tot = sum((x - mean) ** 2 for x in xs) or 1e-9
     r2 = 1 - best[0] / ss_tot
-    nstar = ((1 - s) / k) ** 0.5 if k > 0 else float("inf")
-    return {"lambda": round(l0, 3), "sigma": s, "kappa": k, "R2": round(r2, 3), "N_star": round(nstar, 2)}
+    nstar = ((1 - s) / k) ** 0.5 if k > 0 else None
+    return {"lambda": round(l0, 3), "sigma": s, "kappa": k, "R2": round(r2, 3),
+            "N_star": round(nstar, 2) if nstar is not None else None}
+
+
+def poc_summary(small, r1, r2, d1, d2):
+    pairs = list(zip(small, r1, r2))
+    successful = [a["ok"] and b["ok"] for _, a, b in pairs]
+    deterministic = [
+        a["ok"] and b["ok"] and d1.get(os.path.splitext(os.path.basename(src))[0]) is not None
+        and d1.get(os.path.splitext(os.path.basename(src))[0]) == d2.get(os.path.splitext(os.path.basename(src))[0])
+        for src, a, b in pairs
+    ]
+    failures = [r for _, a, b in pairs for r in (a, b) if not r["ok"]]
+    n = len(small)
+    return {
+        "n": n,
+        "success_pct": round(100 * sum(successful) / n, 1) if n else None,
+        "deterministic_pct": round(100 * sum(deterministic) / n, 1) if n else None,
+        "failures": [(os.path.basename(f["src"]), f["err"][-160:]) for f in failures][:5],
+    }
+
+
+def successful_trial_wall(wall, results):
+    return wall if all(result["ok"] for result in results) else None
 
 
 if __name__ == "__main__":
@@ -96,10 +119,7 @@ if __name__ == "__main__":
     for fmt in a.formats.split(","):
         w1, r1, d1 = run_batch(small, fmt, 1, a.ref, a.lua)
         w2, r2, d2 = run_batch(small, fmt, 2, a.ref, a.lua)
-        fails = [r for r in r1 if not r["ok"]]
-        report["poc"][fmt] = {"n": len(small), "success_pct": round(100 * (len(small) - len(fails)) / len(small), 1),
-                              "deterministic_pct": round(100 * sum(d1.get(k) == d2.get(k) for k in d1) / max(1, len(d1)), 1),
-                              "failures": [(os.path.basename(f["src"]), f["err"][-160:]) for f in fails][:5]}
+        report["poc"][fmt] = poc_summary(small, r1, r2, d1, d2)
         print("PoC", fmt, report["poc"][fmt], flush=True)
 
     # Phase B: gradual scale
@@ -111,19 +131,23 @@ if __name__ == "__main__":
             prev = None
             for N in [int(x) for x in a.workers.split(",")]:
                 walls = []
-                ok = 0
                 for _ in range(a.trials):
                     w, res, _ = run_batch(batch, fmt, N, a.ref, a.lua)
-                    walls.append(w); ok = sum(r["ok"] for r in res)
+                    successful_wall = successful_trial_wall(w, res)
+                    if successful_wall is not None:
+                        walls.append(successful_wall)
+                if not walls:
+                    continue
                 wall = statistics.median(walls)
                 X = round(len(batch) / wall, 2)
                 gain = None if prev is None else round(100 * (X - prev) / prev, 1)
                 pts.append((N, X))
                 report["scale"][fmt].setdefault(str(S), []).append(
                     {"N": N, "wall_s": round(wall, 3), "docs_per_s": X, "marginal_gain_pct": gain,
-                     "cv_pct": round(100 * statistics.pstdev(walls) / statistics.mean(walls), 1), "ok": ok})
+                     "cv_pct": round(100 * statistics.pstdev(walls) / statistics.mean(walls), 1), "ok": len(batch)})
                 print(f"{fmt} S={S} N={N} X={X} docs/s gain={gain}%", flush=True)
                 prev = X
-            report["scale"][fmt][f"{S}_usl"] = usl_fit(pts)
-            print(" USL", fmt, S, report["scale"][fmt][f"{S}_usl"], flush=True)
+            if pts:
+                report["scale"][fmt][f"{S}_usl"] = usl_fit(pts)
+                print(" USL", fmt, S, report["scale"][fmt][f"{S}_usl"], flush=True)
     json.dump(report, open(a.out, "w"), indent=1)
