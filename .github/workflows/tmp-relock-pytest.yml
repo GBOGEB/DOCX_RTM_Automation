@@ -1,0 +1,31 @@
+name: TEMP relock (branch-only bootstrap, deleted before PR)
+on:
+  push:
+    branches: [deps/pytest-9.0.3-ghsa-6w46-20261103]
+permissions:
+  contents: write
+jobs:
+  relock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Re-lock from the manifest (same recipe as dependency-lock.yml)
+        run: |
+          set -euo pipefail
+          python -m pip install uv==0.9.0
+          sed -E '/^[[:space:]]*--hash=/d; s/[[:space:]]+\\$//' \
+            requirements/requirements.lock > "$RUNNER_TEMP/seed.lock"
+          cp "$RUNNER_TEMP/seed.lock" requirements/requirements.lock
+          uv pip compile requirements/requirements.txt --universal --python-version 3.12 \
+            --generate-hashes --no-header -o requirements/requirements.lock
+          git diff --stat
+      - name: Commit the lock
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add requirements/requirements.lock
+          git commit -m "deps: re-lock requirements.lock after pytest 9.0.3 (uv 0.9.0 universal, py3.12)" || exit 0
+          git push
