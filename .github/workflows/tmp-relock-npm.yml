@@ -1,0 +1,30 @@
+name: TEMP npm relock (branch-only bootstrap, deleted before PR)
+on:
+  push:
+    branches: [deps/uuid-11-ghsa-w5hq-20261103]
+permissions:
+  contents: write
+jobs:
+  relock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Re-lock package-lock.json from package.json
+        working-directory: orchestration_ts
+        run: |
+          set -euo pipefail
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm ls --all > /dev/null
+          npm audit --omit=dev || true
+          git diff --stat
+      - name: Commit the lock
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add orchestration_ts/package-lock.json
+          git commit -m "deps: re-lock package-lock.json after removing unused uuid (npm, node 20)" || exit 0
+          git push
