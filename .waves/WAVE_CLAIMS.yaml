@@ -1,0 +1,14 @@
+# GBOGEB/DOCX_RTM_Automation wave claims -- this repository's prerogative.
+# Rules (must obey): GBOGEB/CODEX federation/waves/WAVE_NAMING_RULES.yaml
+# Roll-up: CODEX scripts/build_wave_register.py reads this file at the exact commit.
+# Validate with CODEX scripts/wave_claims.py (MIP kit >= 1.2.3):
+#   wave_claims.py validate .waves/WAVE_CLAIMS.yaml \
+#     --expected-repo GBOGEB/DOCX_RTM_Automation
+schema: gbogeb.wave_claims/1
+repo: GBOGEB/DOCX_RTM_Automation
+owns: []
+participates:
+  - key: QPS:W101
+    role: executor   # source-only recursive recovery workers; owner CODEX
+  - key: QPS:W102
+    role: executor   # MIP control (triage); owner cryoplant
