@@ -18,9 +18,26 @@ jobs:
   admission-policy:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - name: Checkout exact head
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Verify checked-out source identity
+        run: |
+          python - <<'PY'
+          import os
+          import subprocess
+
+          actual = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if actual != os.environ["SOURCE_SHA"]:
+              raise SystemExit("SOURCE_SHA_MISMATCH")
+          print(f"Verified checkout source: {actual}")
+          PY
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -30,46 +47,21 @@ jobs:
       - name: Validate repository-side admission contract
         run: python scripts/validate_repository_admission_policy.py
 
-      - name: Observe live main protection
+      - name: Test effective-policy readback and negative cases
+        run: python tests/test_jade_h08_effective.py
+
+      - name: Observe effective main policy (PR report-only; main fails closed)
         env:
           GH_TOKEN: ${{ github.token }}
-          REPOSITORY: ${{ github.repository }}
           EVENT_NAME: ${{ github.event_name }}
-          REF_NAME: ${{ github.ref_name }}
         run: |
-          python - <<'PY'
-          import json
-          import os
-          import sys
-          import urllib.request
+          python scripts/jade_h08_effective.py --live \
+            --output "$RUNNER_TEMP/admission-policy-readback.json"
 
-          repo = os.environ["REPOSITORY"]
-          request = urllib.request.Request(
-              f"https://api.github.com/repos/{repo}/branches/main",
-              headers={
-                  "Authorization": f"Bearer {os.environ['GH_TOKEN']}",
-                  "Accept": "application/vnd.github+json",
-                  "X-GitHub-Api-Version": "2022-11-28",
-              },
-          )
-          with urllib.request.urlopen(request) as response:
-              payload = json.load(response)
-
-          protected = bool(payload.get("protected"))
-          print(f"main.protected={str(protected).lower()}")
-
-          if not protected:
-              print(
-                  "::warning::P0-B owner gate remains open: main is not protected."
-              )
-
-          if (
-              os.environ["EVENT_NAME"] == "push"
-              and os.environ["REF_NAME"] == "main"
-              and not protected
-          ):
-              print(
-                  "::error::Fail closed: merged main must be protected before P0-B can close."
-              )
-              sys.exit(1)
-          PY
+      - name: Preserve effective-policy receipt even when blocked
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2; same pin as pages.yml
+        with:
+          name: admission-policy-readback-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/admission-policy-readback.json
+          if-no-files-found: error
