@@ -12,3 +12,7 @@ participates:
     role: executor   # source-only recursive recovery workers; owner CODEX
   - key: QPS:W102
     role: executor   # MIP control (triage); owner cryoplant
+  - key: QPS:W107
+    role: receiver   # receipt/return; elevated
+  - key: QPS:W274
+    role: executor   # workflow/script; elevated
