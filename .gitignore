@@ -160,3 +160,6 @@ temp_*
 # QPLANT-AI-AUTO local iteration receipts/state
 state/qplant_input_ledger.jsonl
 output/qplant_ai_auto/
+
+# TypeScript CI npm ci install outputs; do not stage dependency trees
+orchestration_ts/node_modules/
