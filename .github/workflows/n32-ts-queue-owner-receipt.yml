@@ -1,0 +1,101 @@
+name: DOCX N3.2 typed queue component owner receipt (read-only)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'orchestration_ts/scripts/n32_owner_probe.cjs'
+      - 'orchestration_ts/scripts/test_n32_owner_probe.cjs'
+      - '.github/workflows/n32-ts-queue-owner-receipt.yml'
+      - 'orchestration_ts/src/queue/JobQueue.ts'
+      - 'orchestration_ts/package-lock.json'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+concurrency:
+  group: docx-n32-owner-probe-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  typed-owner-candidate:
+    name: Actual compiled TypeScript FIFO and negative source-bound contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout immutable source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Exact head and source check
+        env:
+          HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEAD"
+          test -f orchestration_ts/package-lock.json
+          test -f orchestration_ts/src/queue/JobQueue.ts
+      - name: Use existing repository Node 20 contract
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: orchestration_ts/package-lock.json
+      - name: Install only from lock and build actual queue
+        working-directory: orchestration_ts
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+      - name: Native behavioral negative and source proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test orchestration_ts/scripts/test_n32_owner_probe.cjs \
+            2>&1 | tee "$RUNNER_TEMP/docx-n32-tests.log"
+          node - <<'JS'
+          const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+          const log=fs.readFileSync(path.join(process.env.RUNNER_TEMP,'docx-n32-tests.log'),'utf8');
+          if(!log.includes('# pass 6')||log.includes('# fail 1')||log.includes('# skipped 1')){
+            throw new Error('DOCX_N32_NATIVE_TEST_POPULATION_FIRST_RED');
+          }
+          console.log('DOCX_N32_PROBE_TESTS=6');
+          JS
+      - name: Emit actual compiled TypeScript source-bound owner CANDIDATE
+        shell: bash
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          node orchestration_ts/scripts/n32_owner_probe.cjs \
+            --root . --head "$EXACT_HEAD" --out "$RUNNER_TEMP/docx-n32"
+          node - <<'JS'
+          const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+          const out=path.join(process.env.RUNNER_TEMP,'docx-n32');
+          const receipt=JSON.parse(fs.readFileSync(path.join(out,'owner_receipt.json')));
+          const manifest=JSON.parse(fs.readFileSync(path.join(out,'manifest.json')));
+          const digest=crypto.createHash('sha256')
+             .update(fs.readFileSync(path.join(out,'owner_receipt.json'))).digest('hex');
+          if(manifest.files_sha256['owner_receipt.json']!==digest ||
+             receipt.observed.completed!==32 ||
+             !Object.values(receipt.observed.checks).every(Boolean) ||
+             receipt.caveats.cross_repository_owner_approved!==false ||
+             receipt.caveats.javascript_branch_coverage_pct!==null ||
+             receipt.caveats.native_job_authenticated!==false ||
+             receipt.source_head!==process.env.EXACT_HEAD){
+            throw new Error('DOCX_N32_FALSE_FEDERATION_ACCEPTANCE');
+          }
+          console.log('DOCX_N32_32_ACTUAL_QUEUE_OPERATIONS_VERIFIED');
+          JS
+          test -z "$(git status --porcelain)"
+      - name: Upload candidate for owner review; no auto federation
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: docx-n32-candidate-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/docx-n32-tests.log
+            ${{ runner.temp }}/docx-n32/
+          retention-days: 21
+          if-no-files-found: warn
