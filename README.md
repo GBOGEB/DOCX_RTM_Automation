@@ -153,7 +153,7 @@ flowchart LR
 | Release | 1.0.4 declared, **no tag or release** | Source-to-artefact manifest with SHA-256 receipts, then a tagged release |
 | Security | JWT/RBAC/encryption declared in configuration but **unproven** in code | Executable controls with tests, or relabel as not implemented |
 | Root documentation | Legacy achievement/certification files remain in the root | Archive or rewrite as historical |
-| Dependencies | Advisory fixes merged ([#103](https://github.com/GBOGEB/DOCX_RTM_Automation/pull/103), [#107](https://github.com/GBOGEB/DOCX_RTM_Automation/pull/107), [#108](https://github.com/GBOGEB/DOCX_RTM_Automation/pull/108)) | — |
+| Dependencies | Advisory fixes merged ([#103](https://github.com/GBOGEB/DOCX_RTM_Automation/pull/103), [#107](https://github.com/GBOGEB/DOCX_RTM_Automation/pull/107), [#108](https://github.com/GBOGEB/DOCX_RTM_Automation/pull/108)), but GitHub still reported **221 open Dependabot alerts** on `main` (10 critical, 114 high) on 15 Nov 2026 | Triage by manifest: used vs unused, then lock or remove |
 | Not claimed | Cloud/Kubernetes deployment, performance or SLA figures | Evidence before any claim |
 
 ## 7. Run it locally
