@@ -1,4 +1,6 @@
-# DOCX_RTM_Automation — governed DOCX/RTM extraction, traceability and rendering
+# DOCX RTM Automation
+
+*Governed DOCX/RTM extraction, traceability and rendering.*
 
 <!-- markdownlint-disable MD001 MD013 MD022 MD029 MD031 MD032 MD033 MD040 MD060 -->
 
