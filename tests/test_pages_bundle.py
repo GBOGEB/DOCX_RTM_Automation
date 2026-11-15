@@ -14,10 +14,11 @@ JEKYLL_IMAGE_DIGEST = "sha256:6791ebfd912185ed59bfb5fb102664fa872496b79f87ff8b9c
 
 README_HEADINGS = [
     "# DOCX RTM Automation",
-    "## 1. Purpose",
-    "## 2. Current implemented surfaces",
-    "## 3. Quick start",
-    "## 10. Roadmap policy",
+    "## At a glance",
+    "## 1. Why DOCX_RTM_Automation exists — BIOS",
+    "## 6. Status and open gates",
+    "## 7. Run it locally",
+    "## 9. Repository map and next actions",
 ]
 
 
