@@ -52,7 +52,7 @@
 3. `verify_canonical.py` checks hashes, manifest and cross-references.
 4. ADR/OCD bridge and RTM reconciliation contracts validate the projections.
 5. Rendering workflows produce outward documents.
-6. Exact-head CI and the admission policy gate the merge; the owner admits.
+6. Exact-head CI runs and the owner admits. The admission policy describes the intended merge gate, but it is **not enforced** today: PRs and required checks are not required on `main` (§6).
 
 ## 3. What is inside
 
@@ -174,7 +174,7 @@ TypeScript orchestration:
 cd orchestration_ts && npm ci && npm run build && npm test
 ```
 
-A local pass is not readiness; exact-head CI and repository controls are.
+A local pass is not readiness; exact-head CI is the evidence, and enforced repository controls are still missing (#86).
 
 ## 8. Evidence rules and non-compensation
 
