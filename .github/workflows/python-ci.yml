@@ -35,7 +35,7 @@ jobs:
 
       - name: Run focused tests with coverage threshold
         run: |
-          python -m pytest tests/test_basic.py tests/test_all.py tests/core tests/test_source_extractor.py tests/test_qplant_auto_engine.py -v
+          python -m pytest tests/test_basic.py tests/test_all.py tests/core tests/test_source_extractor.py tests/test_qplant_auto_engine.py tests/test_handover_pack.py -v
 
       - name: Verify recursive alignment lock
         run: |
