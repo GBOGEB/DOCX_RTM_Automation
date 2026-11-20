@@ -10,9 +10,9 @@ def load_applicability():
     return yaml.safe_load(APPLICABILITY.read_text(encoding="utf-8"))
 
 
-def test_v031_registers_reliability_and_mission_control_without_authority_transfer():
+def test_v032_retains_reliability_and_mission_control_without_authority_transfer():
     app = load_applicability()
-    assert app["version"] == "0.3.1"
+    assert app["version"] == "0.3.2"
     assert "Reliability Analysis" in app["scope"]["applies_to"]
     assert app["scope"]["repositories"]["mission_control"] == ["GBOGEB/pipeline-automation-hub"]
     assert app["mission_control_projection"]["horizontal_lane"] == "H4_QPS_TRIAGE"

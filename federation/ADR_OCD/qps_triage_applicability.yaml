@@ -1,5 +1,5 @@
 applicability_id: ADR_OCD_QPS_TRIAGE_APPLICABILITY
-version: 0.3.1
+version: 0.3.2
 status: controlled_projection_candidate
 purpose: >
   Make the ADR_OCD federation bridge directly usable for QPS Requirements and
@@ -281,6 +281,32 @@ qps_to_triage_edges:
   - from: Mission Control Pulse
     to: Triage Item
     relation: routes_without_authority_transfer
+  # Explicit advisory signatures; these do not establish controlled mappings.
+  - from: Triage Item
+    to: Proposed ADR candidate
+    relation: proposed_mapping_to
+    advisory: true
+    authority_transfer: false
+  - from: Triage Item
+    to: Proposed OCD candidate
+    relation: proposed_mapping_to
+    advisory: true
+    authority_transfer: false
+  - from: Triage Item
+    to: Proposed Corrigendum candidate
+    relation: proposed_mapping_to
+    advisory: true
+    authority_transfer: false
+  - from: Triage Item
+    to: Parser RTM source
+    relation: source_reference_to
+    advisory: true
+    authority_transfer: false
+  - from: Triage Item
+    to: Parser DTM source
+    relation: source_reference_to
+    advisory: true
+    authority_transfer: false
 
 control_gates:
   - gate_id: QPS-TRIAGE-GATE-001
