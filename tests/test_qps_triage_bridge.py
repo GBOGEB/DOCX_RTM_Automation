@@ -99,11 +99,12 @@ def test_bridge_emits_triage_items_and_traceability_rows():
     assert any(item["primary_lane"] == "TRIAGE-QPS" for item in items)
     assert any(item["primary_lane"] == "TRIAGE-OCD" for item in items)
     assert any(item["primary_lane"] == "TRIAGE-RTM-DTM" for item in items)
-    assert any(item["disposition"] == "ACCEPT" for item in items)
+    assert any(item["disposition"] == "NEEDS_REVIEW" for item in items)
+    assert not any(item["disposition"] == "ACCEPT" for item in items)
     assert any(item["disposition"] == "NEEDS_SOURCE" for item in items)
     assert any(row["relation"] == "classified_as" for row in rows)
-    assert any(row["relation"] == "design_impact_to" for row in rows)
-    assert any(row["relation"] == "amendment_impact_to" for row in rows)
+    assert any(row["relation"] == "proposed_mapping_to" for row in rows)
+    assert any(row["relation"] == "source_reference_to" for row in rows)
 
 
 def test_enhanced_parser_engine_leaves_qps_triage_disabled_by_default():
