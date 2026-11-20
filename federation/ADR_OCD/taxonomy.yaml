@@ -1,5 +1,5 @@
 taxonomy_id: ADR_OCD_QPS_TAXONOMY
-version: 0.3.0
+version: 0.3.1
 status: controlled_projection_candidate
 purpose: >
   Provide isolated parser and traceability terminology hooks for QPS Requirements,
@@ -127,6 +127,32 @@ traceability_relations:
   - relation: deliverable_impact_to
     from: Triage Item
     to: DTM Row
+  # Parser candidates and source pointers carry no engineering acceptance.
+  - relation: proposed_mapping_to
+    from: Triage Item
+    to: Proposed ADR candidate
+    advisory: true
+    authority_transfer: false
+  - relation: proposed_mapping_to
+    from: Triage Item
+    to: Proposed OCD candidate
+    advisory: true
+    authority_transfer: false
+  - relation: proposed_mapping_to
+    from: Triage Item
+    to: Proposed Corrigendum candidate
+    advisory: true
+    authority_transfer: false
+  - relation: source_reference_to
+    from: Triage Item
+    to: Parser RTM source
+    advisory: true
+    authority_transfer: false
+  - relation: source_reference_to
+    from: Triage Item
+    to: Parser DTM source
+    advisory: true
+    authority_transfer: false
 
 extraction_categories:
   - qps_requirement

@@ -4,12 +4,82 @@ import json
 import subprocess
 import sys
 
+import pytest
+
 from parser.engine import EnhancedParserEngine
 from parser.qps_triage_bridge import QPSTriageBridge
 from src.dashboard.canonical_dashboard import collect_stats
 from src.dashboard.qps_triage_dashboard import QPSTriageDashboardGenerator
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+
+ADVISORY_RELATIONS = {"proposed_mapping_to", "source_reference_to"}
+ADVISORY_SIGNATURES = {
+    ("proposed_mapping_to", "Triage Item", "Proposed ADR candidate"),
+    ("proposed_mapping_to", "Triage Item", "Proposed OCD candidate"),
+    ("proposed_mapping_to", "Triage Item", "Proposed Corrigendum candidate"),
+    ("source_reference_to", "Triage Item", "Parser RTM source"),
+    ("source_reference_to", "Triage Item", "Parser DTM source"),
+}
+
+
+def advisory_contracts(bridge):
+    """Model consumers of each existing typed policy list independently."""
+    for declarations in (
+        bridge.taxonomy["traceability_relations"],
+        bridge.applicability["qps_to_triage_edges"],
+    ):
+        rows = [row for row in declarations if row["relation"] in ADVISORY_RELATIONS]
+        contract = {(row["relation"], row["from"], row["to"]): row for row in rows}
+        assert len(contract) == len(rows), "duplicate typed advisory declaration"
+        yield contract
+
+
+def consume_advisory_row(row, contract):
+    """A typed contract consumer never treats relation-name equality as approval."""
+    signature = (row["relation"], row["from_type"], row["to_type"])
+    declaration = contract.get(signature)
+    if declaration is None:
+        raise ValueError("undeclared advisory edge signature")
+    if declaration.get("advisory") is not True or declaration.get("authority_transfer") is not False:
+        raise ValueError("advisory edge cannot transfer authority")
+    return dict(row)
+
+
+def test_advisory_relations_have_five_explicit_typed_policy_signatures():
+    bridge = QPSTriageBridge()
+    for contract in advisory_contracts(bridge):
+        assert set(contract) == ADVISORY_SIGNATURES
+        assert all(row["advisory"] is True for row in contract.values())
+        assert all(row["authority_transfer"] is False for row in contract.values())
+
+
+def test_actual_advisory_exports_survive_both_policy_consumers():
+    bridge = QPSTriageBridge()
+    enriched = bridge.enrich_analysis(sample_analysis())
+    rows = [row for row in enriched["qps_triage_traceability_rows"]
+            if row["relation"] in ADVISORY_RELATIONS]
+    assert {(row["relation"], row["from_type"], row["to_type"]) for row in rows} == ADVISORY_SIGNATURES
+    for contract in advisory_contracts(bridge):
+        assert [consume_advisory_row(row, contract) for row in rows] == rows
+    assert enriched["parsing_metadata"]["qps_triage_bridge"]["authority_transfer"] is False
+    assert all(item["disposition"] != "ACCEPT" and item["maturity_level"] < 0.8
+               for item in enriched["qps_triage_items"])
+
+
+@pytest.mark.parametrize("relation,from_type,to_type", [
+    ("unknown_relation", "Triage Item", "Parser RTM source"),
+    ("proposed_mapping_to", "QPS Requirement", "Proposed ADR candidate"),
+    ("proposed_mapping_to", "Triage Item", "ADR Design Decision"),
+    ("proposed_mapping_to", "Triage Item", "Any candidate"),
+    ("source_reference_to", "Triage Item", "RTM Row"),
+    ("source_reference_to", "Triage Item", "DTM Row"),
+])
+def test_policy_consumers_reject_untyped_or_controlled_target_substitutions(relation, from_type, to_type):
+    row = {"relation": relation, "from_type": from_type, "to_type": to_type}
+    for contract in advisory_contracts(QPSTriageBridge()):
+        with pytest.raises(ValueError, match="undeclared advisory"):
+            consume_advisory_row(row, contract)
 
 
 def sample_analysis():

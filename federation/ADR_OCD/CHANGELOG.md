@@ -1,5 +1,18 @@
 # ADR_OCD Bridge Changelog
 
+## Advisory relation contracts - 2026-11-20
+
+- Taxonomy 0.3.1 and QPS triage applicability 0.3.2 register the parser's
+  `proposed_mapping_to` and `source_reference_to` relations as five explicit
+  source/target type signatures.
+- Proposed ADR, OCD and Corrigendum candidates remain unresolved advisory
+  mappings. Parser RTM and DTM source references remain source pointers.
+- Each new declaration carries `advisory: true` and `authority_transfer: false`;
+  the existing child engineering authority and controlled relations are retained.
+- Export consumer tests cover both policy lists and reject unknown relations,
+  untyped candidates and substitutions of controlled targets. This closes the
+  relation-registration finding after PR #116 without changing parser promotion.
+
 ## 0.2.0 - 2026-06-24
 
 ### Added
