@@ -12,6 +12,8 @@ and does not invent compliance or traceability relationships.
 from __future__ import annotations
 
 import re
+import io
+from hashlib import sha256
 from pathlib import Path
 from typing import Any, Dict, Iterable, Iterator, Tuple
 
@@ -65,7 +67,11 @@ def extract_analysis_data(doc_path: str | Path) -> Dict[str, Any]:
     if path.suffix.lower() != ".docx":
         raise ValueError(f"direct_docx only accepts .docx, got {path.suffix!r}")
 
-    document = Document(path)
+    # Bind the parser and its source hash to the same immutable byte snapshot.
+    # Reopening the path after hashing could parse a concurrently replaced file.
+    source_raw = path.read_bytes()
+    source_sha256 = sha256(source_raw).hexdigest()
+    document = Document(io.BytesIO(source_raw))
     sections = []
     requirements = []
     otc = []
@@ -73,7 +79,7 @@ def extract_analysis_data(doc_path: str | Path) -> Dict[str, Any]:
     current_section = path.stem
     counters = {"RTM": 0, "OTC": 0, "DEL": 0}
 
-    for kind, text, style in _iter_blocks(document):
+    for block_ordinal, (kind, text, style) in enumerate(_iter_blocks(document), start=1):
         if kind == "paragraph" and style.lower().startswith("heading"):
             current_section = text
             sections.append({"title": text, "style": style})
@@ -84,6 +90,13 @@ def extract_analysis_data(doc_path: str | Path) -> Dict[str, Any]:
             "source_kind": kind,
             "source_style": style,
             "source_text": text,
+            "source_provenance": {
+                "source_sha256": source_sha256,
+                "part": "word/document.xml",
+                "locator_type": "nonempty_paragraph_or_table_row_v1",
+                "block_ordinal": block_ordinal,
+                "source_kind": kind,
+            },
         }
 
         req_match = REQ_ID.search(text)
@@ -134,6 +147,7 @@ def extract_analysis_data(doc_path: str | Path) -> Dict[str, Any]:
         "del_deliverables": deliverables,
         "direct_extraction": {
             "source": str(path),
+            "source_sha256": source_sha256,
             "mode": "conservative_explicit_and_normative",
             "counts": {
                 "sections": len(sections),
@@ -142,5 +156,7 @@ def extract_analysis_data(doc_path: str | Path) -> Dict[str, Any]:
                 "del": len(deliverables),
             },
             "credit_rule": "extraction_is_candidate_traceability_not_compliance_credit",
+            "fidelity_limits": ["main_story_projection_only", "tracked_changes_require_markup_reader",
+                                "automatic_ids_are_parser_candidates", "render_not_evaluated"],
         },
     }

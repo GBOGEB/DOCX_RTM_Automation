@@ -15,7 +15,9 @@ EnhancedParserEngine.parse_document() or used standalone by export scripts.
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from copy import deepcopy
+from dataclasses import asdict, dataclass, field
+from math import isfinite
 from datetime import datetime
 from hashlib import sha1
 from pathlib import Path
@@ -30,7 +32,7 @@ DEFAULT_APPLICABILITY_PATH = REPO_ROOT / "federation" / "ADR_OCD" / "qps_triage_
 
 @dataclass
 class QPSTriageItem:
-    """Controlled triage item emitted from parser output."""
+    """Advisory triage proposal; acceptance is owned by a separate review leg."""
 
     triage_id: str
     source_id: str
@@ -51,6 +53,10 @@ class QPSTriageItem:
     reasons: list[str]
     parser_tags: list[str]
     generated_at: str
+    parser_confidence: float = 0.0
+    reference_status: str = "PROPOSED_UNRESOLVED"
+    proposed_refs: list[dict[str, str]] = field(default_factory=list)
+    source_provenance: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -102,6 +108,7 @@ class QPSTriageBridge:
         triage_items = self.emit_triage_items(analysis)
         traceability_rows = self.export_traceability_rows(triage_items)
         enriched = dict(analysis)
+        enriched["parsing_metadata"] = dict(analysis.get("parsing_metadata") or {})
         enriched["qps_triage_items"] = [asdict(item) for item in triage_items]
         enriched["qps_triage_traceability_rows"] = [asdict(row) for row in traceability_rows]
         enriched.setdefault("parsing_metadata", {})["qps_triage_bridge"] = {
@@ -110,6 +117,9 @@ class QPSTriageBridge:
             "generated_at": datetime.now().isoformat(),
             "triage_item_count": len(triage_items),
             "traceability_row_count": len(traceability_rows),
+            "contract_version": "qps.triage-proposal.v2",
+            "authority_transfer": False,
+            "reference_policy": "parser_source_refs_and_unresolved_proposals",
         }
         return enriched
 
@@ -156,14 +166,26 @@ class QPSTriageBridge:
             priority_score=priority_score,
             evidence_class=evidence_class,
             qps_refs=self._refs_for("QPS", source_type, source_id, content),
-            adr_refs=self._refs_for("ADR", source_type, source_id, content),
-            ocd_refs=self._refs_for("OCD", source_type, source_id, content),
+            adr_refs=[],  # No verified ADR binding is established by keyword matching.
+            ocd_refs=[],
             rtm_refs=[source_id] if source_type == "RTM" else [],
             dtm_refs=[source_id] if source_type == "DTM" else [],
-            corrigendum_refs=self._refs_for("Corrigendum", source_type, source_id, content),
+            corrigendum_refs=[],
             reasons=reasons,
             parser_tags=tags,
             generated_at=datetime.now().isoformat(),
+            parser_confidence=self._parser_confidence(entry),
+            source_provenance=self._source_provenance(entry),
+            proposed_refs=[
+                {
+                    "target_type": target,
+                    "candidate_id": ref,
+                    "status": "PROPOSED_UNRESOLVED",
+                    "basis": "keyword_match_only",
+                }
+                for target in ("ADR", "OCD", "Corrigendum")
+                for ref in self._refs_for(target, source_type, source_id, content)
+            ],
         )
 
     def _match_tags(self, content: str, source_type: str) -> list[str]:
@@ -211,13 +233,38 @@ class QPSTriageBridge:
         return sorted({lane for lane in candidates if lane != primary_lane})
 
     @staticmethod
+    def _source_provenance(entry: dict[str, Any]) -> dict[str, Any]:
+        """Preserve supplied source pointers without creating authority claims."""
+        provenance = entry.get("source_provenance")
+        if provenance is None:
+            metadata = entry.get("metadata")
+            original = metadata.get("original_data") if isinstance(metadata, dict) else None
+            provenance = original.get("source_provenance") if isinstance(original, dict) else None
+        return deepcopy(provenance) if isinstance(provenance, dict) else {}
+
+    @staticmethod
+    def _parser_confidence(entry: dict[str, Any]) -> float:
+        """Normalize advisory confidence; malformed/non-finite input has no credit."""
+        raw = entry.get("confidence_score")
+        if isinstance(raw, bool):
+            return 0.0
+        try:
+            value = float(raw or 0.0)
+        except (TypeError, ValueError, OverflowError):
+            return 0.0
+        return max(0.0, min(1.0, value)) if isfinite(value) else 0.0
+
+    @staticmethod
     def _disposition_and_reasons(entry: dict[str, Any], content: str) -> tuple[str, list[str]]:
         reasons: list[str] = []
-        confidence = float(entry.get("confidence_score") or 0.0)
+        confidence = QPSTriageBridge._parser_confidence(entry)
         if not content.strip():
             return "REJECT", ["empty_source_content"]
         if confidence >= 0.8:
-            return "ACCEPT", ["high_confidence_parser_output"]
+            return "NEEDS_REVIEW", [
+                "high_confidence_parser_output_is_advisory",
+                "authority_receipt_and_owner_disposition_not_evaluated_by_parser",
+            ]
         if confidence >= 0.6:
             return "NEEDS_REVIEW", ["medium_confidence_parser_output"]
         if any(term in content.lower() for term in ["tbd", "unknown", "missing", "source", "evidence"]):
@@ -228,11 +275,9 @@ class QPSTriageBridge:
 
     @staticmethod
     def _maturity_level(entry: dict[str, Any], disposition: str) -> float:
-        confidence = float(entry.get("confidence_score") or 0.0)
-        if disposition == "ACCEPT" and confidence >= 0.8:
-            return 1.0
-        if disposition in {"ACCEPT", "NEEDS_REVIEW"} and confidence >= 0.6:
-            return 0.8
+        confidence = QPSTriageBridge._parser_confidence(entry)
+        # This bridge emits proposals only. Controlled/traceable maturity requires
+        # the separate owner review and source-binding receipt, not confidence.
         if disposition == "NEEDS_SOURCE":
             return 0.3
         if disposition == "REJECT":
@@ -241,10 +286,8 @@ class QPSTriageBridge:
 
     @staticmethod
     def _evidence_class(disposition: str, maturity_level: float) -> str:
-        if disposition == "ACCEPT" and maturity_level >= 1.0:
-            return "controlled"
-        if maturity_level >= 0.8:
-            return "traceable"
+        # No authority-receipt verifier is present in this parser bridge.
+        # Keep all parser-only evidence below controlled/traceable promotion.
         if disposition == "NEEDS_SOURCE":
             return "source_missing"
         if disposition == "NEEDS_IMPLEMENTATION":
@@ -272,25 +315,30 @@ class QPSTriageBridge:
         if target == "QPS" and (source_type == "RTM" or "qps" in content_lower or "shall" in content_lower):
             return [source_id]
         if target == "ADR" and any(term in content_lower for term in ["adr", "architecture", "decision", "interface", "control"]):
-            return [self._stable_id("ADR", source_id, content)]
+            return [self._stable_id("PROPOSED-ADR", source_id, content)]
         if target == "OCD" and any(term in content_lower for term in ["ocd", "operational", "scenario", "workflow", "maintenance", "training"]):
-            return [self._stable_id("OCD", source_id, content)]
+            return [self._stable_id("PROPOSED-OCD", source_id, content)]
         if target == "Corrigendum" and any(term in content_lower for term in ["corrigendum", "amendment", "change", "negotiation"]):
-            return [self._stable_id("COR", source_id, content)]
+            return [self._stable_id("PROPOSED-COR", source_id, content)]
         return []
 
     def export_traceability_rows(self, triage_items: list[QPSTriageItem]) -> list[QPSTriageTraceabilityRow]:
         rows: list[QPSTriageTraceabilityRow] = []
         for item in triage_items:
             rows.append(self._row(item, item.source_id, item.source_type, "classified_as", item.triage_id, "Triage Item"))
+            for proposal in item.proposed_refs:
+                rows.append(self._row(
+                    item, item.triage_id, "Triage Item", "proposed_mapping_to",
+                    proposal["candidate_id"], f"Proposed {proposal['target_type']} candidate",
+                ))
             for ref in item.adr_refs:
                 rows.append(self._row(item, item.triage_id, "Triage Item", "design_impact_to", ref, "ADR Design Decision"))
             for ref in item.ocd_refs:
                 rows.append(self._row(item, item.triage_id, "Triage Item", "operational_impact_to", ref, "OCD Operational Scenario"))
             for ref in item.rtm_refs:
-                rows.append(self._row(item, item.triage_id, "Triage Item", "traceability_impact_to", ref, "RTM Row"))
+                rows.append(self._row(item, item.triage_id, "Triage Item", "source_reference_to", ref, "Parser RTM source"))
             for ref in item.dtm_refs:
-                rows.append(self._row(item, item.triage_id, "Triage Item", "deliverable_impact_to", ref, "DTM Row"))
+                rows.append(self._row(item, item.triage_id, "Triage Item", "source_reference_to", ref, "Parser DTM source"))
             for ref in item.corrigendum_refs:
                 rows.append(self._row(item, item.triage_id, "Triage Item", "amendment_impact_to", ref, "Corrigendum Entry"))
         return rows
@@ -309,3 +357,4 @@ class QPSTriageBridge:
             priority_score=item.priority_score,
             evidence_class=item.evidence_class,
         )
+

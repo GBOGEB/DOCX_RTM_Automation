@@ -118,16 +118,17 @@ class EnhancedParserEngine:
         """Parse document with enhanced logic and recursive mapping"""
         logger.info(f"Starting enhanced parsing of {doc_path}")
         
-        if analysis_data:
-            # Use existing analysis data
-            sections = analysis_data.get('sections', [])
-            rtm_requirements = analysis_data.get('rtm_requirements', [])
-            otc_elements = analysis_data.get('otc_elements', [])
-            del_deliverables = analysis_data.get('del_deliverables', [])
-        else:
-            # Parse from scratch
-            document = Document(doc_path)
-            sections, rtm_requirements, otc_elements, del_deliverables = self._parse_from_document(document)
+        if analysis_data is None:
+            # Reuse the existing conservative reader; the historical direct
+            # branch called an empty stub and silently produced zero candidates.
+            from parser.direct_docx import extract_analysis_data
+            analysis_data = extract_analysis_data(doc_path)
+        if not isinstance(analysis_data, dict):
+            raise TypeError("analysis_data must be a mapping or None")
+        sections = analysis_data.get('sections', [])
+        rtm_requirements = analysis_data.get('rtm_requirements', [])
+        otc_elements = analysis_data.get('otc_elements', [])
+        del_deliverables = analysis_data.get('del_deliverables', [])
         
         # Enhanced processing with recursive mapping
         enhanced_rtm = self._enhance_rtm_elements(rtm_requirements, sections)
@@ -154,6 +155,9 @@ class EnhancedParserEngine:
             "parsing_statistics": statistics,
             "recursive_mapping": self._create_recursive_mapping(enhanced_rtm, enhanced_otc, enhanced_del)
         }
+
+        if isinstance(analysis_data.get("direct_extraction"), dict):
+            result["parsing_metadata"]["direct_extraction"] = dict(analysis_data["direct_extraction"])
         
         result = self._maybe_enrich_qps_triage(result)
         self.last_analysis_result = result
@@ -466,8 +470,9 @@ class EnhancedParserEngine:
             'traceability_row_count': len(rows),
             'by_relation_counts': {key: len(value) for key, value in by_relation.items()},
             'by_target_type_counts': {key: len(value) for key, value in by_target_type.items()},
-            'rtm_rows': by_target_type.get('RTM Row', []),
-            'dtm_rows': by_target_type.get('DTM Row', []),
+            'rtm_rows': by_target_type.get('Parser RTM source', []) + by_target_type.get('RTM Row', []),
+            'dtm_rows': by_target_type.get('Parser DTM source', []) + by_target_type.get('DTM Row', []),
+            'proposed_reference_rows': by_relation.get('proposed_mapping_to', []),
             'adr_rows': by_target_type.get('ADR Design Decision', []),
             'ocd_rows': by_target_type.get('OCD Operational Scenario', []),
             'corrigendum_rows': by_target_type.get('Corrigendum Entry', [])
